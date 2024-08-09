@@ -6,4 +6,6 @@ class ImageConstant {
   static String noConnection = '$imagePath/no_connection.png';
 
   static String imgLogoForLoading = '$imagePath/logo_for_loading.png';
+
+  static String empty = '$imagePath/empty.png';
 }

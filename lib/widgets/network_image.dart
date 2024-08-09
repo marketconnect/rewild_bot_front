@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:rewild/core/constants/image_constant.dart';
-import 'package:rewild/widgets/progress_indicator.dart';
+import 'package:rewild_bot_front/core/constants/image_constant.dart';
+import 'package:rewild_bot_front/widgets/progress_indicator.dart';
 
 class ReWildNetworkImage extends StatelessWidget {
   const ReWildNetworkImage({
@@ -35,7 +35,7 @@ class ReWildNetworkImage extends StatelessWidget {
       return Image.asset(
         width: width,
         height: height,
-        errorImage ?? ImageConstant.taken,
+        errorImage ?? ImageConstant.empty,
         fit: BoxFit.scaleDown,
       );
     }
@@ -46,7 +46,7 @@ class ReWildNetworkImage extends StatelessWidget {
         imageUrl: image,
         placeholder: (context, url) => const MyProgressIndicator(),
         errorWidget: (context, url, error) => Image.asset(
-          errorImage ?? ImageConstant.taken,
+          errorImage ?? ImageConstant.empty,
           fit: BoxFit.scaleDown,
         ),
         fit: fit ?? BoxFit.fill,
