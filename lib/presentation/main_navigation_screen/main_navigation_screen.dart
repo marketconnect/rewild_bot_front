@@ -25,12 +25,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   }
 
   @override
-  Future<void> dispose() async {
+  void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 
-  Future<void> setIndex(int index) async {
+  void setIndex(int index) {
     setState(() {
       _widgetIndex = index;
     });
@@ -50,6 +50,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     final userName = model.userName;
     final isLoading = model.isLoading;
     final goToSubscriptionsScreen = model.goToSubscriptionsScreeen;
+
     List<Widget> widgets = [
       MainNavigationScreenHomeWidget(
         userName: userName,
@@ -69,26 +70,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         callbackForUpdate: callback,
         budget: budget,
         isLoading: isLoading,
-      )
+      ),
     ];
+
     return PopScope(
       canPop: true,
       onPopInvoked: (didPop) async {
         SystemNavigator.pop();
       },
       child: SafeArea(
-          child: Scaffold(
-        bottomNavigationBar: Container(
-          height: MediaQuery.of(context).size.height * 0.11,
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
-                width: 1,
-              ),
-            ),
-          ),
-          child: BottomNavigationBar(
+        child: Scaffold(
+          body: widgets[_widgetIndex].runtimeType ==
+                  MainNavigationScreenAdvertWidget
+              ? SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: widgets[_widgetIndex],
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: widgets[_widgetIndex],
+                ),
+          bottomNavigationBar: BottomNavigationBar(
             currentIndex: _widgetIndex,
             backgroundColor: Theme.of(context).colorScheme.surface,
             type: BottomNavigationBarType.fixed,
@@ -99,18 +103,19 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
               }
             },
             selectedLabelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: MediaQuery.of(context).size.width * 0.04,
-                fontWeight: FontWeight.bold),
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: MediaQuery.of(context).size.width * 0.035,
+              fontWeight: FontWeight.bold,
+            ),
             unselectedLabelStyle: TextStyle(
-                color: Theme.of(context).colorScheme.outline,
-                fontSize: MediaQuery.of(context).size.width * 0.04,
-                fontWeight: FontWeight.bold),
+              color: Theme.of(context).colorScheme.outline,
+              fontSize: MediaQuery.of(context).size.width * 0.035,
+              fontWeight: FontWeight.bold,
+            ),
             items: _buildItems,
           ),
         ),
-        body: widgets[_widgetIndex],
-      )),
+      ),
     );
   }
 
@@ -130,16 +135,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   BottomNavigationBarItem buildBottomNavigationBarItem(
       String imageSrc, String label, bool isActive) {
     return BottomNavigationBarItem(
-        icon: SizedBox(
-          width: MediaQuery.of(context).size.width * 0.07,
-          height: MediaQuery.of(context).size.width * 0.07,
-          child: Image.asset(
-            imageSrc,
-            color: isActive
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.outline,
-          ),
+      icon: SizedBox(
+        width: MediaQuery.of(context).size.width * 0.07,
+        height: MediaQuery.of(context).size.width * 0.07,
+        child: Image.asset(
+          imageSrc,
+          color: isActive
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.outline,
         ),
-        label: label);
+      ),
+      label: label,
+    );
   }
 }

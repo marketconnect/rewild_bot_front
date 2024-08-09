@@ -7,6 +7,7 @@ class IconConstant {
   static String iconKeyword = '$iconPath/keyword.png';
   static String iconQuestions = '$iconPath/questions.png';
   static String iconRatingStars = '$iconPath/rating_stars.png';
+  static String iconFilterDismiss = '$iconPath/filter-dismiss.png';
   static String iconNotificationSettings =
       '$iconPath/notification_settings.png';
 }

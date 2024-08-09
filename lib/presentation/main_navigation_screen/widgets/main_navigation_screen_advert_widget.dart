@@ -31,19 +31,22 @@ class MainNavigationScreenAdvertWidget extends StatelessWidget {
     return SafeArea(
       child: !apiKeyExists
           ? Center(
-              child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const EmptyWidget(
-                    text:
-                        'Для работы с рекламным кабинетом WB вам необходимо добавить токен "Продвижение"'),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
-                ),
-                TextButton(
-                    onPressed: () => print(
-                        "Navigator.of(context).pushNamed(MainNavigationRouteNames.apiKeysScreen)"),
-                    child: Container(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.235),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const EmptyWidget(
+                      text:
+                          'Для работы с рекламным кабинетом WB вам необходимо добавить токен "Продвижение"',
+                    ),
+                    SizedBox(
+                      height: screenHeight * 0.05,
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context)
+                          .pushNamed("MainNavigationRouteNames.apiKeysScreen"),
+                      child: Container(
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.primary,
@@ -55,9 +58,13 @@ class MainNavigationScreenAdvertWidget extends StatelessWidget {
                           'Добавить токен',
                           style: TextStyle(
                               color: Theme.of(context).colorScheme.onPrimary),
-                        )))
-              ],
-            ))
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
           : adverts.isNotEmpty
               ? SingleChildScrollView(
                   child: Column(children: [

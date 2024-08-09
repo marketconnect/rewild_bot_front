@@ -30,11 +30,10 @@ class EmptyWidget extends StatelessWidget {
         if (text != null)
           SizedBox(
             width: screenWidth * 0.8,
-            child: Text(
-              text!,
-              maxLines: 4,
-              textAlign: TextAlign.center,
-            ),
+            child: Text(text!,
+                maxLines: 4,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.w600)),
           ),
       ],
     ));

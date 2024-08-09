@@ -52,42 +52,43 @@ abstract class MainNavigationAdvertService {
 }
 
 class MainNavigationViewModel extends ResourceChangeNotifier {
-  final MainNavigationCardService cardService;
-  final MainNavigationAdvertService advertService;
-  final MainNavigationQuestionService questionService;
-  final MainNavigationAuthService tokenProvider;
-  final MainNavigationUpdateService updateService;
-  final MainNavigationSubscriptionService subscriptionService;
+  // final MainNavigationCardService cardService;
+  // final MainNavigationAdvertService advertService;
+  // final MainNavigationQuestionService questionService;
+  // final MainNavigationAuthService tokenProvider;
+  // final MainNavigationUpdateService updateService;
+  // final MainNavigationSubscriptionService subscriptionService;
   final Stream<(int, int)> cardsNumberStream;
   final Stream<StreamAdvertEvent> updatedAdvertStream;
   final Stream<Map<ApiKeyType, String>> apiKeyExistsStream;
 
   MainNavigationViewModel(
-      {required this.cardService,
-      required this.advertService,
-      required this.questionService,
-      required this.tokenProvider,
-      required this.updateService,
+      {
+      // required this.cardService,
+      // required this.advertService,
+      // required this.questionService,
+      // required this.tokenProvider,
+      // required this.updateService,
       required this.cardsNumberStream,
       required this.updatedAdvertStream,
       required this.apiKeyExistsStream,
-      required this.subscriptionService,
-      required super.internetConnectionChecker,
+      // required this.subscriptionService,
+
       required super.context}) {
     _asyncInit();
   }
 
-  Future<String> _getToken() async {
-    final token = await fetch(() => tokenProvider.getToken());
-    if (token == null) {
-      return "";
-    }
-    return token;
-  }
+  // Future<String> _getToken() async {
+  // final token = await fetch(() => tokenProvider.getToken());
+  // if (token == null) {
+  //   return "";
+  // }
+  // return token;
+  // }
 
   void _asyncInit() async {
-    final token = await _getToken();
-    await updateService.update(token);
+    // final token = await _getToken();
+    // await updateService.update(token);
     // Update in MainNavigationCardsWidget cards number
     cardsNumberStream.listen((event) {
       setSubscriptionsNum(event.$1);
@@ -130,34 +131,34 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     // }
 
     // subscription
-    final subscriptions =
-        await fetch(() => subscriptionService.getSubscriptions(token: token));
-    if (subscriptions == null) {
-      return;
-    }
-    setSubscriptionsNum(subscriptions.length);
-    setTrackedCardsNumber(
-        subscriptions.where((element) => element.cardId != 0).toList().length);
+    // final subscriptions =
+    //     await fetch(() => subscriptionService.getSubscriptions(token: token));
+    // if (subscriptions == null) {
+    //   return;
+    // }
+    // setSubscriptionsNum(subscriptions.length);
+    // setTrackedCardsNumber(
+    //     subscriptions.where((element) => element.cardId != 0).toList().length);
 
     // Api keys exist
     // Advert
-    final advertApiKey = await fetch(() => advertService.getApiKey());
-    if (advertApiKey == null) {
-      return;
-    }
-    setAdvertApiKey(advertApiKey);
+    // final advertApiKey = await fetch(() => advertService.getApiKey());
+    // if (advertApiKey == null) {
+    //   return;
+    // }
+    // setAdvertApiKey(advertApiKey);
 
-    final newAdverts =
-        await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
-    if (newAdverts == null) {
-      return;
-    }
+    // final newAdverts =
+    //     await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
+    // if (newAdverts == null) {
+    //   return;
+    // }
     // Question
-    final questionApiKey = await fetch(() => questionService.getApiKey());
-    if (questionApiKey == null) {
-      return;
-    }
-    setFeedbackApiKey(questionApiKey);
+    // final questionApiKey = await fetch(() => questionService.getApiKey());
+    // if (questionApiKey == null) {
+    //   return;
+    // }
+    // setFeedbackApiKey(questionApiKey);
 
     notify();
   } // _asyncInit
@@ -228,29 +229,29 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     if (_advertApiKey == null) {
       return;
     }
-    final balance =
-        await fetch(() => advertService.getBallance(token: _advertApiKey!));
+    // final balance =
+    //     await fetch(() => advertService.getBallance(token: _advertApiKey!));
     if (balance == null) {
       return;
     }
     setBalance(balance);
     notify();
 
-    final newAdverts =
-        await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
-    if (newAdverts == null) {
-      return;
-    }
-    setAdverts(newAdverts);
+    // final newAdverts =
+    //     await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
+    // if (newAdverts == null) {
+    //   return;
+    // }
+    // setAdverts(newAdverts);
 
-    for (final advert in _adverts) {
-      final budget = await fetch(() => advertService.getBudget(
-          token: _advertApiKey!, campaignId: advert.campaignId));
-      if (budget != null) {
-        addBudget(advert.campaignId, budget);
-        notify();
-      }
-    }
+    // for (final advert in _adverts) {
+    //   final budget = await fetch(() => advertService.getBudget(
+    //       token: _advertApiKey!, campaignId: advert.campaignId));
+    //   if (budget != null) {
+    //     addBudget(advert.campaignId, budget);
+    //     notify();
+    //   }
+    // }
     setLoading(false);
   }
 
@@ -271,9 +272,10 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
 
   // Home screen feedBack
   Future<String> userName() async {
-    var userName = await fetch(() => questionService.getUsername());
-    userName ??= "anonymous";
-    return userName;
+    // var userName = await fetch(() => questionService.getUsername());
+    // userName ??= "anonymous";
+    // return userName;
+    return "anonymous";
   }
 
   Future<void> goToSubscriptionsScreeen(BuildContext context) async {

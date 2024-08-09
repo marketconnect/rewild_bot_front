@@ -5,39 +5,17 @@ import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/widgets/alert_widget.dart';
 import 'package:rewild_bot_front/.env.dart';
 
-abstract class InternetConnectionChecker {
-  Future<bool> checkInternetConnection();
-}
-
 class ResourceChangeNotifier extends ChangeNotifier {
   final BuildContext context;
-  final InternetConnectionChecker internetConnectionChecker;
 
   late final Size _screenSize = MediaQuery.of(context).size;
   double get screenWidth => _screenSize.width;
   double get screenHeight => _screenSize.height;
-  ResourceChangeNotifier(
-      {required this.context, required this.internetConnectionChecker}) {
-    _asyncInit();
-  }
+  ResourceChangeNotifier({
+    required this.context,
+  });
 
   bool isConnected = false;
-
-  void _asyncInit() async {
-    isConnected = await internetConnectionChecker.checkInternetConnection();
-    if (!context.mounted) {
-      return;
-    }
-    if (!isConnected) {
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const AlertWidget(
-              errorType: ErrorType.network,
-            ),
-          ));
-    }
-  }
 
   bool _external = false;
   late bool _loading = true;

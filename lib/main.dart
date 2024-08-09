@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 import 'package:rewild_bot_front/di/di.dart';
+import 'package:rewild_bot_front/domain/entities/hive/card_of_product.dart';
+import 'package:rewild_bot_front/domain/entities/hive/filter_model.dart';
+import 'package:rewild_bot_front/domain/entities/hive/group_model.dart';
+import 'package:rewild_bot_front/domain/entities/hive/initial_stock.dart';
+import 'package:rewild_bot_front/domain/entities/hive/nm_id.dart';
+import 'package:rewild_bot_front/domain/entities/hive/rewild_notification_model.dart';
+import 'package:rewild_bot_front/domain/entities/hive/seller.dart';
+import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
+import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
+import 'package:rewild_bot_front/domain/entities/hive/tariff.dart';
+
+import 'package:rewild_bot_front/domain/entities/hive/user_seller.dart';
 
 abstract class AppFactory {
   Widget makeApp();
@@ -8,7 +22,26 @@ abstract class AppFactory {
 
 final appFactory = makeAppFactory();
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+
+  Hive.registerAdapter(UserSellerAdapter());
+  Hive.registerAdapter(InitialStockAdapter());
+  await Hive.openBox<CardOfProduct>(HiveBoxes.cardOfProducts); // 0
+  await Hive.openBox<GroupModel>(HiveBoxes.groups); // 1
+  await Hive.openBox<InitialStock>(HiveBoxes.initialStocks); // 2
+  await Hive.openBox<NmId>(HiveBoxes.nmIds); // 3
+  await Hive.openBox<Seller>(HiveBoxes.sellers); // 4
+  await Hive.openBox<Stock>(HiveBoxes.stocks); // 5
+  await Hive.openBox<Supply>(HiveBoxes.supplies); // 6
+  await Hive.openBox<Tariff>(HiveBoxes.tariffs); // 7
+  await Hive.openBox<UserSeller>(HiveBoxes.userSellers); // 8
+  await Hive.openBox<FilterModel>(HiveBoxes.filters); // 9
+  await Hive.openBox<ReWildNotificationModel>(
+      HiveBoxes.rewildNotifications); // 10
+
   setUrlStrategy(PathUrlStrategy());
   runApp(appFactory.makeApp());
 }

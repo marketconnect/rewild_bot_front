@@ -7,6 +7,9 @@ abstract class ScreenFactory {
   Widget makeScreen2();
   Widget makeScreen3();
   Widget makeHomeScreen();
+  Widget makeMainNavigationScreen();
+  Widget makeApiKeysScreen();
+  Widget makeAllCardsScreen();
 }
 
 class MainNavigation implements AppNavigation {
@@ -19,12 +22,27 @@ class MainNavigation implements AppNavigation {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
-            builder: (_) => screenFactory.makeHomeScreen());
-      case '/screen1':
-        return MaterialPageRoute(builder: (_) => screenFactory.makeScreen1());
-      case '/screen2':
+            builder: (_) => screenFactory.makeMainNavigationScreen());
+      case MainNavigationRouteNames.apiKeysScreen:
+        return MaterialPageRoute(
+            builder: (_) => screenFactory.makeApiKeysScreen());
+
+      case MainNavigationRouteNames.allCardsScreen:
+        return PageRouteBuilder(
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                screenFactory.makeAllCardsScreen(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+              return FadeTransition(
+                opacity: animation,
+                child: child,
+              );
+            },
+            settings: settings);
+
+      case MainNavigationRouteNames.screen2:
         return MaterialPageRoute(builder: (_) => screenFactory.makeScreen2());
-      case '/screen3':
+      case MainNavigationRouteNames.screen3:
         return MaterialPageRoute(builder: (_) => screenFactory.makeScreen3());
       default:
         return MaterialPageRoute(
