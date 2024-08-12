@@ -10,4 +10,5 @@ class HiveBoxes {
   static const String sellers = 'sellers';
   static const String filters = 'filters';
   static const String rewildNotifications = 'rewild_notifications';
+  static const String commissions = 'commissions';
 }

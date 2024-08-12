@@ -2,8 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
+import 'package:rewild_bot_front/api_clients/details_api_client.dart';
+import 'package:rewild_bot_front/api_clients/grpc_initial_stocks_api_client.dart';
+import 'package:rewild_bot_front/api_clients/price_api_client.dart';
+import 'package:rewild_bot_front/api_clients/product_card_service_api_client.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
+import 'package:rewild_bot_front/data_providers/average_logistics_data_provider/average_logistics_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/rewild_notification_data_provider/rewild_notification_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/secure_storage_data_provider/secure_storage_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/supply_data_provider/supply_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/tariff_data_provider/tariff_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/user_sellers_data_provider/user_sellers_data_provider.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
@@ -61,22 +70,32 @@ class _DIContainer {
   Stream<StreamAdvertEvent> get updatedAdvertStream =>
       updatedAdvertStreamController.stream;
 
+  // Api Clients ===============================================================
+  CardOfProductApiClient _makeCardOfProductApiClient() =>
+      const CardOfProductApiClient();
+  DetailsApiClient _makeDetailsApiClient() => const DetailsApiClient();
+  CommissionApiClient _makeCommissionApiClient() => const CommissionApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
       const SecureStorageProvider();
   UserSellersDataProvider _makeUserSellersDataProvider() =>
       const UserSellersDataProvider();
+  InitialStocksApiClient _makeStocksApiClient() =>
+      const InitialStocksApiClient();
+  PriceApiClient _makePriceApiClient() => const PriceApiClient();
+  AverageLogisticsDataProvider _makeAverageLogisticsDataProvider() =>
+      const AverageLogisticsDataProvider();
+  SupplyDataProvider _makeSupplyDataProvider() => const SupplyDataProvider();
 
+  TariffDataProvider _makeTariffDataProvider() => const TariffDataProvider();
+
+  NotificationDataProvider _makeNotificationDataProvider() =>
+      const NotificationDataProvider();
   // Services ==================================================================
   UpdateService _makeUpdateService() => UpdateService(
-        cardOfProductApiClient: _makeCardOfProductApiClient(),
-        detailsApiClient: _makeDetailsApiClient(),
-        initialStockApiClient: _makeStocksApiClient(),
-        averageLogisticsApiClient: _makePriceApiClient(),
         averageLogisticsDataProvider: _makeAverageLogisticsDataProvider(),
         supplyDataProvider: _makeSupplyDataProvider(),
-        tariffApiClient: _makeCommissionApiClient(),
         tariffDataProvider: _makeTariffDataProvider(),
         weekOrdersDataProvider: _makeOrderDataProvider(),
         totalCostdataProvider: _makeTotalCostCalculatorDataProvider(),
@@ -93,6 +112,11 @@ class _DIContainer {
         lemmaDataProvider: _makeLemmaDataProvider(),
         cachedKwByLemmaByWordDataProvider: _makeCachedKwByWordDataProvider(),
         cachedKwByLemmaDataProvider: _makeCachedKwByLemmaDataProvider(),
+        tariffApiClient: _makeCommissionApiClient(),
+        detailsApiClient: _makeDetailsApiClient(),
+        averageLogisticsApiClient: _makePriceApiClient(),
+        initialStockApiClient: _makeStocksApiClient(),
+        cardOfProductApiClient: _makeCardOfProductApiClient(),
       );
 
   ApiKeysService _makeApiKeysService() => ApiKeysService(

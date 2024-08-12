@@ -21,4 +21,20 @@ class Prices {
     required this.clienId,
     required this.clientSecret,
   });
+
+  // fromMap
+  factory Prices.fromMap(Map<String, dynamic> map) {
+    return Prices(
+      price1: map['price1'] as int,
+      price2: map['price2'] as int,
+      price3: map['price3'] as int,
+      averageLogistics: map['averageLogistics'] as int,
+      logisticsCoef: map['logisticsCoef'] as int,
+      gigaChatLitePerMillion: map['gigaChatLitePerMillion'] as int,
+      gigaChatLitePlusPerMillion: map['gigaChatLitePlusPerMillion'] as int,
+      gigaChatProPerMillion: map['gigaChatProPerMillion'] as int,
+      clienId: map['clienId'] as String,
+      clientSecret: map['clientSecret'] as String,
+    );
+  }
 }

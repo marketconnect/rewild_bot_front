@@ -4,6 +4,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 import 'package:rewild_bot_front/di/di.dart';
 import 'package:rewild_bot_front/domain/entities/hive/card_of_product.dart';
+import 'package:rewild_bot_front/domain/entities/hive/commission_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/filter_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/group_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/initial_stock.dart';
@@ -13,6 +14,7 @@ import 'package:rewild_bot_front/domain/entities/hive/seller.dart';
 import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
 import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
 import 'package:rewild_bot_front/domain/entities/hive/tariff.dart';
+import 'package:rewild_bot_front/domain/entities/hive/tariff_model.dart';
 
 import 'package:rewild_bot_front/domain/entities/hive/user_seller.dart';
 
@@ -41,6 +43,7 @@ Future<void> main() async {
   await Hive.openBox<FilterModel>(HiveBoxes.filters); // 9
   await Hive.openBox<ReWildNotificationModel>(
       HiveBoxes.rewildNotifications); // 10
+  await Hive.openBox<CommissionModel>(HiveBoxes.commissions); // 11
 
   setUrlStrategy(PathUrlStrategy());
   runApp(appFactory.makeApp());

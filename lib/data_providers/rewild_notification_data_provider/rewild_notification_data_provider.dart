@@ -4,8 +4,10 @@ import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/hive/rewild_notification_model.dart';
+import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class NotificationDataProvider {
+class NotificationDataProvider
+    implements UpdateServiceNotificationDataProvider {
   const NotificationDataProvider();
 
   Box<ReWildNotificationModel> get _box =>
