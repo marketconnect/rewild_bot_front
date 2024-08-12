@@ -38,8 +38,7 @@ class SupplyDataProvider implements UpdateServiceSupplyDataProvider {
         return right(null);
       }
 
-      // Удаляем только нужную запись с учетом условий
-      final supply = await _box.get(nmId);
+      final supply = _box.get(nmId);
       if (supply != null &&
           supply.wh == wh &&
           supply.sizeOptionId == sizeOptionId) {
