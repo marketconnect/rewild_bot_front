@@ -3,9 +3,13 @@ import 'package:hive/hive.dart';
 import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/hive/tariff.dart';
+import 'package:rewild_bot_front/domain/services/tariff_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class TariffDataProvider implements UpdateServiceTariffDataProvider {
+class TariffDataProvider
+    implements
+        UpdateServiceTariffDataProvider,
+        TariffServiceTariffDataProvider {
   const TariffDataProvider();
 
   Box<Tariff> get _box => Hive.box<Tariff>(HiveBoxes.tariffs);

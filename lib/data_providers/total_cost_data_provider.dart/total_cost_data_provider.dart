@@ -4,10 +4,13 @@ import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/hive/total_cost_calculator.dart';
+import 'package:rewild_bot_front/domain/services/total_cost_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class TotalCostCalculatorDataProvider
-    implements UpdateServiceTotalCostdataProvider {
+    implements
+        UpdateServiceTotalCostdataProvider,
+        TotalCostServiceTotalCostDataProvider {
   const TotalCostCalculatorDataProvider();
 
   Future<Box<TotalCostCalculator>> _openBox() async {

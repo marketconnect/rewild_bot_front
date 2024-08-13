@@ -5,9 +5,13 @@ import 'package:fpdart/fpdart.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/hive/card_of_product.dart';
+import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class CardOfProductApiClient implements UpdateServiceCardOfProductApiClient {
+class CardOfProductApiClient
+    implements
+        UpdateServiceCardOfProductApiClient,
+        CardOfProductServiceCardOfProductApiClient {
   const CardOfProductApiClient();
 
   @override

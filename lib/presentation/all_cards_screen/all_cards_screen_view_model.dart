@@ -14,7 +14,7 @@ import 'package:rewild_bot_front/domain/entities/hive/filter_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/group_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/nm_id.dart';
 import 'package:rewild_bot_front/domain/entities/hive/rewild_notification_model.dart';
-import 'package:rewild_bot_front/domain/entities/subscription.dart';
+import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
 
 // total costs

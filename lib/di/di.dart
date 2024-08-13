@@ -1,30 +1,61 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
-import 'package:rewild_bot_front/api_clients/grpc_initial_stocks_api_client.dart';
+import 'package:rewild_bot_front/api_clients/initial_stocks_api_client.dart';
 import 'package:rewild_bot_front/api_clients/price_api_client.dart';
 import 'package:rewild_bot_front/api_clients/product_card_service_api_client.dart';
+import 'package:rewild_bot_front/api_clients/subscription_api_client.dart';
+import 'package:rewild_bot_front/api_clients/warehouse_api_client.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/data_providers/average_logistics_data_provider/average_logistics_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/cached_kw_by_lemma_by_word_data_provider/cached_kw_by_lemma_by_word_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cached_kw_by_lemma_data_provider/cached_kw_by_lemma_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/cached_lemma_data_provider/cached_lemma_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cahced_kw_by_autocomplite_data_provider/cahced_kw_by_autocomplite_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/card_keywords_data_provider/card_keywords_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/card_of_product_data_provider/card_of_product_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/filter_data_provider/filter_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/filter_value_data_provider/filter_value_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/group_data_provider/group_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/initial_stock_data_provider/initial_stock_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/last_update_day_data_provider/last_update_day_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/last_update_day_data_provider/last_update_day_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/last_update_day_data_provider/last_update_day_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/nm_id_data_provider/nm_id_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/notification_data_provider/notification_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/order_data_provider/order_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/rewild_notification_data_provider/rewild_notification_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/secure_storage_data_provider/secure_storage_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/seller_data_provider/seller_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/stock_data_provider/stock_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/subscription_data_provider/subscription_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/supply_data_provider/supply_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/tariff_data_provider/tariff_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/total_cost_data_provider.dart/total_cost_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/tracking_result_data_provider/tracking_result_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/user_sellers_data_provider/user_sellers_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/notification_data_provider/notification_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/warehouse_data_provider/warehouse_data_provider.dart';
+import 'package:rewild_bot_front/domain/entities/hive/card_of_product.dart';
 import 'package:rewild_bot_front/domain/entities/hive/total_cost_calculator.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
+import 'package:rewild_bot_front/domain/entities/stream_notification_event.dart';
+import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
+import 'package:rewild_bot_front/domain/services/auth_service.dart';
+import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/group_service.dart';
+import 'package:rewild_bot_front/domain/services/notification_service.dart';
+import 'package:rewild_bot_front/domain/services/subscription_service.dart';
+import 'package:rewild_bot_front/domain/services/supply_service.dart';
+import 'package:rewild_bot_front/domain/services/tariff_service.dart';
+import 'package:rewild_bot_front/domain/services/total_cost_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 import 'package:rewild_bot_front/main.dart';
@@ -78,6 +109,11 @@ class _DIContainer {
       StreamController<StreamAdvertEvent>.broadcast();
   Stream<StreamAdvertEvent> get updatedAdvertStream =>
       updatedAdvertStreamController.stream;
+  // Notification (NotificationService ---> ???)
+  final updatedNotificationStreamController =
+      StreamController<StreamNotificationEvent>.broadcast();
+  Stream<StreamNotificationEvent> get updatedNotificationStream =>
+      updatedNotificationStreamController.stream;
 
   // Api Clients ===============================================================
   CardOfProductApiClient _makeCardOfProductApiClient() =>
@@ -87,7 +123,14 @@ class _DIContainer {
   InitialStocksApiClient _makeStocksApiClient() =>
       const InitialStocksApiClient();
 
+  SubscriptionApiClient _makeSubscriptionApiClient() =>
+      const SubscriptionApiClient();
+
   PriceApiClient _makePriceApiClient() => const PriceApiClient();
+
+  WarehouseApiClient _makeWarehouseApiClient() => const WarehouseApiClient();
+
+  AuthApiClient _makeAuthApiClient() => const AuthApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -100,9 +143,6 @@ class _DIContainer {
 
   TariffDataProvider _makeTariffDataProvider() => const TariffDataProvider();
 
-  NotificationDataProvider _makeNotificationDataProvider() =>
-      const NotificationDataProvider();
-
   CardOfProductDataProvider _makeCardOfProductDataProvider() =>
       const CardOfProductDataProvider();
 
@@ -113,9 +153,6 @@ class _DIContainer {
 
   OrderDataProvider _makeOrderDataProvider() => const OrderDataProvider();
 
-  TotalCostCalculatorDataProvider _makeTotalCostCalculatorDataProvider() =>
-      const TotalCostCalculatorDataProvider();
-
   CardKeywordsDataProvider _makeCardKeywordsDataProvider() =>
       const CardKeywordsDataProvider();
 
@@ -125,7 +162,44 @@ class _DIContainer {
 
   CachedKwByLemmaDataProvider _makeCachedKwByLemmaDataProvider() =>
       const CachedKwByLemmaDataProvider();
+
+  CachedKwByWordDataProvider _makeCachedKwByWordDataProvider() =>
+      const CachedKwByWordDataProvider();
+
+  LastUpdateDayDataProvider _makeLastUpdateDayDataProvider() =>
+      const LastUpdateDayDataProvider();
+
+  FilterDataProvider _makeFilterDataProvider() => const FilterDataProvider();
+
+  FilterValuesDataProvider _makeFilterValuesDataProvider() =>
+      const FilterValuesDataProvider();
+  TrackingResultDataProvider _makeTrackingResultDataProvider() =>
+      const TrackingResultDataProvider();
+
+  CachedLemmaDataProvider _makeLemmaDataProvider() =>
+      const CachedLemmaDataProvider();
+
+  SubscriptionDataProvider _makeSubscriptionDataProvider() =>
+      const SubscriptionDataProvider();
+
+  GroupDataProvider _makeGroupDataProvider() => const GroupDataProvider();
+
+  SellerDataProvider _makeSellerDataProvider() => const SellerDataProvider();
+
+  NotificationDataProvider _makeNotificationDataProvider() =>
+      const NotificationDataProvider();
+
+  TotalCostCalculatorDataProvider _makeTotalCostCalculatorDataProvider() =>
+      const TotalCostCalculatorDataProvider();
+
+  NmIdDataProvider _makeNmIdDataProvider() => const NmIdDataProvider();
+
+  WarehouseDataProvider _makeWarehouseDataProvider() =>
+      const WarehouseDataProvider();
   // Services ==================================================================
+  AuthService _makeAuthService() => AuthService(
+      secureDataProvider: _makeSecureDataProvider(),
+      authApiClient: _makeAuthApiClient());
   UpdateService _makeUpdateService() => UpdateService(
         averageLogisticsDataProvider: _makeAverageLogisticsDataProvider(),
         supplyDataProvider: _makeSupplyDataProvider(),
@@ -140,7 +214,7 @@ class _DIContainer {
         cachedKwByAutocompliteDataProvider:
             _makeCachedKwByAutocompliteDataProvider(),
         cachedKwByLemmaDataProvider: _makeCachedKwByLemmaDataProvider(),
-        cachedKwByLemmaByWordDataProvider: _makeCachedKwByLemmaDataProvider(),
+        cachedKwByLemmaByWordDataProvider: _makeCachedKwByWordDataProvider(),
         lastUpdateDayDataProvider: _makeLastUpdateDayDataProvider(),
         filterDataProvider: _makeFilterValuesDataProvider(),
         trackingResultDataProvider: _makeTrackingResultDataProvider(),
@@ -158,6 +232,49 @@ class _DIContainer {
         apiKeyExistsStreamController: apiKeyExistsStreamController,
       );
 
+  SubscriptionService _makeSubscriptionService() => SubscriptionService(
+        apiClient: _makeSubscriptionApiClient(),
+        dataProvider: _makeSubscriptionDataProvider(),
+        // subsToDeleteDataProvider: _makeSubsToDeleteDataProvider(),
+        cardsNumberStreamController: subscriptionStreamController,
+      );
+
+  SupplyService _makeSupplyService() => SupplyService(
+        supplyDataProvider: _makeSupplyDataProvider(),
+      );
+
+  GroupService _makeAllGroupsService() => GroupService(
+        groupDataProvider: _makeGroupDataProvider(),
+      );
+  AllCardsFilterService _makeAllCardsFilterService() => AllCardsFilterService(
+        cardsOfProductsDataProvider: _makeCardOfProductDataProvider(),
+        filterDataProvider: _makeFilterDataProvider(),
+        sellerDataProvider: _makeSellerDataProvider(),
+      );
+
+  NotificationService _makeNotificationService() => NotificationService(
+      notificationDataProvider: _makeNotificationDataProvider(),
+      updatedNotificationStreamController: updatedNotificationStreamController);
+
+  TotalCostService _makeTotalCostService() => TotalCostService(
+        totalCostDataProvider: _makeTotalCostCalculatorDataProvider(),
+      );
+
+  TariffService _makeTariffService() => TariffService(
+        averageLogisticsApiClient: _makePriceApiClient(),
+        averageLogisticsDataProvider: _makeAverageLogisticsDataProvider(),
+        tariffDataProvider: _makeTariffDataProvider(),
+      );
+
+  CardOfProductService _makeCardOfProductService() => CardOfProductService(
+      cardOfProductApiClient: _makeCardOfProductApiClient(),
+      cardOfProductDataProvider: _makeCardOfProductDataProvider(),
+      initStockDataProvider: _makeInitialStockDataProvider(),
+      nmIdDataProvider: _makeNmIdDataProvider(),
+      stockDataprovider: _makeStockDataProvider(),
+      supplyDataProvider: _makeSupplyDataProvider(),
+      warehouseApiClient: _makeWarehouseApiClient(),
+      warehouseDataprovider: _makeWarehouseDataProvider());
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
           BuildContext context) =>

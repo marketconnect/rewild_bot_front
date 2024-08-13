@@ -5,8 +5,12 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
+import 'package:rewild_bot_front/domain/services/auth_service.dart';
 
-class SecureStorageProvider implements ApiKeysServiceApiKeysDataProvider {
+class SecureStorageProvider
+    implements
+        ApiKeysServiceApiKeysDataProvider,
+        AuthServiceSecureDataProvider {
   static const _secureStorage = FlutterSecureStorage(
       aOptions: AndroidOptions(
     encryptedSharedPreferences: true,
@@ -127,40 +131,40 @@ class SecureStorageProvider implements ApiKeysServiceApiKeysDataProvider {
   }
 
   // Function to get username
-  // @override
-  // Future<Either<RewildError, String?>> getUsername() async {
+  @override
+  Future<Either<RewildError, String?>> getUsername() async {
+    try {
+      final resultEither = await _read(key: 'username');
+      if (resultEither.isLeft()) {
+        return resultEither;
+      }
+      final username =
+          resultEither.fold((l) => throw UnimplementedError(), (r) => r);
+      if (username == null) {
+        // var uuid = const Uuid();
+        // final deviceId = uuid.v4();
 
-  //   try {
-  //     final resultEither = await _read(key: 'username');
-  //     if (resultEither.isLeft()) {
-  //       return resultEither;
-  //     }
-  //     final username =
-  //         resultEither.fold((l) => throw UnimplementedError(), (r) => r);
-  //     if (username == null) {
-  //       var uuid = const Uuid();
-  //       final deviceId = uuid.v4();
-
-  //       // Save username
-  //       final result = await _write(key: 'username', value: deviceId);
-  //       if (result.isLeft()) {
-  //         return left(result.fold((l) => l, (r) => throw UnimplementedError()));
-  //       }
-
-  //       return right(deviceId);
-  //     } else {
-  //       return right(username);
-  //     }
-  //   } catch (e) {
-  //     return left(RewildError(
-  //       sendToTg: true,
-  //       e.toString(),
-  //       source: runtimeType.toString(),
-  //       name: 'getUsername',
-  //       args: [],
-  //     ));
-  //   }
-  // }
+        // // Save username
+        // final result = await _write(key: 'username', value: deviceId);
+        // if (result.isLeft()) {
+        //   return left(result.fold((l) => l, (r) => throw UnimplementedError()));
+        // }
+        print("USERNAME NULL");
+        return right(null);
+        // return right(deviceId);
+      } else {
+        return right(username);
+      }
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        e.toString(),
+        source: runtimeType.toString(),
+        name: 'getUsername',
+        args: [],
+      ));
+    }
+  }
 
   // static Future<Either<RewildError, String?>> getUsernameInBg() async {
   //   // May be deviceId already exists

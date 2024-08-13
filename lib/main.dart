@@ -11,15 +11,18 @@ import 'package:rewild_bot_front/domain/entities/hive/filter_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/group_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/initial_stock.dart';
 import 'package:rewild_bot_front/domain/entities/hive/kw_by_lemma.dart';
+import 'package:rewild_bot_front/domain/entities/hive/lemma_by_filter_id.dart';
 import 'package:rewild_bot_front/domain/entities/hive/nm_id.dart';
 import 'package:rewild_bot_front/domain/entities/hive/order_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/rewild_notification_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/seller.dart';
 import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
+import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
 import 'package:rewild_bot_front/domain/entities/hive/tariff.dart';
 
 import 'package:rewild_bot_front/domain/entities/hive/total_cost_calculator.dart';
+import 'package:rewild_bot_front/domain/entities/hive/tracking_result.dart';
 
 import 'package:rewild_bot_front/domain/entities/hive/user_seller.dart';
 
@@ -54,6 +57,11 @@ Future<void> main() async {
   await Hive.openBox<CardKeyword>(HiveBoxes.cardKeywords); // 15
   await Hive.openBox<CachedKeyword>(HiveBoxes.cachedKeywords); // 16
   await Hive.openBox<KwByLemma>(HiveBoxes.kwByLemmas); // 17
+  await Hive.openBox<KwByLemma>(HiveBoxes.filterValues); // 18
+  await Hive.openBox<TrackingResult>(HiveBoxes.trackingResults); // 19
+  await Hive.openBox<TrackingResult>(HiveBoxes.trackingQueries); // 20
+  await Hive.openBox<LemmaByFilterId>(HiveBoxes.lemmaByFilterIds); // 21
+  await Hive.openBox<SubscriptionModel>(HiveBoxes.subscriptions); // 22
 
   setUrlStrategy(PathUrlStrategy());
   runApp(appFactory.makeApp());

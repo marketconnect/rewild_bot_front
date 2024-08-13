@@ -546,4 +546,50 @@ class CardOfProduct extends HiveObject {
       ));
     }
   }
+
+  CardOfProduct copyWith({
+    int? nmId,
+    String? name,
+    String? img,
+    int? sellerId,
+    String? tradeMark,
+    int? subjectId,
+    int? subjectParentId,
+    String? brand,
+    int? supplierId,
+    int? basicPriceU,
+    int? pics,
+    int? rating,
+    double? reviewRating,
+    int? feedbacks,
+    int? volume,
+    int? createdAt,
+    String? promoTextCard,
+    List<SizeModel>? sizes,
+    List<InitialStock>? initialStocks,
+    int? my,
+  }) {
+    return CardOfProduct(
+      nmId: nmId ?? this.nmId,
+      name: name ?? this.name,
+      img: img ?? this.img,
+      sellerId: sellerId ?? this.sellerId,
+      tradeMark: tradeMark ?? this.tradeMark,
+      subjectId: subjectId ?? this.subjectId,
+      subjectParentId: subjectParentId ?? this.subjectParentId,
+      brand: brand ?? this.brand,
+      supplierId: supplierId ?? this.supplierId,
+      basicPriceU: basicPriceU ?? this.basicPriceU,
+      pics: pics ?? this.pics,
+      rating: rating ?? this.rating,
+      reviewRating: reviewRating ?? this.reviewRating,
+      feedbacks: feedbacks ?? this.feedbacks,
+      volume: volume ?? this.volume,
+      promoTextCard: promoTextCard ?? this.promoTextCard,
+      sizes: sizes ?? this.sizes,
+      createdAt: createdAt ?? this.createdAt,
+      initialStocks: initialStocks ?? this.initialStocks,
+      my: my ?? this.my,
+    );
+  }
 }

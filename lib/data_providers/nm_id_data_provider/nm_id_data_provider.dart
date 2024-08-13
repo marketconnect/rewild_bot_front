@@ -4,8 +4,9 @@ import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/hive/nm_id.dart';
+import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 
-class NmIdDataProvider {
+class NmIdDataProvider implements CardOfProductServiceNmIdDataProvider {
   const NmIdDataProvider();
 
   Box<NmId> get _box => Hive.box<NmId>(HiveBoxes.nmIds);

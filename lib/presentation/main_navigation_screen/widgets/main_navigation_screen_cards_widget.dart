@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/link_btn.dart';
 
 class MainNavigationScreenCardsWidget extends StatelessWidget {
@@ -48,7 +49,7 @@ class MainNavigationScreenCardsWidget extends StatelessWidget {
               LinkBtn(
                 text: 'Аналитика',
                 color: Colors.blueAccent,
-                route: "MainNavigationRouteNames.analiticsNavScreen",
+                route: MainNavigationRouteNames.allCardsScreen,
                 // route: '',
                 iconData: Icons.analytics,
               ),

@@ -4,9 +4,15 @@ import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
+import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/supply_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class SupplyDataProvider implements UpdateServiceSupplyDataProvider {
+class SupplyDataProvider
+    implements
+        UpdateServiceSupplyDataProvider,
+        CardOfProductServiceSupplyDataProvider,
+        SupplyServiceSupplyDataProvider {
   const SupplyDataProvider();
 
   Box<Supply> get _box => Hive.box<Supply>(HiveBoxes.supplies);

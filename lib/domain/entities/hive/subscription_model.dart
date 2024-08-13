@@ -1,17 +1,28 @@
-class SubscriptionModel {
+import 'package:hive/hive.dart';
+
+part 'subscription_model.g.dart';
+
+@HiveType(typeId: 22)
+class SubscriptionModel extends HiveObject {
+  @HiveField(0)
   final int cardId;
+
+  @HiveField(1)
   final String startDate;
+
+  @HiveField(2)
   final String endDate;
+
+  @HiveField(3)
   final String status;
 
   SubscriptionModel({
-    required this.cardId, // Update this to be nullable
+    required this.cardId,
     required this.startDate,
     required this.endDate,
     required this.status,
   });
 
-  // Factory constructor to create a Subscription from a map
   factory SubscriptionModel.fromMap(Map<String, dynamic> map) {
     return SubscriptionModel(
       cardId: map['card_id'] as int,
@@ -21,7 +32,6 @@ class SubscriptionModel {
     );
   }
 
-  // Method to convert a Subscription to a map
   Map<String, dynamic> toMap() {
     return {
       'card_id': cardId,

@@ -3,9 +3,13 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/hive/initial_stock.dart';
+import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class InitialStockDataProvider implements UpdateServiceInitStockDataProvider {
+class InitialStockDataProvider
+    implements
+        UpdateServiceInitStockDataProvider,
+        CardOfProductServiceInitStockDataProvider {
   const InitialStockDataProvider();
 
   Box<InitialStock> get _box => Hive.box<InitialStock>(HiveBoxes.initialStocks);

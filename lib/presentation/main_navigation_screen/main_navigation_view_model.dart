@@ -6,7 +6,7 @@ import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
-import 'package:rewild_bot_front/domain/entities/subscription.dart';
+import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 abstract class MainNavigationCardService {

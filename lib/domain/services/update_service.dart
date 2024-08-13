@@ -12,6 +12,7 @@ import 'package:rewild_bot_front/domain/entities/size_model.dart';
 import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
 import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
 import 'package:rewild_bot_front/domain/entities/hive/tariff.dart';
+import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 // Tariffs Api
@@ -164,6 +165,7 @@ abstract class UpdateServiceKwByAutocompliteDataProvider {
 
 class UpdateService
     implements
+        AllCardsScreenUpdateService,
 
         // PaymentScreenUpdateService,
         MainNavigationUpdateService {
@@ -195,7 +197,6 @@ class UpdateService
   UpdateService(
       {required this.stockDataProvider,
       required this.detailsApiClient,
-      // required this.cardsNumberStreamController,
       required this.weekOrdersDataProvider,
       required this.initialStockDataProvider,
       required this.tariffApiClient,

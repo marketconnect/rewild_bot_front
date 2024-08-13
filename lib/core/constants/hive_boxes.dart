@@ -16,4 +16,9 @@ class HiveBoxes {
   static const String cardKeywords = 'card_keywords';
   static const String cachedKeywords = 'cached_keywords';
   static const String kwByLemmas = 'kw_by_lemmas';
+  static const String filterValues = 'filter_values';
+  static const String trackingResults = 'tracking_results';
+  static const String trackingQueries = 'tracking_query';
+  static const String lemmaByFilterIds = 'lemma_by_filter_id';
+  static const String subscriptions = 'subscriptions';
 }
