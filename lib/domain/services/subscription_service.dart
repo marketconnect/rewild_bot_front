@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+
+import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
+import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 // Api
 abstract class SubscriptionServiceSubscriptionApiClient {
@@ -51,7 +52,7 @@ abstract class SubscriptionServiceUserNameSecureStorage {
   Future<Either<RewildError, String?>> getServerToken();
 }
 
-class SubscriptionService implements AllCardsScreenSubscriptionsService {
+class SubscriptionService implements MainNavigationSubscriptionService {
   final SubscriptionServiceSubscriptionApiClient apiClient;
   final SubscriptionServiceSubscriptionDataProvider dataProvider;
   // final SubscriptionServiceUserNameSecureStorage userNameStorage;

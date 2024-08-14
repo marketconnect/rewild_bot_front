@@ -6,7 +6,7 @@ import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
-import 'package:rewild_bot_front/domain/entities/hive/user_seller.dart';
+import 'package:rewild_bot_front/domain/entities/user_seller.dart';
 import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/widgets/empty_widget.dart';
 

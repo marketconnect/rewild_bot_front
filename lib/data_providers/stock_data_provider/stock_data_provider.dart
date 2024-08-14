@@ -1,9 +1,9 @@
+import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:hive/hive.dart';
-import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 
+import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
+import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
@@ -11,134 +11,187 @@ class StockDataProvider
     implements
         UpdateServiceStockDataProvider,
         CardOfProductServiceStockDataProvider {
-  // Получаем доступ к коробке Hive
-  Box<Stock> get _box => Hive.box<Stock>(HiveBoxes.stocks);
-
   const StockDataProvider();
 
+  Future<Database> get _db async => await DatabaseHelper().database;
+
   @override
-  Future<Either<RewildError, int>> insert({required Stock stock}) async {
+  Future<Either<RewildError, int>> insert({required StocksModel stock}) async {
     try {
-      // Добавляем данные в Hive
-      await _box.put(stock.nmId, stock);
-      return right(stock.key as int); // Возвращаем ID (ключ)
+      final db = await _db;
+      final txn = db.transaction('stocks', idbModeReadWrite);
+      final store = txn.objectStore('stocks');
+
+      await store.add(stock.toMap(), stock.nmId);
+
+      await txn.completed;
+      return right(stock.nmId);
     } catch (e) {
       return left(RewildError(
-        sendToTg: true,
-        'Не удалось сохранить остатки $e',
-        source: runtimeType.toString(),
-        name: "insert",
-        args: [stock],
-      ));
+          sendToTg: true,
+          'Failed to save stock: $e',
+          source: runtimeType.toString(),
+          name: "insert",
+          args: [stock]));
     }
   }
 
   @override
   Future<Either<RewildError, void>> delete(int nmId) async {
     try {
-      await _box.delete(nmId); // Удаляем элемент по ключу
+      final db = await _db;
+      final txn = db.transaction('stocks', idbModeReadWrite);
+      final store = txn.objectStore('stocks');
+
+      await store.delete(nmId);
+
+      await txn.completed;
       return right(null);
     } catch (e) {
       return left(RewildError(
-        sendToTg: true,
-        'Не удалось удалить остатки $e',
-        source: runtimeType.toString(),
-        name: "delete",
-        args: [nmId],
-      ));
+          sendToTg: true,
+          'Failed to delete stock: $e',
+          source: runtimeType.toString(),
+          name: "delete",
+          args: [nmId]));
     }
   }
 
   @override
-  Future<Either<RewildError, List<Stock>>> get({required int nmId}) async {
+  Future<Either<RewildError, List<StocksModel>>> get(
+      {required int nmId}) async {
     try {
-      final stock = _box.get(nmId); // Получаем элемент по ключу
-      if (stock != null) {
-        return right([stock]);
-      } else {
+      final db = await _db;
+      final txn = db.transaction('stocks', idbModeReadOnly);
+      final store = txn.objectStore('stocks');
+
+      final result = await store.getObject(nmId);
+
+      await txn.completed;
+
+      if (result == null) {
         return right([]);
       }
+
+      return right([StocksModel.fromMap(result as Map<String, dynamic>)]);
     } catch (e) {
       return left(RewildError(
-        sendToTg: true,
-        'Не удалось получить остатки $e',
-        source: runtimeType.toString(),
-        name: "get",
-        args: [nmId],
-      ));
+          sendToTg: true,
+          'Failed to retrieve stock: $e',
+          source: runtimeType.toString(),
+          name: "get",
+          args: [nmId]));
     }
   }
 
   @override
-  Future<Either<RewildError, Stock>> getOne({
+  Future<Either<RewildError, StocksModel>> getOne({
     required int nmId,
     required int wh,
     required int sizeOptionId,
   }) async {
     try {
-      final stock = _box.values.firstWhere(
-        (s) => s.nmId == nmId && s.wh == wh && s.sizeOptionId == sizeOptionId,
-        orElse: () => throw Exception('Not Found'),
-      );
-      return right(stock);
+      final db = await _db;
+      final txn = db.transaction('stocks', idbModeReadOnly);
+      final store = txn.objectStore('stocks');
+
+      final index = store.index('nmId_wh_sizeOptionId');
+      final result = await index.get(KeyRange.only([nmId, wh, sizeOptionId]));
+
+      await txn.completed;
+
+      if (result == null) {
+        return left(RewildError(
+            sendToTg: true,
+            'Stock not found',
+            source: runtimeType.toString(),
+            name: "getOne",
+            args: [nmId, wh, sizeOptionId]));
+      }
+
+      return right(StocksModel.fromMap(result as Map<String, dynamic>));
     } catch (e) {
       return left(RewildError(
-        sendToTg: true,
-        'Не удалось получить остатки $e',
-        source: runtimeType.toString(),
-        name: "getOne",
-        args: [nmId, wh, sizeOptionId],
-      ));
+          sendToTg: true,
+          'Failed to retrieve stock: $e',
+          source: runtimeType.toString(),
+          name: "getOne",
+          args: [nmId, wh, sizeOptionId]));
     }
   }
 
   Future<Either<RewildError, int>> update({
-    required Stock stock,
+    required StocksModel stock,
     required int nmId,
   }) async {
     try {
-      // Обновляем данные в Hive
-      await _box.put(nmId, stock);
-      return right(stock.key as int); // Возвращаем ID (ключ)
+      final db = await _db;
+      final txn = db.transaction('stocks', idbModeReadWrite);
+      final store = txn.objectStore('stocks');
+
+      await store.put(stock.toMap(), nmId);
+
+      await txn.completed;
+      return right(nmId);
     } catch (e) {
       return left(RewildError(
-        sendToTg: true,
-        'Не удалось обновить остатки $e',
-        source: runtimeType.toString(),
-        name: "update",
-        args: [stock, nmId],
-      ));
+          sendToTg: true,
+          'Failed to update stock: $e',
+          source: runtimeType.toString(),
+          name: "update",
+          args: [stock, nmId]));
     }
   }
 
   @override
-  Future<Either<RewildError, List<Stock>>> getAll() async {
+  Future<Either<RewildError, List<StocksModel>>> getAll() async {
     try {
-      final stocks = _box.values.toList();
+      final db = await _db;
+      final txn = db.transaction('stocks', idbModeReadOnly);
+      final store = txn.objectStore('stocks');
+
+      final result = await store.getAll();
+
+      await txn.completed;
+
+      final stocks = result
+          .map((e) => StocksModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+
       return right(stocks);
     } catch (e) {
       return left(RewildError(
-        sendToTg: true,
-        'Не удалось получить остатки $e',
-        source: runtimeType.toString(),
-        name: "getAll",
-        args: [],
-      ));
+          sendToTg: true,
+          'Failed to retrieve all stocks: $e',
+          source: runtimeType.toString(),
+          name: "getAll",
+          args: []));
     }
   }
 
-  Future<Either<RewildError, List<Stock>>> getAllByWh(String wh) async {
+  Future<Either<RewildError, List<StocksModel>>> getAllByWh(String wh) async {
     try {
-      final stocks = _box.values.where((s) => s.wh.toString() == wh).toList();
+      final db = await _db;
+      final txn = db.transaction('stocks', idbModeReadOnly);
+      final store = txn.objectStore('stocks');
+
+      final index = store.index('wh');
+      final result = await index.getAll(KeyRange.only(wh));
+
+      await txn.completed;
+
+      final stocks = result
+          .map((e) => StocksModel.fromMap(e as Map<String, dynamic>))
+          .toList();
+
       return right(stocks);
     } catch (e) {
       return left(RewildError(
-        sendToTg: true,
-        'Не удалось Получить остатки $e',
-        source: runtimeType.toString(),
-        name: "getAllByWh",
-        args: [wh],
-      ));
+          sendToTg: true,
+          'Failed to retrieve stocks by warehouse: $e',
+          source: runtimeType.toString(),
+          name: "getAllByWh",
+          args: [wh]));
     }
   }
 }

@@ -1,27 +1,33 @@
-import 'package:hive/hive.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
-
+import 'package:idb_shim/idb.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
+import 'package:rewild_bot_front/core/utils/database_helper.dart';
+import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
-import 'package:rewild_bot_front/domain/services/supply_service.dart';
+
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class SupplyDataProvider
     implements
         UpdateServiceSupplyDataProvider,
-        CardOfProductServiceSupplyDataProvider,
-        SupplyServiceSupplyDataProvider {
+        CardOfProductServiceSupplyDataProvider {
   const SupplyDataProvider();
 
-  Box<Supply> get _box => Hive.box<Supply>(HiveBoxes.supplies);
+  Future<Database> get _db async => await DatabaseHelper().database;
 
   @override
-  Future<Either<RewildError, int>> insert({required Supply supply}) async {
+  Future<Either<RewildError, int>> insert({required SupplyModel supply}) async {
     try {
-      await _box.put(supply.nmId, supply);
-      return right(supply.nmId);
+      final db = await _db;
+      final txn = db.transaction('supplies', idbModeReadWrite);
+      final store = txn.objectStore('supplies');
+
+      // Add the supply to the store
+      await store.put(supply.toMap());
+
+      await txn.completed;
+      return right(
+          0); // IndexedDB does not return an ID like SQLite, so returning 0 or a placeholder value
     } catch (e) {
       return left(RewildError(
           sendToTg: true,
@@ -39,17 +45,15 @@ class SupplyDataProvider
     int? sizeOptionId,
   }) async {
     try {
-      if (wh == null || sizeOptionId == null) {
-        await _box.delete(nmId);
-        return right(null);
-      }
+      final db = await _db;
+      final txn = db.transaction('supplies', idbModeReadWrite);
+      final store = txn.objectStore('supplies');
 
-      final supply = _box.get(nmId);
-      if (supply != null &&
-          supply.wh == wh &&
-          supply.sizeOptionId == sizeOptionId) {
-        await _box.delete(nmId);
-      }
+      // Create a key to match the record to delete
+      final key = _generateSupplyKey(nmId, wh, sizeOptionId);
+
+      await store.delete(key);
+      await txn.completed;
       return right(null);
     } catch (e) {
       return left(RewildError(
@@ -64,12 +68,18 @@ class SupplyDataProvider
   @override
   Future<Either<RewildError, void>> deleteAll() async {
     try {
-      await _box.clear();
+      final db = await _db;
+      final txn = db.transaction('supplies', idbModeReadWrite);
+      final store = txn.objectStore('supplies');
+
+      // Clear all records in the store
+      await store.clear();
+      await txn.completed;
       return right(null);
     } catch (e) {
       return left(RewildError(
           sendToTg: true,
-          'Не удалось удалить все поставки $e',
+          'Не удалось удалить поставки $e',
           source: runtimeType.toString(),
           name: "deleteAll",
           args: []));
@@ -77,18 +87,26 @@ class SupplyDataProvider
   }
 
   @override
-  Future<Either<RewildError, Supply?>> getOne({
+  Future<Either<RewildError, SupplyModel?>> getOne({
     required int nmId,
     required int wh,
     required int sizeOptionId,
   }) async {
     try {
-      final supply = _box.values.where((s) =>
-          s.nmId == nmId && s.wh == wh && s.sizeOptionId == sizeOptionId);
-      if (supply.isEmpty) {
+      final db = await _db;
+      final txn = db.transaction('supplies', idbModeReadOnly);
+      final store = txn.objectStore('supplies');
+
+      // Create a key to match the record
+      final key = _generateSupplyKey(nmId, wh, sizeOptionId);
+
+      final result = await store.getObject(key) as Map<String, dynamic>?;
+      await txn.completed;
+
+      if (result == null) {
         return right(null);
       }
-      return right(supply.first);
+      return right(SupplyModel.fromMap(result));
     } catch (e) {
       return left(RewildError(
           sendToTg: true,
@@ -100,11 +118,27 @@ class SupplyDataProvider
   }
 
   @override
-  Future<Either<RewildError, List<Supply>?>> getForOne({
+  Future<Either<RewildError, List<SupplyModel>?>> getForOne({
     required int nmId,
   }) async {
     try {
-      final supplies = _box.values.where((s) => s.nmId == nmId).toList();
+      final db = await _db;
+      final txn = db.transaction('supplies', idbModeReadOnly);
+      final store = txn.objectStore('supplies');
+
+      // Fetch all records and filter them based on nmId
+      final result = await store.getAll();
+      await txn.completed;
+
+      final supplies = result
+          .map((item) => SupplyModel.fromMap(item as Map<String, dynamic>))
+          .where((supply) => supply.nmId == nmId)
+          .toList();
+
+      if (supplies.isEmpty) {
+        return right(null);
+      }
+
       return right(supplies);
     } catch (e) {
       return left(RewildError(
@@ -117,11 +151,23 @@ class SupplyDataProvider
   }
 
   @override
-  Future<Either<RewildError, List<Supply>>> get({
+  Future<Either<RewildError, List<SupplyModel>>> get({
     required int nmId,
   }) async {
     try {
-      final supplies = _box.values.where((s) => s.nmId == nmId).toList();
+      final db = await _db;
+      final txn = db.transaction('supplies', idbModeReadOnly);
+      final store = txn.objectStore('supplies');
+
+      // Fetch all records and filter them based on nmId
+      final result = await store.getAll();
+      await txn.completed;
+
+      final supplies = result
+          .map((item) => SupplyModel.fromMap(item as Map<String, dynamic>))
+          .where((supply) => supply.nmId == nmId)
+          .toList();
+
       return right(supplies);
     } catch (e) {
       return left(RewildError(
@@ -131,5 +177,10 @@ class SupplyDataProvider
           name: "get",
           args: [nmId]));
     }
+  }
+
+  // Helper method to generate a key based on nmId, wh, and sizeOptionId
+  String _generateSupplyKey(int nmId, int? wh, int? sizeOptionId) {
+    return '$nmId-${wh ?? ''}-${sizeOptionId ?? ''}';
   }
 }

@@ -1,5 +1,4 @@
 import 'package:fpdart/fpdart.dart';
-// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';

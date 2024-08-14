@@ -1,8 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-
 import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 abstract class AuthServiceSecureDataProvider {
   Future<Either<RewildError, void>> updateUserInfo(
@@ -19,7 +18,7 @@ abstract class AuthServiceAuthApiClient {
       {required String username, required String password});
 }
 
-class AuthService implements AllCardsScreenAuthService {
+class AuthService implements MainNavigationAuthService {
   final AuthServiceSecureDataProvider secureDataProvider;
   final AuthServiceAuthApiClient authApiClient;
 

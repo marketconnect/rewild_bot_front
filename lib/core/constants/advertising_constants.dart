@@ -18,3 +18,22 @@ class AdvertisingConstants {
     11: "приостановленно",
   };
 }
+
+class AdvertStatusConstants {
+  static const int deleted = -1;
+  static const int readyToStart = 4;
+  static const int finished = 7;
+  static const int refused = 8;
+  static const int active = 9;
+  static const int paused = 11;
+  static const List<int> useable = [active, paused];
+}
+
+class AdvertTypeConstants {
+  // static const int inCatalog = 4;
+  // static const int inCard = 5;
+  // static const int inSearch = 6;
+  // static const int inRecomendation = 7;
+  static const int auto = 8;
+  static const int searchPlusCatalog = 9;
+}

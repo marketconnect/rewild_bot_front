@@ -1,8 +1,10 @@
-import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 
 class SizeModel {
   int optionId;
-  List<Stock> stocks;
+  List<StocksModel> stocks;
 
   SizeModel({
     this.optionId = 0,

@@ -1,31 +1,41 @@
+import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:hive/hive.dart';
-import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
+import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
+
+import 'package:intl/intl.dart';
 
 class SubscriptionDataProvider
     implements SubscriptionServiceSubscriptionDataProvider {
   const SubscriptionDataProvider();
 
+  Future<Database> get _db async => await DatabaseHelper().database;
+
   @override
   Future<Either<RewildError, int>> save(SubscriptionModel subscription) async {
     try {
-      final box =
-          await Hive.openBox<SubscriptionModel>(HiveBoxes.subscriptions);
+      final db = await _db;
+      final txn = db.transaction('subs', idbModeReadWrite);
+      final store = txn.objectStore('subs');
 
-      // Проверка, существует ли уже подписка с таким card_id
-      final existingSub = box.values
-          .where((sub) => sub.cardId == subscription.cardId)
-          .isNotEmpty;
+      // Check if subscription with this card_id already exists
+      if (subscription.cardId != 0) {
+        final index = store.index('card_id');
+        final existingSub = await index.count(subscription.cardId);
 
-      if (existingSub) {
-        return right(0);
+        // If yes - return 0
+        if (existingSub > 0) {
+          await txn.completed;
+          return right(0);
+        }
       }
 
-      final id = await box.add(subscription);
-      return right(id);
+      // If not, insert a new record
+      final id = await store.put(subscription.toMap());
+      await txn.completed;
+      return right(id as int);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
@@ -41,14 +51,25 @@ class SubscriptionDataProvider
   Future<Either<RewildError, List<SubscriptionModel>>>
       getAllNotExpired() async {
     try {
-      final box =
-          await Hive.openBox<SubscriptionModel>(HiveBoxes.subscriptions);
-      final today = DateTime.now().toIso8601String().split('T')[0];
+      final db = await _db;
+      final txn = db.transaction('subs', idbModeReadOnly);
+      final store = txn.objectStore('subs');
+      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-      final result =
-          box.values.where((sub) => sub.endDate.compareTo(today) >= 0).toList();
+      final index = store.index('end_date');
+      final cursorStream = index.openCursor(autoAdvance: true);
 
-      return right(result);
+      final List<SubscriptionModel> subscriptions = [];
+
+      await for (final cursor in cursorStream) {
+        final value = cursor.value as Map<String, dynamic>;
+        if (value['end_date'] >= today) {
+          subscriptions.add(SubscriptionModel.fromMap(value));
+        }
+      }
+
+      await txn.completed;
+      return right(subscriptions);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
@@ -62,22 +83,22 @@ class SubscriptionDataProvider
   @override
   Future<Either<RewildError, SubscriptionModel?>> getOne(int nmId) async {
     try {
-      final box =
-          await Hive.openBox<SubscriptionModel>(HiveBoxes.subscriptions);
-      // final subscription = box.values
-      //     .firstWhere((sub) => sub.cardId == nmId, orElse: () => null);
+      final db = await _db;
+      final txn = db.transaction('subs', idbModeReadOnly);
+      final store = txn.objectStore('subs');
+      final result = await store.getObject(nmId);
 
-      final subscription = box.values.where((sub) => sub.cardId == nmId);
-      if (subscription.isEmpty) {
-        return right(null);
-      }
-      return right(subscription.first);
+      await txn.completed;
+      return right(result != null
+          ? SubscriptionModel.fromMap(result as Map<String, dynamic>)
+          : null);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
         source: runtimeType.toString(),
         name: "getOne",
+        args: [nmId],
       ));
     }
   }
@@ -85,9 +106,11 @@ class SubscriptionDataProvider
   @override
   Future<Either<RewildError, bool>> deleteAll() async {
     try {
-      final box =
-          await Hive.openBox<SubscriptionModel>(HiveBoxes.subscriptions);
-      await box.clear();
+      final db = await _db;
+      final txn = db.transaction('subs', idbModeReadWrite);
+      final store = txn.objectStore('subs');
+      await store.clear();
+      await txn.completed;
       return right(true);
     } catch (e) {
       return left(RewildError(
@@ -103,16 +126,26 @@ class SubscriptionDataProvider
   Future<Either<RewildError, List<SubscriptionModel>>>
       getActiveSubscriptions() async {
     try {
-      final box =
-          await Hive.openBox<SubscriptionModel>(HiveBoxes.subscriptions);
-      final tomorrow =
-          DateTime.now().add(Duration(days: 1)).toIso8601String().split('T')[0];
+      final db = await _db;
+      final txn = db.transaction('subs', idbModeReadOnly);
+      final store = txn.objectStore('subs');
+      final tomorrow = DateFormat('yyyy-MM-dd')
+          .format(DateTime.now().add(const Duration(days: 1)));
 
-      final result = box.values
-          .where((sub) => sub.endDate.compareTo(tomorrow) > 0)
-          .toList();
+      final index = store.index('end_date');
+      final cursorStream = index.openCursor(autoAdvance: true);
 
-      return right(result);
+      final List<SubscriptionModel> subscriptions = [];
+
+      await for (final cursor in cursorStream) {
+        final value = cursor.value as Map<String, dynamic>;
+        if (value['end_date'] > tomorrow) {
+          subscriptions.add(SubscriptionModel.fromMap(value));
+        }
+      }
+
+      await txn.completed;
+      return right(subscriptions);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
@@ -126,16 +159,26 @@ class SubscriptionDataProvider
   static Future<Either<RewildError, List<SubscriptionModel>>>
       getActiveSubscriptionsInBg() async {
     try {
-      final box =
-          await Hive.openBox<SubscriptionModel>(HiveBoxes.subscriptions);
-      final tomorrow =
-          DateTime.now().add(Duration(days: 1)).toIso8601String().split('T')[0];
+      final db = await DatabaseHelper().database;
+      final txn = db.transaction('subs', idbModeReadOnly);
+      final store = txn.objectStore('subs');
+      final tomorrow = DateFormat('yyyy-MM-dd')
+          .format(DateTime.now().add(const Duration(days: 1)));
 
-      final result = box.values
-          .where((sub) => sub.endDate.compareTo(tomorrow) > 0)
-          .toList();
+      final index = store.index('end_date');
+      final cursorStream = index.openCursor(autoAdvance: true);
 
-      return right(result);
+      final List<SubscriptionModel> subscriptions = [];
+
+      await for (final cursor in cursorStream) {
+        final value = cursor.value as Map<String, dynamic>;
+        if (value['end_date'] > tomorrow) {
+          subscriptions.add(SubscriptionModel.fromMap(value));
+        }
+      }
+
+      await txn.completed;
+      return right(subscriptions);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,

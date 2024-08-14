@@ -5,42 +5,44 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/constants/settings.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/card_of_product.dart';
-import 'package:rewild_bot_front/domain/entities/hive/initial_stock.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
+
+import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/entities/size_model.dart';
-import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
-import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
-import 'package:rewild_bot_front/domain/entities/hive/tariff.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+
+import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
+import 'package:rewild_bot_front/domain/entities/supply_model.dart';
+import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 // Tariffs Api
 abstract class UpdateServiceTariffApiClient {
-  Future<Either<RewildError, List<Tariff>>> getTarrifs({required String token});
+  Future<Either<RewildError, List<TariffModel>>> getTarrifs(
+      {required String token});
 }
 
 // Tariffs data provider
 abstract class UpdateServiceTariffDataProvider {
-  Future<Either<RewildError, void>> insertAll(List<Tariff> tariffs);
+  Future<Either<RewildError, void>> insertAll(List<TariffModel> tariffs);
 }
 
 // Details
 abstract class UpdateServiceDetailsApiClient {
-  Future<Either<RewildError, List<CardOfProduct>>> get(
+  Future<Either<RewildError, List<CardOfProductModel>>> get(
       {required List<int> ids});
 }
 
 // Supply
 abstract class UpdateServiceSupplyDataProvider {
   Future<Either<RewildError, void>> deleteAll();
-  Future<Either<RewildError, int>> insert({required Supply supply});
+  Future<Either<RewildError, int>> insert({required SupplyModel supply});
   Future<Either<RewildError, void>> delete({
     required int nmId,
     int? wh,
     int? sizeOptionId,
   });
-  Future<Either<RewildError, Supply?>> getOne({
+  Future<Either<RewildError, SupplyModel?>> getOne({
     required int nmId,
     required int wh,
     required int sizeOptionId,
@@ -49,25 +51,25 @@ abstract class UpdateServiceSupplyDataProvider {
 
 // Card of product data provider
 abstract class UpdateServiceCardOfProductDataProvider {
-  Future<Either<RewildError, List<CardOfProduct>>> getAll();
+  Future<Either<RewildError, List<CardOfProductModel>>> getAll();
   Future<Either<RewildError, int>> insertOrUpdate(
-      {required CardOfProduct card});
+      {required CardOfProductModel card});
   Future<Either<RewildError, int>> delete({required int id});
 }
 
 // Card of product api client
 abstract class UpdateServiceCardOfProductApiClient {
   Future<Either<RewildError, void>> save(
-      {required String token, required List<CardOfProduct> productCards});
-  Future<Either<RewildError, List<CardOfProduct>>> getAll(
+      {required String token, required List<CardOfProductModel> productCards});
+  Future<Either<RewildError, List<CardOfProductModel>>> getAll(
       {required String token});
   Future<Either<RewildError, void>> delete(
       {required String token, required int id});
 }
 
 // initial stock api client
-abstract class UpdateServiceInitialStockApiClient {
-  Future<Either<RewildError, List<InitialStock>>> get(
+abstract class UpdateServiceInitialStockModelApiClient {
+  Future<Either<RewildError, List<InitialStockModel>>> get(
       {required String token,
       required List<int> skus,
       required DateTime dateFrom,
@@ -76,12 +78,13 @@ abstract class UpdateServiceInitialStockApiClient {
 
 // init stock data provider
 abstract class UpdateServiceInitStockDataProvider {
-  Future<Either<RewildError, int>> insert({required InitialStock initialStock});
-  Future<Either<RewildError, List<InitialStock>>> get(
+  Future<Either<RewildError, int>> insert(
+      {required InitialStockModel initialStockModel});
+  Future<Either<RewildError, List<InitialStockModel>>> get(
       {required int nmId,
       required DateTime dateFrom,
       required DateTime dateTo});
-  Future<Either<RewildError, InitialStock?>> getOne(
+  Future<Either<RewildError, InitialStockModel?>> getOne(
       {required int nmId,
       required DateTime dateFrom,
       required DateTime dateTo,
@@ -93,9 +96,9 @@ abstract class UpdateServiceInitStockDataProvider {
 
 // stock data provider
 abstract class UpdateServiceStockDataProvider {
-  Future<Either<RewildError, int>> insert({required Stock stock});
-  Future<Either<RewildError, List<Stock>>> get({required int nmId});
-  Future<Either<RewildError, Stock>> getOne(
+  Future<Either<RewildError, int>> insert({required StocksModel stock});
+  Future<Either<RewildError, List<StocksModel>>> get({required int nmId});
+  Future<Either<RewildError, StocksModel>> getOne(
       {required int nmId, required int wh, required int sizeOptionId});
   Future<Either<RewildError, void>> delete(int nmId);
 }
@@ -165,7 +168,8 @@ abstract class UpdateServiceKwByAutocompliteDataProvider {
 
 class UpdateService
     implements
-        AllCardsScreenUpdateService,
+
+        // MyWebViewScreenViewModelUpdateService,
 
         // PaymentScreenUpdateService,
         MainNavigationUpdateService {
@@ -173,8 +177,8 @@ class UpdateService
   final UpdateServiceSupplyDataProvider supplyDataProvider;
   final UpdateServiceCardOfProductDataProvider cardOfProductDataProvider;
   final UpdateServiceCardOfProductApiClient cardOfProductApiClient;
-  final UpdateServiceInitialStockApiClient initialStockApiClient;
-  final UpdateServiceInitStockDataProvider initialStockDataProvider;
+  final UpdateServiceInitialStockModelApiClient initialStockModelApiClient;
+  final UpdateServiceInitStockDataProvider initialStockModelDataProvider;
   final UpdateServiceStockDataProvider stockDataProvider;
   final UpdateServiceLastUpdateDayDataProvider lastUpdateDayDataProvider;
   final UpdateServiceNotificationDataProvider notificationDataProvider;
@@ -198,7 +202,7 @@ class UpdateService
       {required this.stockDataProvider,
       required this.detailsApiClient,
       required this.weekOrdersDataProvider,
-      required this.initialStockDataProvider,
+      required this.initialStockModelDataProvider,
       required this.tariffApiClient,
       required this.averageLogisticsApiClient,
       required this.totalCostdataProvider,
@@ -208,7 +212,7 @@ class UpdateService
       required this.averageLogisticsDataProvider,
       required this.cardOfProductDataProvider,
       required this.notificationDataProvider,
-      required this.initialStockApiClient,
+      required this.initialStockModelApiClient,
       required this.filterDataProvider,
       required this.trackingResultDataProvider,
       required this.supplyDataProvider,
@@ -267,7 +271,7 @@ class UpdateService
   @override
   Future<Either<RewildError, int>> insert(
       {required String token,
-      required List<CardOfProduct> cardOfProductsToInsert}) async {
+      required List<CardOfProductModel> cardOfProductsToInsert}) async {
     // get all cards from local db
     final cardsInDBEither = await cardOfProductDataProvider.getAll();
 
@@ -282,7 +286,7 @@ class UpdateService
     );
     final cardsInDBIds = cardsInDB.map((e) => e.nmId).toList();
 
-    List<CardOfProduct> newCards = [];
+    List<CardOfProductModel> newCards = [];
     for (final c in cardOfProductsToInsert) {
       if (cardsInDBIds.contains(c.nmId)) {
         continue;
@@ -296,26 +300,26 @@ class UpdateService
       return right(0);
     }
 
-    List<InitialStock> initStocksFromServer = [];
+    List<InitialStockModel> initStocksFromServer = [];
 
     // ids of cards that initial stocks do not exist on server yet
     List<int> abscentOnServerNewCardsIds = newCards.map((e) => e.nmId).toList();
 
     // initial stocks from server
 
-    final initialStocksEither = await initialStockApiClient.get(
+    final initialStockModelsEither = await initialStockModelApiClient.get(
       token: token,
       skus: newCards.map((e) => e.nmId).toList(),
       dateFrom: yesterdayEndOfTheDay(),
       dateTo: DateTime.now(),
     );
 
-    initStocksFromServer = initialStocksEither.getOrElse((l) => []);
+    initStocksFromServer = initialStockModelsEither.getOrElse((l) => []);
 
     // save fetched from server initial stocks to local db
     for (final stock in initStocksFromServer) {
       final insertStockEither =
-          await initialStockDataProvider.insert(initialStock: stock);
+          await initialStockModelDataProvider.insert(initialStockModel: stock);
 
       if (insertStockEither.isLeft()) {
         return left(insertStockEither.fold(
@@ -362,17 +366,17 @@ class UpdateService
           // if the miracle does not happen
           // and initial stocks do not exist on server yet
           if (abscentOnServerNewCardsIds.contains(stock.nmId)) {
-            final insertInitialStockEither =
-                await initialStockDataProvider.insert(
-                    initialStock: InitialStock(
+            final insertInitialStockModelEither =
+                await initialStockModelDataProvider.insert(
+                    initialStockModel: InitialStockModel(
               nmId: stock.nmId,
               sizeOptionId: stock.sizeOptionId,
               date: DateTime.now(),
               wh: stock.wh,
               qty: stock.qty,
             ));
-            if (insertInitialStockEither.isLeft()) {
-              return left(insertInitialStockEither.fold(
+            if (insertInitialStockModelEither.isLeft()) {
+              return left(insertInitialStockModelEither.fold(
                   (l) => l, (r) => throw UnimplementedError()));
             }
           }
@@ -386,7 +390,7 @@ class UpdateService
   @override
   Future<Either<RewildError, void>> putOnServerNewCards(
       {required String token,
-      required List<CardOfProduct> cardOfProductsToPutOnServer}) async {
+      required List<CardOfProductModel> cardOfProductsToPutOnServer}) async {
     // get rid of duplicates
     final uniqueNewCards = cardOfProductsToPutOnServer.toSet().toList();
     final saveOnServerEither = await cardOfProductApiClient.save(
@@ -497,10 +501,10 @@ class UpdateService
             (l) => l, (r) => throw UnimplementedError()));
       }
 
-      final deleteInitialStocksEither =
-          await initialStockDataProvider.deleteAll();
-      if (deleteInitialStocksEither.isLeft()) {
-        return left(deleteInitialStocksEither.fold(
+      final deleteInitialStockModelsEither =
+          await initialStockModelDataProvider.deleteAll();
+      if (deleteInitialStockModelsEither.isLeft()) {
+        return left(deleteInitialStockModelsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 
@@ -525,20 +529,22 @@ class UpdateService
       }
 
       // try to fetch today`s initial stocks from server
-      final todayInitialStocksFromServerEither =
-          await _fetchTodayInitialStocksFromServer(
+      final todayInitialStockModelsFromServerEither =
+          await _fetchTodayInitialStockModelsFromServer(
               token, allSavedCardsOfProducts.map((e) => e.nmId).toList());
-      if (todayInitialStocksFromServerEither is Left) {
-        return left(todayInitialStocksFromServerEither.fold(
+      if (todayInitialStockModelsFromServerEither is Left) {
+        return left(todayInitialStockModelsFromServerEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
-      final todayInitialStocksFromServer = todayInitialStocksFromServerEither
-          .fold((l) => throw UnimplementedError(), (r) => r);
+      final todayInitialStockModelsFromServer =
+          todayInitialStockModelsFromServerEither.fold(
+              (l) => throw UnimplementedError(), (r) => r);
 
       // save today`s initial stocks to local db
-      for (final stock in todayInitialStocksFromServer) {
-        final insertInitialStockEither = await initialStockDataProvider.insert(
-            initialStock: InitialStock(
+      for (final stock in todayInitialStockModelsFromServer) {
+        final insertInitialStockModelEither =
+            await initialStockModelDataProvider.insert(
+                initialStockModel: InitialStockModel(
           nmId: stock.nmId,
           sizeOptionId: stock.sizeOptionId,
           date: DateTime.now(),
@@ -546,8 +552,8 @@ class UpdateService
           qty: stock.qty,
         ));
 
-        if (insertInitialStockEither is Left) {
-          return left(insertInitialStockEither.fold(
+        if (insertInitialStockModelEither is Left) {
+          return left(insertInitialStockModelEither.fold(
               (l) => l, (r) => throw UnimplementedError()));
         }
       }
@@ -581,7 +587,7 @@ class UpdateService
       // get stocks for the card before deleting since if there are supplies
       // they will be used for last stock calculation
       final stocksEither = await stockDataProvider.get(nmId: card.nmId);
-      List<Stock> stocks = [];
+      List<StocksModel> stocks = [];
       if (stocksEither.isRight()) {
         stocks = stocksEither.fold((l) => throw UnimplementedError(), (r) => r);
       }
@@ -605,7 +611,7 @@ class UpdateService
   }
 
   Future<Either<RewildError, void>> _addStocks(
-      List<SizeModel> sizes, List<Stock> stocks) async {
+      List<SizeModel> sizes, List<StocksModel> stocks) async {
     final dateFrom = yesterdayEndOfTheDay();
     final dateTo = DateTime.now();
 
@@ -614,7 +620,7 @@ class UpdateService
       // for each stock
       for (final stock in size.stocks) {
         // get saved init stock
-        final initStockEither = await initialStockDataProvider.getOne(
+        final initStockEither = await initialStockModelDataProvider.getOne(
             nmId: stock.nmId,
             dateFrom: dateFrom,
             dateTo: dateTo,
@@ -629,13 +635,14 @@ class UpdateService
         // if init stock does not exists
         if (initStock == null) {
           // insert init stock
-          final insertInitStockEither = await initialStockDataProvider.insert(
-              initialStock: InitialStock(
-                  date: dateFrom,
-                  nmId: stock.nmId,
-                  wh: stock.wh,
-                  sizeOptionId: stock.sizeOptionId,
-                  qty: 0));
+          final insertInitStockEither =
+              await initialStockModelDataProvider.insert(
+                  initialStockModel: InitialStockModel(
+                      date: dateFrom,
+                      nmId: stock.nmId,
+                      wh: stock.wh,
+                      sizeOptionId: stock.sizeOptionId,
+                      qty: 0));
           if (insertInitStockEither.isLeft()) {
             return left(insertInitStockEither.fold(
                 (l) => l, (r) => throw UnimplementedError()));
@@ -645,7 +652,7 @@ class UpdateService
           if (stock.qty > SettingsConstants.supplyThreshold) {
             // insert supply
             final insertSupplyEither = await supplyDataProvider.insert(
-                supply: Supply(
+                supply: SupplyModel(
                     wh: stock.wh,
                     nmId: stock.nmId,
                     sizeOptionId: stock.sizeOptionId,
@@ -693,7 +700,7 @@ class UpdateService
                 final savedStockData = stockForSup.first;
 
                 final insertSupplyEither = await supplyDataProvider.insert(
-                    supply: Supply(
+                    supply: SupplyModel(
                   wh: stock.wh,
                   nmId: stock.nmId,
                   sizeOptionId: stock.sizeOptionId,
@@ -711,7 +718,7 @@ class UpdateService
 
               if (stock.qty - initStock.qty > supply.qty) {
                 final insertSupplyEither = await supplyDataProvider.insert(
-                    supply: Supply(
+                    supply: SupplyModel(
                   wh: supply.wh,
                   nmId: supply.nmId,
                   sizeOptionId: supply.sizeOptionId,
@@ -738,35 +745,35 @@ class UpdateService
     return right(null);
   }
 
-  Future<Either<RewildError, List<InitialStock>>>
-      _fetchTodayInitialStocksFromServer(
+  Future<Either<RewildError, List<InitialStockModel>>>
+      _fetchTodayInitialStockModelsFromServer(
           String token, List<int> cardsWithoutTodayInitStocksIds) async {
-    List<InitialStock> initialStocksFromServer = [];
+    List<InitialStockModel> initialStockModelsFromServer = [];
     if (cardsWithoutTodayInitStocksIds.isNotEmpty) {
-      final initialStocksEither = await initialStockApiClient.get(
+      final initialStockModelsEither = await initialStockModelApiClient.get(
         token: token,
         skus: cardsWithoutTodayInitStocksIds,
         dateFrom: yesterdayEndOfTheDay(),
         dateTo: DateTime.now(),
       );
-      if (initialStocksEither.isLeft()) {
-        return left(initialStocksEither.fold(
+      if (initialStockModelsEither.isLeft()) {
+        return left(initialStockModelsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
-      initialStocksFromServer =
-          initialStocksEither.getOrElse((l) => throw UnimplementedError());
+      initialStockModelsFromServer =
+          initialStockModelsEither.getOrElse((l) => throw UnimplementedError());
 
       // save initial stocks to local db
-      for (final stock in initialStocksFromServer) {
-        final insertStockEither =
-            await initialStockDataProvider.insert(initialStock: stock);
+      for (final stock in initialStockModelsFromServer) {
+        final insertStockEither = await initialStockModelDataProvider.insert(
+            initialStockModel: stock);
         if (insertStockEither.isLeft()) {
           return left(insertStockEither.fold(
               (l) => l, (r) => throw UnimplementedError()));
         }
       }
     }
-    return right(initialStocksFromServer);
+    return right(initialStockModelsFromServer);
   }
 
   @override

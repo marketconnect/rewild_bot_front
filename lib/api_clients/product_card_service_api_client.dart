@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/card_of_product.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
@@ -17,7 +17,7 @@ class CardOfProductApiClient
   @override
   Future<Either<RewildError, void>> save({
     required String token,
-    required List<CardOfProduct> productCards,
+    required List<CardOfProductModel> productCards,
   }) async {
     try {
       final url = Uri.parse('https://rewild.website/api/productCardsAdd');
@@ -57,7 +57,7 @@ class CardOfProductApiClient
   }
 
   @override
-  Future<Either<RewildError, List<CardOfProduct>>> getAll({
+  Future<Either<RewildError, List<CardOfProductModel>>> getAll({
     required String token,
   }) async {
     try {
@@ -72,7 +72,7 @@ class CardOfProductApiClient
       if (response.statusCode == 200) {
         final List<dynamic> responseData = jsonDecode(response.body);
         final productCards = responseData.map((c) {
-          return CardOfProduct(
+          return CardOfProductModel(
             nmId: c['nmId'],
             name: c['name'],
             img: c['img'],

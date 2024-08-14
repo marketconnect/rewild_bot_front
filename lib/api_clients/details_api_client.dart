@@ -4,15 +4,16 @@ import 'package:fpdart/fpdart.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/card_of_product.dart';
-import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
+
 import 'package:rewild_bot_front/domain/entities/size_model.dart';
+import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class DetailsApiClient implements UpdateServiceDetailsApiClient {
   const DetailsApiClient();
   @override
-  Future<Either<RewildError, List<CardOfProduct>>> get(
+  Future<Either<RewildError, List<CardOfProductModel>>> get(
       {required List<int> ids}) async {
     try {
       final params = {
@@ -47,7 +48,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final productCardsJson = data['data']['products'];
-        List<CardOfProduct> resultProductCardsList = [];
+        List<CardOfProductModel> resultProductCardsList = [];
         // Mapping
         for (final json in productCardsJson) {
           // sizes
@@ -56,10 +57,10 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
 
           for (final size in sizes) {
             // newCardModel.sizes.add();
-            List<Stock> stocks = [];
+            List<StocksModel> stocks = [];
             final optionId = size['optionId'] ?? 0;
             if (size['stocks'].isEmpty) {
-              stocks.add(Stock(
+              stocks.add(StocksModel(
                 nmId: json['id'],
                 wh: 0,
                 sizeOptionId: optionId,
@@ -71,7 +72,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
             for (final stock in size['stocks']) {
               final wh = stock['wh'];
               final qty = stock['qty'];
-              stocks.add(Stock(
+              stocks.add(StocksModel(
                 nmId: json['id'],
                 wh: wh,
                 sizeOptionId: optionId,
@@ -94,7 +95,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
               ? reviewRatingRaw.toDouble()
               : reviewRatingRaw;
 
-          CardOfProduct newCardModel = CardOfProduct(
+          CardOfProductModel newCardModel = CardOfProductModel(
               nmId: json['id'],
               name: json['name'] ?? "",
               sellerId: json['sellerId'] ?? 0,
@@ -136,7 +137,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
     }
   }
 
-  static Future<Either<RewildError, List<CardOfProduct>>> getInBackground(
+  static Future<Either<RewildError, List<CardOfProductModel>>> getInBackground(
       {required List<int> ids}) async {
     try {
       final params = {
@@ -172,7 +173,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final productCardsJson = data['data']['products'];
-        List<CardOfProduct> resultProductCardsList = [];
+        List<CardOfProductModel> resultProductCardsList = [];
         // Mapping
         for (final json in productCardsJson) {
           // sizes
@@ -181,10 +182,10 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
 
           for (final size in sizes) {
             // newCardModel.sizes.add();
-            List<Stock> stocks = [];
+            List<StocksModel> stocks = [];
             final optionId = size['optionId'] ?? 0;
             if (size['stocks'].isEmpty) {
-              stocks.add(Stock(
+              stocks.add(StocksModel(
                 nmId: json['id'],
                 wh: 0,
                 sizeOptionId: optionId,
@@ -199,7 +200,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
               // if (json['id'] == 197368454) {
               //   print(json);
               // }
-              stocks.add(Stock(
+              stocks.add(StocksModel(
                 nmId: json['id'],
                 wh: wh,
                 sizeOptionId: optionId,
@@ -222,7 +223,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
               ? reviewRatingRaw.toDouble()
               : reviewRatingRaw;
 
-          CardOfProduct newCardModel = CardOfProduct(
+          CardOfProductModel newCardModel = CardOfProductModel(
               nmId: json['id'],
               name: json['name'] ?? "",
               sellerId: json['sellerId'] ?? 0,

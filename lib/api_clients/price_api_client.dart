@@ -3,13 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
-import 'package:rewild_bot_front/domain/services/tariff_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class PriceApiClient
-    implements
-        UpdateServiceAverageLogisticsApiClient,
-        TariffServiceAverageLogisticsApiClient {
+class PriceApiClient implements UpdateServiceAverageLogisticsApiClient {
   const PriceApiClient();
 
   @override

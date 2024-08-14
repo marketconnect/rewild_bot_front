@@ -3,8 +3,9 @@ import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/commission_model.dart';
-import 'package:rewild_bot_front/domain/entities/hive/tariff.dart';
+import 'package:rewild_bot_front/domain/entities/commission_model.dart';
+
+import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class CommissionApiClient implements UpdateServiceTariffApiClient {
@@ -57,7 +58,7 @@ class CommissionApiClient implements UpdateServiceTariffApiClient {
   }
 
   @override
-  Future<Either<RewildError, List<Tariff>>> getTarrifs({
+  Future<Either<RewildError, List<TariffModel>>> getTarrifs({
     required String token,
   }) async {
     final url = Uri.parse('https://rewild.website/api/getTariffs');
@@ -72,7 +73,7 @@ class CommissionApiClient implements UpdateServiceTariffApiClient {
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
         final tariffs = (responseData['tariff'] as List)
-            .map((item) => Tariff(
+            .map((item) => TariffModel(
                   coef: item['coef'],
                   storeId: item['storeId'],
                   type: item['type'],

@@ -3,19 +3,19 @@ import 'dart:async';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/card_of_product.dart';
-import 'package:rewild_bot_front/domain/entities/hive/initial_stock.dart';
-import 'package:rewild_bot_front/domain/entities/hive/nm_id.dart';
-import 'package:rewild_bot_front/domain/entities/hive/seller.dart';
-import 'package:rewild_bot_front/domain/entities/hive/stock.dart';
-import 'package:rewild_bot_front/domain/entities/hive/supply.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
+import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
+import 'package:rewild_bot_front/domain/entities/nm_id.dart';
+import 'package:rewild_bot_front/domain/entities/seller_model.dart';
 import 'package:rewild_bot_front/domain/entities/size_model.dart';
+import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
+import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 // API clients
 abstract class CardOfProductServiceSellerApiClient {
-  Future<Either<RewildError, Seller>> fetchSeller({required int sellerID});
+  Future<Either<RewildError, SellerModel>> fetchSeller({required int sellerID});
 }
 
 // Warehouse
@@ -39,27 +39,28 @@ abstract class CardOfProductServiceWarehouseDataProvider {
 
 // stock
 abstract class CardOfProductServiceStockDataProvider {
-  Future<Either<RewildError, List<Stock>>> getAll();
+  Future<Either<RewildError, List<StocksModel>>> getAll();
 }
 
 // init stock
 abstract class CardOfProductServiceInitStockDataProvider {
-  Future<Either<RewildError, List<InitialStock>>> getAll(
+  Future<Either<RewildError, List<InitialStockModel>>> getAll(
       {required DateTime dateFrom, required DateTime dateTo});
 }
 
 // supply
 abstract class CardOfProductServiceSupplyDataProvider {
-  Future<Either<RewildError, List<Supply>>> get({required int nmId});
+  Future<Either<RewildError, List<SupplyModel>>> get({required int nmId});
 }
 
 // card
 abstract class CardOfProductServiceCardOfProductDataProvider {
-  Future<Either<RewildError, List<CardOfProduct>>> getAll([List<int>? nmIds]);
-  Future<Either<RewildError, CardOfProduct?>> get({required int nmId});
+  Future<Either<RewildError, List<CardOfProductModel>>> getAll(
+      [List<int>? nmIds]);
+  Future<Either<RewildError, CardOfProductModel?>> get({required int nmId});
   // Future<Either<RewildError, int>> delete({required int id});
   Future<Either<RewildError, String>> getImage({required int id});
-  Future<Either<RewildError, List<CardOfProduct>>> getAllBySupplierId(
+  Future<Either<RewildError, List<CardOfProductModel>>> getAllBySupplierId(
       {required int supplierId});
   Future<Either<RewildError, List<int>>> getAllNmIds();
 }
@@ -69,7 +70,7 @@ abstract class CardOfProductServiceNmIdDataProvider {
   Future<Either<RewildError, List<NmId>>> getNmIds();
 }
 
-class CardOfProductService implements AllCardsScreenCardOfProductService {
+class CardOfProductService implements MainNavigationCardService {
   final CardOfProductServiceWarehouseDataProvider warehouseDataprovider;
   final CardOfProductServiceStockDataProvider stockDataprovider;
   final CardOfProductServiceWarehouseApiCient warehouseApiClient;
@@ -102,9 +103,9 @@ class CardOfProductService implements AllCardsScreenCardOfProductService {
   }
 
   @override
-  Future<Either<RewildError, List<CardOfProduct>>> getAll(
+  Future<Either<RewildError, List<CardOfProductModel>>> getAll(
       [List<int>? nmIds]) async {
-    List<CardOfProduct> resultCards = [];
+    List<CardOfProductModel> resultCards = [];
     // Cards
     final allCardsEither = await cardOfProductDataProvider.getAll(nmIds);
 
@@ -150,12 +151,13 @@ class CardOfProductService implements AllCardsScreenCardOfProductService {
   }
 
   @override
-  Future<Either<RewildError, CardOfProduct?>> getOne(int nmId) async {
+  Future<Either<RewildError, CardOfProductModel?>> getOne(int nmId) async {
     return await cardOfProductDataProvider.get(nmId: nmId);
   }
 
   @override
-  Future<Either<RewildError, List<CardOfProduct>>> getNotUserCards() async {
+  Future<Either<RewildError, List<CardOfProductModel>>>
+      getNotUserCards() async {
     // get user nmIds
     final userNmIdsEither = await nmIdDataProvider.getNmIds();
     if (userNmIdsEither.isLeft()) {

@@ -5,7 +5,7 @@ import 'package:rewild_bot_front/core/utils/jwt_decode.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
-import 'package:rewild_bot_front/domain/entities/hive/user_seller.dart';
+import 'package:rewild_bot_front/domain/entities/user_seller.dart';
 
 abstract class AddApiKeysScreenApiKeysService {
   Future<Either<RewildError, List<ApiKeyModel>>> getAll(

@@ -5,9 +5,9 @@ import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
-import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
-import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
+// import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
 
 abstract class MainNavigationCardService {
   Future<Either<RewildError, int>> count();
@@ -52,43 +52,41 @@ abstract class MainNavigationAdvertService {
 }
 
 class MainNavigationViewModel extends ResourceChangeNotifier {
-  // final MainNavigationCardService cardService;
-  // final MainNavigationAdvertService advertService;
-  // final MainNavigationQuestionService questionService;
-  // final MainNavigationAuthService tokenProvider;
-  // final MainNavigationUpdateService updateService;
-  // final MainNavigationSubscriptionService subscriptionService;
+  final MainNavigationCardService cardService;
+  final MainNavigationAdvertService advertService;
+  final MainNavigationQuestionService questionService;
+  final MainNavigationAuthService tokenProvider;
+  final MainNavigationUpdateService updateService;
+  final MainNavigationSubscriptionService subscriptionService;
   final Stream<(int, int)> cardsNumberStream;
   final Stream<StreamAdvertEvent> updatedAdvertStream;
   final Stream<Map<ApiKeyType, String>> apiKeyExistsStream;
 
   MainNavigationViewModel(
-      {
-      // required this.cardService,
-      // required this.advertService,
-      // required this.questionService,
-      // required this.tokenProvider,
-      // required this.updateService,
+      {required this.cardService,
+      required this.advertService,
+      required this.questionService,
+      required this.tokenProvider,
+      required this.updateService,
       required this.cardsNumberStream,
       required this.updatedAdvertStream,
       required this.apiKeyExistsStream,
-      // required this.subscriptionService,
-
+      required this.subscriptionService,
       required super.context}) {
     _asyncInit();
   }
 
-  // Future<String> _getToken() async {
-  // final token = await fetch(() => tokenProvider.getToken());
-  // if (token == null) {
-  //   return "";
-  // }
-  // return token;
-  // }
+  Future<String> _getToken() async {
+    final token = await fetch(() => tokenProvider.getToken());
+    if (token == null) {
+      return "";
+    }
+    return token;
+  }
 
   void _asyncInit() async {
-    // final token = await _getToken();
-    // await updateService.update(token);
+    final token = await _getToken();
+    await updateService.update(token);
     // Update in MainNavigationCardsWidget cards number
     cardsNumberStream.listen((event) {
       setSubscriptionsNum(event.$1);
@@ -125,40 +123,40 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
       notify();
     });
 
-    // final cardsQty = await fetch(() => cardService.count());
-    // if (cardsQty == null) {
-    //   return;
-    // }
+    final cardsQty = await fetch(() => cardService.count());
+    if (cardsQty == null) {
+      return;
+    }
 
     // subscription
-    // final subscriptions =
-    //     await fetch(() => subscriptionService.getSubscriptions(token: token));
-    // if (subscriptions == null) {
-    //   return;
-    // }
-    // setSubscriptionsNum(subscriptions.length);
-    // setTrackedCardsNumber(
-    //     subscriptions.where((element) => element.cardId != 0).toList().length);
+    final subscriptions =
+        await fetch(() => subscriptionService.getSubscriptions(token: token));
+    if (subscriptions == null) {
+      return;
+    }
+    setSubscriptionsNum(subscriptions.length);
+    setTrackedCardsNumber(
+        subscriptions.where((element) => element.cardId != 0).toList().length);
 
     // Api keys exist
     // Advert
-    // final advertApiKey = await fetch(() => advertService.getApiKey());
-    // if (advertApiKey == null) {
-    //   return;
-    // }
-    // setAdvertApiKey(advertApiKey);
+    final advertApiKey = await fetch(() => advertService.getApiKey());
+    if (advertApiKey == null) {
+      return;
+    }
+    setAdvertApiKey(advertApiKey);
 
-    // final newAdverts =
-    //     await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
-    // if (newAdverts == null) {
-    //   return;
-    // }
+    final newAdverts =
+        await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
+    if (newAdverts == null) {
+      return;
+    }
     // Question
-    // final questionApiKey = await fetch(() => questionService.getApiKey());
-    // if (questionApiKey == null) {
-    //   return;
-    // }
-    // setFeedbackApiKey(questionApiKey);
+    final questionApiKey = await fetch(() => questionService.getApiKey());
+    if (questionApiKey == null) {
+      return;
+    }
+    setFeedbackApiKey(questionApiKey);
 
     notify();
   } // _asyncInit
@@ -237,21 +235,21 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     setBalance(balance);
     notify();
 
-    // final newAdverts =
-    //     await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
-    // if (newAdverts == null) {
-    //   return;
-    // }
-    // setAdverts(newAdverts);
+    final newAdverts =
+        await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
+    if (newAdverts == null) {
+      return;
+    }
+    setAdverts(newAdverts);
 
-    // for (final advert in _adverts) {
-    //   final budget = await fetch(() => advertService.getBudget(
-    //       token: _advertApiKey!, campaignId: advert.campaignId));
-    //   if (budget != null) {
-    //     addBudget(advert.campaignId, budget);
-    //     notify();
-    //   }
-    // }
+    for (final advert in _adverts) {
+      final budget = await fetch(() => advertService.getBudget(
+          token: _advertApiKey!, campaignId: advert.campaignId));
+      if (budget != null) {
+        addBudget(advert.campaignId, budget);
+        notify();
+      }
+    }
     setLoading(false);
   }
 

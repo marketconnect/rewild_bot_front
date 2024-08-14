@@ -1,24 +1,28 @@
+import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:hive/hive.dart';
-import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/seller.dart';
-import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
+import 'package:rewild_bot_front/domain/entities/seller_model.dart';
 
-class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
+import 'package:rewild_bot_front/core/utils/database_helper.dart';
+
+class SellerDataProvider {
   const SellerDataProvider();
 
-  Box<Seller> get _box => Hive.box<Seller>(HiveBoxes.sellers);
+  Future<Database> get _db async => await DatabaseHelper().database;
 
   @override
-  Future<Either<RewildError, int>> insert({required Seller seller}) async {
+  Future<Either<RewildError, int>> insert({required SellerModel seller}) async {
     try {
-      await _box.put(seller.supplierId, seller);
+      final db = await _db;
+      final txn = db.transaction('sellers', idbModeReadWrite);
+      final store = txn.objectStore('sellers');
+      await store.put(seller.toMap(), seller.supplierId);
+      await txn.completed;
       return right(seller.supplierId);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
-        "Не удалось вставить данные продавца: $e",
+        "Не удалось сохранить данные продавца $e",
         source: runtimeType.toString(),
         name: 'insert',
         args: [seller],
@@ -26,30 +30,46 @@ class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
     }
   }
 
-  Future<Either<RewildError, void>> delete(int supplierId) async {
+  Future<Either<RewildError, void>> delete(int id) async {
     try {
-      await _box.delete(supplierId);
+      final db = await _db;
+      final txn = db.transaction('sellers', idbModeReadWrite);
+      final store = txn.objectStore('sellers');
+      await store.delete(id);
+      await txn.completed;
       return right(null);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
-        "Не удалось удалить данные продавца: $e",
+        "Не удалось удалить данные продавца $e",
         source: runtimeType.toString(),
         name: 'delete',
-        args: [supplierId],
+        args: [id],
       ));
     }
   }
 
   @override
-  Future<Either<RewildError, Seller?>> get({required int supplierId}) async {
+  Future<Either<RewildError, SellerModel?>> get(
+      {required int supplierId}) async {
     try {
-      final seller = _box.get(supplierId);
-      return right(seller);
+      final db = await _db;
+      final txn = db.transaction('sellers', idbModeReadOnly);
+      final store = txn.objectStore('sellers');
+      final sellerMap = await store.getObject(supplierId);
+
+      await txn.completed;
+
+      if (sellerMap == null) {
+        return right(null);
+      }
+
+      // Cast the object to Map<String, dynamic> before passing it to fromMap
+      return right(SellerModel.fromMap(sellerMap as Map<String, dynamic>));
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
-        "Не удалось получить данные продавца: $e",
+        "Не удалось получить данные продавца $e",
         source: runtimeType.toString(),
         name: "get",
         args: [supplierId],
@@ -57,14 +77,18 @@ class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
     }
   }
 
-  Future<Either<RewildError, int>> update(Seller seller) async {
+  Future<Either<RewildError, int>> update(SellerModel seller) async {
     try {
-      await _box.put(seller.supplierId, seller);
+      final db = await _db;
+      final txn = db.transaction('sellers', idbModeReadWrite);
+      final store = txn.objectStore('sellers');
+      await store.put(seller.toMap(), seller.supplierId);
+      await txn.completed;
       return right(seller.supplierId);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
-        "Не удалось обновить данные продавца: $e",
+        "Не удалось обновить данные продавца $e",
         source: runtimeType.toString(),
         name: 'update',
         args: [seller],
@@ -72,14 +96,21 @@ class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
     }
   }
 
-  Future<Either<RewildError, List<Seller>>> getAll() async {
+  Future<Either<RewildError, List<SellerModel>>> getAll() async {
     try {
-      final sellers = _box.values.toList();
-      return right(sellers);
+      final db = await _db;
+      final txn = db.transaction('sellers', idbModeReadOnly);
+      final store = txn.objectStore('sellers');
+      final sellers = await store.getAll();
+
+      await txn.completed;
+      return right(sellers
+          .map((e) => SellerModel.fromMap(e as Map<String, dynamic>))
+          .toList());
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
-        "Не удалось получить данные продавцов: $e",
+        "Не удалось получить данные продавцов $e",
         source: runtimeType.toString(),
         name: 'getAll',
         args: [],

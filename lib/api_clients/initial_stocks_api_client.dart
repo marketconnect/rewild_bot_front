@@ -3,14 +3,16 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/initial_stock.dart';
+
+import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class InitialStocksApiClient implements UpdateServiceInitialStockApiClient {
+class InitialStocksApiClient
+    implements UpdateServiceInitialStockModelApiClient {
   const InitialStocksApiClient();
 
   @override
-  Future<Either<RewildError, List<InitialStock>>> get({
+  Future<Either<RewildError, List<InitialStockModel>>> get({
     required String token,
     required List<int> skus,
     required DateTime dateFrom,
@@ -34,7 +36,7 @@ class InitialStocksApiClient implements UpdateServiceInitialStockApiClient {
       if (response.statusCode == 200) {
         final List<dynamic> responseData = jsonDecode(response.body);
         final initialStocks = responseData.map((stock) {
-          return InitialStock(
+          return InitialStockModel(
             nmId: stock['sku'],
             wh: stock['wh'],
             sizeOptionId: stock['sizeOptionId'],
@@ -64,7 +66,7 @@ class InitialStocksApiClient implements UpdateServiceInitialStockApiClient {
     }
   }
 
-  static Future<Either<RewildError, List<InitialStock>>> getInBackground({
+  static Future<Either<RewildError, List<InitialStockModel>>> getInBackground({
     required String token,
     required List<int> skus,
     required DateTime dateFrom,
@@ -88,7 +90,7 @@ class InitialStocksApiClient implements UpdateServiceInitialStockApiClient {
       if (response.statusCode == 200) {
         final List<dynamic> responseData = jsonDecode(response.body);
         final initialStocks = responseData.map((stock) {
-          return InitialStock(
+          return InitialStockModel(
             nmId: stock['sku'],
             wh: stock['wh'],
             sizeOptionId: stock['sizeOptionId'],

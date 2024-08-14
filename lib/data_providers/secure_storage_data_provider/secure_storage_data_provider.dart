@@ -2,14 +2,21 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
+import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
+import 'package:rewild_bot_front/domain/services/advert_service.dart';
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
+import 'package:rewild_bot_front/domain/services/question_service.dart';
 
 class SecureStorageProvider
     implements
         ApiKeysServiceApiKeysDataProvider,
+        QuestionServiceApiKeyDataProvider,
+        AdvertServiceApiKeyDataProvider,
         AuthServiceSecureDataProvider {
   static const _secureStorage = FlutterSecureStorage(
       aOptions: AndroidOptions(
@@ -21,29 +28,6 @@ class SecureStorageProvider
   // Function to update user-related data (e.g., username, token, etc.) in secure storage
   @override
   Future<Either<RewildError, void>> updateUserInfo(
-      {String? token, String? expiredAt, bool? freebie}) async {
-    if (token != null) {
-      final result = await _write(key: 'token', value: token);
-      if (result.isLeft()) {
-        return result;
-      }
-    }
-    if (expiredAt != null) {
-      final result = await _write(key: 'token_expired_at', value: expiredAt);
-      if (result.isLeft()) {
-        return result;
-      }
-    }
-    if (freebie != null) {
-      final result = await _write(key: 'freevie', value: freebie ? "1" : "");
-      if (result.isLeft()) {
-        return result;
-      }
-    }
-    return right(null);
-  }
-
-  static Future<Either<RewildError, void>> updateUserInfoInBg(
       {String? token, String? expiredAt, bool? freebie}) async {
     if (token != null) {
       final result = await _write(key: 'token', value: token);
@@ -79,39 +63,9 @@ class SecureStorageProvider
     return right(result);
   }
 
-  static Future<Either<RewildError, String?>> getServerTokenInBg() async {
-    // read token from local storage
-    final resultEither = await _read(key: 'token');
-    if (resultEither.isLeft()) {
-      return resultEither;
-    }
-    final result =
-        resultEither.fold((l) => throw UnimplementedError(), (r) => r);
-    return right(result);
-  }
-
   // Function to check if token is expired
   @override
   Future<Either<RewildError, bool>> tokenNotExpired() async {
-    final result = await _read(key: 'token_expired_at');
-    return result.fold(
-      (l) => left(l),
-      (r) {
-        if (r == null) {
-          return right(false);
-        }
-        final now = DateTime.now();
-        final timestamp = int.parse(r);
-        final expiredAtDT =
-            DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-        return right(
-          expiredAtDT.isAfter(now),
-        );
-      },
-    );
-  }
-
-  static Future<Either<RewildError, bool>> tokenNotExpiredInBg() async {
     final result = await _read(key: 'token_expired_at');
     return result.fold(
       (l) => left(l),
@@ -141,17 +95,16 @@ class SecureStorageProvider
       final username =
           resultEither.fold((l) => throw UnimplementedError(), (r) => r);
       if (username == null) {
-        // var uuid = const Uuid();
-        // final deviceId = uuid.v4();
+        final chatId = await TelegramWebApp.getChatId();
+        await sendMessageToTelegramBot(
+            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'chatId: $chatId');
+        // Save username
+        final result = await _write(key: 'username', value: chatId);
+        if (result.isLeft()) {
+          return left(result.fold((l) => l, (r) => throw UnimplementedError()));
+        }
 
-        // // Save username
-        // final result = await _write(key: 'username', value: deviceId);
-        // if (result.isLeft()) {
-        //   return left(result.fold((l) => l, (r) => throw UnimplementedError()));
-        // }
-        print("USERNAME NULL");
-        return right(null);
-        // return right(deviceId);
+        return right(chatId);
       } else {
         return right(username);
       }

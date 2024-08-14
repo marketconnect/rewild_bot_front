@@ -1,21 +1,34 @@
+import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:hive/hive.dart';
-import 'package:rewild_bot_front/core/constants/hive_boxes.dart';
-
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/hive/nm_id.dart';
+import 'package:rewild_bot_front/domain/entities/nm_id.dart';
+
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+
+import 'package:rewild_bot_front/core/utils/database_helper.dart';
 
 class NmIdDataProvider implements CardOfProductServiceNmIdDataProvider {
   const NmIdDataProvider();
 
-  Box<NmId> get _box => Hive.box<NmId>(HiveBoxes.nmIds);
+  Future<Database> get _db async => await DatabaseHelper().database;
 
-  // Метод для получения всех NmId из Hive
+  // A method that retrieves all the nmIds from the nm_ids table.
   @override
   Future<Either<RewildError, List<NmId>>> getNmIds() async {
     try {
-      final nmIds = _box.values.toList();
+      final db = await _db;
+      final txn = db.transaction('nm_ids', idbModeReadOnly);
+      final store = txn.objectStore('nm_ids');
+      final List<Object?> maps = await store.getAll();
+
+      List<NmId> nmIds = maps.map((map) {
+        final nmIdMap = map as Map<String, dynamic>;
+        return NmId(
+          nmId: nmIdMap['nmId'] as int,
+        );
+      }).toList();
+
+      await txn.completed;
       return right(nmIds);
     } catch (e) {
       return left(RewildError(
@@ -28,11 +41,16 @@ class NmIdDataProvider implements CardOfProductServiceNmIdDataProvider {
     }
   }
 
-  // Метод для вставки NmId в Hive
+  // A method that inserts a NmId into the nm_ids table.
   @override
   Future<Either<RewildError, void>> insertNmId(NmId nmId) async {
     try {
-      await _box.put(nmId.nmId, nmId); // Сохраняем объект по его nmId
+      final db = await _db;
+      final txn = db.transaction('nm_ids', idbModeReadWrite);
+      final store = txn.objectStore('nm_ids');
+
+      await store.put(nmId.toMap());
+      await txn.completed;
       return right(null);
     } catch (e) {
       return left(RewildError(

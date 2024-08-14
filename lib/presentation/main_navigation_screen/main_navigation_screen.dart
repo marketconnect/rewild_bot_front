@@ -39,7 +39,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   @override
   Widget build(BuildContext context) {
     final model = context.watch<MainNavigationViewModel>();
-    final adverts = model.adverts;
+    // final adverts = model.adverts;
     final advertApiKeyExists = model.advertApiKeyExists;
     final feedbackApiKeyExists = model.feedbackApiKeyExists;
     final cardsNumber = model.trackedCardsNumber;
@@ -64,7 +64,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         apiKeyExists: feedbackApiKeyExists,
       ),
       MainNavigationScreenAdvertWidget(
-        adverts: adverts,
+        adverts: [],
         balance: balance,
         apiKeyExists: advertApiKeyExists,
         callbackForUpdate: callback,

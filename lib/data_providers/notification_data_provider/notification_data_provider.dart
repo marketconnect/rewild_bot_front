@@ -1,200 +1,229 @@
-// import 'package:hive/hive.dart';
-// import 'package:fpdart/fpdart.dart';
+import 'package:idb_shim/idb.dart';
+import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/core/utils/database_helper.dart';
 
-// import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-// import 'package:rewild_bot_front/domain/entities/hive/rewild_notification_model.dart';
-// import 'package:rewild_bot_front/domain/services/notification_service.dart';
-// import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/domain/entities/notification.dart';
+import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-// class NotificationDataProvider
-//     implements
-//         NotificationServiceNotificationDataProvider,
-//         UpdateServiceNotificationDataProvider {
-//   const NotificationDataProvider();
+class NotificationDataProvider
+    implements UpdateServiceNotificationDataProvider {
+  const NotificationDataProvider();
 
-//   @override
-//   Future<Either<RewildError, bool>> save(
-//       {required ReWildNotificationModel notification}) async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       await box.add(notification);
-//       return right(true);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: runtimeType.toString(),
-//           name: "save",
-//           args: [notification]));
-//     }
-//   }
+  Future<Database> get _db async => await DatabaseHelper().database;
 
-//   @override
-//   Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
-//       {required int parentId}) async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       final notifications = box.values
-//           .where((notification) => notification.parentId == parentId)
-//           .toList();
+  @override
+  Future<Either<RewildError, bool>> save(
+      {required ReWildNotificationModel notification}) async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('notifications', idbModeReadWrite);
+      final store = txn.objectStore('notifications');
 
-//       return right(notifications);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: runtimeType.toString(),
-//           name: "getForParent",
-//           args: [parentId]));
-//     }
-//   }
+      await store.put({
+        'parentId': notification.parentId,
+        'condition': notification.condition,
+        'value': notification.value,
+        'sizeId': notification.sizeId,
+        'wh': notification.wh,
+        'reusable': notification.reusable,
+      });
 
-//   @override
-//   Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
-//       List<int> conditions) async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       final notifications = box.values
-//           .where((notification) => conditions.contains(notification.condition))
-//           .toList();
+      await txn.completed;
+      return right(true);
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        e.toString(),
+        source: runtimeType.toString(),
+        name: "save",
+        args: [notification],
+      ));
+    }
+  }
 
-//       return right(notifications.isEmpty ? null : notifications);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: runtimeType.toString(),
-//           name: "getByCondition",
-//           args: [conditions]));
-//     }
-//   }
+  @override
+  Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
+      {required int parentId}) async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('notifications', idbModeReadOnly);
+      final store = txn.objectStore('notifications');
+      final index = store.index('parentId');
 
-//   @override
-//   Future<Either<RewildError, List<ReWildNotificationModel>?>> getAll() async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       final notifications = box.values.toList();
+      final List<ReWildNotificationModel> notifications = [];
+      final cursorStream = index.openCursor(key: parentId);
 
-//       return right(notifications.isEmpty ? null : notifications);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: runtimeType.toString(),
-//           name: "getAll",
-//           args: []));
-//     }
-//   }
+      await for (final cursor in cursorStream) {
+        final value = cursor.value as Map<String, dynamic>;
+        notifications.add(ReWildNotificationModel.fromMap(value));
+        cursor.next();
+      }
 
-//   @override
-//   Future<Either<RewildError, int>> deleteAll({required int parentId}) async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       final keysToDelete =
-//           box.keys.where((key) => box.get(key)?.parentId == parentId).toList();
+      await txn.completed;
+      return right(notifications);
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        e.toString(),
+        source: runtimeType.toString(),
+        name: "getForParent",
+        args: [parentId],
+      ));
+    }
+  }
 
-//       for (var key in keysToDelete) {
-//         await box.delete(key);
-//       }
+  @override
+  Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
+      List<int> conditions) async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('notifications', idbModeReadOnly);
+      final store = txn.objectStore('notifications');
+      final index = store.index('condition');
 
-//       return right(keysToDelete.length);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: runtimeType.toString(),
-//           name: "deleteAll",
-//           args: [parentId]));
-//     }
-//   }
+      final List<ReWildNotificationModel> notifications = [];
 
-//   @override
-//   Future<Either<RewildError, bool>> delete(
-//       {required int parentId,
-//       required int condition,
-//       bool? reusableAlso}) async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       final keysToDelete = box.keys.where((key) {
-//         final notification = box.get(key);
-//         return notification?.parentId == parentId &&
-//             notification?.condition == condition &&
-//             (reusableAlso == true || notification?.reusable != true);
-//       }).toList();
+      for (var condition in conditions) {
+        final cursorStream = index.openCursor(key: condition);
 
-//       for (var key in keysToDelete) {
-//         await box.delete(key);
-//       }
+        await for (final cursor in cursorStream) {
+          final value = cursor.value as Map<String, dynamic>;
+          notifications.add(ReWildNotificationModel.fromMap(value));
+          cursor.next();
+        }
+      }
 
-//       return right(keysToDelete.isNotEmpty);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: runtimeType.toString(),
-//           name: "delete",
-//           args: [parentId, condition]));
-//     }
-//   }
+      await txn.completed;
+      return right(notifications.isNotEmpty ? notifications : null);
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        e.toString(),
+        source: runtimeType.toString(),
+        name: "getByCondition",
+        args: [conditions],
+      ));
+    }
+  }
 
-//   static Future<Either<RewildError, List<ReWildNotificationModel>>>
-//       getAllInBackground() async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       final notifications = box.values.toList();
+  @override
+  Future<Either<RewildError, List<ReWildNotificationModel>?>> getAll() async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('notifications', idbModeReadOnly);
+      final store = txn.objectStore('notifications');
+      final result = await store.getAll();
 
-//       return right(notifications);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: "NotificationDataProvider",
-//           name: "getAllInBackground",
-//           args: []));
-//     }
-//   }
+      if (result.isEmpty) {
+        return right(null);
+      }
 
-//   static Future<Either<RewildError, bool>> saveInBackground(
-//       ReWildNotificationModel notificate) async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       await box.add(notificate);
+      final notifications = result
+          .map(
+              (e) => ReWildNotificationModel.fromMap(e as Map<String, dynamic>))
+          .toList();
 
-//       return right(true);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: "NotificationDataProvider",
-//           name: "saveInBackground",
-//           args: [notificate]));
-//     }
-//   }
+      await txn.completed;
+      return right(notifications);
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        e.toString(),
+        source: runtimeType.toString(),
+        name: "getAll",
+        args: [],
+      ));
+    }
+  }
 
-//   @override
-//   Future<Either<RewildError, bool>> checkForParent({required int id}) async {
-//     try {
-//       final box = await Hive.openBox<ReWildNotificationModel>(
-//           'HiveBoxes.notifications');
-//       final exists =
-//           box.values.any((notification) => notification.parentId == id);
+  @override
+  Future<Either<RewildError, int>> deleteAll({required int parentId}) async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('notifications', idbModeReadWrite);
+      final store = txn.objectStore('notifications');
+      final index = store.index('parentId');
+      final keys = await index.getAllKeys(parentId);
+      for (final key in keys) {
+        await store.delete(key);
+      }
 
-//       return right(exists);
-//     } catch (e) {
-//       return left(RewildError(
-//           sendToTg: true,
-//           e.toString(),
-//           source: runtimeType.toString(),
-//           name: "checkForParent",
-//           args: [id]));
-//     }
-//   }
-// }
+      await txn.completed;
+      return right(keys.length);
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        e.toString(),
+        source: runtimeType.toString(),
+        name: "deleteAll",
+        args: [parentId],
+      ));
+    }
+  }
+
+  @override
+  Future<Either<RewildError, bool>> delete(
+      {required int parentId,
+      required int condition,
+      bool? reusableAlso}) async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('notifications', idbModeReadWrite);
+      final store = txn.objectStore('notifications');
+      final index = store.index('parentId_condition');
+      final keys = await index.getAllKeys([parentId, condition]);
+
+      for (final key in keys) {
+        if (reusableAlso == true) {
+          await store.delete(key);
+        } else {
+          final notification =
+              await store.getObject(key) as Map<String, dynamic>?;
+          if (notification != null && notification['reusable'] != 1) {
+            await store.delete(key);
+          }
+        }
+      }
+
+      await txn.completed;
+      return right(true);
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        e.toString(),
+        source: runtimeType.toString(),
+        name: "delete",
+        args: [parentId, condition],
+      ));
+    }
+  }
+
+  @override
+  Future<Either<RewildError, bool>> checkForParent({required int id}) async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('notifications', idbModeReadOnly);
+      final store = txn.objectStore('notifications');
+      final index = store.index('parentId');
+      final cursorStream = index.openCursor(key: id);
+      bool exists = false;
+
+      await for (final cursor in cursorStream) {
+        exists = true;
+        break;
+      }
+
+      await txn.completed;
+      return right(exists);
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        e.toString(),
+        source: runtimeType.toString(),
+        name: "checkForParent",
+        args: [id],
+      ));
+    }
+  }
+}
