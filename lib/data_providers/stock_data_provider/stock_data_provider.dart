@@ -22,7 +22,7 @@ class StockDataProvider
       final txn = db.transaction('stocks', idbModeReadWrite);
       final store = txn.objectStore('stocks');
 
-      await store.add(stock.toMap(), stock.nmId);
+      await store.add(stock.toMap());
 
       await txn.completed;
       return right(stock.nmId);

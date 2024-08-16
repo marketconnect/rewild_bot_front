@@ -39,7 +39,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
         return left(RewildError(
           sendToTg: true,
           errorString,
-          source: runtimeType.toString(),
+          source: "AuthApiClient",
           name: 'registerUser',
           args: [username, password],
         ));
@@ -48,7 +48,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
       return left(RewildError(
         sendToTg: true,
         'Неизвестная ошибка: ${e.toString()}',
-        source: runtimeType.toString(),
+        source: "AuthApiClient",
         name: 'registerUser',
         args: [username, password],
       ));
@@ -85,7 +85,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
         return left(RewildError(
           sendToTg: true,
           errorString,
-          source: runtimeType.toString(),
+          source: "AuthApiClient",
           name: 'loginUser',
           args: [username, password],
         ));
@@ -94,7 +94,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
       return left(RewildError(
         sendToTg: true,
         'Неизвестная ошибка: ${e.toString()}',
-        source: runtimeType.toString(),
+        source: "AuthApiClient",
         name: 'loginUser',
         args: [username, password],
       ));

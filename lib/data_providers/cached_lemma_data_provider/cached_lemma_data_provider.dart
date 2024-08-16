@@ -4,6 +4,7 @@ import 'package:rewild_bot_front/core/utils/database_helper.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/lemma_by_filter.dart';
+
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class CachedLemmaDataProvider implements UpdateServiceLemmaDataProvider {
@@ -34,6 +35,7 @@ class CachedLemmaDataProvider implements UpdateServiceLemmaDataProvider {
       return left(RewildError(
         e.toString(),
         name: "addAll",
+        source: "CachedLemmaDataProvider",
         sendToTg: true,
         args: [subjectId, lemmas],
       ));
@@ -68,6 +70,7 @@ class CachedLemmaDataProvider implements UpdateServiceLemmaDataProvider {
       return left(RewildError(
         e.toString(),
         name: "getAllForSubjectID",
+        source: "CachedLemmaDataProvider",
         sendToTg: true,
         args: [subjectId],
       ));
@@ -87,6 +90,7 @@ class CachedLemmaDataProvider implements UpdateServiceLemmaDataProvider {
       return left(RewildError(
         e.toString(),
         name: "deleteAll",
+        source: "CachedLemmaDataProvider",
         sendToTg: true,
         args: [],
       ));

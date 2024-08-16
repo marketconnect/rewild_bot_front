@@ -26,7 +26,9 @@ class InitialStockDataProvider
       final txn = db.transaction('initial_stocks', idbModeReadWrite);
       final store = txn.objectStore('initial_stocks');
 
-      await store.add(initialStockModel.toMap(), initialStockModel.id);
+      await store.add(
+        initialStockModel.toMap(),
+      );
 
       await txn.completed;
       return right(initialStockModel.id!);
@@ -34,7 +36,7 @@ class InitialStockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to save initial stock: $e',
-          source: runtimeType.toString(),
+          source: "InitialStockDataProvider",
           name: "insert",
           args: [initialStockModel]));
     }
@@ -75,7 +77,7 @@ class InitialStockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to delete initial stock: $e',
-          source: runtimeType.toString(),
+          source: "InitialStockDataProvider",
           name: "delete",
           args: [id]));
     }
@@ -96,7 +98,7 @@ class InitialStockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to delete all initial stocks: $e',
-          source: runtimeType.toString(),
+          source: "InitialStockDataProvider",
           name: "deleteAll",
           args: []));
     }
@@ -128,7 +130,7 @@ class InitialStockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to retrieve initial stocks: $e',
-          source: runtimeType.toString(),
+          source: "InitialStockDataProvider",
           name: "get",
           args: [nmId, dateFrom, dateTo]));
     }
@@ -165,7 +167,7 @@ class InitialStockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to retrieve initial stock: $e',
-          source: runtimeType.toString(),
+          source: "InitialStockDataProvider",
           name: "getOne",
           args: [nmId, dateFrom, dateTo, wh, sizeOptionId]));
     }
@@ -186,7 +188,7 @@ class InitialStockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to update initial stock: $e',
-          source: runtimeType.toString(),
+          source: "InitialStockDataProvider",
           name: "update",
           args: [initialStock]));
     }
@@ -217,7 +219,7 @@ class InitialStockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to retrieve all initial stocks: $e',
-          source: runtimeType.toString(),
+          source: "InitialStockDataProvider",
           name: "getAll",
           args: [dateFrom, dateTo]));
     }

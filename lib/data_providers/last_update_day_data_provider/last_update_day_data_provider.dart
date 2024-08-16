@@ -23,7 +23,7 @@ class LastUpdateDayDataProvider
         return left(RewildError(
           sendToTg: true,
           'Не удалось сохранить дату последнего обновления',
-          source: runtimeType.toString(),
+          source: "LastUpdateDayDataProvider",
           name: "update",
         ));
       }
@@ -32,7 +32,7 @@ class LastUpdateDayDataProvider
       return left(RewildError(
         sendToTg: true,
         'Не удалось сохранить дату последнего обновления: $e',
-        source: runtimeType.toString(),
+        source: "LastUpdateDayDataProvider",
         name: "update",
       ));
     }
@@ -82,7 +82,7 @@ class LastUpdateDayDataProvider
       return left(RewildError(
         sendToTg: true,
         'Не удалось получить дату последнего обновления:  $e',
-        source: runtimeType.toString(),
+        source: "LastUpdateDayDataProvider",
         name: "todayUpdated",
       ));
     }

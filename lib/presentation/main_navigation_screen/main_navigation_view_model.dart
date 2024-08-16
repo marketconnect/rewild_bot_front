@@ -7,6 +7,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
+import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 // import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
 
 abstract class MainNavigationCardService {
@@ -277,18 +278,18 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
   }
 
   Future<void> goToSubscriptionsScreeen(BuildContext context) async {
-    // final res = await Navigator.of(context)
-    //     .pushNamed(MainNavigationRouteNames.paymentScreen);
+    final res = await Navigator.of(context)
+        .pushNamed(MainNavigationRouteNames.paymentScreen);
 
-    // if (res == true) {
-    //   // subscription
-    //   final token = await _getToken();
-    //   final subscriptions =
-    //       await fetch(() => subscriptionService.getSubscriptions(token: token));
-    //   if (subscriptions == null) {
-    //     return;
-    //   }
-    //   setSubscriptionsNum(subscriptions.length);
-    // }
+    if (res == true) {
+      // subscription
+      final token = await _getToken();
+      final subscriptions =
+          await fetch(() => subscriptionService.getSubscriptions(token: token));
+      if (subscriptions == null) {
+        return;
+      }
+      setSubscriptionsNum(subscriptions.length);
+    }
   }
 }

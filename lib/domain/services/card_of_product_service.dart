@@ -11,7 +11,12 @@ import 'package:rewild_bot_front/domain/entities/size_model.dart';
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
+import 'package:rewild_bot_front/presentation/ab_test_results_screen/ab_tests_results_view_model.dart';
+import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
+
+import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
 
 // API clients
 abstract class CardOfProductServiceSellerApiClient {
@@ -70,7 +75,13 @@ abstract class CardOfProductServiceNmIdDataProvider {
   Future<Either<RewildError, List<NmId>>> getNmIds();
 }
 
-class CardOfProductService implements MainNavigationCardService {
+class CardOfProductService
+    implements
+        MainNavigationCardService,
+        AllCardsSeoScreenCardOfProductService,
+        ABTestsResultsCardsService,
+        AllCardsScreenCardOfProductService,
+        PaymentScreenCardsService {
   final CardOfProductServiceWarehouseDataProvider warehouseDataprovider;
   final CardOfProductServiceStockDataProvider stockDataprovider;
   final CardOfProductServiceWarehouseApiCient warehouseApiClient;

@@ -41,7 +41,7 @@ class CommissionApiClient implements UpdateServiceTariffApiClient {
         return left(RewildError(
           sendToTg: true,
           "Ошибка при получении комиссии: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "CommissionApiClient",
           name: "get",
           args: [id],
         ));
@@ -50,7 +50,7 @@ class CommissionApiClient implements UpdateServiceTariffApiClient {
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "CommissionApiClient",
         name: "get",
         args: [id],
       ));
@@ -86,7 +86,7 @@ class CommissionApiClient implements UpdateServiceTariffApiClient {
         return left(RewildError(
           sendToTg: true,
           "Ошибка при получении тарифов: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "CommissionApiClient",
           name: "getTarrifs",
           args: [],
         ));
@@ -95,7 +95,7 @@ class CommissionApiClient implements UpdateServiceTariffApiClient {
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "CommissionApiClient",
         name: "getTarrifs",
         args: [],
       ));

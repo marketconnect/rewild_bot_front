@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class Prices {
@@ -10,8 +9,9 @@ class Prices {
   int gigaChatLitePerMillion;
   int gigaChatLitePlusPerMillion;
   int gigaChatProPerMillion;
-  String clienId;
+  String clientId; // Corrected typo here
   String clientSecret;
+
   Prices({
     required this.price1,
     required this.price2,
@@ -21,10 +21,11 @@ class Prices {
     required this.gigaChatLitePerMillion,
     required this.gigaChatLitePlusPerMillion,
     required this.gigaChatProPerMillion,
-    required this.clienId,
+    required this.clientId, // Corrected typo here
     required this.clientSecret,
   });
 
+  // Copy with method should also be updated
   Prices copyWith({
     int? price1,
     int? price2,
@@ -34,7 +35,7 @@ class Prices {
     int? gigaChatLitePerMillion,
     int? gigaChatLitePlusPerMillion,
     int? gigaChatProPerMillion,
-    String? clienId,
+    String? clientId, // Corrected typo here
     String? clientSecret,
   }) {
     return Prices(
@@ -49,7 +50,7 @@ class Prices {
           gigaChatLitePlusPerMillion ?? this.gigaChatLitePlusPerMillion,
       gigaChatProPerMillion:
           gigaChatProPerMillion ?? this.gigaChatProPerMillion,
-      clienId: clienId ?? this.clienId,
+      clientId: clientId ?? this.clientId, // Corrected typo here
       clientSecret: clientSecret ?? this.clientSecret,
     );
   }
@@ -64,23 +65,24 @@ class Prices {
       'gigaChatLitePerMillion': gigaChatLitePerMillion,
       'gigaChatLitePlusPerMillion': gigaChatLitePlusPerMillion,
       'gigaChatProPerMillion': gigaChatProPerMillion,
-      'clienId': clienId,
+      'clientId': clientId, // Corrected typo here
       'clientSecret': clientSecret,
     };
   }
 
   factory Prices.fromMap(Map<String, dynamic> map) {
     return Prices(
-      price1: map['price1'] as int,
-      price2: map['price2'] as int,
-      price3: map['price3'] as int,
-      averageLogistics: map['averageLogistics'] as int,
-      logisticsCoef: map['logisticsCoef'] as int,
-      gigaChatLitePerMillion: map['gigaChatLitePerMillion'] as int,
-      gigaChatLitePlusPerMillion: map['gigaChatLitePlusPerMillion'] as int,
-      gigaChatProPerMillion: map['gigaChatProPerMillion'] as int,
-      clienId: map['clienId'] as String,
-      clientSecret: map['clientSecret'] as String,
+      price1: map['price1'] as int? ?? 0,
+      price2: map['price2'] as int? ?? 0,
+      price3: map['price3'] as int? ?? 0,
+      averageLogistics: map['averageLogistics'] as int? ?? 0,
+      logisticsCoef: map['logisticsCoef'] as int? ?? 0,
+      gigaChatLitePerMillion: map['gigaChatLitePerMillion'] as int? ?? 0,
+      gigaChatLitePlusPerMillion:
+          map['gigaChatLitePlusPerMillion'] as int? ?? 0,
+      gigaChatProPerMillion: map['gigaChatProPerMillion'] as int? ?? 0,
+      clientId: map['clientId'] as String? ?? '', // Corrected typo here
+      clientSecret: map['clientSecret'] as String? ?? '',
     );
   }
 
@@ -91,7 +93,7 @@ class Prices {
 
   @override
   String toString() {
-    return 'Prices(price1: $price1, price2: $price2, price3: $price3, averageLogistics: $averageLogistics, logisticsCoef: $logisticsCoef, gigaChatLitePerMillion: $gigaChatLitePerMillion, gigaChatLitePlusPerMillion: $gigaChatLitePlusPerMillion, gigaChatProPerMillion: $gigaChatProPerMillion, clienId: $clienId, clientSecret: $clientSecret)';
+    return 'Prices(price1: $price1, price2: $price2, price3: $price3, averageLogistics: $averageLogistics, logisticsCoef: $logisticsCoef, gigaChatLitePerMillion: $gigaChatLitePerMillion, gigaChatLitePlusPerMillion: $gigaChatLitePlusPerMillion, gigaChatProPerMillion: $gigaChatProPerMillion, clientId: $clientId, clientSecret: $clientSecret)'; // Corrected typo here
   }
 
   @override
@@ -106,7 +108,7 @@ class Prices {
         other.gigaChatLitePerMillion == gigaChatLitePerMillion &&
         other.gigaChatLitePlusPerMillion == gigaChatLitePlusPerMillion &&
         other.gigaChatProPerMillion == gigaChatProPerMillion &&
-        other.clienId == clienId &&
+        other.clientId == clientId && // Corrected typo here
         other.clientSecret == clientSecret;
   }
 
@@ -120,7 +122,7 @@ class Prices {
         gigaChatLitePerMillion.hashCode ^
         gigaChatLitePlusPerMillion.hashCode ^
         gigaChatProPerMillion.hashCode ^
-        clienId.hashCode ^
+        clientId.hashCode ^ // Corrected typo here
         clientSecret.hashCode;
   }
 }

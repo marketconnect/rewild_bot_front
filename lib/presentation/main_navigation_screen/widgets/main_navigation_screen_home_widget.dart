@@ -68,6 +68,12 @@ class _MainNavigationScreenHomeWidgetState
                 route: MainNavigationRouteNames.apiKeysScreen,
                 iconData: Icons.key,
               ),
+              _Link(
+                text: 'СЕО',
+                color: Colors.orangeAccent,
+                route: MainNavigationRouteNames.allCardsSeoScreen,
+                iconData: Icons.dashboard,
+              ),
             ],
           ),
         )

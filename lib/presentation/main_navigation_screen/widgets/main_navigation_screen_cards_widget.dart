@@ -53,12 +53,7 @@ class MainNavigationScreenCardsWidget extends StatelessWidget {
                 // route: '',
                 iconData: Icons.analytics,
               ),
-              LinkBtn(
-                text: 'СЕО',
-                color: Colors.orangeAccent,
-                route: "MainNavigationRouteNames.cardsNavigationScreen",
-                iconData: Icons.dashboard,
-              ),
+
               LinkBtn(
                 text: 'Финансы',
                 color: Colors.greenAccent,

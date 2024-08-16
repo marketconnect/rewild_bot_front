@@ -5,31 +5,37 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/api_clients/advert_api_client.dart';
+import 'package:rewild_bot_front/api_clients/analitics_detail_api_client.dart';
 import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
+import 'package:rewild_bot_front/api_clients/filter_api_client.dart';
 import 'package:rewild_bot_front/api_clients/initial_stocks_api_client.dart';
 import 'package:rewild_bot_front/api_clients/price_api_client.dart';
 import 'package:rewild_bot_front/api_clients/product_card_service_api_client.dart';
 import 'package:rewild_bot_front/api_clients/questions_api_client.dart';
 import 'package:rewild_bot_front/api_clients/subscription_api_client.dart';
 import 'package:rewild_bot_front/api_clients/warehouse_api_client.dart';
+import 'package:rewild_bot_front/api_clients/wb_content_api_client.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/data_providers/average_logistics_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cached_kw_by_lemma_by_word_data_provider/cached_kw_by_lemma_by_word_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cached_lemma_data_provider/cached_lemma_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cahced_kw_by_autocomplite_data_provider/cahced_kw_by_autocomplite_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cahced_kw_by_lemma_data_provider/cahced_kw_by_lemma_data_provider.dart';
+
 import 'package:rewild_bot_front/data_providers/card_keywords_data_provider/card_keywords_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/card_of_product_data_provider/card_of_product_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/filter_data_provider/filter_data_provider.dart';
-import 'package:rewild_bot_front/data_providers/filter_values_data_provider/filter_values_data_provider.dart';
+
+import 'package:rewild_bot_front/data_providers/group_data_provider/group_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/initial_stocks_data_provider/initial_stocks_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/last_update_day_data_provider/last_update_day_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/nm_id_data_provider/nm_id_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/notification_data_provider/notification_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/orders_data_provider/orders_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/secure_storage_data_provider/secure_storage_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/seller_data_provider/seller_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/stock_data_provider/stock_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subscription_data_provider/subscription_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/supply_data_provider/supply_data_provider.dart';
@@ -38,23 +44,51 @@ import 'package:rewild_bot_front/data_providers/total_cost_data_provider/total_c
 import 'package:rewild_bot_front/data_providers/tracking_result_data_provider/tracking_result_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/user_sellers_data_provider/user_sellers_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/warehouse_data_provider/warehouse_data_provider.dart';
-import 'package:rewild_bot_front/domain/entities/question_model.dart';
+
+import 'package:rewild_bot_front/domain/entities/payment_info.dart';
+
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/domain/entities/stream_notification_event.dart';
 import 'package:rewild_bot_front/domain/services/advert_service.dart';
+import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
+
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
+import 'package:rewild_bot_front/domain/services/balance_service.dart';
+
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/content_service.dart';
+
+import 'package:rewild_bot_front/domain/services/group_service.dart';
+import 'package:rewild_bot_front/domain/services/notification_service.dart';
+import 'package:rewild_bot_front/domain/services/price_service.dart';
 import 'package:rewild_bot_front/domain/services/question_service.dart';
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
+import 'package:rewild_bot_front/domain/services/supply_service.dart';
+import 'package:rewild_bot_front/domain/services/tariff_service.dart';
+import 'package:rewild_bot_front/domain/services/total_cost_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 import 'package:rewild_bot_front/main.dart';
+
 import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_screen.dart';
 import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen.dart';
+import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_screen.dart';
+import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
 import 'package:rewild_bot_front/presentation/app/app.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_screen.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
+
+import 'package:rewild_bot_front/presentation/my_web_view/my_web_view.dart';
+import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
+
+import 'package:rewild_bot_front/presentation/payment_screen/payment_screen.dart';
+import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment_web_view/payment_web_view.dart';
+import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
+
 import 'package:rewild_bot_front/routes/main_navigation.dart';
 
 AppFactory makeAppFactory() => _AppFactoryDefault();
@@ -124,6 +158,12 @@ class _DIContainer {
   AdvertApiClient _makeAdvertApiClient() => const AdvertApiClient();
 
   QuestionsApiClient _makeQuestionsApiClient() => const QuestionsApiClient();
+
+  WbContentApiClient _makeWbContentApiClient() => const WbContentApiClient();
+
+  FilterApiClient _makeFilterApiClient() => const FilterApiClient();
+
+  AnaliticsApiClient _makeAnaliticsApiClient() => const AnaliticsApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -164,8 +204,6 @@ class _DIContainer {
 
   FilterDataProvider _makeFilterDataProvider() => const FilterDataProvider();
 
-  FilterValuesDataProvider _makeFilterValuesDataProvider() =>
-      const FilterValuesDataProvider();
   TrackingResultDataProvider _makeTrackingResultDataProvider() =>
       const TrackingResultDataProvider();
 
@@ -177,7 +215,7 @@ class _DIContainer {
 
   // GroupDataProvider _makeGroupDataProvider() => const GroupDataProvider();
 
-  // SellerDataProvider _makeSellerDataProvider() => const SellerDataProvider();
+  SellerDataProvider _makeSellerDataProvider() => const SellerDataProvider();
 
   NotificationDataProvider _makeNotificationDataProvider() =>
       const NotificationDataProvider();
@@ -191,6 +229,9 @@ class _DIContainer {
 
   WarehouseDataProvider _makeWarehouseDataProvider() =>
       const WarehouseDataProvider();
+
+  GroupDataProvider _makeGroupDataProvider() => const GroupDataProvider();
+
   // Services ==================================================================
   AuthService _makeAuthService() => AuthService(
       secureDataProvider: _makeSecureDataProvider(),
@@ -213,7 +254,6 @@ class _DIContainer {
         cachedKwByLemmaDataProvider: _makeCachedKwByLemmaDataProvider(),
         cachedKwByLemmaByWordDataProvider: _makeCachedKwByWordDataProvider(),
         lastUpdateDayDataProvider: _makeLastUpdateDayDataProvider(),
-        filterDataProvider: _makeFilterValuesDataProvider(),
         tariffApiClient: _makeCommissionApiClient(),
         detailsApiClient: _makeDetailsApiClient(),
         averageLogisticsApiClient: _makePriceApiClient(),
@@ -243,39 +283,38 @@ class _DIContainer {
         apiKeysDataProvider: _makeSecureDataProvider(),
         questionApiClient: _makeQuestionsApiClient(),
       );
-  // SubscriptionService _makeSubscriptionService() => SubscriptionService(
-  //       apiClient: _makeSubscriptionApiClient(),
-  //       dataProvider: _makeSubscriptionDataProvider(),
-  //       // subsToDeleteDataProvider: _makeSubsToDeleteDataProvider(),
-  //       cardsNumberStreamController: subscriptionStreamController,
-  //     );
+  AllCardsFilterService _makeAllCardsFilterService() => AllCardsFilterService(
+        cardsOfProductsDataProvider: _makeCardOfProductDataProvider(),
+        filterDataProvider: _makeFilterDataProvider(),
+        sellerDataProvider: _makeSellerDataProvider(),
+      );
 
-  // SupplyService _makeSupplyService() => SupplyService(
-  //       supplyDataProvider: _makeSupplyDataProvider(),
-  //     );
+  SupplyService _makeSupplyService() => SupplyService(
+        supplyDataProvider: _makeSupplyDataProvider(),
+      );
 
-  // GroupService _makeAllGroupsService() => GroupService(
-  //       groupDataProvider: _makeGroupDataProvider(),
-  //     );
+  GroupService _makeAllGroupsService() => GroupService(
+        groupDataProvider: _makeGroupDataProvider(),
+      );
   // AllCardsFilterService _makeAllCardsFilterService() => AllCardsFilterService(
   //       cardsOfProductsDataProvider: _makeCardOfProductDataProvider(),
   //       filterDataProvider: _makeFilterDataProvider(),
   //       sellerDataProvider: _makeSellerDataProvider(),
   //     );
 
-  // NotificationService _makeNotificationService() => NotificationService(
-  //     notificationDataProvider: _makeNotificationDataProvider(),
-  //     updatedNotificationStreamController: updatedNotificationStreamController);
+  NotificationService _makeNotificationService() => NotificationService(
+      notificationDataProvider: _makeNotificationDataProvider(),
+      updatedNotificationStreamController: updatedNotificationStreamController);
 
-  // TotalCostService _makeTotalCostService() => TotalCostService(
-  //       totalCostDataProvider: _makeTotalCostCalculatorDataProvider(),
-  //     );
+  TotalCostService _makeTotalCostService() => TotalCostService(
+        totalCostDataProvider: _makeTotalCostCalculatorDataProvider(),
+      );
 
-  // TariffService _makeTariffService() => TariffService(
-  //       averageLogisticsApiClient: _makePriceApiClient(),
-  //       averageLogisticsDataProvider: _makeAverageLogisticsDataProvider(),
-  //       tariffDataProvider: _makeTariffDataProvider(),
-  //     );
+  TariffService _makeTariffService() => TariffService(
+        averageLogisticsApiClient: _makePriceApiClient(),
+        averageLogisticsDataProvider: _makeAverageLogisticsDataProvider(),
+        tariffDataProvider: _makeTariffDataProvider(),
+      );
 
   CardOfProductService _makeCardOfProductService() => CardOfProductService(
       cardOfProductApiClient: _makeCardOfProductApiClient(),
@@ -287,12 +326,19 @@ class _DIContainer {
       nmIdDataProvider: _makeNmIdDataProvider(),
       warehouseDataprovider: _makeWarehouseDataProvider());
 
-  // PriceService _makePriceService() => PriceService(
-  //       apiClient: _makePriceApiClient(),
-  //     );
+  PriceService _makePriceService() => PriceService(
+        apiClient: _makePriceApiClient(),
+      );
 
-  // BalanceService _makeBalanceService() =>
-  //     BalanceService(balanceDataProvider: _makeSecureDataProvider());
+  BalanceService _makeBalanceService() =>
+      BalanceService(balanceDataProvider: _makeSecureDataProvider());
+
+  ContentService _makeContentService() => ContentService(
+      activeSellerDataProvider: _makeUserSellersDataProvider(),
+      apiKeyDataProvider: _makeSecureDataProvider(),
+      nmIdDataProvider: _makeNmIdDataProvider(),
+      wbContentApiClient: _makeWbContentApiClient());
+
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
           BuildContext context) =>
@@ -311,47 +357,56 @@ class _DIContainer {
       AddApiKeysScreenViewModel(
           context: context, apiKeysService: _makeApiKeysService());
 
-  // AllCardsScreenViewModel _makeAllCardsScreenViewModel(context) =>
-  //     AllCardsScreenViewModel(
-  //         context: context,
-  //         updateService: _makeUpdateService(),
-  //         subscriptionsService: _makeSubscriptionService(),
-  //         supplyService: _makeSupplyService(),
-  //         groupsProvider: _makeAllGroupsService(),
-  //         filterService: _makeAllCardsFilterService(),
-  //         notificationsService: _makeNotificationService(),
-  //         totalCostService: _makeTotalCostService(),
-  //         averageLogisticsService: _makeTariffService(),
-  //         cardsOfProductsService: _makeCardOfProductService(),
-  //         tokenService: _makeAuthService());
+  AllCardsScreenViewModel _makeAllCardsScreenViewModel(context) =>
+      AllCardsScreenViewModel(
+          context: context,
+          updateService: _makeUpdateService(),
+          subscriptionsService: _makeSubscriptionService(),
+          supplyService: _makeSupplyService(),
+          groupsProvider: _makeAllGroupsService(),
+          filterService: _makeAllCardsFilterService(),
+          notificationsService: _makeNotificationService(),
+          totalCostService: _makeTotalCostService(),
+          averageLogisticsService: _makeTariffService(),
+          cardsOfProductsService: _makeCardOfProductService(),
+          tokenService: _makeAuthService());
 
-  // PaymentScreenViewModel _makePaymentScreenViewModel(
-  //   BuildContext context,
-  //   List<int> cardNmIds,
-  // ) =>
-  //     PaymentScreenViewModel(
-  //         context: context,
-  //         subService: _makeSubscriptionService(),
-  //         cardService: _makeCardOfProductService(),
-  //         tokenService: _makeAuthService(),
-  //         paymentStoreService: _makePriceService(),
-  //         cardNmIds: cardNmIds);
+  PaymentScreenViewModel _makePaymentScreenViewModel(
+    BuildContext context,
+    List<int> cardNmIds,
+  ) =>
+      PaymentScreenViewModel(
+          context: context,
+          subService: _makeSubscriptionService(),
+          cardService: _makeCardOfProductService(),
+          tokenService: _makeAuthService(),
+          paymentStoreService: _makePriceService(),
+          cardNmIds: cardNmIds);
 
-  // PaymentWebViewModel _makePaymentWebViewModel(
-  //   BuildContext context,
-  // ) =>
-  //     PaymentWebViewModel(
-  //       context: context,
-  //       subService: _makeSubscriptionService(),
-  //       tokenService: _makeAuthService(),
-  //       updateService: _makeUpdateService(),
-  //       balanceService: _makeBalanceService(),
-  //     );
-  // MyWebViewScreenViewModel _makeMyWebViewScreenViewModel(context) =>
-  //     MyWebViewScreenViewModel(
-  //         context: context,
-  //         updateService: _makeUpdateService(),
-  //         tokenProvider: _makeAuthService());
+  PaymentWebViewModel _makePaymentWebViewModel(
+    BuildContext context,
+  ) =>
+      PaymentWebViewModel(
+        context: context,
+        subService: _makeSubscriptionService(),
+        tokenService: _makeAuthService(),
+        updateService: _makeUpdateService(),
+        balanceService: _makeBalanceService(),
+      );
+  MyWebViewScreenViewModel _makeMyWebViewScreenViewModel(context) =>
+      MyWebViewScreenViewModel(
+          context: context,
+          updateService: _makeUpdateService(),
+          tokenProvider: _makeAuthService());
+
+  AllCardsSeoViewModel _makeAllCardsSeoViewModel(context) =>
+      AllCardsSeoViewModel(
+        context: context,
+        cardOfProductService: _makeCardOfProductService(),
+        contentService: _makeContentService(),
+        authService: _makeAuthService(),
+        updateService: _makeUpdateService(),
+      );
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -374,42 +429,50 @@ class ScreenFactoryDefault implements ScreenFactory {
         child: const AddApiKeysScreen());
   }
 
-  // @override
-  // Widget makeAllCardsScreen() {
-  //   return ChangeNotifierProvider(
-  //       create: (context) => _diContainer._makeAllCardsScreenViewModel(context),
-  //       child: const AllCardsScreen());
-  // }
+  @override
+  Widget makeAllCardsScreen() {
+    return ChangeNotifierProvider(
+        create: (context) => _diContainer._makeAllCardsScreenViewModel(context),
+        child: const AllCardsScreen());
+  }
 
-  // @override
-  // Widget makePaymentWebView(PaymentInfo paymentInfo) {
-  //   return ChangeNotifierProvider(
-  //     create: (context) => _diContainer._makePaymentWebViewModel(
-  //       context,
-  //     ),
-  //     child: PaymentWebView(
-  //       paymentInfo: paymentInfo,
-  //     ),
-  //   );
-  // }
+  @override
+  Widget makePaymentWebView(PaymentInfo paymentInfo) {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makePaymentWebViewModel(
+        context,
+      ),
+      child: PaymentWebView(
+        paymentInfo: paymentInfo,
+      ),
+    );
+  }
 
-  // @override
-  // Widget makePaymentScreen(List<int> cardNmIds) {
-  //   return ChangeNotifierProvider(
-  //     create: (context) =>
-  //         _diContainer._makePaymentScreenViewModel(context, cardNmIds),
-  //     child: const PaymentScreen(),
-  //   );
-  // }
+  @override
+  Widget makePaymentScreen(List<int> cardNmIds) {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makePaymentScreenViewModel(context, cardNmIds),
+      child: const PaymentScreen(),
+    );
+  }
 
-  // @override
-  // Widget makeMyWebViewScreen((List<int>, String?) nmIdsSearchString) {
-  //   return ChangeNotifierProvider(
-  //     create: (context) => _diContainer._makeMyWebViewScreenViewModel(context),
-  //     child: MyWebViewScreen(
-  //         nmIds: nmIdsSearchString.$1, searchString: nmIdsSearchString.$2),
-  //   );
-  // }
+  @override
+  Widget makeMyWebViewScreen((List<int>, String?) nmIdsSearchString) {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeMyWebViewScreenViewModel(context),
+      child: MyWebViewScreen(
+          nmIds: nmIdsSearchString.$1, searchString: nmIdsSearchString.$2),
+    );
+  }
+
+  @override
+  Widget makeAllCardsSeoScreen() {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeAllCardsSeoViewModel(context),
+      child: const AllCardsSeoScreen(),
+    );
+  }
 
   // @override
   // Widget makeScreen1() {

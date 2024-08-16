@@ -40,7 +40,7 @@ class CardOfProductApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при сохранении карточек: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "CardOfProductApiClient",
           name: "save",
           args: [productCards],
         ));
@@ -49,7 +49,7 @@ class CardOfProductApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "CardOfProductApiClient",
         name: "save",
         args: [productCards],
       ));
@@ -84,7 +84,7 @@ class CardOfProductApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при получении карточек: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "CardOfProductApiClient",
           name: "getAll",
           args: [],
         ));
@@ -93,7 +93,7 @@ class CardOfProductApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "CardOfProductApiClient",
         name: "getAll",
         args: [],
       ));
@@ -124,7 +124,7 @@ class CardOfProductApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при удалении карточки: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "CardOfProductApiClient",
           name: "delete",
           args: [id],
         ));
@@ -133,7 +133,7 @@ class CardOfProductApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "CardOfProductApiClient",
         name: "delete",
         args: [id],
       ));

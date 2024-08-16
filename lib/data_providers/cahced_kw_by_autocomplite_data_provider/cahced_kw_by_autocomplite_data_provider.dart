@@ -31,6 +31,7 @@ class CachedKwByAutocompliteDataProvider
       return left(RewildError(
         e.toString(),
         name: "addAll",
+        source: "CachedKwByAutocompliteDataProvider",
         sendToTg: true,
         args: [keywords],
       ));
@@ -59,6 +60,7 @@ class CachedKwByAutocompliteDataProvider
       return left(RewildError(
         e.toString(),
         name: "getAll",
+        source: "CachedKwByAutocompliteDataProvider",
         sendToTg: true,
         args: [],
       ));
@@ -80,6 +82,7 @@ class CachedKwByAutocompliteDataProvider
       return left(RewildError(
         e.toString(),
         name: "deleteAll",
+        source: "CachedKwByAutocompliteDataProvider",
         sendToTg: true,
         args: [],
       ));

@@ -25,26 +25,33 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
         'nm': ids.join(";")
       };
 
-      final uri = Uri.parse('https://card.wb.ru/cards/detail')
+      // final uri = Uri.parse('https://card.wb.ru/cards/detail')
+      //     .replace(queryParameters: params);
+
+      final uri = Uri.parse('https://rewild.website/api/details')
           .replace(queryParameters: params);
 
-      final response = await http.get(uri, headers: {
-        'Accept': '*/*',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'ru-RU,ru;q=0.9',
-        'Connection': 'keep-alive',
-        'Host': 'card.wb.ru',
-        'Origin': 'https://www.wildberries.ru',
-        'sec-ch-ua':
-            '"Chromium";v="110", "Not A(Brand";v="24", "Google Chrome";v="110"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"Linux"',
-        'Sec-Fetch-Dest': 'empty',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Site': 'cross-site',
-        'User-Agent':
-            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
-      });
+      final response = await http.get(
+        uri,
+        headers: {
+          'Accept': '*/*',
+          'Referer': 'https://web.telegram.org',
+          'Origin': 'https://web.telegram.org', // Или укажите нужный домен
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Accept-Language': 'ru-RU,ru;q=0.9',
+          'Connection': 'keep-alive',
+          'Host': 'card.wb.ru',
+          'sec-ch-ua':
+              '"Chromium";v="110", "Not A(Brand";v="24", "Google Chrome";v="110"',
+          'sec-ch-ua-mobile': '?0',
+          'sec-ch-ua-platform': '"Linux"',
+          'Sec-Fetch-Dest': 'empty',
+          'Sec-Fetch-Mode': 'cors',
+          'Sec-Fetch-Site': 'cross-site',
+          'User-Agent':
+              'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36'
+        },
+      );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final productCardsJson = data['data']['products'];
@@ -88,7 +95,6 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
 
           final basicPrice = json['salePriceU'] ??
               (json['extended'] != null ? json['extended']['basicPriceU'] : 0);
-          // json['extended'] == null ? 0 : json['extended']['basicPriceU'];
 
           final reviewRatingRaw = json['reviewRating'] ?? 0;
           final reviewRating = reviewRatingRaw is int
@@ -121,7 +127,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
         return left(RewildError(
           sendToTg: false,
           "Ошибка при обращении к WB status code:${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "DetailsApiClient",
           name: "get",
           args: [ids],
         ));
@@ -130,7 +136,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
       return left(RewildError(
         sendToTg: false,
         "Ошибка при обращении к WB: $e",
-        source: runtimeType.toString(),
+        source: "DetailsApiClient",
         name: "get",
         args: [ids],
       ));

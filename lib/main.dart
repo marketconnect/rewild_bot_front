@@ -24,7 +24,8 @@ void main() async {
     FlutterError.presentError(details);
   };
   final chatId = await TelegramWebApp.getChatId();
-  print('Chat ID: $chatId'); // Логирование для проверки
+  sendMessageToTelegramBot(
+      TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Bot started $chatId');
 
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();

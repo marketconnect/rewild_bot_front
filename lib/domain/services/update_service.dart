@@ -1,10 +1,13 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/constants/settings.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
+// import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
@@ -14,7 +17,12 @@ import 'package:rewild_bot_front/domain/entities/size_model.dart';
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
+import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
+
+import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
 
 // Tariffs Api
 abstract class UpdateServiceTariffApiClient {
@@ -134,10 +142,6 @@ abstract class UpdateServiceTotalCostdataProvider {
   Future<Either<RewildError, void>> deleteAll(int nmId);
 }
 
-abstract class UpdateServiceFilterDataProvider {
-  Future<Either<RewildError, void>> deleteOld();
-}
-
 abstract class UpdateServiceWeekOrdersDataProvider {
   Future<Either<RewildError, void>> deleteOldOrders();
 }
@@ -168,10 +172,10 @@ abstract class UpdateServiceKwByAutocompliteDataProvider {
 
 class UpdateService
     implements
-
-        // MyWebViewScreenViewModelUpdateService,
-
-        // PaymentScreenUpdateService,
+        AllCardsScreenUpdateService,
+        MyWebViewScreenViewModelUpdateService,
+        PaymentWebViewUpdateService,
+        AllCardsSeoUpdateService,
         MainNavigationUpdateService {
   final UpdateServiceDetailsApiClient detailsApiClient;
   final UpdateServiceSupplyDataProvider supplyDataProvider;
@@ -182,7 +186,7 @@ class UpdateService
   final UpdateServiceStockDataProvider stockDataProvider;
   final UpdateServiceLastUpdateDayDataProvider lastUpdateDayDataProvider;
   final UpdateServiceNotificationDataProvider notificationDataProvider;
-  final UpdateServiceFilterDataProvider filterDataProvider;
+
   // final StreamController<int> cardsNumberStreamController;
   final UpdateServiceWeekOrdersDataProvider weekOrdersDataProvider;
   final UpdateServiceTrackingResultDataProvider trackingResultDataProvider;
@@ -213,7 +217,6 @@ class UpdateService
       required this.cardOfProductDataProvider,
       required this.notificationDataProvider,
       required this.initialStockModelApiClient,
-      required this.filterDataProvider,
       required this.trackingResultDataProvider,
       required this.supplyDataProvider,
       required this.lastUpdateDayDataProvider,
@@ -273,13 +276,13 @@ class UpdateService
       {required String token,
       required List<CardOfProductModel> cardOfProductsToInsert}) async {
     // get all cards from local db
+
     final cardsInDBEither = await cardOfProductDataProvider.getAll();
 
     if (cardsInDBEither.isLeft()) {
       return left(
           cardsInDBEither.fold((l) => l, (r) => throw UnimplementedError()));
     }
-
     final cardsInDB = cardsInDBEither.fold(
       (l) => throw UnimplementedError(),
       (r) => r,
@@ -334,14 +337,19 @@ class UpdateService
     final fetchedCardsOfProductsEither =
         await detailsApiClient.get(ids: newCards.map((e) => e.nmId).toList());
     if (fetchedCardsOfProductsEither.isLeft()) {
+      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+          'fetchedCardsOfProductsEither ${fetchedCardsOfProductsEither.fold((l) => l, (r) => throw UnimplementedError())}');
       return left(fetchedCardsOfProductsEither.fold(
           (l) => l, (r) => throw UnimplementedError()));
     }
     final fetchedCardsOfProducts =
         fetchedCardsOfProductsEither.getOrElse((l) => []);
-
+    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+        'fetchedCards ${fetchedCardsOfProducts.length}');
     // add to db cards
     for (final card in fetchedCardsOfProducts) {
+      sendMessageToTelegramBot(
+          TBot.tBotErrorToken, TBot.tBotErrorChatId, 'c ${card.nmId}');
       // append img
       final img = newCards.firstWhere((e) => e.nmId == card.nmId).img;
       card.img = img;
@@ -350,12 +358,19 @@ class UpdateService
       final insertEither =
           await cardOfProductDataProvider.insertOrUpdate(card: card);
       if (insertEither.isLeft()) {
+        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+            'err ${insertEither.fold((l) => l, (r) => throw UnimplementedError())}');
         return left(
             insertEither.fold((l) => l, (r) => throw UnimplementedError()));
       }
 
+      sendMessageToTelegramBot(
+          TBot.tBotErrorToken, TBot.tBotErrorChatId, '${card.nmId} OK!');
+
       // add stocks
       for (final size in card.sizes) {
+        sendMessageToTelegramBot(
+            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'size ${card.nmId}');
         for (final stock in size.stocks) {
           final insertStockEither =
               await stockDataProvider.insert(stock: stock);
@@ -383,6 +398,7 @@ class UpdateService
         }
       }
     }
+
     // cardsNumberStreamController.add(newCards.length + cardsInDB.length);
     return right(newCards.length);
   }
@@ -488,12 +504,6 @@ class UpdateService
         await averageLogisticsDataProvider.update(prices.averageLogistics);
       }
 
-      // delete all saved filter values
-      final deleteFilterValuesEither = await filterDataProvider.deleteOld();
-      if (deleteFilterValuesEither.isLeft()) {
-        return left(deleteFilterValuesEither.fold(
-            (l) => l, (r) => throw UnimplementedError()));
-      }
       // since there is today first time update - delete supplies and initial stocks
       final deleteSuppliesEither = await supplyDataProvider.deleteAll();
       if (deleteSuppliesEither.isLeft()) {

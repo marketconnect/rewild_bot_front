@@ -29,8 +29,8 @@ class DatabaseHelper {
     }
 
     // Open the database and check if it succeeded
-    final db = await dbFactory.open('rewild.db',
-        version: 20, onUpgradeNeeded: _onCreate);
+    final db = await dbFactory.open('rewild-1.db',
+        version: 24, onUpgradeNeeded: _onCreate);
 
     return db;
   }
@@ -38,106 +38,127 @@ class DatabaseHelper {
   Future<void> _onCreate(VersionChangeEvent event) async {
     final db = event.database;
 
-    // Create the user_sellers store
-    final userSellersStore =
-        db.createObjectStore('user_sellers', keyPath: 'sellerId');
-    userSellersStore.createIndex('sellerId', 'sellerId', unique: true);
+    // Utility to create object stores only if they don't exist
+    void createStoreIfNotExists(String storeName, void Function() createStore) {
+      if (!db.objectStoreNames.contains(storeName)) {
+        createStore();
+      }
+    }
 
-    // Create the tariffs store with a composite key for uniqueness (storeId and type)
-    final tariffsStore =
-        db.createObjectStore('tariffs', keyPath: 'id', autoIncrement: true);
-    tariffsStore.createIndex('storeId_type', ['storeId', 'type'], unique: true);
+    createStoreIfNotExists('user_sellers', () {
+      final store = db.createObjectStore('user_sellers', keyPath: 'sellerId');
+      store.createIndex('sellerId', 'sellerId', unique: true);
+    });
 
-    // Create the supplies store with a composite key for uniqueness (nmId, wh, sizeOptionId)
-    final suppliesStore =
-        db.createObjectStore('supplies', keyPath: 'id', autoIncrement: true);
-    suppliesStore.createIndex(
-        'nmId_wh_sizeOptionId', ['nmId', 'wh', 'sizeOptionId'],
-        unique: true);
+    createStoreIfNotExists('tariffs', () {
+      final store =
+          db.createObjectStore('tariffs', keyPath: 'id', autoIncrement: true);
+      store.createIndex('storeId_type', ['storeId', 'type'], unique: true);
+    });
 
-    // Create the cards store
-    final _ = db.createObjectStore('cards', keyPath: 'nmId');
-    // Optionally create indexes based on what queries you plan to run
-    // Example: cardsStore.createIndex('sellerId', 'sellerId');
+    createStoreIfNotExists('supplies', () {
+      final store =
+          db.createObjectStore('supplies', keyPath: 'id', autoIncrement: true);
+      store.createIndex('nmId_wh_sizeOptionId', ['nmId', 'wh', 'sizeOptionId'],
+          unique: true);
+    });
 
-    // Create the initial_stocks store with a composite key for uniqueness (nmId, wh, sizeOptionId)
-    final initialStocksStore = db.createObjectStore('initial_stocks',
-        keyPath: 'id', autoIncrement: true);
-    initialStocksStore.createIndex(
-        'nmId_wh_sizeOptionId', ['nmId', 'wh', 'sizeOptionId'],
-        unique: true);
+    createStoreIfNotExists('cards', () {
+      db.createObjectStore('cards', keyPath: 'nmId');
+    });
 
-    // Create the stocks store with a composite key for uniqueness (nmId, wh, sizeOptionId)
-    final stocksStore =
-        db.createObjectStore('stocks', keyPath: 'id', autoIncrement: true);
-    stocksStore.createIndex(
-        'nmId_wh_sizeOptionId', ['nmId', 'wh', 'sizeOptionId'],
-        unique: true);
+    createStoreIfNotExists('initial_stocks', () {
+      final store = db.createObjectStore('initial_stocks',
+          keyPath: 'id', autoIncrement: true);
+      store.createIndex('nmId_wh_sizeOptionId', ['nmId', 'wh', 'sizeOptionId'],
+          unique: true);
+    });
 
-    final ordersStore =
-        db.createObjectStore('orders', keyPath: 'id', autoIncrement: true);
-    ordersStore.createIndex(
-        'sku_warehouse_period', ['sku', 'warehouse', 'period'],
-        unique: true);
+    createStoreIfNotExists('stocks', () {
+      final store =
+          db.createObjectStore('stocks', keyPath: 'id', autoIncrement: true);
+      store.createIndex('nmId_wh_sizeOptionId', ['nmId', 'wh', 'sizeOptionId'],
+          unique: true);
+    });
 
-    final cardKeywordsStore = db.createObjectStore('card_keywords',
-        keyPath: 'id', autoIncrement: true);
-    cardKeywordsStore.createIndex('cardId_keyword_freq', ['cardId', 'keyword'],
-        unique: true);
+    createStoreIfNotExists('orders', () {
+      final store =
+          db.createObjectStore('orders', keyPath: 'id', autoIncrement: true);
+      store.createIndex('sku_warehouse_period', ['sku', 'warehouse', 'period'],
+          unique: true);
+    });
 
-    db.createObjectStore('cached_kw_by_autocomplite', keyPath: 'keyword');
+    createStoreIfNotExists('card_keywords', () {
+      final store = db.createObjectStore('card_keywords',
+          keyPath: 'id', autoIncrement: true);
+      store.createIndex('cardId_keyword_freq', ['cardId', 'keyword'],
+          unique: true);
+    });
 
-    final cachedKwByLemmaStore =
-        db.createObjectStore('cached_kw_by_lemma', keyPath: 'lemmaID');
-    cachedKwByLemmaStore.createIndex(
-        'lemmaID_keyword_freq', ["lemmaID", "keyword"],
-        unique: true);
+    createStoreIfNotExists('cached_kw_by_autocomplite', () {
+      db.createObjectStore('cached_kw_by_autocomplite', keyPath: 'keyword');
+    });
 
-    final cachedKwByWord =
-        db.createObjectStore('cached_kw_by_word', keyPath: 'lemmaID');
-    cachedKwByWord.createIndex("lemmaID_keyword_freq", ["lemmaID", "keyword"],
-        unique: true);
+    createStoreIfNotExists('cached_kw_by_lemma', () {
+      final store =
+          db.createObjectStore('cached_kw_by_lemma', keyPath: 'lemmaID');
+      store.createIndex('lemmaID_keyword_freq', ['lemmaID', 'keyword'],
+          unique: true);
+    });
 
-    final filtersStore = db.createObjectStore('filters', autoIncrement: true);
-    filtersStore.createIndex(
-      'sectionName_itemId',
-      ['sectionName', 'itemId'],
-      unique: true,
-    );
+    createStoreIfNotExists('cached_kw_by_word', () {
+      final store =
+          db.createObjectStore('cached_kw_by_word', keyPath: 'lemmaID');
+      store.createIndex('lemmaID_keyword_freq', ['lemmaID', 'keyword'],
+          unique: true);
+    });
 
-    final filterValuesStore =
-        db.createObjectStore('filterValues', autoIncrement: true);
+    createStoreIfNotExists('filters', () {
+      final store = db.createObjectStore('filters', autoIncrement: true);
+      store.createIndex('sectionName_itemId', ['sectionName', 'itemId'],
+          unique: true);
+    });
 
-    filterValuesStore.createIndex('filterName_value', ["filterName", "value"],
-        unique: true);
+    createStoreIfNotExists('tracking_results', () {
+      final store =
+          db.createObjectStore('tracking_results', autoIncrement: true);
+      store.createIndex(
+          'keyword_geo_product_date', ['keyword', 'geo', 'product_id', 'date'],
+          unique: true);
+    });
 
-    final trackingStore =
-        db.createObjectStore('tracking_results', autoIncrement: true);
+    createStoreIfNotExists('cached_lemmas', () {
+      final store = db.createObjectStore('cached_lemmas', autoIncrement: true);
+      store.createIndex('subjectId_lemma', ['subjectId', 'lemma'],
+          unique: true);
+    });
 
-    // Create indexes to ensure uniqueness similar to UNIQUE(keyword, geo, product_id, date) ON CONFLICT REPLACE
-    trackingStore.createIndex(
-        'keyword_geo_product_date', ['keyword', 'geo', 'product_id', 'date'],
-        unique: true);
+    createStoreIfNotExists('notifications', () {
+      final store = db.createObjectStore('notifications',
+          keyPath: 'id', autoIncrement: true);
+      store.createIndex('parentId_condition', ['parentId', 'condition'],
+          unique: true);
+    });
 
-    final cachedLemmasStore =
-        db.createObjectStore('cached_lemmas', autoIncrement: true);
-    cachedLemmasStore.createIndex('subjectId_lemma', ["subjectId", 'lemma'],
-        unique: true);
+    createStoreIfNotExists('total_cost_calculator', () {
+      db.createObjectStore('total_cost_calculator',
+          keyPath: ['nmId', 'expenseName']);
+    });
 
-    final notificationsStore = db.createObjectStore('notifications',
-        keyPath: 'id', autoIncrement: true);
+    createStoreIfNotExists('sellers', () {
+      db.createObjectStore('sellers', keyPath: 'supplierId');
+    });
 
-    notificationsStore.createIndex(
-        'parentId_condition', ['parentId', 'condition'],
-        unique: true);
+    createStoreIfNotExists('subs', () {
+      db.createObjectStore('subs', keyPath: 'id', autoIncrement: true);
+    });
 
-    db.createObjectStore('total_cost_calculator',
-        keyPath: ['nmId', 'expenseName']);
+    createStoreIfNotExists('groups', () {
+      final store = db.createObjectStore('groups', autoIncrement: true);
+      store.createIndex('name_nmId', ['name', 'nmId'], unique: true);
+    });
 
-    db.createObjectStore('sellers', keyPath: 'supplierId');
-
-    db.createObjectStore('subs', keyPath: 'id', autoIncrement: true);
-    ;
+    // CardItems
   }
 
   Future<void> close() async {

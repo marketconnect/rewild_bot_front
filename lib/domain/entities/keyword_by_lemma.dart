@@ -37,4 +37,16 @@ class KwByLemma {
       keyword: keyword,
     );
   }
+
+  // fromMap
+
+  factory KwByLemma.fromMap(Map<String, dynamic> json) {
+    return KwByLemma(
+      lemmaID: json['lemmaID'],
+      lemma: json['lemma'],
+      keyword: json['keyword'],
+      freq: json['freq'],
+      sku: json['sku'],
+    );
+  }
 }

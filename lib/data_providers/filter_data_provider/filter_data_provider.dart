@@ -1,11 +1,14 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
+
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/filter_model.dart';
 
-class FilterDataProvider {
+import 'package:rewild_bot_front/domain/entities/filter_model.dart';
+import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
+
+class FilterDataProvider implements AllCardsFilterFilterDataProvider {
   const FilterDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
@@ -86,7 +89,7 @@ class FilterDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "FilterDataProvider",
         name: "insert",
         args: [filter],
       ));
@@ -106,7 +109,7 @@ class FilterDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "FilterDataProvider",
         name: "delete",
         args: [],
       ));
@@ -117,8 +120,11 @@ class FilterDataProvider {
   Future<Either<RewildError, FilterModel>> get() async {
     try {
       final db = await _db;
+
       final txn = db.transaction('filters', idbModeReadOnly);
+
       final store = txn.objectStore('filters');
+
       final result = await store.getAll();
 
       if (result.isEmpty) {
@@ -176,7 +182,7 @@ class FilterDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "FilterDataProvider",
         name: "get",
         args: [],
       ));

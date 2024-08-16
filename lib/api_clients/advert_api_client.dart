@@ -36,7 +36,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
             sendToTg: true,
             errString,
-            source: runtimeType.toString(),
+            source: "AdvertApiClient",
             name: "setSearchExcludedKeywords",
             args: [campaignId, ...excludedKeywords]));
       }
@@ -44,7 +44,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
           sendToTg: true,
           "Ошибка при установке исключений для кампании в поиске: $e",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "setSearchExcludedKeywords",
           args: [campaignId, ...excludedKeywords]));
     }
@@ -73,7 +73,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
           sendToTg: true,
           errString,
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "setAutoSetExcluded",
           args: [campaignId, ...excludedKw],
         ));
@@ -82,7 +82,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
           sendToTg: true,
           "Неизвестная ошибка: $e",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "setAutoSetExcluded",
           args: [campaignId.toString(), ...excludedKw]));
     }
@@ -123,7 +123,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
             sendToTg: false,
             errString,
-            source: runtimeType.toString(),
+            source: "AdvertApiClient",
             name: "changeCpm",
             args: [campaignId, type, cpm, param, instrument]));
       }
@@ -131,7 +131,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
           sendToTg: false,
           "Неизвестная ошибка: $e",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "changeCpm",
           args: [campaignId, type, cpm, param, instrument]));
     }
@@ -171,7 +171,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return Left(RewildError(
           sendToTg: true,
           errString,
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "getExpensesSum",
           args: [from, to],
         ));
@@ -180,7 +180,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return Left(RewildError(
         sendToTg: true,
         "Исключение при запросе суммы затрат: $e",
-        source: runtimeType.toString(),
+        source: "AdvertApiClient",
         name: "getExpensesSum",
         args: [from, to],
       ));
@@ -209,7 +209,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "pauseAdvert",
           args: [campaignId],
         ));
@@ -218,7 +218,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
           sendToTg: false,
           "Неизвестная ошибка",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "pauseAdvert",
           args: [campaignId]));
     }
@@ -248,7 +248,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "startAdvert",
           args: [campaignId],
         ));
@@ -257,7 +257,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
           sendToTg: false,
           "Неизвестная ошибка: $e",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "startAdvert",
           args: [campaignId]));
     }
@@ -289,7 +289,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "getCompanyBudget",
           args: [campaignId],
         ));
@@ -298,7 +298,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
           sendToTg: false,
           "Неизвестная ошибка: $e",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "getCompanyBudget",
           args: [campaignId]));
     }
@@ -354,7 +354,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "count",
           args: [
             token,
@@ -365,7 +365,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
           sendToTg: false,
           "Неизвестная ошибка: $e",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "count",
           args: [
             token,
@@ -391,7 +391,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "balance",
           args: [],
         ));
@@ -400,7 +400,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
         sendToTg: false,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "AdvertApiClient",
         name: "balance",
         args: [],
       ));
@@ -434,7 +434,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
             sendToTg: true,
             errString,
-            source: runtimeType.toString(),
+            source: "AdvertApiClient",
             name: "autoStatWords",
             args: [campaignId]));
       }
@@ -442,7 +442,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
           sendToTg: true,
           "Неизвестная ошибка: $e",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "autoStatWords",
           args: [campaignId]));
     }
@@ -471,7 +471,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
   //       return left(RewildError(
   //         sendToTg: false,
   //         errString,
-  //         source: runtimeType.toString(),
+  //         source: "AdvertApiClient",
   //         name: "getSearchStat",
   //         args: [campaignId],
   //       ));
@@ -480,7 +480,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
   //     return left(RewildError(
   //       sendToTg: false,
   //       "Неизвестная ошибка $e",
-  //       source: runtimeType.toString(),
+  //       source: "AdvertApiClient",
   //       name: "getSearchStat",
   //       args: [campaignId],
   //     ));
@@ -534,7 +534,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
               return left(RewildError(
                 sendToTg: false,
                 "Неизвестный тип кампании: $advType",
-                source: runtimeType.toString(),
+                source: "AdvertApiClient",
                 name: "getAdverts",
                 args: [ids],
               ));
@@ -549,7 +549,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "getAdverts",
           args: [ids],
         ));
@@ -558,7 +558,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return left(RewildError(
         sendToTg: false,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "AdvertApiClient",
         name: "getAdverts",
         args: [ids],
       ));
@@ -641,7 +641,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
         return Left(RewildError(
           sendToTg: false,
           "Ошибка API: Статус ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "AdvertApiClient",
           name: "getSingleCampaignDataByInterval",
           args: [campaignId, interval],
         ));
@@ -651,7 +651,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
       return Left(RewildError(
         sendToTg: false,
         "Исключение при запросе данных кампании: $e",
-        source: runtimeType.toString(),
+        source: "AdvertApiClient",
         name: "getSingleCampaignDataByInterval",
         args: [campaignId, interval],
       ));
@@ -719,7 +719,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
   //       return left(RewildError(
   //         sendToTg: false,
   //         errString,
-  //         source: runtimeType.toString(),
+  //         source: "AdvertApiClient",
   //         name: "getAutoStat",
   //         args: [, campaignId],
   //       ));
@@ -728,7 +728,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
   //     return left(RewildError(
   //       sendToTg: false,
   //       "Неизвестная ошибка $e",
-  //       source: runtimeType.toString(),
+  //       source: "AdvertApiClient",
   //       name: "getAutoStat",
   //       args: [, campaignId],
   //     ));
@@ -758,7 +758,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
   //       return left(RewildError(
   //         sendToTg: false,
   //         errString,
-  //         source: runtimeType.toString(),
+  //         source: "AdvertApiClient",
   //         name: "getSearchAndCatalogueStat",
   //         args: [, campaignId],
   //       ));
@@ -767,7 +767,7 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
   //     return left(RewildError(
   //       sendToTg: false,
   //       "Неизвестная ошибка $e",
-  //       source: runtimeType.toString(),
+  //       source: "AdvertApiClient",
   //       name: "getSearchAndCatalogueStat",
   //       args: [, campaignId],
   //     ));

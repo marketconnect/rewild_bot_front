@@ -6,8 +6,12 @@ import 'package:rewild_bot_front/domain/entities/nm_id.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
+import 'package:rewild_bot_front/domain/services/content_service.dart';
 
-class NmIdDataProvider implements CardOfProductServiceNmIdDataProvider {
+class NmIdDataProvider
+    implements
+        CardOfProductServiceNmIdDataProvider,
+        ContentServiceNmIdDataProvider {
   const NmIdDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;

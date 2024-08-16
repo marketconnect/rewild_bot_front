@@ -47,7 +47,7 @@ class _AddApiKeysScreenState extends State<AddApiKeysScreen> {
     final delete = model.delete;
     final selectionInProgress =
         apiKeys.where((apiKey) => apiKey.isSelected).isNotEmpty;
-
+    print("ISLOADING: $isLoading");
     final emptyTypes =
         types.where((type) => !addedTypes.contains(type)).toList();
     return OverlayLoaderWithAppIcon(

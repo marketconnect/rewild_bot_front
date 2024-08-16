@@ -4,11 +4,13 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/supply_service.dart';
 
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class SupplyDataProvider
     implements
+        SupplyServiceSupplyDataProvider,
         UpdateServiceSupplyDataProvider,
         CardOfProductServiceSupplyDataProvider {
   const SupplyDataProvider();

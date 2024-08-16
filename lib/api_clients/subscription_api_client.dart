@@ -14,8 +14,9 @@ class SubscriptionApiClient
   const SubscriptionApiClient();
 
   @override
-  Future<Either<RewildError, List<SubscriptionModel>>> getSubscription(
-      {required String token}) async {
+  Future<Either<RewildError, List<SubscriptionModel>>> getSubscription({
+    required String token,
+  }) async {
     final url = Uri.parse("https://rewild.website/api/getSubscriptions");
     try {
       final response = await http.post(
@@ -28,6 +29,12 @@ class SubscriptionApiClient
 
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
+
+        // Handle empty response from server
+        if (data.isEmpty) {
+          return right([]);
+        }
+
         List<SubscriptionModel> subscriptions = data.map((item) {
           return SubscriptionModel(
             cardId: item['cardId'],
@@ -42,7 +49,7 @@ class SubscriptionApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при получении подписок: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "SubscriptionApiClient",
           name: "getSubscriptions",
           args: [token],
         ));
@@ -51,7 +58,7 @@ class SubscriptionApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "SubscriptionApiClient",
         name: "getSubscriptions",
         args: [token],
       ));
@@ -96,7 +103,7 @@ class SubscriptionApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при добавлении подписок: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "SubscriptionApiClient",
           name: "addZeroSubscriptions",
           args: [qty, startDate, endDate],
         ));
@@ -105,7 +112,7 @@ class SubscriptionApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "SubscriptionApiClient",
         name: "addZeroSubscriptions",
         args: [qty, startDate, endDate],
       ));
@@ -150,7 +157,7 @@ class SubscriptionApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при создании подписок: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "SubscriptionApiClient",
           name: "createSubscriptions",
           args: [cardIds, startDate, endDate],
         ));
@@ -159,7 +166,7 @@ class SubscriptionApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "SubscriptionApiClient",
         name: "createSubscriptions",
         args: [cardIds, startDate, endDate],
       ));
@@ -200,7 +207,7 @@ class SubscriptionApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при очистке подписок: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "SubscriptionApiClient",
           name: "clearSubscriptions",
           args: [cardIds],
         ));
@@ -209,7 +216,7 @@ class SubscriptionApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "SubscriptionApiClient",
         name: "clearSubscriptions",
         args: [cardIds],
       ));
@@ -250,7 +257,7 @@ class SubscriptionApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при удалении подписок: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "SubscriptionApiClient",
           name: "deleteSubscriptions",
           args: [cardIds],
         ));
@@ -259,7 +266,7 @@ class SubscriptionApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "SubscriptionApiClient",
         name: "deleteSubscriptions",
         args: [cardIds],
       ));

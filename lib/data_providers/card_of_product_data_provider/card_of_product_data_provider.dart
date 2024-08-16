@@ -1,13 +1,17 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
+import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class CardOfProductDataProvider
     implements
+        AllCardsFilterServiceCardsOfProductDataProvider,
         UpdateServiceCardOfProductDataProvider,
         CardOfProductServiceCardOfProductDataProvider {
   const CardOfProductDataProvider();
@@ -29,7 +33,7 @@ class CardOfProductDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "CardOfProductDataProvider",
         name: "getAllNmIds",
         args: [],
       ));
@@ -47,9 +51,13 @@ class CardOfProductDataProvider
       final existingCard = await store.getObject(card.nmId);
 
       if (existingCard != null) {
+        sendMessageToTelegramBot(
+            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Put card ${card.nmId}');
         await store.put(card.toMap());
       } else {
-        await store.add(card.toMap(), card.nmId);
+        sendMessageToTelegramBot(
+            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Add card ${card.nmId}');
+        await store.add(card.toMap()); // Убрано явное указание ключа
       }
 
       await txn.completed;
@@ -59,7 +67,7 @@ class CardOfProductDataProvider
       return left(RewildError(
         sendToTg: true,
         'Failed to insert or update card: ${e.toString()}',
-        source: runtimeType.toString(),
+        source: "CardOfProductDataProvider",
         name: "insertOrUpdate",
         args: [card],
       ));
@@ -85,7 +93,7 @@ class CardOfProductDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "CardOfProductDataProvider",
         name: "getImage",
         args: [id],
       ));
@@ -107,7 +115,7 @@ class CardOfProductDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "CardOfProductDataProvider",
         name: "delete",
         args: [id],
       ));
@@ -134,7 +142,7 @@ class CardOfProductDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "CardOfProductDataProvider",
         name: "get",
         args: [nmId],
       ));
@@ -146,10 +154,16 @@ class CardOfProductDataProvider
       [List<int>? nmIds]) async {
     try {
       final db = await _db;
-      final txn = db.transaction('cards', idbModeReadOnly);
-      final store = txn.objectStore('cards');
       List<Map<String, dynamic>> cards = [];
 
+      // Check if the 'cards' object store exists
+      if (!db.objectStoreNames.contains('cards')) {
+        return right(
+            []); // Return an empty list if the object store is not found
+      }
+
+      final txn = db.transaction('cards', idbModeReadOnly);
+      final store = txn.objectStore('cards');
       if (nmIds != null) {
         for (var nmId in nmIds) {
           final card = await store.getObject(nmId);
@@ -162,6 +176,8 @@ class CardOfProductDataProvider
         cards = result.map((e) => e as Map<String, dynamic>).toList();
       }
 
+      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+          'Get all card ${cards.length}');
       await txn.completed;
 
       return right(cards.map((e) => CardOfProductModel.fromMap(e)).toList());
@@ -169,7 +185,7 @@ class CardOfProductDataProvider
       return left(RewildError(
         sendToTg: true,
         'Failed to retrieve cards: ${e.toString()}',
-        source: runtimeType.toString(),
+        source: "CardOfProductDataProvider",
         name: "getAll",
         args: [nmIds],
       ));
@@ -198,7 +214,7 @@ class CardOfProductDataProvider
       return left(RewildError(
         sendToTg: true,
         'Failed to retrieve cards by supplierId: ${e.toString()}',
-        source: runtimeType.toString(),
+        source: "CardOfProductDataProvider",
         name: "getAllBySupplierId",
         args: [supplierId],
       ));

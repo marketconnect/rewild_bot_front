@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
+
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class CachedKwByWordDataProvider
@@ -34,6 +35,7 @@ class CachedKwByWordDataProvider
       return left(RewildError(
         e.toString(),
         name: "insertAll",
+        source: "CachedKwByWordDataProvider",
         sendToTg: true,
         args: [lemmas],
       ));
@@ -71,6 +73,7 @@ class CachedKwByWordDataProvider
       return left(RewildError(
         e.toString(),
         name: "getByWord",
+        source: "CachedKwByWordDataProvider",
         sendToTg: true,
         args: [word],
       ));
@@ -93,6 +96,7 @@ class CachedKwByWordDataProvider
         e.toString(),
         name: "deleteAll",
         sendToTg: true,
+        source: "CachedKwByWordDataProvider",
         args: [],
       ));
     }

@@ -50,7 +50,7 @@ class InitialStocksApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при получении запасов: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "InitialStocksApiClient",
           name: "get",
           args: [skus, dateFrom, dateTo],
         ));
@@ -59,7 +59,7 @@ class InitialStocksApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "InitialStocksApiClient",
         name: "get",
         args: [skus, dateFrom, dateTo],
       ));

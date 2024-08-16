@@ -43,7 +43,7 @@ class WarehouseApiClient implements CardOfProductServiceWarehouseApiCient
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "WarehouseApiClient",
           name: "getAll",
           args: [],
         ));
@@ -52,7 +52,7 @@ class WarehouseApiClient implements CardOfProductServiceWarehouseApiCient
       return left(RewildError(
         sendToTg: false,
         "$e",
-        source: runtimeType.toString(),
+        source: "WarehouseApiClient",
         name: "getAll",
         args: [],
       ));

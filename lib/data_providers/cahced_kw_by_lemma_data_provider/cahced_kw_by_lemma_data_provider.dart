@@ -3,6 +3,7 @@ import 'package:idb_shim/idb.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
+
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class CachedKwByLemmaDataProvider
@@ -33,6 +34,7 @@ class CachedKwByLemmaDataProvider
       return left(RewildError(
         e.toString(),
         name: "insertAll",
+        source: "CachedKwByLemmaDataProvider",
         sendToTg: true,
         args: [lemmas],
       ));
@@ -69,6 +71,7 @@ class CachedKwByLemmaDataProvider
       return left(RewildError(
         e.toString(),
         name: "getByLemmaId",
+        source: "CachedKwByLemmaDataProvider",
         sendToTg: true,
         args: [lemmaID],
       ));
@@ -89,6 +92,7 @@ class CachedKwByLemmaDataProvider
       return left(RewildError(
         e.toString(),
         name: "deleteAll",
+        source: "CachedKwByLemmaDataProvider",
         sendToTg: true,
         args: [],
       ));

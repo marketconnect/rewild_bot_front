@@ -4,10 +4,13 @@ import 'package:idb_shim/idb.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/total_cost_calculator.dart';
+import 'package:rewild_bot_front/domain/services/total_cost_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class TotalCostCalculatorDataProvider
-    implements UpdateServiceTotalCostdataProvider {
+    implements
+        UpdateServiceTotalCostdataProvider,
+        TotalCostServiceTotalCostDataProvider {
   const TotalCostCalculatorDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;

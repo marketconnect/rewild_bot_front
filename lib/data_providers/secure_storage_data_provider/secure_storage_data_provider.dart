@@ -8,14 +8,19 @@ import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/services/advert_service.dart';
+
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
+import 'package:rewild_bot_front/domain/services/balance_service.dart';
+import 'package:rewild_bot_front/domain/services/content_service.dart';
 import 'package:rewild_bot_front/domain/services/question_service.dart';
 
 class SecureStorageProvider
     implements
         ApiKeysServiceApiKeysDataProvider,
+        ContentServiceApiKeyDataProvider,
         QuestionServiceApiKeyDataProvider,
+        BalanceServiceBalanceDataProvider,
         AdvertServiceApiKeyDataProvider,
         AuthServiceSecureDataProvider {
   static const _secureStorage = FlutterSecureStorage(
@@ -112,7 +117,7 @@ class SecureStorageProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SecureStorageProvider",
         name: 'getUsername',
         args: [],
       ));
@@ -194,7 +199,7 @@ class SecureStorageProvider
             return left(RewildError(
               sendToTg: true,
               e.toString(),
-              source: runtimeType.toString(),
+              source: "SecureStorageProvider",
               name: 'getAllWBApiKeys',
               args: [],
             ));
@@ -225,7 +230,7 @@ class SecureStorageProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SecureStorageProvider",
         name: 'deleteWBApiKey',
         args: [apiKeyType],
       ));
@@ -246,7 +251,7 @@ class SecureStorageProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SecureStorageProvider",
         name: 'storeUserBalance',
       ));
     }
@@ -268,7 +273,7 @@ class SecureStorageProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SecureStorageProvider",
         name: 'getUserBalance',
       ));
     }
@@ -316,7 +321,7 @@ class SecureStorageProvider
       return left(RewildError(
         sendToTg: true,
         "could not write to secure storage: $e",
-        source: 'secureStorage',
+        source: 'SecureStorageProvider',
         name: '_write',
         args: [key, value],
       ));

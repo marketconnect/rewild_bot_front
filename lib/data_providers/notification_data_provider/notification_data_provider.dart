@@ -4,10 +4,13 @@ import 'package:rewild_bot_front/core/utils/database_helper.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
+import 'package:rewild_bot_front/domain/services/notification_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class NotificationDataProvider
-    implements UpdateServiceNotificationDataProvider {
+    implements
+        UpdateServiceNotificationDataProvider,
+        NotificationServiceNotificationDataProvider {
   const NotificationDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
@@ -35,7 +38,7 @@ class NotificationDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "NotificationDataProvider",
         name: "save",
         args: [notification],
       ));
@@ -66,7 +69,7 @@ class NotificationDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "NotificationDataProvider",
         name: "getForParent",
         args: [parentId],
       ));
@@ -100,7 +103,7 @@ class NotificationDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "NotificationDataProvider",
         name: "getByCondition",
         args: [conditions],
       ));
@@ -130,7 +133,7 @@ class NotificationDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "NotificationDataProvider",
         name: "getAll",
         args: [],
       ));
@@ -155,7 +158,7 @@ class NotificationDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "NotificationDataProvider",
         name: "deleteAll",
         args: [parentId],
       ));
@@ -192,7 +195,7 @@ class NotificationDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "NotificationDataProvider",
         name: "delete",
         args: [parentId, condition],
       ));
@@ -220,7 +223,7 @@ class NotificationDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "NotificationDataProvider",
         name: "checkForParent",
         args: [id],
       ));
