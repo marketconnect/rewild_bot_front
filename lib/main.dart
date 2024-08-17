@@ -35,7 +35,7 @@ void main() async {
     // Initialize the database
     final dbHelper = DatabaseHelper();
     await dbHelper.database;
-    await dbHelper.cleanInvalidRecords();
+    await dbHelper.clearAllTables();
     await dbHelper.checkDatabaseIntegrity();
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {

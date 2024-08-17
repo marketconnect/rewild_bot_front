@@ -38,6 +38,27 @@ class DatabaseHelper {
     await txn.completed;
   }
 
+  Future<void> clearAllTables() async {
+    final db = await database;
+
+    final storeNames = db.objectStoreNames;
+
+    for (var storeName in storeNames) {
+      final txn = db.transaction(storeName, idbModeReadWrite);
+      final store = txn.objectStore(storeName);
+
+      try {
+        await store.clear();
+        await txn.completed;
+        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+            "Successfully cleared store: $storeName");
+      } catch (e) {
+        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+            "Failed to clear store $storeName: $e");
+      }
+    }
+  }
+
   Future<void> checkDatabaseIntegrity() async {
     final db = await DatabaseHelper().database;
     final txn = db.transaction('stocks', idbModeReadOnly);

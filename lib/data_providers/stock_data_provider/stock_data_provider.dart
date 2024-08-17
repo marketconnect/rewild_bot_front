@@ -4,7 +4,7 @@ import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
@@ -24,8 +24,7 @@ class StockDataProvider
       final db = await _db;
       final txn = db.transaction('stocks', idbModeReadWrite);
       final store = txn.objectStore('stocks');
-      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          "stock put ${stock.toMap()}");
+
       await store.put(stock.toMap());
 
       await txn.completed;

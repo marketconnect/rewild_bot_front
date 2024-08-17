@@ -1,10 +1,10 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
@@ -20,8 +20,6 @@ class InitialStockDataProvider
   @override
   Future<Either<RewildError, int>> insert(
       {required InitialStockModel initialStockModel}) async {
-    await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        'initial stock dp insert ${initialStockModel.toMap()}');
     try {
       final db = await _db;
       final txn = db.transaction('initial_stocks', idbModeReadWrite);

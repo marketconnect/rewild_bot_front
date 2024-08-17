@@ -4,13 +4,13 @@ import 'package:fpdart/fpdart.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/constants/notification_constants.dart';
 import 'package:rewild_bot_front/core/constants/settings.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/filter_model.dart';
 import 'package:rewild_bot_front/domain/entities/group_model.dart';
@@ -299,9 +299,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     if (fetchedCardsOfProducts == null) {
       return;
     }
-
-    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        'got cards ${fetchedCardsOfProducts.length}');
 
     List<CardOfProductModel> oldCards = List.from(_productCards);
 

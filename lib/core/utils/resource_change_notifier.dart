@@ -45,10 +45,11 @@ class ResourceChangeNotifier extends ChangeNotifier {
     return resource.fold((l) {
       // sendMessageToTelegramBot(
       //     TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
-      if (l.sendToTg) {
-        sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
-      }
+      // if (l.sendToTg) {
+      // TODO
+      sendMessageToTelegramBot(
+          TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
+      // }
       if (context.mounted && showError) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(message ?? l.message!),

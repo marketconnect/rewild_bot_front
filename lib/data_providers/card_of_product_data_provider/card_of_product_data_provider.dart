@@ -1,9 +1,9 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
@@ -168,8 +168,6 @@ class CardOfProductDataProvider
         cards = result.map((e) => e as Map<String, dynamic>).toList();
       }
 
-      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          'Get all card ${cards.length}');
       await txn.completed;
 
       return right(cards.map((e) => CardOfProductModel.fromMap(e)).toList());

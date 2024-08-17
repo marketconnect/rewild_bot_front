@@ -1,12 +1,11 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/constants/settings.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+// import 'package:rewild_bot_front/core/utils/telegram.dart';
 // import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
@@ -360,8 +359,6 @@ class UpdateService
       // add stocks
       for (final size in card.sizes) {
         for (final stock in size.stocks) {
-          sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-              "STOCK PUT IN UPDATE ${stock.toMap()}");
           final insertStockEither =
               await stockDataProvider.insert(stock: stock);
           if (insertStockEither.isLeft()) {
