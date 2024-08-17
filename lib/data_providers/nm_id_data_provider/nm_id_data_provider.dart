@@ -1,6 +1,8 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/nm_id.dart';
 
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
@@ -24,6 +26,13 @@ class NmIdDataProvider
       final txn = db.transaction('nm_ids', idbModeReadOnly);
       final store = txn.objectStore('nm_ids');
       final List<Object?> maps = await store.getAll();
+
+      if (maps.isEmpty) {
+        return right([]);
+      }
+
+      await sendMessageToTelegramBot(
+          TBot.tBotErrorToken, TBot.tBotErrorChatId, '${maps.first}');
 
       List<NmId> nmIds = maps.map((map) {
         final nmIdMap = map as Map<String, dynamic>;

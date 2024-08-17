@@ -5,9 +5,9 @@ import 'package:rewild_bot_front/domain/entities/size_model.dart';
 
 class StocksModel {
   int id;
-  int wh;
-  int nmId;
-  int sizeOptionId;
+  final int wh;
+  final int nmId;
+  final int sizeOptionId;
   String? name;
   int qty;
 
@@ -42,6 +42,7 @@ class StocksModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
+      'nmId': nmId, // Обязательно включите nmId в карту
       'wh': wh,
       'name': name,
       'qty': qty,

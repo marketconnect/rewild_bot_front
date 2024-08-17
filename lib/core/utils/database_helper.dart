@@ -86,8 +86,8 @@ class DatabaseHelper {
     }
 
     // Open the database and check if it succeeded
-    final db =
-        await dbFactory.open('rw.db', version: 1, onUpgradeNeeded: _onCreate);
+    final db = await dbFactory.open('rw_bot.db',
+        version: 1, onUpgradeNeeded: _onCreate);
 
     return db;
   }
@@ -223,6 +223,12 @@ class DatabaseHelper {
       final store =
           db.createObjectStore('groups', keyPath: 'id', autoIncrement: true);
       store.createIndex('nmId_name', ['nmId', 'name'], unique: true);
+    });
+
+    createStoreIfNotExists('nm_ids', () {
+      final store =
+          db.createObjectStore('nm_ids', keyPath: 'id', autoIncrement: true);
+      store.createIndex('nmId', 'nmId', unique: true);
     });
   }
 
