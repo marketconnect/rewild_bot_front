@@ -24,7 +24,7 @@ class WarehouseDataProvider
           return left(RewildError(
               sendToTg: true,
               '',
-              source: runtimeType.toString(),
+              source: "WarehouseDataProvider",
               name: "update",
               args: [warehouse.id, warehouse.name]));
         }
@@ -34,7 +34,7 @@ class WarehouseDataProvider
       return left(RewildError(
           sendToTg: true,
           e.toString(),
-          source: runtimeType.toString(),
+          source: "WarehouseDataProvider",
           name: "update",
           args: [warehouses]));
     }
@@ -55,7 +55,7 @@ class WarehouseDataProvider
       return left(RewildError(
           sendToTg: true,
           e.toString(),
-          source: runtimeType.toString(),
+          source: "WarehouseDataProvider",
           name: "get",
           args: [id]));
     }

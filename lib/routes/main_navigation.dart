@@ -6,10 +6,6 @@ import 'package:rewild_bot_front/presentation/app/app.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 abstract class ScreenFactory {
-  // Widget makeScreen1();
-  // Widget makeScreen2();
-  // Widget makeScreen3();
-  // Widget makeHomeScreen();
   Widget makeMainNavigationScreen();
   Widget makeApiKeysScreen();
   Widget makeAllCardsScreen();
@@ -27,7 +23,6 @@ class MainNavigation implements AppNavigation {
 
   @override
   Route<Object> onGenerateRoute(RouteSettings settings) {
-    var myWebViewScreen;
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(

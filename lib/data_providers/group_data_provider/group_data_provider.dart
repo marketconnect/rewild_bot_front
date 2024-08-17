@@ -18,7 +18,7 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
       final store = txn.objectStore('groups');
 
       for (final nmId in group.cardsNmIds) {
-        await store.add({
+        await store.put({
           'name': group.name,
           'bgColor': group.bgColor,
           'fontColor': group.fontColor,
@@ -32,7 +32,7 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "GroupDataProvider",
         name: "insert",
         args: [group],
       ));
@@ -64,7 +64,7 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "GroupDataProvider",
         name: "renameGroup",
         args: [groupName, newGroupName],
       ));
@@ -105,7 +105,7 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "GroupDataProvider",
         name: "delete",
         args: [name, nmId],
       ));
@@ -150,7 +150,7 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "GroupDataProvider",
         name: "get",
         args: [name],
       ));
@@ -221,7 +221,7 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "GroupDataProvider",
         name: "getAll",
         args: [nmIds],
       ));

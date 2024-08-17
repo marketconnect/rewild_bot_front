@@ -12,7 +12,6 @@ class CachedKwByLemmaDataProvider
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   Future<Either<RewildError, void>> insertAll(List<KwByLemma> lemmas) async {
     try {
       final db = await _db;
@@ -25,7 +24,7 @@ class CachedKwByLemmaDataProvider
           'lemma': lemma.lemma,
           'keyword': lemma.keyword,
           'freq': lemma.freq,
-        }, lemma.lemmaID);
+        });
       }
 
       await txn.completed;
@@ -41,7 +40,6 @@ class CachedKwByLemmaDataProvider
     }
   }
 
-  @override
   Future<Either<RewildError, List<KwByLemma>>> getByLemmaId(int lemmaID) async {
     try {
       final db = await _db;

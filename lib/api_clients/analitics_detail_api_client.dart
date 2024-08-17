@@ -1,4 +1,5 @@
 import 'dart:convert';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/api_helpers/analitics_detail_api_helper.dart';
@@ -8,7 +9,6 @@ import 'package:rewild_bot_front/domain/entities/fetch_analitics_detail_result.d
 
 class AnaliticsApiClient {
   const AnaliticsApiClient();
-  @override
   Future<Either<RewildError, FetchDetailResult>> fetchDetail({
     required String token,
     required DateTime begin,
@@ -81,7 +81,6 @@ class AnaliticsApiClient {
     }
   }
 
-  @override
   Future<Either<RewildError, bool>> fetchExciseReport({
     required String token,
   }) async {

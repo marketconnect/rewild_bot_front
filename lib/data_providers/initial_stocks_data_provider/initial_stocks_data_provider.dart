@@ -1,14 +1,13 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
-
-import 'package:idb_shim/idb.dart';
-import 'package:fpdart/fpdart.dart';
 
 class InitialStockDataProvider
     implements
@@ -21,17 +20,19 @@ class InitialStockDataProvider
   @override
   Future<Either<RewildError, int>> insert(
       {required InitialStockModel initialStockModel}) async {
+    await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+        'initial stock dp insert ${initialStockModel.toMap()}');
     try {
       final db = await _db;
       final txn = db.transaction('initial_stocks', idbModeReadWrite);
       final store = txn.objectStore('initial_stocks');
 
-      await store.add(
+      await store.put(
         initialStockModel.toMap(),
       );
 
       await txn.completed;
-      return right(initialStockModel.id!);
+      return right(initialStockModel.id);
     } catch (e) {
       return left(RewildError(
           sendToTg: true,
@@ -52,7 +53,7 @@ class InitialStockDataProvider
       await store.add(initialStock.toMap(), initialStock.id);
 
       await txn.completed;
-      return right(initialStock.id!);
+      return right(initialStock.id);
     } catch (e) {
       return left(RewildError(
           sendToTg: true,
@@ -183,7 +184,7 @@ class InitialStockDataProvider
       await store.put(initialStock.toMap(), initialStock.id);
 
       await txn.completed;
-      return right(initialStock.id!);
+      return right(initialStock.id);
     } catch (e) {
       return left(RewildError(
           sendToTg: true,

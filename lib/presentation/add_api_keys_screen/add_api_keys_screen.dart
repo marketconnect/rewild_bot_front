@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'dart:html' as html;
 
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +45,7 @@ class _AddApiKeysScreenState extends State<AddApiKeysScreen> {
     final delete = model.delete;
     final selectionInProgress =
         apiKeys.where((apiKey) => apiKey.isSelected).isNotEmpty;
-    print("ISLOADING: $isLoading");
+
     final emptyTypes =
         types.where((type) => !addedTypes.contains(type)).toList();
     return OverlayLoaderWithAppIcon(
@@ -421,63 +419,31 @@ class _AddApiKeysScreenState extends State<AddApiKeysScreen> {
                       obscureText: true,
                       controller: _textEditingController,
                       decoration: InputDecoration(
-                        labelText: 'Вставьте токен API',
-                        errorText: _errorText != null ? '' : null,
-                        errorStyle: const TextStyle(height: 0),
-                        contentPadding: const EdgeInsets.symmetric(
-                          vertical: 0,
-                          horizontal: 15,
-                        ),
-                        hintStyle: const TextStyle(
-                          fontSize: 30,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        filled: true,
-                        fillColor:
-                            Theme.of(context).colorScheme.primaryContainer,
-                        suffixIcon: _textEditingController.text.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () {
-                                  _textEditingController.clear();
-                                  setState(() {});
-                                },
-                              )
-                            : IconButton(
-                                icon: const Icon(Icons.paste_rounded),
-                                onPressed: () async {
-                                  //   ClipboardData? cdata =
-                                  //       await Clipboard.getData(
-                                  //           Clipboard.kTextPlain);
-                                  //   if (cdata == null || cdata.text!.isEmpty) {
-                                  //     setState(() {
-                                  //       _errorText = 'Буфер обмена пуст';
-                                  //     });
-                                  //   } else {
-                                  //     setState(() {
-                                  //       _errorText = null;
-                                  //       _textEditingController.text = cdata.text!;
-                                  //     });
-                                  //   }
-                                  html.window.navigator.clipboard
-                                      ?.readText()
-                                      .then((value) {
-                                    if (value == null || value.isEmpty) {
-                                      print('Буфер обмена пуст');
-                                    } else {
-                                      print('Скопированный текст: $value');
-                                      // Ваш код для обработки скопированного текста
-                                      _textEditingController.text = value;
-                                    }
-                                  }).catchError((err) {
-                                    print(
-                                        'Ошибка при чтении буфера обмена: $err');
-                                  });
-                                },
-                              ),
-                      ),
+                          labelText: 'Вставьте токен API',
+                          errorText: _errorText != null ? '' : null,
+                          errorStyle: const TextStyle(height: 0),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 0,
+                            horizontal: 15,
+                          ),
+                          hintStyle: const TextStyle(
+                            fontSize: 30,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          filled: true,
+                          fillColor:
+                              Theme.of(context).colorScheme.primaryContainer,
+                          suffixIcon: _textEditingController.text.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () {
+                                    _textEditingController.clear();
+                                    setState(() {});
+                                  },
+                                )
+                              : null),
                     ),
                   ),
                   if (_errorText != null)
@@ -503,7 +469,7 @@ class _AddApiKeysScreenState extends State<AddApiKeysScreen> {
                         width: screenWidth * 0.08,
                       ),
                       Text(
-                        'Категория',
+                        'Маркетплейс',
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,

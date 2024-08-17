@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/services/advert_service.dart';
@@ -101,8 +99,7 @@ class SecureStorageProvider
           resultEither.fold((l) => throw UnimplementedError(), (r) => r);
       if (username == null) {
         final chatId = await TelegramWebApp.getChatId();
-        await sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'chatId: $chatId');
+
         // Save username
         final result = await _write(key: 'username', value: chatId);
         if (result.isLeft()) {
@@ -123,41 +120,6 @@ class SecureStorageProvider
       ));
     }
   }
-
-  // static Future<Either<RewildError, String?>> getUsernameInBg() async {
-  //   // May be deviceId already exists
-  //   try {
-  //     final resultEither = await _read(key: 'username');
-  //     if (resultEither.isLeft()) {
-  //       return resultEither;
-  //     }
-  //     final username =
-  //         resultEither.fold((l) => throw UnimplementedError(), (r) => r);
-  //     if (username == null) {
-  //       var uuid = const Uuid();
-  //       final deviceId = uuid.v4();
-
-  //       // Save username
-
-  //       final result = await _write(key: 'username', value: deviceId);
-  //       if (result.isLeft()) {
-  //         return left(result.fold((l) => l, (r) => throw UnimplementedError()));
-  //       }
-
-  //       return right(deviceId);
-  //     } else {
-  //       return right(username);
-  //     }
-  //   } catch (e) {
-  //     return left(RewildError(
-  //       sendToTg: true,
-  //       e.toString(),
-  //       source: 'SecureStorageProvider',
-  //       name: 'getUsername',
-  //       args: [],
-  //     ));
-  //   }
-  // }
 
   // Function to get an API key of a specific type =============================
   @override
@@ -184,28 +146,37 @@ class SecureStorageProvider
   Future<Either<RewildError, List<ApiKeyModel>>> getAllWBApiKeys(
       List<String> types, String sellerId) async {
     List<ApiKeyModel> apiKeys = [];
+
     for (final type in types) {
       final key = '${type}_$sellerId';
       final result = await _read(key: key);
-      result.fold((l) => left(l), (r) {
-        if (r != null) {
-          try {
-            final apiKey = ApiKeyModel.fromJson(jsonDecode(r));
-            // Check if API key is expired
-            if (apiKey.expiryDate.isAfter(DateTime.now())) {
-              apiKeys.add(apiKey);
-            }
-          } catch (e) {
-            return left(RewildError(
-              sendToTg: true,
-              e.toString(),
-              source: "SecureStorageProvider",
-              name: 'getAllWBApiKeys',
-              args: [],
-            ));
-          }
-        }
-      });
+
+      if (result.isLeft()) {
+        // Логируем ошибку и возвращаем ее
+        return left(result.fold((l) => l, (r) => throw UnimplementedError()));
+      }
+
+      final value = result.fold((l) => null, (r) => r);
+      if (value == null) {
+        continue;
+      }
+
+      try {
+        final apiKey = ApiKeyModel.fromJson(jsonDecode(value));
+
+        // Проверяем, не истек ли срок действия ключа
+        if (apiKey.expiryDate.isAfter(DateTime.now())) {
+          apiKeys.add(apiKey);
+        } else {}
+      } catch (e) {
+        return left(RewildError(
+          sendToTg: true,
+          e.toString(),
+          source: "SecureStorageProvider",
+          name: 'getAllWBApiKeys',
+          args: [],
+        ));
+      }
     }
 
     return right(apiKeys);
@@ -307,7 +278,7 @@ class SecureStorageProvider
   }
 
   // Function to write data to secure storage ==================================
-  static Future<Either<RewildError, void>> _write(
+  Future<Either<RewildError, void>> _write(
       {required String key, required String? value}) async {
     try {
       await _secureStorage.write(
@@ -328,23 +299,8 @@ class SecureStorageProvider
     }
   }
 
-  // Function to get API key from secure storage in the background
-  static Future<Either<RewildError, ApiKeyModel?>> getApiKeyFromBackground(
-      String type, String sellerId) async {
-    final result = await _read(key: '${type}_$sellerId');
-
-    return result.fold((l) => left(l), (r) {
-      if (r == null) {
-        return right(null);
-      }
-
-      return right(ApiKeyModel.fromJson(jsonDecode(r)));
-    });
-  }
-
   // Function to read a value from secure storage
-  static Future<Either<RewildError, String?>> _read(
-      {required String key}) async {
+  Future<Either<RewildError, String?>> _read({required String key}) async {
     try {
       final value = await _secureStorage.read(
         key: key,
@@ -363,5 +319,10 @@ class SecureStorageProvider
         args: [key],
       ));
     }
+  }
+
+  Future<void> debugPrintAllKeys() async {
+    final allKeys = await _secureStorage.readAll();
+    allKeys.forEach((key, value) {});
   }
 }

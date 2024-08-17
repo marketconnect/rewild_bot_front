@@ -34,7 +34,7 @@ class SupplyDataProvider
       return left(RewildError(
           sendToTg: true,
           'Не удалось сохранить поставки $e',
-          source: runtimeType.toString(),
+          source: "SupplyDataProvider",
           name: "insert",
           args: [supply]));
     }
@@ -61,7 +61,7 @@ class SupplyDataProvider
       return left(RewildError(
           sendToTg: true,
           'Не удалось удалить поставки $e',
-          source: runtimeType.toString(),
+          source: "SupplyDataProvider",
           name: "delete",
           args: [nmId]));
     }
@@ -82,7 +82,7 @@ class SupplyDataProvider
       return left(RewildError(
           sendToTg: true,
           'Не удалось удалить поставки $e',
-          source: runtimeType.toString(),
+          source: "SupplyDataProvider",
           name: "deleteAll",
           args: []));
     }
@@ -113,7 +113,7 @@ class SupplyDataProvider
       return left(RewildError(
           sendToTg: true,
           'Не удалось получить поставки: $e',
-          source: runtimeType.toString(),
+          source: "SupplyDataProvider",
           name: "getOne",
           args: [nmId, wh, sizeOptionId]));
     }
@@ -146,7 +146,7 @@ class SupplyDataProvider
       return left(RewildError(
           sendToTg: true,
           'Не удалось получить поставки: $e',
-          source: runtimeType.toString(),
+          source: "SupplyDataProvider",
           name: "getForOne",
           args: [nmId]));
     }
@@ -175,7 +175,7 @@ class SupplyDataProvider
       return left(RewildError(
           sendToTg: true,
           'Не удалось получить поставки $e',
-          source: runtimeType.toString(),
+          source: "SupplyDataProvider",
           name: "get",
           args: [nmId]));
     }

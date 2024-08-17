@@ -1,8 +1,8 @@
 import 'package:fpdart/fpdart.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:idb_shim/idb.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
-
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
@@ -12,7 +12,6 @@ class CardKeywordsDataProvider
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   Future<Either<RewildError, void>> insert(
       int cardId, List<(String keyword, int freq)> keywords) async {
     try {
@@ -43,7 +42,6 @@ class CardKeywordsDataProvider
     }
   }
 
-  @override
   Future<Either<RewildError, List<(String keyword, int freq)>>>
       getKeywordsByCardId(int cardId) async {
     try {

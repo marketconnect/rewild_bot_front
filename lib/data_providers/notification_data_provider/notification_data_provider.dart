@@ -212,6 +212,7 @@ class NotificationDataProvider
       final cursorStream = index.openCursor(key: id);
       bool exists = false;
 
+      // ignore: unused_local_variable
       await for (final cursor in cursorStream) {
         exists = true;
         break;

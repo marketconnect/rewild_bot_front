@@ -12,7 +12,6 @@ class BalanceService implements PaymentWebViewViewModelBalanceService {
   final BalanceServiceBalanceDataProvider balanceDataProvider;
   const BalanceService({required this.balanceDataProvider});
 
-  @override
   Future<Either<RewildError, double>> getUserBalance() async {
     return balanceDataProvider.getUserBalance();
   }
@@ -22,7 +21,6 @@ class BalanceService implements PaymentWebViewViewModelBalanceService {
     return balanceDataProvider.addBalance(amountToAdd);
   }
 
-  @override
   Future<Either<RewildError, bool>> subtractBalance(
       double amountToSubtract) async {
     final balanceEither = await balanceDataProvider.getUserBalance();

@@ -3,6 +3,7 @@ import 'package:rewild_bot_front/core/constants/advertising_constants.dart';
 import 'package:rewild_bot_front/core/constants/icon_constant.dart';
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
+import 'package:rewild_bot_front/widgets/empty_api_key.dart';
 import 'package:rewild_bot_front/widgets/empty_widget.dart';
 import 'package:rewild_bot_front/widgets/link_btn.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
@@ -30,40 +31,10 @@ class MainNavigationScreenAdvertWidget extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     return SafeArea(
       child: !apiKeyExists
-          ? Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: screenHeight * 0.235),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const EmptyWidget(
-                      text:
-                          'Для работы с рекламным кабинетом WB вам необходимо добавить токен "Продвижение"',
-                    ),
-                    SizedBox(
-                      height: screenHeight * 0.05,
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.of(context)
-                          .pushNamed("MainNavigationRouteNames.apiKeysScreen"),
-                      child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        width: screenWidth * 0.7,
-                        height: screenHeight * 0.08,
-                        child: Text(
-                          'Добавить токен',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+          ? const EmptyApiKey(
+              text:
+                  'Для работы с рекламным кабинетом WB вам необходимо добавить токен "Продвижение"',
+              route: MainNavigationRouteNames.apiKeysScreen,
             )
           : adverts.isNotEmpty
               ? SingleChildScrollView(

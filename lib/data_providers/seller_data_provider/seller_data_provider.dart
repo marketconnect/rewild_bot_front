@@ -11,7 +11,6 @@ class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   Future<Either<RewildError, int>> insert({required SellerModel seller}) async {
     try {
       final db = await _db;
@@ -43,7 +42,7 @@ class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
       return left(RewildError(
         sendToTg: true,
         "Не удалось удалить данные продавца $e",
-        source: runtimeType.toString(),
+        source: "SellerDataPovider",
         name: 'delete',
         args: [id],
       ));
@@ -71,7 +70,7 @@ class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
       return left(RewildError(
         sendToTg: true,
         "Не удалось получить данные продавца $e",
-        source: runtimeType.toString(),
+        source: "SellerDataPovider",
         name: "get",
         args: [supplierId],
       ));
@@ -90,7 +89,7 @@ class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
       return left(RewildError(
         sendToTg: true,
         "Не удалось обновить данные продавца $e",
-        source: runtimeType.toString(),
+        source: "SellerDataPovider",
         name: 'update',
         args: [seller],
       ));
@@ -112,7 +111,7 @@ class SellerDataProvider implements AllCardsFilterServiceSellerDataProvider {
       return left(RewildError(
         sendToTg: true,
         "Не удалось получить данные продавцов $e",
-        source: runtimeType.toString(),
+        source: "SellerDataPovider",
         name: 'getAll',
         args: [],
       ));

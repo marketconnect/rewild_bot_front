@@ -14,7 +14,6 @@ class TrackingResultDataProvider
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   Future<Either<RewildError, void>> addTrackingResult(
       TrackingResult trackingResult) async {
     try {
@@ -45,7 +44,6 @@ class TrackingResultDataProvider
     }
   }
 
-  @override
   Future<Either<RewildError, List<TrackingResult>>>
       getAllTrackingResults() async {
     try {
@@ -112,7 +110,6 @@ class TrackingResultDataProvider
     }
   }
 
-  @override
   Future<Either<RewildError, List<TrackingQuery>>>
       getKeywordsWithoutTodayEntries(List<TrackingQuery> queries) async {
     try {
@@ -131,6 +128,7 @@ class TrackingResultDataProvider
         );
 
         bool hasEntry = false;
+        // ignore: unused_local_variable
         await for (final cursor in cursorStream) {
           hasEntry = true;
           break;

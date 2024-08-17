@@ -22,7 +22,7 @@ class AverageLogisticsDataProvider
         return left(RewildError(
           sendToTg: true,
           'Не удалось сохранить дату последнего обновления',
-          source: runtimeType.toString(),
+          source: "AverageLogisticsDataProvider",
           name: "update",
         ));
       }
@@ -31,7 +31,7 @@ class AverageLogisticsDataProvider
       return left(RewildError(
         sendToTg: true,
         'Не удалось сохранить дату последнего обновления: $e',
-        source: runtimeType.toString(),
+        source: "AverageLogisticsDataProvider",
         name: "update",
       ));
     }
@@ -72,7 +72,7 @@ class AverageLogisticsDataProvider
       return left(RewildError(
         sendToTg: true,
         'Не удалось получить дату последнего обновления:  $e',
-        source: runtimeType.toString(),
+        source: "AverageLogisticsDataProvider",
         name: "todayUpdated",
       ));
     }

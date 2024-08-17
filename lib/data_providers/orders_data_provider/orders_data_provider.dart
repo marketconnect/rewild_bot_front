@@ -13,7 +13,6 @@ class OrderDataProvider implements UpdateServiceWeekOrdersDataProvider {
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   Future<Either<RewildError, void>> insertAll(List<OrderModel> orders) async {
     try {
       final db = await _db;
@@ -45,7 +44,6 @@ class OrderDataProvider implements UpdateServiceWeekOrdersDataProvider {
     }
   }
 
-  @override
   Future<Either<RewildError, bool>> isUpdated(int skus) async {
     try {
       final db = await _db;
@@ -88,9 +86,7 @@ class OrderDataProvider implements UpdateServiceWeekOrdersDataProvider {
       final cursorStream = index.openCursor(range: keyRange);
 
       await for (final cursor in cursorStream) {
-        if (cursor != null) {
-          await cursor.delete();
-        }
+        await cursor.delete();
       }
 
       await txn.completed;
@@ -106,42 +102,43 @@ class OrderDataProvider implements UpdateServiceWeekOrdersDataProvider {
     }
   }
 
-  @override
-  Future<Either<RewildError, List<OrderModel>>> getAllBySkus(
-      List<int> skus) async {
+  Future<Either<RewildError, List<OrderModel>>> getAllBySkuAndPeriod(
+      int sku, String period) async {
     try {
       final db = await _db;
       final txn = db.transaction('orders', idbModeReadOnly);
       final store = txn.objectStore('orders');
+
+      // Use a KeyRange.bound for warehouse ignored
+      final index = store.index('sku_warehouse_period');
+      final range = KeyRange.bound(
+        [sku, 0, period], // lower bound
+        [sku, double.infinity, period], // upper bound
+      );
+
+      final cursorStream = index.openCursor(range: range);
       final List<OrderModel> orders = [];
 
-      for (var sku in skus) {
-        final range = KeyRange.only(sku); // Corrected from IDBKeyRange.only
-        final cursorStream = store.openCursor(range: range);
-
-        await for (final cursor in cursorStream) {
-          if (cursor != null) {
-            final result = cursor.value as Map<String, dynamic>;
-            orders.add(OrderModel(
-              sku: result['sku'] as int,
-              warehouse: result['warehouse'] as int,
-              qty: result['qty'] as int,
-              price: result['price'] as int,
-              period: result['period'] as String,
-            ));
-            cursor.next();
-          }
-        }
+      await for (final cursor in cursorStream) {
+        final result = cursor.value as Map<String, dynamic>;
+        orders.add(OrderModel(
+          sku: result['sku'] as int,
+          warehouse: result['warehouse'] as int,
+          qty: result['qty'] as int,
+          price: result['price'] as int,
+          period: result['period'] as String,
+        ));
+        cursor.next();
       }
 
       await txn.completed;
       return right(orders);
     } catch (e) {
       return left(RewildError(
-        "Failed to retrieve orders by SKUs: ${e.toString()}",
+        "Failed to retrieve orders by SKU and period: ${e.toString()}",
         source: "OrderDataProvider",
-        name: "getAllBySkus",
-        args: [skus],
+        name: "getAllBySkuAndPeriod",
+        args: [sku, period],
         sendToTg: true,
       ));
     }

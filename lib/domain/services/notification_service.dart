@@ -31,7 +31,6 @@ class NotificationService implements AllCardsScreenNotificationsService {
       {required this.notificationDataProvider,
       required this.updatedNotificationStreamController});
 
-  @override
   Future<Either<RewildError, bool>> delete(
       {required int id, required int condition, bool? isEmpty}) async {
     final either = await notificationDataProvider.delete(
@@ -50,7 +49,6 @@ class NotificationService implements AllCardsScreenNotificationsService {
     });
   }
 
-  @override
   Future<Either<RewildError, bool>> checkForParent(
       {required int campaignId}) async {
     final resource =
@@ -59,7 +57,6 @@ class NotificationService implements AllCardsScreenNotificationsService {
     return resource;
   }
 
-  @override
   Future<Either<RewildError, void>> addForParent(
       {required List<ReWildNotificationModel> notifications,
       required int parentId,
@@ -84,7 +81,6 @@ class NotificationService implements AllCardsScreenNotificationsService {
     });
   }
 
-  @override
   Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
       {required int parentId}) async {
     final either =
@@ -112,7 +108,6 @@ class NotificationService implements AllCardsScreenNotificationsService {
     });
   }
 
-  @override
   Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
       List<int> conditions) async {
     final either = await notificationDataProvider.getByCondition(conditions);

@@ -96,7 +96,6 @@ class AdvertService implements MainNavigationAdvertService {
     });
   }
 
-  @override
   Future<Either<RewildError, int>> getExpensesSum({
     required DateTime from,
     required DateTime to,
@@ -120,7 +119,7 @@ class AdvertService implements MainNavigationAdvertService {
       return left(RewildError(
         'Токен отсутствует',
         sendToTg: false,
-        source: runtimeType.toString(),
+        source: "AdvertService",
         name: "depositCampaignBudget",
         args: [from, to],
       ));
@@ -133,7 +132,6 @@ class AdvertService implements MainNavigationAdvertService {
   }
 
   // budget
-  @override
   Future<Either<RewildError, int>> depositCampaignBudget({
     required int campaignId,
     required int sum,
@@ -157,7 +155,7 @@ class AdvertService implements MainNavigationAdvertService {
       return left(RewildError(
         'Токен отсутствует',
         sendToTg: false,
-        source: runtimeType.toString(),
+        source: "AdvertService",
         name: "depositCampaignBudget",
         args: [campaignId, sum],
       ));
@@ -240,7 +238,6 @@ class AdvertService implements MainNavigationAdvertService {
         .toList());
   }
 
-  @override
   Future<Either<RewildError, Advert>> getAdvert(
       {required String token, required int campaignId}) async {
     final advInfoResult =
@@ -250,7 +247,6 @@ class AdvertService implements MainNavigationAdvertService {
     });
   }
 
-  @override
   Future<Either<RewildError, bool>> setCpm(
       {required int campaignId,
       required int type,
@@ -276,7 +272,7 @@ class AdvertService implements MainNavigationAdvertService {
       return left(RewildError(
         'Токен отсутствует',
         sendToTg: false,
-        source: runtimeType.toString(),
+        source: "AdvertService",
         name: "setCpm",
         args: [campaignId, type, cpm, param, instrument],
       ));
@@ -310,7 +306,6 @@ class AdvertService implements MainNavigationAdvertService {
     });
   }
 
-  @override
   Future<Either<RewildError, List<Advert>>> getAll(
       {required String token, List<int>? types}) async {
     // get ids of all adverts filtered by types if types is not null

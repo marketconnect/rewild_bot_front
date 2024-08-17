@@ -48,23 +48,46 @@ class FilterModel {
     };
   }
 
+  // factory FilterModel.fromMap(Map<String, dynamic> map) {
+  //   return FilterModel(
+  //       subjects: map['subjects'] != null
+  //           ? Map<int, String>.from(map['subjects'] as Map<int, String>)
+  //           : null,
+  //       brands: map['brands'] != null
+  //           ? Map<int, String>.from(map['brands'] as Map<int, String>)
+  //           : null,
+  //       suppliers: map['suppliers'] != null
+  //           ? Map<int, String>.from(map['suppliers'] as Map<int, String>)
+  //           : null,
+  //       promos: map['promos'] != null
+  //           ? Map<int, String>.from(map['promos'] as Map<int, String>)
+  //           : null,
+  //       withSales: map['withSales'] != null ? map['withSales'] as bool : null,
+  //       withStocks:
+  //           map['withStocks'] != null ? map['withStocks'] as bool : null);
+  // }
+
   factory FilterModel.fromMap(Map<String, dynamic> map) {
     return FilterModel(
-        subjects: map['subjects'] != null
-            ? Map<int, String>.from(map['subjects'] as Map<int, String>)
-            : null,
-        brands: map['brands'] != null
-            ? Map<int, String>.from(map['brands'] as Map<int, String>)
-            : null,
-        suppliers: map['suppliers'] != null
-            ? Map<int, String>.from(map['suppliers'] as Map<int, String>)
-            : null,
-        promos: map['promos'] != null
-            ? Map<int, String>.from(map['promos'] as Map<int, String>)
-            : null,
-        withSales: map['withSales'] != null ? map['withSales'] as bool : null,
-        withStocks:
-            map['withStocks'] != null ? map['withStocks'] as bool : null);
+      subjects: map['subjects'] != null
+          ? Map<int, String>.from((map['subjects'] as Map).map((key, value) =>
+              MapEntry(int.parse(key.toString()), value.toString())))
+          : null,
+      brands: map['brands'] != null
+          ? Map<int, String>.from((map['brands'] as Map).map((key, value) =>
+              MapEntry(int.parse(key.toString()), value.toString())))
+          : null,
+      suppliers: map['suppliers'] != null
+          ? Map<int, String>.from((map['suppliers'] as Map).map((key, value) =>
+              MapEntry(int.parse(key.toString()), value.toString())))
+          : null,
+      promos: map['promos'] != null
+          ? Map<int, String>.from((map['promos'] as Map).map((key, value) =>
+              MapEntry(int.parse(key.toString()), value.toString())))
+          : null,
+      withSales: map['withSales'] != null ? map['withSales'] as bool : null,
+      withStocks: map['withStocks'] != null ? map['withStocks'] as bool : null,
+    );
   }
 
   String toJson() => json.encode(toMap());

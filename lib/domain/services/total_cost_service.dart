@@ -18,25 +18,21 @@ class TotalCostService implements AllCardsScreenTotalCostService {
   final TotalCostServiceTotalCostDataProvider totalCostDataProvider;
   TotalCostService({required this.totalCostDataProvider});
 
-  @override
   Future<Either<RewildError, TotalCostCalculator>> getTotalCost(
       int nmId) async {
     return await totalCostDataProvider.getTotalCost(nmId);
   }
 
-  @override
   Future<Either<RewildError, void>> addOrUpdateExpense(
       int nmId, String name, double value) async {
     // print('nmId: $nmId, name: $name, value: $value');
     return await totalCostDataProvider.addOrUpdateExpense(nmId, name, value);
   }
 
-  @override
   Future<Either<RewildError, void>> removeExpense(int nmId, String name) async {
     return await totalCostDataProvider.removeExpense(nmId, name);
   }
 
-  @override
   Future<Either<RewildError, void>> updateWith(
       {required int nmIdFrom, required int nmIdTo}) async {
     final deleteRes = await totalCostDataProvider.deleteAll(nmIdTo);
@@ -62,7 +58,6 @@ class TotalCostService implements AllCardsScreenTotalCostService {
     return right(null);
   }
 
-  @override
   Future<Either<RewildError, List<int>>> getAllNmIds() async {
     final result = await totalCostDataProvider.getAllNmIds();
     if (result.isLeft()) {

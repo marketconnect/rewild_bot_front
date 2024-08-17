@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
@@ -57,6 +58,7 @@ class _MyWebViewScreenState extends State<MyWebViewScreen> {
     });
   }
 
+  // ignore: unused_element
   void _setUrl(String url) {
     setState(() {
       currentUrl = url;
@@ -73,7 +75,6 @@ class _MyWebViewScreenState extends State<MyWebViewScreen> {
   Widget build(BuildContext context) {
     final model = context.watch<MyWebViewScreenViewModel>();
     final save = model.saveSiblingCards;
-    final isLoading = model.isLoading;
     final errorMessage = model.errorMessage;
 
     return Scaffold(
@@ -96,6 +97,7 @@ class _MyWebViewScreenState extends State<MyWebViewScreen> {
                         (n == 0
                             ? "Эти карточки уже добавлены"
                             : "Добавлено карточек: $n шт.");
+                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                         content: Text(
                       message,

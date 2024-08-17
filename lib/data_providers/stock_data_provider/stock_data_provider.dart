@@ -1,8 +1,10 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
@@ -16,23 +18,26 @@ class StockDataProvider
   Future<Database> get _db async => await DatabaseHelper().database;
 
   @override
+  @override
   Future<Either<RewildError, int>> insert({required StocksModel stock}) async {
     try {
       final db = await _db;
       final txn = db.transaction('stocks', idbModeReadWrite);
       final store = txn.objectStore('stocks');
-
-      await store.add(stock.toMap());
+      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+          "stock put ${stock.toMap()}");
+      await store.put(stock.toMap());
 
       await txn.completed;
       return right(stock.nmId);
     } catch (e) {
       return left(RewildError(
-          sendToTg: true,
-          'Failed to save stock: $e',
-          source: runtimeType.toString(),
-          name: "insert",
-          args: [stock]));
+        sendToTg: true,
+        'Failed to save stock: $e',
+        source: "StockDataProvider",
+        name: "insert",
+        args: [stock],
+      ));
     }
   }
 
@@ -51,7 +56,7 @@ class StockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to delete stock: $e',
-          source: runtimeType.toString(),
+          source: "StockDataProvider",
           name: "delete",
           args: [nmId]));
     }
@@ -78,7 +83,7 @@ class StockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to retrieve stock: $e',
-          source: runtimeType.toString(),
+          source: "StockDataProvider",
           name: "get",
           args: [nmId]));
     }
@@ -104,7 +109,7 @@ class StockDataProvider
         return left(RewildError(
             sendToTg: true,
             'Stock not found',
-            source: runtimeType.toString(),
+            source: "StockDataProvider",
             name: "getOne",
             args: [nmId, wh, sizeOptionId]));
       }
@@ -114,7 +119,7 @@ class StockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to retrieve stock: $e',
-          source: runtimeType.toString(),
+          source: "StockDataProvider",
           name: "getOne",
           args: [nmId, wh, sizeOptionId]));
     }
@@ -137,7 +142,7 @@ class StockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to update stock: $e',
-          source: runtimeType.toString(),
+          source: "StockDataProvider",
           name: "update",
           args: [stock, nmId]));
     }
@@ -154,6 +159,10 @@ class StockDataProvider
 
       await txn.completed;
 
+      if (result.isEmpty) {
+        return right([]);
+      }
+
       final stocks = result
           .map((e) => StocksModel.fromMap(e as Map<String, dynamic>))
           .toList();
@@ -163,7 +172,7 @@ class StockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to retrieve all stocks: $e',
-          source: runtimeType.toString(),
+          source: "StockDataProvider",
           name: "getAll",
           args: []));
     }
@@ -189,7 +198,7 @@ class StockDataProvider
       return left(RewildError(
           sendToTg: true,
           'Failed to retrieve stocks by warehouse: $e',
-          source: runtimeType.toString(),
+          source: "StockDataProvider",
           name: "getAllByWh",
           args: [wh]));
     }

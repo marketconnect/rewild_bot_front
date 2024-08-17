@@ -21,21 +21,6 @@ class PriceService implements PaymentScreenPriceService {
   const PriceService({
     required this.apiClient,
   });
-  // @override
-  // Future<Either<RewildError, int>> addSubsInfoOnServer(int price) async {
-  //   final tokenEither = await tokenDataProvider.getToken();
-
-  //   final token = tokenEither.fold((l) => null, (r) => r);
-  //   if (token == null) {
-  //     return left(RewildError(
-  //       'Не удалось получить токен',
-  //       source: runtimeType.toString(),
-  //       name: 'getCurrentPrice',
-  //       args: [],
-  //     ));
-  //   }
-  //   return apiClient.addSubscriptionInfo(token: token, price: price);
-  // }
 
   @override
   Future<Either<RewildError, Prices>> getPrice(String token) async {

@@ -375,7 +375,6 @@ class CardOfProductModel {
         promoTextCard.hashCode;
   }
 
-  @override
   List<ReWildNotificationContent> notifications(
       List<ReWildNotificationModel> notifications) {
     List<ReWildNotificationContent> result = [];

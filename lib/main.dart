@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_web_libraries_in_flutter
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
@@ -5,7 +7,6 @@ import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
-import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 import 'package:rewild_bot_front/di/di.dart';
 
 import 'dart:html' as html;
@@ -23,9 +24,9 @@ void main() async {
         TBot.tBotErrorToken, TBot.tBotErrorChatId, details.toString());
     FlutterError.presentError(details);
   };
-  final chatId = await TelegramWebApp.getChatId();
-  sendMessageToTelegramBot(
-      TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Bot started $chatId');
+  // final chatId = await TelegramWebApp.getChatId();
+  // sendMessageToTelegramBot(
+  //     TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Bot started $chatId');
 
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -34,7 +35,8 @@ void main() async {
     // Initialize the database
     final dbHelper = DatabaseHelper();
     await dbHelper.database;
-
+    await dbHelper.cleanInvalidRecords();
+    await dbHelper.checkDatabaseIntegrity();
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {
     await sendMessageToTelegramBot(

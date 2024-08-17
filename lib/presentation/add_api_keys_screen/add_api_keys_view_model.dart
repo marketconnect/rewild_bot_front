@@ -133,9 +133,7 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
       return;
     }
 
-    print('SCIPS$scops');
     for (var scope in scops) {
-      print("SSSSSSSSSSS $scops");
       if (scope == 'Вопросы и отзывы') {
         scope = 'Вопросы/Отз.';
       }

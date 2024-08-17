@@ -1,11 +1,9 @@
 import 'dart:convert';
-import 'dart:io';
-import 'package:http_parser/http_parser.dart';
 
 import 'package:fpdart/fpdart.dart';
 
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 import 'package:rewild_bot_front/core/utils/api_helpers/wb_content_api_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
@@ -68,7 +66,6 @@ class WbContentApiClient implements ContentServiceWbContentApiClient {
     }
   }
 
-  @override
   Future<Either<RewildError, bool>> fetchCardLimits(
       {required String token}) async {
     try {
@@ -93,98 +90,6 @@ class WbContentApiClient implements ContentServiceWbContentApiClient {
           source: "WbContentApiClient",
           name: "fetchCardLimits",
           args: [token],
-          sendToTg: true));
-    }
-  }
-
-  @override
-  // Future<Either<RewildError, bool>> addMediaFile({
-  //   required String token,
-  //   required int nmId,
-  //   required int photoNumber,
-  //   required XFile file,
-  // }) async {
-  //   var uri =
-  //       Uri.parse('https://suppliers-api.wildberries.ru/content/v3/media/file');
-  //   var request = http.MultipartRequest("POST", uri)
-  //     ..headers.addAll({
-  //       'Authorization': token,
-  //       'X-Nm-Id': nmId.toString(),
-  //       'X-Photo-Number': photoNumber.toString(),
-  //     })
-  //     ..files.add(await http.MultipartFile.fromPath(
-  //       'uploadfile',
-  //       file.path,
-  //     ));
-
-  //   try {
-  //     final response = await request.send();
-
-  //     if (response.statusCode == 200) {
-  //       return const Right(true);
-  //     } else {
-  //       // Extracting error from response body for detailed error message
-  //       final respStr = await response.stream.bytesToString();
-  //       final errMsg = json.decode(respStr)['errorText'] ?? "Unknown error";
-  //       return Left(RewildError(
-  //         errMsg,
-  //         source: runtimeType.toString(),
-  //         name: "addMediaFile",
-  //         args: [nmId, photoNumber, file.path],
-  //         sendToTg: true,
-  //       ));
-  //     }
-  //   } catch (e) {
-  //     return Left(RewildError(e.toString(),
-  //         source: runtimeType.toString(),
-  //         name: "addMediaFile",
-  //         args: [nmId, photoNumber, file.path],
-  //         sendToTg: true));
-  //   }
-  // }
-  @override
-  Future<Either<RewildError, bool>> addMediaFile({
-    required String token,
-    required int nmId,
-    required int photoNumber,
-    required XFile file,
-  }) async {
-    var uri =
-        Uri.parse('https://suppliers-api.wildberries.ru/content/v3/media/file');
-    var request = http.MultipartRequest("POST", uri)
-      ..headers.addAll({
-        'Authorization': token,
-        'X-Nm-Id': nmId.toString(),
-        'X-Photo-Number': photoNumber.toString(),
-      })
-      ..files.add(await http.MultipartFile.fromPath(
-        'uploadfile',
-        file.path,
-        contentType: MediaType('image',
-            'jpeg'), // Замените 'jpeg' на соответствующий MIME-тип вашего файла
-      ));
-
-    try {
-      final response = await request.send();
-
-      if (response.statusCode == 200) {
-        return const Right(true);
-      } else {
-        final respStr = await response.stream.bytesToString();
-        final errMsg = json.decode(respStr)['errorText'] ?? "Unknown error";
-        return Left(RewildError(
-          errMsg,
-          source: runtimeType.toString(),
-          name: "addMediaFile",
-          args: [nmId, photoNumber, file.path],
-          sendToTg: true,
-        ));
-      }
-    } catch (e) {
-      return Left(RewildError(e.toString(),
-          source: runtimeType.toString(),
-          name: "addMediaFile",
-          args: [nmId, photoNumber, file.path],
           sendToTg: true));
     }
   }

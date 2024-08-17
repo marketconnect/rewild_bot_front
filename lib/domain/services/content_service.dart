@@ -1,5 +1,4 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
@@ -26,12 +25,6 @@ abstract class ContentServiceWbContentApiClient {
     required List<String> mediaUrls,
   });
 
-  Future<Either<RewildError, bool>> addMediaFile({
-    required String token,
-    required int nmId,
-    required int photoNumber,
-    required XFile file,
-  });
   Future<Either<RewildError, bool>> updateProductCard({
     required String token,
     required int nmID,
@@ -74,7 +67,6 @@ class ContentService implements AllCardsSeoContentService {
   });
   static final keyType = ApiKeyConstants.apiKeyTypes[ApiKeyType.content] ?? "";
 
-  @override
   Future<Either<RewildError, List<SubjCharacteristic>>>
       fetchSubjectCharacteristics({
     required int subjectId,
@@ -100,7 +92,7 @@ class ContentService implements AllCardsSeoContentService {
       return left(RewildError(
         'Токен отсутствует',
         sendToTg: false,
-        source: runtimeType.toString(),
+        source: "ContentService",
         name: "fetchNomenclatures",
         args: [],
       ));
@@ -160,7 +152,7 @@ class ContentService implements AllCardsSeoContentService {
       return left(RewildError(
         'Токен отсутствует',
         sendToTg: false,
-        source: runtimeType.toString(),
+        source: "ContentService",
         name: "fetchNomenclatures",
         args: [],
       ));
@@ -185,47 +177,6 @@ class ContentService implements AllCardsSeoContentService {
     return right(cardCatalog);
   }
 
-  @override
-  Future<Either<RewildError, bool>> addMediaFile({
-    required int nmId,
-    required int photoNumber,
-    required XFile file,
-  }) async {
-    // Get active seller
-    final activeSellerOrElse = await activeSellerDataProvider.getActive();
-    if (activeSellerOrElse.isLeft()) {
-      return left(
-          activeSellerOrElse.fold((l) => l, (r) => throw UnimplementedError()));
-    }
-    final activeSeller =
-        activeSellerOrElse.fold((l) => throw UnimplementedError(), (r) => r);
-
-    // Get Api key
-    final tokenResult = await apiKeyDataProvider.getWBApiKey(
-        type: keyType, sellerId: activeSeller.first.sellerId);
-    if (tokenResult.isLeft()) {
-      return left(
-          tokenResult.fold((l) => l, (r) => throw UnimplementedError()));
-    }
-    final token = tokenResult.fold((l) => throw UnimplementedError(), (r) => r);
-    if (token == null) {
-      return left(RewildError(
-        'Токен отсутствует',
-        sendToTg: false,
-        source: runtimeType.toString(),
-        name: "fetchNomenclatures",
-        args: [],
-      ));
-    }
-    return await wbContentApiClient.addMediaFile(
-      token: token.token,
-      nmId: nmId,
-      photoNumber: photoNumber,
-      file: file,
-    );
-  }
-
-  @override
   Future<Either<RewildError, bool>> updateProductCard({
     required int nmID,
     required String vendorCode,
@@ -257,7 +208,7 @@ class ContentService implements AllCardsSeoContentService {
       return left(RewildError(
         'Токен отсутствует',
         sendToTg: false,
-        source: runtimeType.toString(),
+        source: "ContentService",
         name: "fetchNomenclatures",
         args: [],
       ));
@@ -273,44 +224,6 @@ class ContentService implements AllCardsSeoContentService {
       title: title,
       description: description,
       characteristics: characteristics,
-    );
-  }
-
-  @override
-  Future<Either<RewildError, bool>> updateMediaFiles({
-    required int nmId,
-    required List<String> mediaUrls,
-  }) async {
-    // Get active seller
-    final activeSellerOrElse = await activeSellerDataProvider.getActive();
-    if (activeSellerOrElse.isLeft()) {
-      return left(
-          activeSellerOrElse.fold((l) => l, (r) => throw UnimplementedError()));
-    }
-    final activeSeller =
-        activeSellerOrElse.fold((l) => throw UnimplementedError(), (r) => r);
-
-    // Get Api key
-    final tokenResult = await apiKeyDataProvider.getWBApiKey(
-        type: keyType, sellerId: activeSeller.first.sellerId);
-    if (tokenResult.isLeft()) {
-      return left(
-          tokenResult.fold((l) => l, (r) => throw UnimplementedError()));
-    }
-    final token = tokenResult.fold((l) => throw UnimplementedError(), (r) => r);
-    if (token == null) {
-      return left(RewildError(
-        'Токен отсутствует',
-        sendToTg: false,
-        source: runtimeType.toString(),
-        name: "fetchNomenclatures",
-        args: [],
-      ));
-    }
-    return await wbContentApiClient.updateMediaFiles(
-      token: token.token,
-      nmId: nmId,
-      mediaUrls: mediaUrls,
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/core/constants/advertising_constants.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
@@ -67,13 +66,6 @@ class QuestionService implements MainNavigationQuestionService {
     return result.fold((l) => left(l), (r) {
       if (r == null) {
         return right(null);
-        // return left(RewildError(
-        //   sendToTg: false,
-        //   "Api key not found",
-        //   name: "getApiKey",
-        //   source: runtimeType.toString(),
-        //   args: [],
-        // ));
       }
       return right(r.token);
     });
@@ -89,7 +81,7 @@ class QuestionService implements MainNavigationQuestionService {
           sendToTg: true,
           "Username not found",
           name: "getUsername",
-          source: runtimeType.toString(),
+          source: "QuestionService",
           args: [],
         ));
       }
@@ -98,7 +90,6 @@ class QuestionService implements MainNavigationQuestionService {
   }
 
   // Function to get unanswered questions by nmId
-  @override
   Future<Either<RewildError, List<QuestionModel>>> getUnansweredQuestions(
       {required String token,
       required int take,
@@ -116,7 +107,6 @@ class QuestionService implements MainNavigationQuestionService {
   }
 
   // Function to get unanswered questions and answered questions by nmId
-  @override
   Future<Either<RewildError, List<QuestionModel>>> getQuestions({
     int? nmId,
     required String token,
@@ -160,7 +150,6 @@ class QuestionService implements MainNavigationQuestionService {
   }
 
   // Function to publish question on wb server
-  @override
   Future<Either<RewildError, bool>> publishQuestion(
       {required String token,
       required String id,

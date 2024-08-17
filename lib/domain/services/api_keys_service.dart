@@ -142,7 +142,7 @@ class ApiKeysService implements AddApiKeysScreenApiKeysService {
       return left(RewildError(
         sendToTg: true,
         sellerResultEither.fold((l) => l.message, (r) => ""),
-        source: runtimeType.toString(),
+        source: "ApiKeysService",
         name: 'add',
         args: [sellerId],
       ));
@@ -161,7 +161,6 @@ class ApiKeysService implements AddApiKeysScreenApiKeysService {
             addResEither.fold((l) => l, (r) => throw UnimplementedError()));
       }
     }
-
     final apiKey = ApiKeyModel(
         token: key,
         type: type,
@@ -173,7 +172,6 @@ class ApiKeysService implements AddApiKeysScreenApiKeysService {
         .firstWhere((entry) => entry.value == type,
             orElse: () => const MapEntry(ApiKeyType.stat, ""))
         .key;
-
     final addApiKeyResult = await apiKeysDataProvider.addWBApiKey(apiKey);
 
     return addApiKeyResult.fold((l) => left(l), (r) {
@@ -193,7 +191,7 @@ class ApiKeysService implements AddApiKeysScreenApiKeysService {
       return left(RewildError(
         sendToTg: true,
         sellerResultEither.fold((l) => l.message, (r) => ""),
-        source: runtimeType.toString(),
+        source: "ApiKeysService",
         name: 'add',
         args: [seller.sellerId],
       ));
@@ -206,7 +204,7 @@ class ApiKeysService implements AddApiKeysScreenApiKeysService {
       return left(RewildError(
         sendToTg: true,
         makeActiveResult.fold((l) => l.message, (r) => ""),
-        source: runtimeType.toString(),
+        source: "ApiKeysService",
         name: 'add',
         args: [seller.sellerId],
       ));
@@ -229,7 +227,7 @@ class ApiKeysService implements AddApiKeysScreenApiKeysService {
       return left(RewildError(
         sendToTg: true,
         keysForSellerResult.fold((l) => l.message, (r) => ""),
-        source: runtimeType.toString(),
+        source: "ApiKeysService",
         name: 'add',
         args: [id],
       ));

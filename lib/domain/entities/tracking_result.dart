@@ -17,7 +17,6 @@ class TrackingResult {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id, // This will be null for new records
       'keyword': keyword,
       'product_id': productId,
       'position': position,

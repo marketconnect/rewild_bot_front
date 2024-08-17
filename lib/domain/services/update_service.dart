@@ -8,6 +8,7 @@ import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
 // import 'package:rewild_bot_front/core/utils/telegram.dart';
+
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
@@ -235,7 +236,6 @@ class UpdateService
       ? true
       : DateTime.now().difference(updatedAt!) > SettingsConstants.updatePeriod;
 
-  @override
   Future<Either<RewildError, void>> fetchAllUserCardsFromServer(
       String token) async {
     // check db is empty when app starts
@@ -337,19 +337,14 @@ class UpdateService
     final fetchedCardsOfProductsEither =
         await detailsApiClient.get(ids: newCards.map((e) => e.nmId).toList());
     if (fetchedCardsOfProductsEither.isLeft()) {
-      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          'fetchedCardsOfProductsEither ${fetchedCardsOfProductsEither.fold((l) => l, (r) => throw UnimplementedError())}');
       return left(fetchedCardsOfProductsEither.fold(
           (l) => l, (r) => throw UnimplementedError()));
     }
     final fetchedCardsOfProducts =
         fetchedCardsOfProductsEither.getOrElse((l) => []);
-    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        'fetchedCards ${fetchedCardsOfProducts.length}');
+
     // add to db cards
     for (final card in fetchedCardsOfProducts) {
-      sendMessageToTelegramBot(
-          TBot.tBotErrorToken, TBot.tBotErrorChatId, 'c ${card.nmId}');
       // append img
       final img = newCards.firstWhere((e) => e.nmId == card.nmId).img;
       card.img = img;
@@ -358,26 +353,22 @@ class UpdateService
       final insertEither =
           await cardOfProductDataProvider.insertOrUpdate(card: card);
       if (insertEither.isLeft()) {
-        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-            'err ${insertEither.fold((l) => l, (r) => throw UnimplementedError())}');
         return left(
             insertEither.fold((l) => l, (r) => throw UnimplementedError()));
       }
 
-      sendMessageToTelegramBot(
-          TBot.tBotErrorToken, TBot.tBotErrorChatId, '${card.nmId} OK!');
-
       // add stocks
       for (final size in card.sizes) {
-        sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'size ${card.nmId}');
         for (final stock in size.stocks) {
+          sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+              "STOCK PUT IN UPDATE ${stock.toMap()}");
           final insertStockEither =
               await stockDataProvider.insert(stock: stock);
           if (insertStockEither.isLeft()) {
             return left(insertStockEither.fold(
                 (l) => l, (r) => throw UnimplementedError()));
           }
+
           // if the miracle does not happen
           // and initial stocks do not exist on server yet
           if (abscentOnServerNewCardsIds.contains(stock.nmId)) {

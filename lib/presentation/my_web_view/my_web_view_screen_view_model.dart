@@ -92,7 +92,7 @@ class MyWebViewScreenViewModel extends ResourceChangeNotifier {
       return left(RewildError(
           sendToTg: true,
           e.toString(),
-          source: runtimeType.toString(),
+          source: "MyWebViewScreenViewModel",
           name: "_parseCards",
           args: [jsonString]));
     }

@@ -10,7 +10,6 @@ import 'package:rewild_bot_front/domain/services/question_service.dart';
 class QuestionsApiClient implements QuestionServiceQuestionApiClient {
   const QuestionsApiClient();
 
-  @override
   Future<Either<RewildError, int>> getCountUnansweredQuestions(
       {required String token}) async {
     try {
@@ -177,7 +176,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "QuestionsApiClient",
           name: "getUnansweredQuestions",
           args: [
             token,
@@ -188,7 +187,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
       return left(RewildError(
         sendToTg: false,
         "Ошибка при получении списка вопросов: $e",
-        source: runtimeType.toString(),
+        source: "QuestionsApiClient",
         name: "getUnansweredQuestions",
         args: [
           token,
@@ -238,7 +237,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "QuestionsApiClient",
           name: "getAnsweredQuestions",
           args: [
             token,
@@ -249,7 +248,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
       return left(RewildError(
         sendToTg: false,
         "Ошибка при получении списка вопросов: $e",
-        source: runtimeType.toString(),
+        source: "QuestionsApiClient",
         name: "getAnsweredQuestions",
         args: [
           token,
@@ -281,7 +280,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "QuestionsApiClient",
           name: "handleQuestion",
           args: [id, answer],
         ));
@@ -290,7 +289,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
       return left(RewildError(
         sendToTg: false,
         "Ошибка при обработке вопроса: $e",
-        source: runtimeType.toString(),
+        source: "QuestionsApiClient",
         name: "handleQuestion",
         args: [id, answer],
       ));
@@ -314,7 +313,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
   //       return left(RewildError(
   // sendToTg: false,
   //         errString,
-  //         source: runtimeType.toString(),
+  //         source: "QuestionsApiClient",,
   //         name: "hasNewFeedbacksAndQuestions",
   //         args: [],
   //       );
@@ -323,7 +322,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
   //     return left(RewildError(
   // sendToTg: false,
   //       "Ошибка при проверке наличия новых отзывов и вопросов: $e",
-  //       source: runtimeType.toString(),
+  //       source: "QuestionsApiClient",,
   //       name: "hasNewFeedbacksAndQuestions",
   //       args: [],
   //     );
@@ -347,7 +346,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
   //       return left(RewildError(
   // sendToTg: false,
   //         errString,
-  //         source: runtimeType.toString(),
+  //         source: "QuestionsApiClient",,
   //         name: "getFrequentlyAskedProducts",
   //         args: [, size],
   //       );
@@ -356,7 +355,7 @@ class QuestionsApiClient implements QuestionServiceQuestionApiClient {
   //     return left(RewildError(
   // sendToTg: false,
   //       "Ошибка при получении часто задаваемых товаров: $e",
-  //       source: runtimeType.toString(),
+  //       source: "QuestionsApiClient",,
   //       name: "getFrequentlyAskedProducts",
   //       args: [, size],
   //     );

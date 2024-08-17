@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 // import 'package:rewild_bot_front/core/utils/telegram.dart';

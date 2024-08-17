@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:fpdart/fpdart.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
@@ -9,7 +10,6 @@ import 'package:rewild_bot_front/domain/entities/lemma_by_filter.dart';
 class FilterApiClient {
   const FilterApiClient();
 
-  @override
   Future<Either<RewildError, List<String>>> getFilterValues({
     required String token,
     required String filterName,
@@ -28,7 +28,7 @@ class FilterApiClient {
         return left(RewildError(
           sendToTg: true,
           "Ошибка HTTP: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "FilterApiClient",
           name: "getFilterValues",
           args: [],
         ));
@@ -37,14 +37,13 @@ class FilterApiClient {
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: ${e.toString()}",
-        source: runtimeType.toString(),
+        source: "FilterApiClient",
         name: "getFilterValues",
         args: [],
       ));
     }
   }
 
-  @override
   Future<Either<RewildError, List<KwByLemma>>> getKeywordsByLemmas({
     required String token,
     required List<int> lemmasIDs,
@@ -73,7 +72,7 @@ class FilterApiClient {
         return left(RewildError(
           sendToTg: true,
           "Ошибка HTTP: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "FilterApiClient",
           name: "getKeywordsByLemmas",
           args: [],
         ));
@@ -82,14 +81,13 @@ class FilterApiClient {
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: ${e.toString()}",
-        source: runtimeType.toString(),
+        source: "FilterApiClient",
         name: "getKeywordsByLemmas",
         args: [],
       ));
     }
   }
 
-  @override
   Future<Either<RewildError, List<KwByLemma>>> getKeywordsByWords({
     required String token,
     required List<String> words,
@@ -114,7 +112,7 @@ class FilterApiClient {
         return left(RewildError(
           sendToTg: true,
           "Ошибка HTTP: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "FilterApiClient",
           name: "getKeywordsByWords",
           args: [],
         ));
@@ -123,14 +121,13 @@ class FilterApiClient {
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: ${e.toString()}",
-        source: runtimeType.toString(),
+        source: "FilterApiClient",
         name: "getKeywordsByWords",
         args: [],
       ));
     }
   }
 
-  @override
   Future<Either<RewildError, List<LemmaByFilterId>>> getLemmasByFilterId({
     required String token,
     required int filterID,
@@ -159,7 +156,7 @@ class FilterApiClient {
         return left(RewildError(
           sendToTg: true,
           "Ошибка HTTP: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "FilterApiClient",
           name: "getLemmasByFilterId",
           args: [],
         ));
@@ -168,7 +165,7 @@ class FilterApiClient {
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: ${e.toString()}",
-        source: runtimeType.toString(),
+        source: "FilterApiClient",
         name: "getLemmasByFilterId",
         args: [],
       ));

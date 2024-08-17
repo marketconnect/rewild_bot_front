@@ -1,9 +1,8 @@
 import 'dart:convert';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/services/price_service.dart';
 import 'package:rewild_bot_front/domain/services/tariff_service.dart';
@@ -68,8 +67,6 @@ class PriceApiClient
       final response = await http.get(url, headers: headers);
 
       if (response.statusCode == 200) {
-        sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, '${response.body}');
         final responseData = jsonDecode(response.body);
         return right(Prices.fromMap(responseData));
       } else {

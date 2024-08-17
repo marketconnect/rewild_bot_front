@@ -38,7 +38,6 @@ class AuthService
   const AuthService(
       {required this.secureDataProvider, required this.authApiClient});
 
-  @override
   Future<Either<RewildError, bool>> isLogined() async {
     final getTokenEither = await secureDataProvider.getServerToken();
     if (getTokenEither.isLeft()) {

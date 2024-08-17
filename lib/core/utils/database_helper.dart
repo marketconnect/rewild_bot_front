@@ -1,5 +1,7 @@
 import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/idb_browser.dart';
+import 'package:rewild_bot_front/.env.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -21,6 +23,40 @@ class DatabaseHelper {
     return _database!;
   }
 
+  Future<void> cleanInvalidRecords() async {
+    final db = await DatabaseHelper().database;
+    final txn = db.transaction('stocks', idbModeReadWrite);
+    final store = txn.objectStore('stocks');
+
+    final result = await store.getAll();
+    for (var item in result) {
+      final map = item as Map<String, dynamic>;
+
+      await store.delete(map['id']);
+    }
+
+    await txn.completed;
+  }
+
+  Future<void> checkDatabaseIntegrity() async {
+    final db = await DatabaseHelper().database;
+    final txn = db.transaction('stocks', idbModeReadOnly);
+    final store = txn.objectStore('stocks');
+
+    final result = await store.getAll();
+
+    for (var item in result) {
+      final map = item as Map<String, dynamic>;
+      if (map['nmId'] == null) {
+        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+            "Error: Missing nmId in record: $map");
+        // print("Error: Missing nmId in record: $map");
+      }
+    }
+
+    await txn.completed;
+  }
+
   Future<Database> _initializeDatabase() async {
     // Ensure the database factory is not null
     final dbFactory = getIdbFactory();
@@ -29,8 +65,8 @@ class DatabaseHelper {
     }
 
     // Open the database and check if it succeeded
-    final db = await dbFactory.open('rewild-1.db',
-        version: 24, onUpgradeNeeded: _onCreate);
+    final db =
+        await dbFactory.open('rw.db', version: 1, onUpgradeNeeded: _onCreate);
 
     return db;
   }
@@ -51,14 +87,12 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('tariffs', () {
-      final store =
-          db.createObjectStore('tariffs', keyPath: 'id', autoIncrement: true);
+      final store = db.createObjectStore('tariffs', autoIncrement: false);
       store.createIndex('storeId_type', ['storeId', 'type'], unique: true);
     });
 
     createStoreIfNotExists('supplies', () {
-      final store =
-          db.createObjectStore('supplies', keyPath: 'id', autoIncrement: true);
+      final store = db.createObjectStore('supplies', autoIncrement: true);
       store.createIndex('nmId_wh_sizeOptionId', ['nmId', 'wh', 'sizeOptionId'],
           unique: true);
     });
@@ -82,17 +116,17 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('orders', () {
-      final store =
-          db.createObjectStore('orders', keyPath: 'id', autoIncrement: true);
+      final store = db.createObjectStore('orders');
       store.createIndex('sku_warehouse_period', ['sku', 'warehouse', 'period'],
           unique: true);
     });
 
     createStoreIfNotExists('card_keywords', () {
       final store = db.createObjectStore('card_keywords',
-          keyPath: 'id', autoIncrement: true);
-      store.createIndex('cardId_keyword_freq', ['cardId', 'keyword'],
-          unique: true);
+          keyPath: 'cardId', autoIncrement: true);
+      store.createIndex('cardId', 'cardId');
+      store.createIndex('updatedAt', 'updatedAt');
+      store.createIndex('cardId_keyword', ['cardId', 'keyword'], unique: true);
     });
 
     createStoreIfNotExists('cached_kw_by_autocomplite', () {
@@ -100,37 +134,43 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('cached_kw_by_lemma', () {
-      final store =
-          db.createObjectStore('cached_kw_by_lemma', keyPath: 'lemmaID');
-      store.createIndex('lemmaID_keyword_freq', ['lemmaID', 'keyword'],
+      final store = db.createObjectStore('cached_kw_by_lemma',
+          keyPath: 'id', autoIncrement: true);
+      store.createIndex('lemmaID_keyword', ['lemmaID', 'keyword'],
           unique: true);
     });
 
     createStoreIfNotExists('cached_kw_by_word', () {
-      final store =
-          db.createObjectStore('cached_kw_by_word', keyPath: 'lemmaID');
-      store.createIndex('lemmaID_keyword_freq', ['lemmaID', 'keyword'],
+      final store = db.createObjectStore('cached_kw_by_word',
+          keyPath: 'id', autoIncrement: true);
+      store.createIndex('lemmaID_keyword', ['lemmaID', 'keyword'],
           unique: true);
+      store.createIndex('lemma', 'lemma'); // Добавляем индекс на поле 'lemma'
     });
 
     createStoreIfNotExists('filters', () {
-      final store = db.createObjectStore('filters', autoIncrement: true);
+      final store =
+          db.createObjectStore('filters', keyPath: 'id', autoIncrement: true);
       store.createIndex('sectionName_itemId', ['sectionName', 'itemId'],
           unique: true);
     });
 
     createStoreIfNotExists('tracking_results', () {
-      final store =
-          db.createObjectStore('tracking_results', autoIncrement: true);
+      final store = db.createObjectStore('tracking_results',
+          keyPath: 'id', autoIncrement: true);
+      store.createIndex('date', 'date');
+      store.createIndex('keyword_geo_date', ['keyword', 'geo', 'date']);
       store.createIndex(
           'keyword_geo_product_date', ['keyword', 'geo', 'product_id', 'date'],
           unique: true);
     });
 
     createStoreIfNotExists('cached_lemmas', () {
-      final store = db.createObjectStore('cached_lemmas', autoIncrement: true);
-      store.createIndex('subjectId_lemma', ['subjectId', 'lemma'],
+      final store = db.createObjectStore('cached_lemmas', autoIncrement: false);
+      store.createIndex('subjectId_lemmaId', ['subjectId', 'lemmaId'],
           unique: true);
+      store.createIndex('subjectId',
+          'subjectId'); // Добавление отдельного индекса для subjectId
     });
 
     createStoreIfNotExists('notifications', () {
@@ -138,6 +178,8 @@ class DatabaseHelper {
           keyPath: 'id', autoIncrement: true);
       store.createIndex('parentId_condition', ['parentId', 'condition'],
           unique: true);
+      store.createIndex('parentId', 'parentId');
+      store.createIndex('condition', 'condition');
     });
 
     createStoreIfNotExists('total_cost_calculator', () {
@@ -150,15 +192,17 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('subs', () {
-      db.createObjectStore('subs', keyPath: 'id', autoIncrement: true);
+      final store =
+          db.createObjectStore('subs', keyPath: 'id', autoIncrement: true);
+      store.createIndex('card_id', 'card_id', unique: true);
+      store.createIndex('end_date', 'end_date');
     });
 
     createStoreIfNotExists('groups', () {
-      final store = db.createObjectStore('groups', autoIncrement: true);
-      store.createIndex('name_nmId', ['name', 'nmId'], unique: true);
+      final store =
+          db.createObjectStore('groups', keyPath: 'id', autoIncrement: true);
+      store.createIndex('nmId_name', ['nmId', 'name'], unique: true);
     });
-
-    // CardItems
   }
 
   Future<void> close() async {

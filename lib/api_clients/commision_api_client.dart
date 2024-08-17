@@ -1,4 +1,5 @@
 import 'dart:convert';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
 
@@ -11,7 +12,6 @@ import 'package:rewild_bot_front/domain/services/update_service.dart';
 class CommissionApiClient implements UpdateServiceTariffApiClient {
   const CommissionApiClient();
 
-  @override
   Future<Either<RewildError, CommissionModel>> get({
     required String token,
     required int id,

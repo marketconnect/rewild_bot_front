@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
-import 'package:rewild_bot_front/widgets/alert_widget.dart';
 import 'package:rewild_bot_front/.env.dart';
 
 class ResourceChangeNotifier extends ChangeNotifier {

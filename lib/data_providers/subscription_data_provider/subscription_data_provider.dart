@@ -40,7 +40,7 @@ class SubscriptionDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SubscriptionDataProvider",
         name: "save",
         args: [subscription],
       ));
@@ -74,7 +74,7 @@ class SubscriptionDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SubscriptionDataProvider",
         name: "getAllNotExpired",
       ));
     }
@@ -96,7 +96,7 @@ class SubscriptionDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SubscriptionDataProvider",
         name: "getOne",
         args: [nmId],
       ));
@@ -116,13 +116,12 @@ class SubscriptionDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SubscriptionDataProvider",
         name: "deleteAll",
       ));
     }
   }
 
-  @override
   Future<Either<RewildError, List<SubscriptionModel>>>
       getActiveSubscriptions() async {
     try {
@@ -150,7 +149,7 @@ class SubscriptionDataProvider
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "SubscriptionDataProvider",
         name: "getActiveSubscriptions",
       ));
     }

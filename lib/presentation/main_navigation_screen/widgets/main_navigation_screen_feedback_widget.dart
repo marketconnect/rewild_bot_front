@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rewild_bot_front/core/constants/icon_constant.dart';
-import 'package:rewild_bot_front/widgets/empty_widget.dart';
+import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
+import 'package:rewild_bot_front/widgets/empty_api_key.dart';
 
 class MainNavigationScreenFeedBackWidget extends StatelessWidget {
   const MainNavigationScreenFeedBackWidget(
@@ -12,34 +13,11 @@ class MainNavigationScreenFeedBackWidget extends StatelessWidget {
     final screenHeight = MediaQuery.of(context).size.height;
     return SafeArea(
       child: !apiKeyExists
-          ? Center(
-              child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const EmptyWidget(
-                    text:
-                        'Для работы с отзывами и вопросами WB вам необходимо добавить токен "Вопросы и отзывы"'),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
-                ),
-                TextButton(
-                    onPressed: () => Navigator.of(context)
-                        .pushNamed("MainNavigationRouteNames.apiKeysScreen"),
-                    child: Container(
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        width: screenWidth * 0.7,
-                        height: screenHeight * 0.08,
-                        child: Text(
-                          'Добавить токен',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary),
-                        )))
-              ],
-            ))
+          ? const EmptyApiKey(
+              text:
+                  'Для работы с отзывами и вопросами WB вам необходимо добавить токен "Вопросы и отзывы"',
+              route: MainNavigationRouteNames.apiKeysScreen,
+            )
           : SingleChildScrollView(
               child: Column(children: [
                 Padding(

@@ -13,7 +13,6 @@ class CachedKwByWordDataProvider
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   Future<Either<RewildError, void>> insertAll(List<KwByLemma> lemmas) async {
     try {
       final db = await _db;
@@ -42,7 +41,6 @@ class CachedKwByWordDataProvider
     }
   }
 
-  @override
   Future<Either<RewildError, List<KwByLemma>>> getByWord(String word) async {
     try {
       final db = await _db;

@@ -25,7 +25,6 @@ class TariffService implements AllCardsScreenAverageLogisticsService {
       {required this.tariffDataProvider,
       required this.averageLogisticsApiClient,
       required this.averageLogisticsDataProvider});
-  @override
   Future<Either<RewildError, List<TariffModel>>> getByStoreId(
       int storeId) async {
     return tariffDataProvider.getByStoreId(storeId);

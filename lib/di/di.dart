@@ -5,11 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/api_clients/advert_api_client.dart';
-import 'package:rewild_bot_front/api_clients/analitics_detail_api_client.dart';
 import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
-import 'package:rewild_bot_front/api_clients/filter_api_client.dart';
 import 'package:rewild_bot_front/api_clients/initial_stocks_api_client.dart';
 import 'package:rewild_bot_front/api_clients/price_api_client.dart';
 import 'package:rewild_bot_front/api_clients/product_card_service_api_client.dart';
@@ -161,9 +159,6 @@ class _DIContainer {
 
   WbContentApiClient _makeWbContentApiClient() => const WbContentApiClient();
 
-  FilterApiClient _makeFilterApiClient() => const FilterApiClient();
-
-  AnaliticsApiClient _makeAnaliticsApiClient() => const AnaliticsApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -412,6 +407,7 @@ class _DIContainer {
 class ScreenFactoryDefault implements ScreenFactory {
   final _DIContainer _diContainer;
 
+  // ignore: library_private_types_in_public_api
   const ScreenFactoryDefault(this._diContainer);
 
   @override

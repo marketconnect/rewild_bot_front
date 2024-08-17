@@ -74,7 +74,6 @@ class SubscriptionService
       // required this.userNameStorage,
       required this.cardsNumberStreamController});
 
-  @override
   Future<Either<RewildError, bool>> subscriptionsIsNotEmpty() async {
     final subsEither = await dataProvider.getAllNotExpired();
     if (subsEither.isRight()) {
@@ -85,7 +84,6 @@ class SubscriptionService
     return right(false);
   }
 
-  @override
   Future<Either<RewildError, bool>> isSubscribed(int nmId) async {
     final subsEither = await dataProvider.getOne(nmId);
     if (subsEither.isLeft()) {
@@ -217,17 +215,14 @@ class SubscriptionService
     required String startDate,
     required String endDate,
   }) async {
-    print("Create subs $cardIds $startDate $endDate");
     // Create subscriptions in the API client
     final allSubsOnServerEither = await apiClient.createSubscriptions(
         token: token, cardIds: cardIds, startDate: startDate, endDate: endDate);
     if (allSubsOnServerEither.isLeft()) {
       return allSubsOnServerEither; // If API creation fails, return the error
     }
-    print("AAAAAAAAAAAAAA");
     final allSubscriptionsOnServer =
         allSubsOnServerEither.fold((l) => throw UnimplementedError(), (r) => r);
-    print("BBBBBBBBBBBBB");
     // Save all server`s subscriptions to the local data provider
     List<SubscriptionModel> allSubscriptionsFromServer = [];
 
@@ -235,7 +230,6 @@ class SubscriptionService
     if (res.isLeft()) {
       return res.fold((l) => left(l), (r) => throw UnimplementedError());
     }
-    print("CCCCCCCCCCCCC");
     return right(
         allSubscriptionsFromServer); // Return the list of saved subscriptions
   }

@@ -32,7 +32,6 @@ class AllCardsFilterService implements AllCardsScreenFilterService {
       required this.filterDataProvider,
       required this.sellerDataProvider});
 
-  @override
   Future<Either<RewildError, FilterModel>> getCompletlyFilledFilter() async {
     Map<int, String> brands = {};
     Map<int, String> promos = {};
@@ -106,7 +105,6 @@ class AllCardsFilterService implements AllCardsScreenFilterService {
     return await filterDataProvider.delete();
   }
 
-  @override
   Future<Either<RewildError, void>> setFilter(
       {required FilterModel filter}) async {
     final values = await Future.wait([

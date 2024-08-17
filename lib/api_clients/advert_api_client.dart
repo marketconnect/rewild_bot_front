@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:fpdart/fpdart.dart';
+// ignore: depend_on_referenced_packages
 import 'package:intl/intl.dart';
 import 'package:rewild_bot_front/core/constants/advertising_constants.dart';
 import 'package:rewild_bot_front/core/utils/api_helpers/wb_advert_seller_api_helper.dart';
@@ -15,7 +16,6 @@ import 'package:rewild_bot_front/domain/services/advert_service.dart';
 class AdvertApiClient implements AdvertServiceAdvertApiClient {
   const AdvertApiClient();
 
-  @override
   Future<Either<RewildError, bool>> setSearchExcludedKeywords(
       {required String token,
       required int campaignId,
@@ -50,7 +50,6 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
     }
   }
 
-  @override
   Future<Either<RewildError, bool>> setAutoSetExcluded(
       {required String token,
       required int campaignId,
@@ -407,7 +406,6 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
     }
   }
 
-  @override
   Future<Either<RewildError, AutoCampaignStatWord>> autoStatWords(
       {required String token, required int campaignId}) async {
     try {
@@ -607,7 +605,6 @@ class AdvertApiClient implements AdvertServiceAdvertApiClient {
   }
 
   // wb api returns only one intreval per campaignId
-  @override
   Future<Either<RewildError, CampaignData?>> getSingleCampaignDataByInterval({
     required int campaignId,
     required (String, String) interval,

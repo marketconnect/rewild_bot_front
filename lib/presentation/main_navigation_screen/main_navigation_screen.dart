@@ -64,7 +64,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         apiKeyExists: feedbackApiKeyExists,
       ),
       MainNavigationScreenAdvertWidget(
-        adverts: [],
+        adverts: const [],
         balance: balance,
         apiKeyExists: advertApiKeyExists,
         callbackForUpdate: callback,
@@ -82,11 +82,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         child: Scaffold(
           body: widgets[_widgetIndex].runtimeType ==
                   MainNavigationScreenAdvertWidget
-              ? SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: widgets[_widgetIndex],
-                  ),
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: widgets[_widgetIndex],
                 )
               : Padding(
                   padding: const EdgeInsets.all(8.0),

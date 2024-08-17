@@ -147,23 +147,43 @@ class FilterDataProvider implements AllCardsFilterFilterDataProvider {
         if (itemId == null || itemName == null) {
           continue;
         }
-        if (row['sectionName'] == 'subjects') {
-          subjects[itemId] = itemName;
-        }
-        if (row['sectionName'] == 'brands') {
-          brands[itemId] = itemName;
-        }
-        if (row['sectionName'] == 'suppliers') {
-          suppliers[itemId] = itemName;
-        }
-        if (row['sectionName'] == 'promos') {
-          promos[itemId] = itemName;
-        }
-        if (row['sectionName'] == 'withSales') {
-          withSales = true;
-        }
-        if (row['sectionName'] == 'withStocks') {
-          withStocks = true;
+        // if (row['sectionName'] == 'subjects') {
+        //   subjects[itemId] = itemName;
+        // }
+        // if (row['sectionName'] == 'brands') {
+        //   brands[itemId] = itemName;
+        // }
+        // if (row['sectionName'] == 'suppliers') {
+        //   suppliers[itemId] = itemName;
+        // }
+        // if (row['sectionName'] == 'promos') {
+        //   promos[itemId] = itemName;
+        // }
+        // if (row['sectionName'] == 'withSales') {
+        //   withSales = true;
+        // }
+        // if (row['sectionName'] == 'withStocks') {
+        //   withStocks = true;
+        // }
+        switch (row['sectionName']) {
+          case 'subjects':
+            subjects[itemId] = itemName;
+            break;
+          case 'brands':
+            brands[itemId] = itemName;
+            break;
+          case 'suppliers':
+            suppliers[itemId] = itemName;
+            break;
+          case 'promos':
+            promos[itemId] = itemName;
+            break;
+          case 'withSales':
+            withSales = true;
+            break;
+          case 'withStocks':
+            withStocks = true;
+            break;
         }
       }
 

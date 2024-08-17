@@ -12,7 +12,6 @@ class CachedLemmaDataProvider implements UpdateServiceLemmaDataProvider {
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   Future<Either<RewildError, void>> addAll(
       int subjectId, List<LemmaByFilterId> lemmas) async {
     try {
@@ -42,14 +41,13 @@ class CachedLemmaDataProvider implements UpdateServiceLemmaDataProvider {
     }
   }
 
-  @override
   Future<Either<RewildError, List<LemmaByFilterId>>> getAllForSubjectID(
       int subjectId) async {
     try {
       final db = await _db;
       final txn = db.transaction('cached_lemmas', idbModeReadOnly);
       final store = txn.objectStore('cached_lemmas');
-      final index = store.index('subjectId');
+      final index = store.index('subjectId'); // Используем новый индекс
 
       final lemmas = <LemmaByFilterId>[];
       final cursorStream = index.openCursor(key: subjectId);

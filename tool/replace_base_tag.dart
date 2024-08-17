@@ -16,8 +16,10 @@ void main() {
     content = content.replaceFirst('</head>', '$scriptTag\n</head>');
 
     file.writeAsStringSync(content);
+    // ignore: avoid_print
     print('index.html успешно обновлен.');
   } else {
+    // ignore: avoid_print
     print('index.html не найден.');
   }
 }

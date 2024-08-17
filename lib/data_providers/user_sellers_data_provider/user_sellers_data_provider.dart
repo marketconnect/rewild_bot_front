@@ -31,7 +31,7 @@ class UserSellersDataProvider
     } catch (e) {
       return left(RewildError(
         "Failed to add user seller: $e",
-        source: runtimeType.toString(),
+        source: "UserSellersDataProvider",
         name: "addOne",
         args: [seller],
         sendToTg: true,
@@ -58,7 +58,7 @@ class UserSellersDataProvider
     } catch (e) {
       return left(RewildError(
         "Failed to retrieve all user sellers: $e",
-        source: runtimeType.toString(),
+        source: "UserSellersDataProvider",
         name: "getAll",
         args: [],
         sendToTg: true,
@@ -66,6 +66,7 @@ class UserSellersDataProvider
     }
   }
 
+  @override
   Future<Either<RewildError, void>> rename(
       String sellerId, String sellerName) async {
     try {
@@ -85,7 +86,7 @@ class UserSellersDataProvider
     } catch (e) {
       return left(RewildError(
         "Failed to rename user seller: $e",
-        source: runtimeType.toString(),
+        source: "UserSellersDataProvider",
         name: "rename",
         args: [sellerId, sellerName],
         sendToTg: true,
@@ -117,7 +118,7 @@ class UserSellersDataProvider
     } catch (e) {
       return left(RewildError(
         "Failed to retrieve active user sellers: $e",
-        source: runtimeType.toString(),
+        source: "UserSellersDataProvider",
         name: "getActive",
         args: [],
         sendToTg: true,
@@ -145,7 +146,7 @@ class UserSellersDataProvider
     } catch (e) {
       return left(RewildError(
         "Failed to set active status for user seller: $e",
-        source: runtimeType.toString(),
+        source: "UserSellersDataProvider",
         name: "setActive",
         args: [sellerId],
         sendToTg: true,
@@ -171,7 +172,7 @@ class UserSellersDataProvider
     } catch (e) {
       return left(RewildError(
         "Failed to reset all user sellers: $e",
-        source: runtimeType.toString(),
+        source: "UserSellersDataProvider",
         name: "resetAll",
         args: [],
         sendToTg: true,

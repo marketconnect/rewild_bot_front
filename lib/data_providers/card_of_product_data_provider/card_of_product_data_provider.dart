@@ -41,6 +41,7 @@ class CardOfProductDataProvider
   }
 
   @override
+  @override
   Future<Either<RewildError, int>> insertOrUpdate(
       {required CardOfProductModel card}) async {
     try {
@@ -48,17 +49,8 @@ class CardOfProductDataProvider
       final txn = db.transaction('cards', idbModeReadWrite);
       final store = txn.objectStore('cards');
 
-      final existingCard = await store.getObject(card.nmId);
-
-      if (existingCard != null) {
-        sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Put card ${card.nmId}');
-        await store.put(card.toMap());
-      } else {
-        sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Add card ${card.nmId}');
-        await store.add(card.toMap()); // Убрано явное указание ключа
-      }
+      // Используем put для вставки или обновления записи
+      await store.put(card.toMap());
 
       await txn.completed;
 

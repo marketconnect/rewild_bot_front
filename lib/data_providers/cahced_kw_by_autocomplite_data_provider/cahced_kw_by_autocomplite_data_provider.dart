@@ -11,7 +11,6 @@ class CachedKwByAutocompliteDataProvider
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   Future<Either<RewildError, void>> addAll(List<(String, int)> keywords) async {
     try {
       final db = await _db;
@@ -22,7 +21,7 @@ class CachedKwByAutocompliteDataProvider
         await store.put({
           'keyword': keyword.$1,
           'freq': keyword.$2,
-        }, keyword.$1);
+        });
       }
 
       await txn.completed;
@@ -38,7 +37,6 @@ class CachedKwByAutocompliteDataProvider
     }
   }
 
-  @override
   Future<Either<RewildError, List<(String, int)>>> getAll() async {
     try {
       final db = await _db;

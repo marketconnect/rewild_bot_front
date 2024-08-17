@@ -11,7 +11,7 @@ import 'package:rewild_bot_front/domain/entities/size_model.dart';
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
-import 'package:rewild_bot_front/presentation/ab_test_results_screen/ab_tests_results_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
@@ -79,7 +79,6 @@ class CardOfProductService
     implements
         MainNavigationCardService,
         AllCardsSeoScreenCardOfProductService,
-        ABTestsResultsCardsService,
         AllCardsScreenCardOfProductService,
         PaymentScreenCardsService {
   final CardOfProductServiceWarehouseDataProvider warehouseDataprovider;
@@ -161,12 +160,10 @@ class CardOfProductService
     });
   }
 
-  @override
   Future<Either<RewildError, CardOfProductModel?>> getOne(int nmId) async {
     return await cardOfProductDataProvider.get(nmId: nmId);
   }
 
-  @override
   Future<Either<RewildError, List<CardOfProductModel>>>
       getNotUserCards() async {
     // get user nmIds
@@ -194,13 +191,11 @@ class CardOfProductService
     return await cardOfProductDataProvider.getAll(notUserNmIds);
   }
 
-  @override
   Future<Either<RewildError, String>> getImageForNmId(
       {required int nmId}) async {
     return await cardOfProductDataProvider.getImage(id: nmId);
   }
 
-  @override
   Future<Either<RewildError, List<int>>> getAllNmIds() async {
     final nmIdsEither = await cardOfProductDataProvider.getAllNmIds();
 
