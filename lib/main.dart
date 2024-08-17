@@ -24,6 +24,7 @@ void main() async {
         TBot.tBotErrorToken, TBot.tBotErrorChatId, details.toString());
     FlutterError.presentError(details);
   };
+
   // final chatId = await TelegramWebApp.getChatId();
 
   runZonedGuarded<Future<void>>(() async {
