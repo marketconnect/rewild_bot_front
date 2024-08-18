@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/constants/settings.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 // import 'package:rewild_bot_front/core/utils/telegram.dart';
 // import 'package:rewild_bot_front/core/utils/telegram.dart';
 
@@ -19,6 +21,7 @@ import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
 import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
@@ -176,6 +179,7 @@ class UpdateService
         AllCardsScreenUpdateService,
         MyWebViewScreenViewModelUpdateService,
         PaymentWebViewUpdateService,
+        AllCardsSeoUpdateService,
         AddApiKeysUpdateService,
         MainNavigationUpdateService {
   final UpdateServiceDetailsApiClient detailsApiClient;
@@ -276,7 +280,8 @@ class UpdateService
       {required String token,
       required List<CardOfProductModel> cardOfProductsToInsert}) async {
     // get all cards from local db
-
+    sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, "UpdateService insert");
     final cardsInDBEither = await cardOfProductDataProvider.getAll();
 
     if (cardsInDBEither.isLeft()) {
@@ -387,7 +392,8 @@ class UpdateService
         }
       }
     }
-
+    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+        "UpdateService insert end ${newCards.length}");
     // cardsNumberStreamController.add(newCards.length + cardsInDB.length);
     return right(newCards.length);
   }

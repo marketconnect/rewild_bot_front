@@ -405,6 +405,7 @@ class _DIContainer {
         cardOfProductService: _makeCardOfProductService(),
         contentService: _makeContentService(),
         authService: _makeAuthService(),
+        updateService: _makeUpdateService(),
       );
 }
 

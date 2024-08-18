@@ -166,11 +166,9 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
     if (uSellers != null) {
       setUserSellers(uSellers);
     }
-    sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, "${_addedTypes.toString()}");
+
     if (_addedTypes.contains(ApiKeyConstants.apiKeyTypes[ApiKeyType.content])) {
-      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          "Добавлен новый API-ключ контент");
+      await updateUsersCards();
     }
 
     setIsLoading(false);

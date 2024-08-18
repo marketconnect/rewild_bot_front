@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+// import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/domain/entities/nm_id.dart';
@@ -134,10 +136,12 @@ class CardOfProductService
         );
         return initStocksEither.fold((l) => left(l), (initialStocks) async {
           // append stocks and init stocks to cards
+
           for (final card in allCards) {
             // append stocks
             final cardStocks =
                 stocks.where((stock) => stock.nmId == card.nmId).toList();
+
             final sizes = [SizeModel(stocks: cardStocks)];
             final cardWithStocks = card.copyWith(sizes: sizes);
 
@@ -156,6 +160,7 @@ class CardOfProductService
               resultCards.add(newCard);
             });
           }
+
           return right(resultCards);
         });
       });

@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
-// import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-// import 'package:rewild_bot_front/core/utils/telegram.dart';
-// import 'package:rewild_bot_front/core/utils/telegram.dart';
+
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
 // token for cards inserting
+
 abstract class AllCardsSeoAuthService {
   Future<Either<RewildError, String>> getToken();
+}
+
+// update
+abstract class AllCardsSeoUpdateService {
+  Future<Either<RewildError, int>> insert(
+      {required String token,
+      required List<CardOfProductModel> cardOfProductsToInsert});
 }
 
 abstract class AllCardsSeoScreenCardOfProductService {
@@ -28,6 +35,7 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
       {required super.context,
       required this.contentService,
       required this.authService,
+      required this.updateService,
       required this.cardOfProductService}) {
     _asyncInit();
   }
@@ -35,7 +43,7 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
   final AllCardsSeoScreenCardOfProductService cardOfProductService;
   final AllCardsSeoContentService contentService;
   final AllCardsSeoAuthService authService;
-
+  final AllCardsSeoUpdateService updateService;
   // other fields ========================================================
   // loading
   bool _isLoading = true;
@@ -113,38 +121,37 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     final nmIds = _cardsContent.map((e) => e.nmID).toList();
     final allCardsOrNull =
         await fetch(() => cardOfProductService.getAll(nmIds));
-    if (allCardsOrNull != null) {
-      setCards(allCardsOrNull);
+
+    // get local saved cards nmIds
+    final savedNmIds = allCardsOrNull!.map((e) => e.nmId);
+    // get cards that are not in local storage
+    final notSavedCards =
+        contentOrNull.cards.where((card) => !savedNmIds.contains(card.nmID));
+
+    List<CardOfProductModel> cardOfProducts = [];
+
+    for (final c in notSavedCards) {
+      final nmId = c.nmID;
+      final img = c.photos.first.big;
+      final cardOfProduct = CardOfProductModel(
+        nmId: nmId,
+        img: img,
+      );
+      cardOfProducts.add(cardOfProduct);
     }
 
-    // // get local saved cards nmIds
-    // final savedNmIds = allCardsOrNull!.map((e) => e.nmId);
-    // // get cards that are not in local storage
-    // final notSavedCards =
-    //     contentOrNull.cards.where((card) => !savedNmIds.contains(card.nmID));
+    if (cardOfProducts.isNotEmpty) {
+      final tokenOrNull = await fetch(() => authService.getToken());
+      if (tokenOrNull == null) {
+        _setIsLoading(false);
+        return;
+      }
 
-    // List<CardOfProductModel> cardOfProducts = [];
+      await updateService.insert(
+          token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
+    }
 
-    // for (final c in notSavedCards) {
-    //   final nmId = c.nmID;
-    //   final img = c.photos.first.big;
-    //   final cardOfProduct = CardOfProductModel(
-    //     nmId: nmId,
-    //     img: img,
-    //   );
-    //   cardOfProducts.add(cardOfProduct);
-    // }
-
-    // if (cardOfProducts.isNotEmpty) {
-    //   final tokenOrNull = await fetch(() => authService.getToken());
-    //   if (tokenOrNull == null) {
-    //     _setIsLoading(false);
-    //     return;
-    //   }
-
-    //   // await updateService.insert(
-    //   //     token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
-    // }
+    setCards([...allCardsOrNull, ...cardOfProducts]);
 
     _setIsLoading(false);
   }
