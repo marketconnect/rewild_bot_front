@@ -350,7 +350,12 @@ class _DIContainer {
           cardService: _makeCardOfProductService());
   AddApiKeysScreenViewModel _makeApiKeysScreenViewModel(BuildContext context) =>
       AddApiKeysScreenViewModel(
-          context: context, apiKeysService: _makeApiKeysService());
+          context: context,
+          apiKeysService: _makeApiKeysService(),
+          contentService: _makeContentService(),
+          updateService: _makeUpdateService(),
+          cardOfProductService: _makeCardOfProductService(),
+          authService: _makeAuthService());
 
   AllCardsScreenViewModel _makeAllCardsScreenViewModel(context) =>
       AllCardsScreenViewModel(
@@ -400,7 +405,6 @@ class _DIContainer {
         cardOfProductService: _makeCardOfProductService(),
         contentService: _makeContentService(),
         authService: _makeAuthService(),
-        updateService: _makeUpdateService(),
       );
 }
 

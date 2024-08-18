@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/jwt_decode.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
+import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
 
+// Api key service
 abstract class AddApiKeysScreenApiKeysService {
   Future<Either<RewildError, List<ApiKeyModel>>> getAll(
       {required List<String> types});
@@ -23,21 +28,51 @@ abstract class AddApiKeysScreenApiKeysService {
   Future<Either<RewildError, void>> renameSeller(String id, String name);
 }
 
+// Auth
+abstract class AddApiKeysAuthService {
+  Future<Either<RewildError, String>> getToken();
+}
+
+// Update
+abstract class AddApiKeysUpdateService {
+  Future<Either<RewildError, int>> insert(
+      {required String token,
+      required List<CardOfProductModel> cardOfProductsToInsert});
+}
+
+// Content
+abstract class AddApiKeysContentService {
+  Future<Either<RewildError, CardCatalog>> fetchNomenclatures();
+  Future<Either<RewildError, bool>> apiKeyExist();
+}
+
+// Cards
+abstract class AddApiKeysCardOfProductService {
+  Future<Either<RewildError, List<CardOfProductModel>>> getAll(
+      [List<int>? nmIds]);
+}
+
 class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
-  final AddApiKeysScreenApiKeysService apiKeysService;
   AddApiKeysScreenViewModel({
     required super.context,
     required this.apiKeysService,
+    required this.contentService,
+    required this.updateService,
+    required this.cardOfProductService,
+    required this.authService,
   }) {
     _asyncInit();
   }
 
-  List<ApiKeyModel> _apiKeys = [];
-  void setApiKeys(List<ApiKeyModel> apiKeys) {
-    _apiKeys = apiKeys;
-    notify();
-  }
+  // constructor params
+  final AddApiKeysScreenApiKeysService apiKeysService;
+  final AddApiKeysUpdateService updateService;
+  final AddApiKeysContentService contentService;
+  final AddApiKeysCardOfProductService cardOfProductService;
+  final AddApiKeysAuthService authService;
 
+  // other fields
+  // is loading
   bool _isLoading = false;
   void setIsLoading(bool variable) {
     _isLoading = variable;
@@ -46,20 +81,34 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
 
   bool get isLoading => _isLoading;
 
+  // Api keys
+  final List<ApiKeyModel> _apiKeys = [];
+  void setApiKeys(List<ApiKeyModel> apiKeys) {
+    _apiKeys.clear();
+    _apiKeys.addAll(apiKeys);
+    notify();
+  }
+
   List<ApiKeyModel> get apiKeys => _apiKeys;
 
+  // types
   final Map<ApiKeyType, String> _types = ApiKeyConstants.apiKeyTypes;
   List<String> get types => _types.entries.map((e) => e.value).toList();
 
-  List<String> _addedTypes = [];
+  // added types
+  final List<String> _addedTypes = [];
   void setAddedTypes(List<String> addedTypes) {
-    _addedTypes = addedTypes;
+    _addedTypes.clear();
+    _addedTypes.addAll(addedTypes);
   }
 
   List<String> get addedTypes => _addedTypes;
-  List<UserSeller> _userSellers = [];
+
+  // user sellers
+  final List<UserSeller> _userSellers = [];
   void setUserSellers(List<UserSeller> userSellers) {
-    _userSellers = userSellers;
+    _userSellers.clear();
+    _userSellers.addAll(userSellers);
   }
 
   List<UserSeller> get userSellers => _userSellers;
@@ -70,6 +119,7 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
           ? userSellers.where((e) => e.isActive).first
           : null;
 
+  // Methods
   void _asyncInit() async {
     setIsLoading(true);
     final fetchedApiKeys =
@@ -91,6 +141,37 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
     }
 
     // active user seller
+
+    setIsLoading(false);
+  }
+
+  _update() async {
+    setIsLoading(true);
+    // fetch api keys and update
+    final fetchedApiKeys =
+        await fetch(() => apiKeysService.getAll(types: types));
+
+    if (fetchedApiKeys == null) {
+      setIsLoading(false);
+      return;
+    }
+
+    setApiKeys(fetchedApiKeys);
+
+    _addedTypes.clear();
+    for (final apiKey in fetchedApiKeys) {
+      _addedTypes.add(apiKey.type);
+    }
+    final uSellers = await fetch(() => apiKeysService.getAllUserSellers());
+    if (uSellers != null) {
+      setUserSellers(uSellers);
+    }
+    sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, "${_addedTypes.toString()}");
+    if (_addedTypes.contains(ApiKeyConstants.apiKeyTypes[ApiKeyType.content])) {
+      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+          "Добавлен новый API-ключ контент");
+    }
 
     setIsLoading(false);
   }
@@ -158,7 +239,7 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
         return;
       }
     }
-    _asyncInit();
+    _update();
 
     if (context.mounted) {
       Navigator.pop(context);
@@ -188,5 +269,60 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
   Future<void> renameSeller(String id, String name) async {
     await fetch(() => apiKeysService.renameSeller(id, name));
     _asyncInit();
+  }
+
+  Future<void> updateUsersCards() async {
+    // check if wb content api key exists
+    final apiKey = await fetch(() => contentService.apiKeyExist());
+    if (apiKey == null || !apiKey) {
+      return;
+    }
+    // get all users cards content
+    final contentOrNull =
+        await fetch(() => contentService.fetchNomenclatures());
+    if (contentOrNull == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Ошибка при получении данных от API WB")),
+        );
+      }
+      return;
+    }
+
+    final nmIds = contentOrNull.cards.map((e) => e.nmID).toList();
+    final allCardsOrNull =
+        await fetch(() => cardOfProductService.getAll(nmIds));
+    if (allCardsOrNull != null) {
+      return;
+    }
+
+    // get local saved cards nmIds
+    final savedNmIds = allCardsOrNull!.map((e) => e.nmId);
+    // get cards that are not in local storage
+
+    final notSavedCards =
+        contentOrNull.cards.where((card) => !savedNmIds.contains(card.nmID));
+
+    List<CardOfProductModel> cardOfProducts = [];
+
+    for (final c in notSavedCards) {
+      final nmId = c.nmID;
+      final img = c.photos.first.big;
+      final cardOfProduct = CardOfProductModel(
+        nmId: nmId,
+        img: img,
+      );
+      cardOfProducts.add(cardOfProduct);
+    }
+    if (cardOfProducts.isNotEmpty) {
+      final tokenOrNull = await fetch(() => authService.getToken());
+      if (tokenOrNull == null) {
+        return;
+      }
+
+      await updateService.insert(
+          token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
+    }
   }
 }

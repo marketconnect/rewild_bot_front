@@ -6,6 +6,7 @@ import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/nm_id.dart';
 import 'package:rewild_bot_front/domain/entities/subj_characteristic.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
+import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
 
 // NmIds Data Provider
@@ -54,7 +55,8 @@ abstract class ContentServiceActiveSellerDataProvider {
   Future<Either<RewildError, List<UserSeller>>> getActive();
 }
 
-class ContentService implements AllCardsSeoContentService {
+class ContentService
+    implements AllCardsSeoContentService, AddApiKeysContentService {
   final ContentServiceWbContentApiClient wbContentApiClient;
   final ContentServiceNmIdDataProvider nmIdDataProvider;
   final ContentServiceApiKeyDataProvider apiKeyDataProvider;

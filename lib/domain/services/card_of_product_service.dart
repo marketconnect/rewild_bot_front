@@ -11,6 +11,7 @@ import 'package:rewild_bot_front/domain/entities/size_model.dart';
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
+import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
@@ -78,6 +79,7 @@ abstract class CardOfProductServiceNmIdDataProvider {
 class CardOfProductService
     implements
         MainNavigationCardService,
+        AddApiKeysCardOfProductService,
         AllCardsSeoScreenCardOfProductService,
         AllCardsScreenCardOfProductService,
         PaymentScreenCardsService {

@@ -7,7 +7,6 @@ import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/empty_api_key.dart';
 import 'package:rewild_bot_front/widgets/network_image.dart';
-import 'package:rewild_bot_front/widgets/progress_indicator.dart';
 
 class AllCardsSeoScreen extends StatelessWidget {
   const AllCardsSeoScreen({super.key});
@@ -21,7 +20,7 @@ class AllCardsSeoScreen extends StatelessWidget {
     final products = model.cards;
     final apiKeyExists = model.apiKeyExists;
     return OverlayLoaderWithAppIcon(
-      isLoading: isLoading,
+      isLoading: isLoading && apiKeyExists,
       overlayBackgroundColor: Colors.black,
       circularProgressColor: const Color(0xff83735c),
       appIcon: Image.asset(ImageConstant.imgLogoForLoading),
@@ -37,26 +36,23 @@ class AllCardsSeoScreen extends StatelessWidget {
                   scrolledUnderElevation: 2,
                   shadowColor: Colors.black,
                   surfaceTintColor: Colors.transparent),
-              body: isLoading
-                  ? const Center(child: MyProgressIndicator())
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      itemCount: products.length,
-                      itemBuilder: (context, index) {
-                        final product = products[index];
-                        final cardContent = getCardContent(product.nmId);
-                        return GestureDetector(
-                          onTap: () {
-                            if (cardContent == null) return;
-                            goToSeoToolScreen(
-                                product: product, card: cardContent);
-                          },
-                          child: ProductCard(
-                            productCard: product,
-                          ),
-                        );
-                      },
+              body: ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  final cardContent = getCardContent(product.nmId);
+                  return GestureDetector(
+                    onTap: () {
+                      if (cardContent == null) return;
+                      goToSeoToolScreen(product: product, card: cardContent);
+                    },
+                    child: ProductCard(
+                      productCard: product,
                     ),
+                  );
+                },
+              ),
             ),
     );
   }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+// import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+// import 'package:rewild_bot_front/core/utils/telegram.dart';
 // import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
@@ -21,18 +23,11 @@ abstract class AllCardsSeoContentService {
   Future<Either<RewildError, bool>> apiKeyExist();
 }
 
-abstract class AllCardsSeoUpdateService {
-  Future<Either<RewildError, int>> insert(
-      {required String token,
-      required List<CardOfProductModel> cardOfProductsToInsert});
-}
-
 class AllCardsSeoViewModel extends ResourceChangeNotifier {
   AllCardsSeoViewModel(
       {required super.context,
       required this.contentService,
       required this.authService,
-      required this.updateService,
       required this.cardOfProductService}) {
     _asyncInit();
   }
@@ -40,7 +35,7 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
   final AllCardsSeoScreenCardOfProductService cardOfProductService;
   final AllCardsSeoContentService contentService;
   final AllCardsSeoAuthService authService;
-  final AllCardsSeoUpdateService updateService;
+
   // other fields ========================================================
   // loading
   bool _isLoading = true;
@@ -52,18 +47,20 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
   bool get isLoading => _isLoading;
 
   // products
-  List<CardOfProductModel> _cards = [];
+  final List<CardOfProductModel> _cards = [];
   void setCards(List<CardOfProductModel> value) {
-    _cards = value;
+    _cards.clear();
+    _cards.addAll(value);
     notify();
   }
 
   List<CardOfProductModel> get cards => _cards;
 
   // content of cards
-  List<CardItem> _cardsContent = [];
+  final List<CardItem> _cardsContent = [];
   void setCardsContent(List<CardItem> value) {
-    _cardsContent = value;
+    _cardsContent.clear();
+    _cardsContent.addAll(value);
     notify();
   }
 
@@ -120,34 +117,34 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
       setCards(allCardsOrNull);
     }
 
-    // get local saved cards nmIds
-    final savedNmIds = allCardsOrNull!.map((e) => e.nmId);
-    // get cards that are not in local storage
-    final notSavedCards =
-        contentOrNull.cards.where((card) => !savedNmIds.contains(card.nmID));
+    // // get local saved cards nmIds
+    // final savedNmIds = allCardsOrNull!.map((e) => e.nmId);
+    // // get cards that are not in local storage
+    // final notSavedCards =
+    //     contentOrNull.cards.where((card) => !savedNmIds.contains(card.nmID));
 
-    List<CardOfProductModel> cardOfProducts = [];
+    // List<CardOfProductModel> cardOfProducts = [];
 
-    for (final c in notSavedCards) {
-      final nmId = c.nmID;
-      final img = c.photos.first.big;
-      final cardOfProduct = CardOfProductModel(
-        nmId: nmId,
-        img: img,
-      );
-      cardOfProducts.add(cardOfProduct);
-    }
+    // for (final c in notSavedCards) {
+    //   final nmId = c.nmID;
+    //   final img = c.photos.first.big;
+    //   final cardOfProduct = CardOfProductModel(
+    //     nmId: nmId,
+    //     img: img,
+    //   );
+    //   cardOfProducts.add(cardOfProduct);
+    // }
 
-    if (cardOfProducts.isNotEmpty) {
-      final tokenOrNull = await fetch(() => authService.getToken());
-      if (tokenOrNull == null) {
-        _setIsLoading(false);
-        return;
-      }
+    // if (cardOfProducts.isNotEmpty) {
+    //   final tokenOrNull = await fetch(() => authService.getToken());
+    //   if (tokenOrNull == null) {
+    //     _setIsLoading(false);
+    //     return;
+    //   }
 
-      await updateService.insert(
-          token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
-    }
+    //   // await updateService.insert(
+    //   //     token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
+    // }
 
     _setIsLoading(false);
   }
