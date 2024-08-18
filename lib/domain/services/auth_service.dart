@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/presentation/main_navigation_screen/main_naviga
 import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class AuthServiceSecureDataProvider {
   Future<Either<RewildError, void>> updateUserInfo(
@@ -29,6 +30,7 @@ class AuthService
     implements
         MainNavigationAuthService,
         AddApiKeysAuthService,
+        SingleCardScreenAuthService,
         PaymentScreenTokenService,
         PaymentWebViewTokenService,
         AllCardsSeoAuthService,

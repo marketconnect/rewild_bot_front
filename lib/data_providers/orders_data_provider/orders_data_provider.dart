@@ -7,8 +7,12 @@ import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/order_model.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/domain/services/week_orders_service.dart';
 
-class OrderDataProvider implements UpdateServiceWeekOrdersDataProvider {
+class OrderDataProvider
+    implements
+        UpdateServiceWeekOrdersDataProvider,
+        WeekOrdersServiceOrdersDataProvider {
   const OrderDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
@@ -139,6 +143,45 @@ class OrderDataProvider implements UpdateServiceWeekOrdersDataProvider {
         source: "OrderDataProvider",
         name: "getAllBySkuAndPeriod",
         args: [sku, period],
+        sendToTg: true,
+      ));
+    }
+  }
+
+  @override
+  Future<Either<RewildError, List<OrderModel>>> getAllBySkus(
+      List<int> skus) async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('orders', idbModeReadOnly);
+      final store = txn.objectStore('orders');
+      final List<OrderModel> orders = [];
+
+      for (var sku in skus) {
+        final index = store.index('sku');
+        final cursorStream = index.openCursor(range: KeyRange.only(sku));
+
+        await for (final cursor in cursorStream) {
+          final result = cursor.value as Map<String, dynamic>;
+          orders.add(OrderModel(
+            sku: result['sku'] as int,
+            warehouse: result['warehouse'] as int,
+            qty: result['qty'] as int,
+            price: result['price'] as int,
+            period: result['period'] as String,
+          ));
+          cursor.next();
+        }
+      }
+
+      await txn.completed;
+      return right(orders);
+    } catch (e) {
+      return left(RewildError(
+        "Failed to retrieve orders by SKUs: ${e.toString()}",
+        source: "OrderDataProvider",
+        name: "getAllBySkus",
+        args: [skus],
         sendToTg: true,
       ));
     }

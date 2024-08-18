@@ -3,10 +3,13 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/warehouse_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class WarehouseDataProvider
-    implements CardOfProductServiceWarehouseDataProvider {
+    implements
+        CardOfProductServiceWarehouseDataProvider,
+        WarehouseServiceWarehouseProvider {
   const WarehouseDataProvider();
 
   // Function to update a list of warehouses

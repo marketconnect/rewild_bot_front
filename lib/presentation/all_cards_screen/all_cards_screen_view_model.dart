@@ -4,12 +4,14 @@ import 'package:fpdart/fpdart.dart';
 import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
+import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/constants/notification_constants.dart';
 import 'package:rewild_bot_front/core/constants/settings.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/filter_model.dart';
@@ -18,6 +20,7 @@ import 'package:rewild_bot_front/domain/entities/nm_id.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
+import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // total costs
 abstract class AllCardsScreenTotalCostService {
@@ -96,19 +99,6 @@ abstract class AllCardsScreenNotificationsService {
 }
 
 class AllCardsScreenViewModel extends ResourceChangeNotifier {
-  final AllCardsScreenAuthService tokenService;
-  final AllCardsScreenCardOfProductService cardsOfProductsService;
-  final AllCardsScreenUpdateService updateService;
-  final AllCardsScreenGroupsService groupsProvider;
-  final AllCardsScreenFilterService filterService;
-  final AllCardsScreenTotalCostService totalCostService;
-  final AllCardsScreenSupplyService supplyService;
-  final AllCardsScreenNotificationsService notificationsService;
-  final AllCardsScreenSubscriptionsService subscriptionsService;
-
-  final AllCardsScreenAverageLogisticsService averageLogisticsService;
-  // Stream
-  // Stream<StreamNotificationEvent> streamNotification;
   AllCardsScreenViewModel(
       {required super.context,
       required this.tokenService,
@@ -125,34 +115,22 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     asyncInit();
   }
 
-  Future<void> asyncInit() async {
-    // SqfliteService.printTableContent('subs');
-    setLoading(true);
+  // constructor params
+  final AllCardsScreenAuthService tokenService;
+  final AllCardsScreenCardOfProductService cardsOfProductsService;
+  final AllCardsScreenUpdateService updateService;
+  final AllCardsScreenGroupsService groupsProvider;
+  final AllCardsScreenFilterService filterService;
+  final AllCardsScreenTotalCostService totalCostService;
+  final AllCardsScreenSupplyService supplyService;
+  final AllCardsScreenNotificationsService notificationsService;
+  final AllCardsScreenSubscriptionsService subscriptionsService;
 
-    // streamNotification.listen((event) async {
-    //   if (event.parentType == ParentType.card) {
-    //     await _update();
-    //   }
-    // });
-    final userNmIdsOrNull =
-        await fetch(() => cardsOfProductsService.getAllUserNmIds());
-    if (userNmIdsOrNull != null) {
-      setUserNmIds(userNmIdsOrNull.map((e) => e.nmId).toList());
-    }
-    _groups.insert(
-        0,
-        GroupModel(
-            name: "Все",
-            bgColor: const Color(0xFF6750A4).value,
-            cardsNmIds: [],
-            fontColor: const Color(0xFFFFFFFF).value));
+  final AllCardsScreenAverageLogisticsService averageLogisticsService;
+  // Stream
+  // Stream<StreamNotificationEvent> streamNotification;
 
-    await _update(false);
-    setLoading(false);
-
-    await p();
-  }
-
+  // other fields
   final dateFormat = DateFormat('yyyy-MM-dd');
 
   // user`s nmIds
@@ -208,6 +186,43 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
   bool _filterIsEmpty = true;
   bool get filterIsEmpty => _filterIsEmpty;
+
+  // Methods
+  Future<void> asyncInit() async {
+    await sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, '1');
+    // SqfliteService.printTableContent('subs');
+    setLoading(true);
+
+    // streamNotification.listen((event) async {
+    //   if (event.parentType == ParentType.card) {
+    //     await _update();
+    //   }
+    // });
+    final userNmIdsOrNull =
+        await fetch(() => cardsOfProductsService.getAllUserNmIds());
+    if (userNmIdsOrNull != null) {
+      setUserNmIds(userNmIdsOrNull.map((e) => e.nmId).toList());
+    }
+    await sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, '2');
+    _groups.insert(
+        0,
+        GroupModel(
+            name: "Все",
+            bgColor: const Color(0xFF6750A4).value,
+            cardsNmIds: [],
+            fontColor: const Color(0xFFFFFFFF).value));
+    await sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, '3');
+    await _update(false);
+    await sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, '4');
+    setLoading(false);
+    await sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, '5');
+    await p();
+  }
 
   void checkFilter() {
     if (_filter == null) {
@@ -453,7 +468,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     if (_selectedNmIds.isEmpty &&
         (!_missingCardIds.contains(nmId) || isUserNmId(nmId))) {
       Navigator.of(context).pushNamed(
-        "MainNavigationRouteNames.singleCardScreen",
+        MainNavigationRouteNames.singleCardScreen,
         arguments: nmId,
       );
       return;

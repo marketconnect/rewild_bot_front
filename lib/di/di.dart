@@ -9,12 +9,15 @@ import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
 import 'package:rewild_bot_front/api_clients/initial_stocks_api_client.dart';
+import 'package:rewild_bot_front/api_clients/orders_history_api_client.dart';
 import 'package:rewild_bot_front/api_clients/price_api_client.dart';
 import 'package:rewild_bot_front/api_clients/product_card_service_api_client.dart';
 import 'package:rewild_bot_front/api_clients/questions_api_client.dart';
+import 'package:rewild_bot_front/api_clients/seller_api_client.dart';
 import 'package:rewild_bot_front/api_clients/subscription_api_client.dart';
 import 'package:rewild_bot_front/api_clients/warehouse_api_client.dart';
 import 'package:rewild_bot_front/api_clients/wb_content_api_client.dart';
+import 'package:rewild_bot_front/api_clients/week_orders_api_client.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/data_providers/average_logistics_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cached_kw_by_lemma_by_word_data_provider/cached_kw_by_lemma_by_word_data_provider.dart';
@@ -24,6 +27,7 @@ import 'package:rewild_bot_front/data_providers/cahced_kw_by_lemma_data_provider
 
 import 'package:rewild_bot_front/data_providers/card_keywords_data_provider/card_keywords_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/card_of_product_data_provider/card_of_product_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/commission_data_provider/commission_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/filter_data_provider/filter_data_provider.dart';
 
 import 'package:rewild_bot_front/data_providers/group_data_provider/group_data_provider.dart';
@@ -32,6 +36,7 @@ import 'package:rewild_bot_front/data_providers/last_update_day_data_provider/la
 import 'package:rewild_bot_front/data_providers/nm_id_data_provider/nm_id_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/notification_data_provider/notification_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/orders_data_provider/orders_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/orders_history_data_provider/orders_history_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/secure_storage_data_provider/secure_storage_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/seller_data_provider/seller_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/stock_data_provider/stock_data_provider.dart';
@@ -55,17 +60,24 @@ import 'package:rewild_bot_front/domain/services/auth_service.dart';
 import 'package:rewild_bot_front/domain/services/balance_service.dart';
 
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/commission_service.dart';
 import 'package:rewild_bot_front/domain/services/content_service.dart';
 
 import 'package:rewild_bot_front/domain/services/group_service.dart';
+import 'package:rewild_bot_front/domain/services/init_stock_service.dart';
 import 'package:rewild_bot_front/domain/services/notification_service.dart';
+import 'package:rewild_bot_front/domain/services/orders_history_service.dart';
 import 'package:rewild_bot_front/domain/services/price_service.dart';
 import 'package:rewild_bot_front/domain/services/question_service.dart';
+import 'package:rewild_bot_front/domain/services/seller_service.dart';
+import 'package:rewild_bot_front/domain/services/stock_service.dart';
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
 import 'package:rewild_bot_front/domain/services/supply_service.dart';
 import 'package:rewild_bot_front/domain/services/tariff_service.dart';
 import 'package:rewild_bot_front/domain/services/total_cost_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/domain/services/warehouse_service.dart';
+import 'package:rewild_bot_front/domain/services/week_orders_service.dart';
 
 import 'package:rewild_bot_front/main.dart';
 
@@ -81,11 +93,15 @@ import 'package:rewild_bot_front/presentation/main_navigation_screen/main_naviga
 
 import 'package:rewild_bot_front/presentation/my_web_view/my_web_view.dart';
 import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/notification_card_screen/notification_card_screen.dart';
+import 'package:rewild_bot_front/presentation/notification_card_screen/notification_card_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen.dart';
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment_web_view/payment_web_view.dart';
 import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 import 'package:rewild_bot_front/routes/main_navigation.dart';
 
@@ -159,6 +175,12 @@ class _DIContainer {
 
   WbContentApiClient _makeWbContentApiClient() => const WbContentApiClient();
 
+  WeekOrdersApiClient _makeWeekOrdersApiClient() => const WeekOrdersApiClient();
+
+  OrdersHistoryApiClient _makeOrdersHistoryApiClient() =>
+      const OrdersHistoryApiClient();
+
+  SellerApiClient _makeSellerApiClient() => const SellerApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -227,6 +249,11 @@ class _DIContainer {
 
   GroupDataProvider _makeGroupDataProvider() => const GroupDataProvider();
 
+  CommissionDataProvider _makeCommissionDataProvider() =>
+      const CommissionDataProvider();
+
+  OrdersHistoryDataProvider _makeOrdersHistoryDataProvider() =>
+      const OrdersHistoryDataProvider();
   // Services ==================================================================
   AuthService _makeAuthService() => AuthService(
       secureDataProvider: _makeSecureDataProvider(),
@@ -334,6 +361,38 @@ class _DIContainer {
       nmIdDataProvider: _makeNmIdDataProvider(),
       wbContentApiClient: _makeWbContentApiClient());
 
+  StockService _makeStockService() => StockService(
+        stocksDataProvider: _makeStockDataProvider(),
+      );
+
+  OrdersHistoryService _makeOrdersHistoryService() => OrdersHistoryService(
+        ordersHistoryApiClient: _makeOrdersHistoryApiClient(),
+        ordersHistoryDataProvider: _makeOrdersHistoryDataProvider(),
+      );
+
+  WeekOrdersService _makeWeekOrdersService() => WeekOrdersService(
+        ordersDataProvider: _makeOrderDataProvider(),
+        ordersApiClient: _makeWeekOrdersApiClient(),
+      );
+
+  CommissionService _makeCommissionService() => CommissionService(
+        commissionApiClient: _makeCommissionApiClient(),
+        commissionDataProvider: _makeCommissionDataProvider(),
+      );
+
+  SellerService _makeSellerService() => SellerService(
+        sellerApiClient: _makeSellerApiClient(),
+        sellerDataProvider: _makeSellerDataProvider(),
+      );
+
+  InitialStockService _makeInitialStockService() => InitialStockService(
+        initStockDataProvider: _makeInitialStockDataProvider(),
+      );
+
+  WarehouseService _makeWarehouseService() => WarehouseService(
+        warehouseApiClient: _makeWarehouseApiClient(),
+        warehouseProvider: _makeWarehouseDataProvider(),
+      );
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
           BuildContext context) =>
@@ -407,6 +466,31 @@ class _DIContainer {
         authService: _makeAuthService(),
         updateService: _makeUpdateService(),
       );
+  CardNotificationViewModel _makeCardNotificationSettingsViewModel(
+          BuildContext context, NotificationCardState state) =>
+      CardNotificationViewModel(state,
+          notificationService: _makeNotificationService(), context: context);
+
+  SingleCardScreenViewModel _makeSingleCardViewModel(
+          BuildContext context, int id) =>
+      SingleCardScreenViewModel(
+          context: context,
+          stockService: _makeStockService(),
+          id: id,
+          ordersHistoryService: _makeOrdersHistoryService(),
+          weekOrdersService: _makeWeekOrdersService(),
+          tariffService: _makeTariffService(),
+          subscriptionsService: _makeSubscriptionService(),
+          tokenProvider: _makeAuthService(),
+          commissionService: _makeCommissionService(),
+          sellerService: _makeSellerService(),
+          notificationService: _makeNotificationService(),
+          cardOfProductService: _makeCardOfProductService(),
+          supplyService: _makeSupplyService(),
+          priceService: _makePriceService(),
+          initialStocksService: _makeInitialStockService(),
+          streamNotification: updatedNotificationStream,
+          warehouseService: _makeWarehouseService());
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -472,6 +556,23 @@ class ScreenFactoryDefault implements ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => _diContainer._makeAllCardsSeoViewModel(context),
       child: const AllCardsSeoScreen(),
+    );
+  }
+
+  @override
+  Widget makeCardNotificationsSettingsScreen(NotificationCardState state) {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeCardNotificationSettingsViewModel(context, state),
+      child: const NotificationCardSettingsScreen(),
+    );
+  }
+
+  @override
+  Widget makeSingleCardScreen(int id) {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeSingleCardViewModel(context, id),
+      child: const SingleCardScreen(),
     );
   }
 

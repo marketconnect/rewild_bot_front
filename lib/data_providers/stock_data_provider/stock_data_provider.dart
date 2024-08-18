@@ -6,11 +6,13 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/stock_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class StockDataProvider
     implements
         UpdateServiceStockDataProvider,
+        StockServiceStocksDataProvider,
         CardOfProductServiceStockDataProvider {
   const StockDataProvider();
 

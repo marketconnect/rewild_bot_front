@@ -26,13 +26,11 @@ class NmIdDataProvider
       final txn = db.transaction('nm_ids', idbModeReadOnly);
       final store = txn.objectStore('nm_ids');
       final List<Object?> maps = await store.getAll();
-
+      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+          "getNmIds: ${maps.length}");
       if (maps.isEmpty) {
         return right([]);
       }
-
-      await sendMessageToTelegramBot(
-          TBot.tBotErrorToken, TBot.tBotErrorChatId, '${maps.first}');
 
       List<NmId> nmIds = maps.map((map) {
         final nmIdMap = map as Map<String, dynamic>;

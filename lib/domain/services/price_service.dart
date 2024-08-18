@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 // Token
 // abstract class PriceServiceTokenDataProvider {
@@ -15,7 +16,8 @@ abstract class PriceServicePriceApiClient {
   Future<Either<RewildError, Prices>> getCurrentPrice({required String token});
 }
 
-class PriceService implements PaymentScreenPriceService {
+class PriceService
+    implements PaymentScreenPriceService, SingleCardScreenPriceService {
   final PriceServicePriceApiClient apiClient;
   // final PriceServiceTokenDataProvider tokenDataProvider;
   const PriceService({

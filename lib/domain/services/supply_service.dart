@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class SupplyServiceSupplyDataProvider {
   Future<Either<RewildError, List<SupplyModel>?>> getForOne(
@@ -9,7 +10,8 @@ abstract class SupplyServiceSupplyDataProvider {
   Future<Either<RewildError, List<SupplyModel>>> get({required int nmId});
 }
 
-class SupplyService implements AllCardsScreenSupplyService {
+class SupplyService
+    implements AllCardsScreenSupplyService, SingleCardScreenSupplyService {
   final SupplyServiceSupplyDataProvider supplyDataProvider;
 
   SupplyService({required this.supplyDataProvider});

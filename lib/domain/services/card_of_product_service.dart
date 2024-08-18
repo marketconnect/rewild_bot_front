@@ -20,6 +20,7 @@ import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 // API clients
 abstract class CardOfProductServiceSellerApiClient {
@@ -83,6 +84,7 @@ class CardOfProductService
         MainNavigationCardService,
         AddApiKeysCardOfProductService,
         AllCardsSeoScreenCardOfProductService,
+        SingleCardScreenCardOfProductService,
         AllCardsScreenCardOfProductService,
         PaymentScreenCardsService {
   final CardOfProductServiceWarehouseDataProvider warehouseDataprovider;

@@ -3,6 +3,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class TariffServiceTariffDataProvider {
   Future<Either<RewildError, List<TariffModel>>> getByStoreId(int storeId);
@@ -17,7 +18,10 @@ abstract class TariffServiceAverageLogisticsDataProvider {
   Future<Either<RewildError, void>> update(int price);
 }
 
-class TariffService implements AllCardsScreenAverageLogisticsService {
+class TariffService
+    implements
+        AllCardsScreenAverageLogisticsService,
+        SingleCardScreenTariffService {
   final TariffServiceTariffDataProvider tariffDataProvider;
   final TariffServiceAverageLogisticsApiClient averageLogisticsApiClient;
   final TariffServiceAverageLogisticsDataProvider averageLogisticsDataProvider;

@@ -7,11 +7,13 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/init_stock_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class InitialStockDataProvider
     implements
         UpdateServiceInitStockDataProvider,
+        InitStockServiceInitStockDataProvider,
         CardOfProductServiceInitStockDataProvider {
   const InitialStockDataProvider();
 

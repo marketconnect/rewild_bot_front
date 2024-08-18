@@ -20,11 +20,11 @@ class AllCardsSeoScreen extends StatelessWidget {
     final products = model.cards;
     final apiKeyExists = model.apiKeyExists;
     return OverlayLoaderWithAppIcon(
-      isLoading: isLoading && apiKeyExists,
+      isLoading: isLoading,
       overlayBackgroundColor: Colors.black,
       circularProgressColor: const Color(0xff83735c),
       appIcon: Image.asset(ImageConstant.imgLogoForLoading),
-      child: !apiKeyExists
+      child: !apiKeyExists && !isLoading
           ? const EmptyApiKey(
               text:
                   'Для работы с карточками товаров WB вам необходимо добавить токен "Контент"',

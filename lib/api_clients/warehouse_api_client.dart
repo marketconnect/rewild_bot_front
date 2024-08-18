@@ -6,8 +6,12 @@ import 'package:rewild_bot_front/core/utils/api_helpers/warehouses_api_helper.da
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
+import 'package:rewild_bot_front/domain/services/warehouse_service.dart';
 
-class WarehouseApiClient implements CardOfProductServiceWarehouseApiCient
+class WarehouseApiClient
+    implements
+        CardOfProductServiceWarehouseApiCient,
+        WarehouseServiceWerehouseApiClient
 // WarehouseServiceWerehouseApiClient
 {
   const WarehouseApiClient();

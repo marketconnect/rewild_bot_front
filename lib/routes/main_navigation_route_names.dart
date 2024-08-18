@@ -5,4 +5,8 @@ abstract class MainNavigationRouteNames {
   static const String paymentWebView = '/payment_web_view';
   static const String myWebViewScreen = '/my_web_view_screen';
   static const String allCardsSeoScreen = '/all_cards_seo_screen';
+  static const String singleCardScreen = '/single_card_screen';
+
+  static const String cardNotificationsSettingsScreen =
+      '/card_notifications_settings_screen';
 }

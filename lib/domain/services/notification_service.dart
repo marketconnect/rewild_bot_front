@@ -6,6 +6,8 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
 import 'package:rewild_bot_front/domain/entities/stream_notification_event.dart';
 import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/notification_card_screen/notification_card_view_model.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 // import 'package:rewild/presentation/single_advert_stats_screen/single_advert_stats_view_model.dart';
 
@@ -23,7 +25,11 @@ abstract class NotificationServiceNotificationDataProvider {
       List<int> conditions);
 }
 
-class NotificationService implements AllCardsScreenNotificationsService {
+class NotificationService
+    implements
+        AllCardsScreenNotificationsService,
+        SingleCardScreenNotificationService,
+        NotificationCardNotificationService {
   final NotificationServiceNotificationDataProvider notificationDataProvider;
   final StreamController<StreamNotificationEvent>
       updatedNotificationStreamController;

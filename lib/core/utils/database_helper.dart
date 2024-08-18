@@ -87,7 +87,7 @@ class DatabaseHelper {
 
     // Open the database and check if it succeeded
     final db = await dbFactory.open('rw_bot.db',
-        version: 1, onUpgradeNeeded: _onCreate);
+        version: 1, onUpgradeNeeded: _onUpgradeNeeded);
 
     return db;
   }
@@ -230,6 +230,40 @@ class DatabaseHelper {
           db.createObjectStore('nm_ids', keyPath: 'id', autoIncrement: true);
       store.createIndex('nmId', 'nmId', unique: true);
     });
+
+    createStoreIfNotExists('commissions', () {
+      final store = db.createObjectStore('commissions',
+          keyPath: 'id', autoIncrement: true);
+      store.createIndex('id', 'id', unique: true);
+    });
+
+    db.createObjectStore('orders_history', keyPath: 'id', autoIncrement: true)
+      ..createIndex('nmId', 'nmId', unique: false)
+      ..createIndex('nmId_updatetAt', ['nmId', 'updatetAt'], unique: false);
+  }
+
+  Future<void> _onUpgradeNeeded(VersionChangeEvent event) async {
+    final db = event.database;
+    final oldVersion = event.oldVersion;
+
+    // Create a new store if needed
+    if (oldVersion == 0) {
+      await _onCreate(event);
+    }
+    if (oldVersion < 2) {
+      final txn = db.transaction('orders', idbModeReadWrite);
+      final store = txn.objectStore('orders');
+      store.createIndex('sku', 'sku', unique: false);
+      await txn.completed;
+
+      final commissionStore = db.createObjectStore('commissions',
+          keyPath: 'id', autoIncrement: true);
+      commissionStore.createIndex('id', 'id', unique: true);
+
+      db.createObjectStore('orders_history', keyPath: 'id', autoIncrement: true)
+        ..createIndex('nmId', 'nmId', unique: false)
+        ..createIndex('nmId_updatetAt', ['nmId', 'updatetAt'], unique: false);
+    }
   }
 
   Future<void> close() async {

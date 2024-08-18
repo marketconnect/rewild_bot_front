@@ -8,6 +8,7 @@ import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 // Api
 abstract class SubscriptionServiceSubscriptionApiClient {
@@ -58,6 +59,7 @@ abstract class SubscriptionServiceUserNameSecureStorage {
 class SubscriptionService
     implements
         PaymentScreenSubscriptionsService,
+        SingleCardScreenSubscriptionsService,
         PaymentWebViewSubscriptionsService,
         MainNavigationSubscriptionService,
         AllCardsScreenSubscriptionsService {

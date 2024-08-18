@@ -7,9 +7,13 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/commission_model.dart';
 
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
+import 'package:rewild_bot_front/domain/services/commission_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class CommissionApiClient implements UpdateServiceTariffApiClient {
+class CommissionApiClient
+    implements
+        UpdateServiceTariffApiClient,
+        CommissionServiceCommissionApiClient {
   const CommissionApiClient();
 
   Future<Either<RewildError, CommissionModel>> get({
