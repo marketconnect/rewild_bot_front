@@ -9,7 +9,6 @@ import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/di/di.dart';
 
-import 'dart:html' as html;
 import 'dart:js' as js;
 
 abstract class AppFactory {
@@ -25,32 +24,24 @@ void main() async {
     FlutterError.presentError(details);
   };
 
-  // final chatId = await TelegramWebApp.getChatId();
-
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     setUrlStrategy(PathUrlStrategy());
-    // Initialize the database
     final dbHelper = DatabaseHelper();
+
+    // Дождитесь полной инициализации базы данных
+    await sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, "started");
     await dbHelper.database;
-    // await dbHelper.clearAllTables();
-    // await dbHelper.checkDatabaseIntegrity();
+    await sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, "finished");
+
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {
     await sendMessageToTelegramBot(
         TBot.tBotErrorToken, TBot.tBotErrorChatId, '$error\n$stack');
   });
-
-  html.window.onError.listen((html.Event event) {
-    final html.ErrorEvent errorEvent = event as html.ErrorEvent;
-    final String message =
-        'JS Error: ${errorEvent.message} at ${errorEvent.filename}:${errorEvent.lineno}:${errorEvent.colno}';
-    sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, message);
-  });
-
-  interceptConsoleErrors();
 }
 
 void interceptConsoleErrors() {

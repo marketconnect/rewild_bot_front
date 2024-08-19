@@ -2,7 +2,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/color.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
 class SellerModel {
@@ -36,6 +38,8 @@ class SellerModel {
   }
 
   factory SellerModel.fromJson(Map<String, dynamic> json) {
+    sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, '$json');
     final ogrn = json['ogrn'] ?? json['ogrnip'] ?? "";
     return SellerModel(
       supplierId: json['id'] as int,

@@ -79,17 +79,37 @@ class DatabaseHelper {
   }
 
   Future<Database> _initializeDatabase() async {
-    // Ensure the database factory is not null
     final dbFactory = getIdbFactory();
     if (dbFactory == null) {
       throw Exception("Failed to get IDB factory.");
     }
 
-    // Open the database and check if it succeeded
-    final db = await dbFactory.open('rw_bot.db',
-        version: 1, onUpgradeNeeded: _onUpgradeNeeded);
+    // Открываем базу данных и обновляем её при необходимости
+    final db = await dbFactory.open(
+      'qqq2.db',
+      version: 5,
+      onUpgradeNeeded: _onUpgrade,
+    );
 
     return db;
+  }
+
+  Future<void> _onUpgrade(VersionChangeEvent event) async {
+    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+        "${event.oldVersion} -> ${event.newVersion}");
+    final db = event.database;
+    if (event.oldVersion < 1) {
+      await _onCreate(event);
+    }
+
+    if (event.oldVersion < 5) {
+      if (db.objectStoreNames.contains('initial_stocks')) {
+        final store = event.transaction.objectStore('initial_stocks');
+        if (!store.indexNames.contains('nmId_date')) {
+          store.createIndex('nmId_date', ['nmId', 'date']);
+        }
+      }
+    }
   }
 
   Future<void> _onCreate(VersionChangeEvent event) async {
@@ -140,6 +160,7 @@ class DatabaseHelper {
       final store = db.createObjectStore('orders');
       store.createIndex('sku_warehouse_period', ['sku', 'warehouse', 'period'],
           unique: true);
+      store.createIndex('sku', 'sku', unique: false);
     });
 
     createStoreIfNotExists('card_keywords', () {
@@ -240,30 +261,6 @@ class DatabaseHelper {
     db.createObjectStore('orders_history', keyPath: 'id', autoIncrement: true)
       ..createIndex('nmId', 'nmId', unique: false)
       ..createIndex('nmId_updatetAt', ['nmId', 'updatetAt'], unique: false);
-  }
-
-  Future<void> _onUpgradeNeeded(VersionChangeEvent event) async {
-    final db = event.database;
-    final oldVersion = event.oldVersion;
-
-    // Create a new store if needed
-    if (oldVersion == 0) {
-      await _onCreate(event);
-    }
-    if (oldVersion < 2) {
-      final txn = db.transaction('orders', idbModeReadWrite);
-      final store = txn.objectStore('orders');
-      store.createIndex('sku', 'sku', unique: false);
-      await txn.completed;
-
-      final commissionStore = db.createObjectStore('commissions',
-          keyPath: 'id', autoIncrement: true);
-      commissionStore.createIndex('id', 'id', unique: true);
-
-      db.createObjectStore('orders_history', keyPath: 'id', autoIncrement: true)
-        ..createIndex('nmId', 'nmId', unique: false)
-        ..createIndex('nmId_updatetAt', ['nmId', 'updatetAt'], unique: false);
-    }
   }
 
   Future<void> close() async {

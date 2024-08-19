@@ -44,7 +44,7 @@
     jwt_decode: ^0.3.1
     overlay_loader_with_app_icon: ^0.0.4
     flutter_secure_storage: ^9.2.2
-    idb_shim: ^2.6.0+5
+    idb_shim: ^2.6.1
     image_picker: ^1.1.2
     flutter_speed_dial: ^7.0.0
     shimmer: ^3.0.0

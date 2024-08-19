@@ -6,6 +6,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
+import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // token for cards inserting
 
@@ -80,13 +81,13 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     return c.first;
   }
 
-  // content api key exists
-  bool _apiKeyExists = false;
-  void _setApiKeyExists(bool apiKeyExists) {
-    _apiKeyExists = apiKeyExists;
-  }
+  // // content api key exists
+  // bool _apiKeyExists = false;
+  // void _setApiKeyExists(bool apiKeyExists) {
+  //   _apiKeyExists = apiKeyExists;
+  // }
 
-  bool get apiKeyExists => _apiKeyExists;
+  // bool get apiKeyExists => _apiKeyExists;
 
   // methods ===================================================================
 
@@ -95,11 +96,11 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     // check if wb content api key exists
     final apiKey = await fetch(() => contentService.apiKeyExist());
     if (apiKey == null || !apiKey) {
-      _setApiKeyExists(false);
-      _setIsLoading(false);
+      if (context.mounted) {
+        Navigator.of(context)
+            .pushReplacementNamed(MainNavigationRouteNames.apiKeysScreen);
+      }
       return;
-    } else {
-      _setApiKeyExists(true);
     }
     // get all users cards content
     final contentOrNull =

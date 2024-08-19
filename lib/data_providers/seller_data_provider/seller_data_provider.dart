@@ -15,12 +15,13 @@ class SellerDataProvider
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
+  @override
   Future<Either<RewildError, int>> insert({required SellerModel seller}) async {
     try {
       final db = await _db;
       final txn = db.transaction('sellers', idbModeReadWrite);
       final store = txn.objectStore('sellers');
-      await store.put(seller.toMap(), seller.supplierId);
+      await store.put(seller.toMap());
       await txn.completed;
       return right(seller.supplierId);
     } catch (e) {

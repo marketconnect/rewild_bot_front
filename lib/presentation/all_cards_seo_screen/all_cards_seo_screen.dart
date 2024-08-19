@@ -4,8 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
-import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
-import 'package:rewild_bot_front/widgets/empty_api_key.dart';
+
 import 'package:rewild_bot_front/widgets/network_image.dart';
 
 class AllCardsSeoScreen extends StatelessWidget {
@@ -18,42 +17,36 @@ class AllCardsSeoScreen extends StatelessWidget {
     final goToSeoToolScreen = model.goToSeoToolScreen;
     final getCardContent = model.getCardContent;
     final products = model.cards;
-    final apiKeyExists = model.apiKeyExists;
+
     return OverlayLoaderWithAppIcon(
       isLoading: isLoading,
       overlayBackgroundColor: Colors.black,
       circularProgressColor: const Color(0xff83735c),
       appIcon: Image.asset(ImageConstant.imgLogoForLoading),
-      child: !apiKeyExists && !isLoading
-          ? const EmptyApiKey(
-              text:
-                  'Для работы с карточками товаров WB вам необходимо добавить токен "Контент"',
-              route: MainNavigationRouteNames.apiKeysScreen,
-            )
-          : Scaffold(
-              appBar: AppBar(
-                  title: const Text('Ваши товары'),
-                  scrolledUnderElevation: 2,
-                  shadowColor: Colors.black,
-                  surfaceTintColor: Colors.transparent),
-              body: ListView.builder(
-                padding: const EdgeInsets.all(8.0),
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  final product = products[index];
-                  final cardContent = getCardContent(product.nmId);
-                  return GestureDetector(
-                    onTap: () {
-                      if (cardContent == null) return;
-                      goToSeoToolScreen(product: product, card: cardContent);
-                    },
-                    child: ProductCard(
-                      productCard: product,
-                    ),
-                  );
-                },
+      child: Scaffold(
+        appBar: AppBar(
+            title: const Text('Ваши товары'),
+            scrolledUnderElevation: 2,
+            shadowColor: Colors.black,
+            surfaceTintColor: Colors.transparent),
+        body: ListView.builder(
+          padding: const EdgeInsets.all(8.0),
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            final product = products[index];
+            final cardContent = getCardContent(product.nmId);
+            return GestureDetector(
+              onTap: () {
+                if (cardContent == null) return;
+                goToSeoToolScreen(product: product, card: cardContent);
+              },
+              child: ProductCard(
+                productCard: product,
               ),
-            ),
+            );
+          },
+        ),
+      ),
     );
   }
 }

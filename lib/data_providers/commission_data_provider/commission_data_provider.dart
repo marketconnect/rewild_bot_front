@@ -34,7 +34,7 @@ class CommissionDataProvider
       return left(RewildError(
         sendToTg: true,
         'Ошибка во время получения комиссии ${e.toString()}',
-        source: runtimeType.toString(),
+        source: "CommissionDataProvider",
         name: "get",
         args: [id],
       ));
@@ -58,7 +58,7 @@ class CommissionDataProvider
       return left(RewildError(
         sendToTg: true,
         'Ошибка во время добавления комиссии ${e.toString()}',
-        source: runtimeType.toString(),
+        source: "CommissionDataProvider",
         name: "insert",
         args: [commission],
       ));
