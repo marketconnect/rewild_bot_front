@@ -47,15 +47,20 @@ class OrdersHistoryModel {
   }
 
   factory OrdersHistoryModel.fromMap(Map<String, dynamic> map) {
-    final highBuyout = map['highBuyout'] as int;
+    final dynamic highBuyoutValue = map['highBuyout'];
+
+    // Определяем тип сохраненного значения и корректно его обрабатываем
+    final bool highBuyout = highBuyoutValue is bool
+        ? highBuyoutValue
+        : (highBuyoutValue as int) > 0;
+
     return OrdersHistoryModel(
       nmId: map['nmId'] as int,
       qty: map['qty'] as int,
-      highBuyout: highBuyout > 0,
+      highBuyout: highBuyout,
       updatetAt: DateTime.fromMillisecondsSinceEpoch(map['updatetAt'] as int),
     );
   }
-
   String toJson() => json.encode(toMap());
 
   factory OrdersHistoryModel.fromJson(String source) =>

@@ -4,7 +4,9 @@ import 'package:fpdart/fpdart.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
 import 'package:rewild_bot_front/domain/entities/size_model.dart';
@@ -93,7 +95,8 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
             );
             fetchedSizes.add(sizeModel);
           }
-
+          // sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+          //     "API ${fetchedSizes.toString()}");
           final basicPrice = json['salePriceU'] ??
               (json['extended'] != null ? json['extended']['basicPriceU'] : 0);
 

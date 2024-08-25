@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class KwByLemma {
   final int lemmaID;
   final String lemma;
@@ -43,10 +45,10 @@ class KwByLemma {
   factory KwByLemma.fromMap(Map<String, dynamic> json) {
     return KwByLemma(
       lemmaID: json['lemmaID'],
-      lemma: json['lemma'],
-      keyword: json['keyword'],
+      lemma: utf8.decode(json['lemma'].runes.toList()),
+      keyword: utf8.decode(json['keyword'].runes.toList()),
       freq: json['freq'],
-      sku: json['sku'],
+      // sku: json['sku'],
     );
   }
 }

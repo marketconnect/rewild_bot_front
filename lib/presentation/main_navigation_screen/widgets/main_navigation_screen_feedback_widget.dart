@@ -11,71 +11,69 @@ class MainNavigationScreenFeedBackWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    return SafeArea(
-      child: !apiKeyExists
-          ? const EmptyApiKey(
-              text:
-                  'Для работы с отзывами и вопросами WB вам необходимо добавить токен "Вопросы и отзывы"',
-              route: MainNavigationRouteNames.apiKeysScreen,
-            )
-          : SingleChildScrollView(
-              child: Column(children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 15.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        height: screenHeight * 0.1,
-                      ),
-                      Text(
-                        'Обратная связь',
-                        style: TextStyle(
-                            fontSize: screenWidth * 0.08,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
+    return !apiKeyExists
+        ? const EmptyApiKey(
+            text:
+                'Для работы с отзывами и вопросами WB вам необходимо добавить токен "Вопросы и отзывы"',
+            route: MainNavigationRouteNames.apiKeysScreen,
+          )
+        : SingleChildScrollView(
+            child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: screenHeight * 0.1,
+                    ),
+                    Text(
+                      'Обратная связь',
+                      style: TextStyle(
+                          fontSize: screenWidth * 0.08,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
                 ),
-                SizedBox(
-                  height: screenHeight * 0.05,
+              ),
+              SizedBox(
+                height: screenHeight * 0.05,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceContainerHighest
+                      .withOpacity(0.3),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .surfaceContainerHighest
-                        .withOpacity(0.3),
-                  ),
-                  child: Column(
-                    children: [
-                      _Link(
-                        text: 'Вопросы',
-                        color: const Color(0xFFd2a941),
-                        imageSrc: IconConstant.iconQuestions,
-                        route:
-                            "MainNavigationRouteNames.allProductsQuestionsScreen",
-                      ),
-                      _Link(
-                        text: 'Отзывы',
-                        color: const Color(0xFF8c56ce),
-                        imageSrc: IconConstant.iconRatingStars,
-                        route:
-                            "MainNavigationRouteNames.allProductsReviewsScreen",
-                      ),
-                      _Link(
-                        text: 'Настройка уведомлений',
-                        route:
-                            "MainNavigationRouteNames.feedbackNotificationScreen",
-                        color: const Color(0xFF4aa6db),
-                        imageSrc: IconConstant.iconNotificationSettings,
-                      ),
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    _Link(
+                      text: 'Вопросы',
+                      color: const Color(0xFFd2a941),
+                      imageSrc: IconConstant.iconQuestions,
+                      route:
+                          "MainNavigationRouteNames.allProductsQuestionsScreen",
+                    ),
+                    _Link(
+                      text: 'Отзывы',
+                      color: const Color(0xFF8c56ce),
+                      imageSrc: IconConstant.iconRatingStars,
+                      route:
+                          "MainNavigationRouteNames.allProductsReviewsScreen",
+                    ),
+                    _Link(
+                      text: 'Настройка уведомлений',
+                      route:
+                          "MainNavigationRouteNames.feedbackNotificationScreen",
+                      color: const Color(0xFF4aa6db),
+                      imageSrc: IconConstant.iconNotificationSettings,
+                    ),
+                  ],
                 ),
-              ]),
-            ),
-    );
+              ),
+            ]),
+          );
   }
 }
 

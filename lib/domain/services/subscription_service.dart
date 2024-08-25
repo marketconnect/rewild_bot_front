@@ -86,6 +86,7 @@ class SubscriptionService
     return right(false);
   }
 
+  @override
   Future<Either<RewildError, bool>> isSubscribed(int nmId) async {
     final subsEither = await dataProvider.getOne(nmId);
     if (subsEither.isLeft()) {

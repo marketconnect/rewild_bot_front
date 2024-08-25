@@ -42,7 +42,7 @@ class OrdersHistoryApiClient
         return left(RewildError(
           sendToTg: false,
           errString,
-          source: runtimeType.toString(),
+          source: "OrdersHistoryApiClient",
           name: "get",
           args: [nmId],
         ));
@@ -51,7 +51,7 @@ class OrdersHistoryApiClient
       return left(RewildError(
         sendToTg: false,
         "Ошибка при получении списка отзывов: $e",
-        source: runtimeType.toString(),
+        source: "OrdersHistoryApiClient",
         name: "get",
         args: [nmId],
       ));

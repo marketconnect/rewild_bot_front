@@ -5,8 +5,7 @@ import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class InitStockServiceInitStockDataProvider {
-  Future<Either<RewildError, List<InitialStockModel>>> getAll(
-      {required DateTime dateFrom, required DateTime dateTo});
+  Future<Either<RewildError, List<InitialStockModel>>> getAll();
 
   Future<Either<RewildError, List<InitialStockModel>>> get(
       {required int nmId,

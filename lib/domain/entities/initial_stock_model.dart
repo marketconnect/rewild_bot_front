@@ -2,65 +2,58 @@
 import 'dart:convert';
 
 class InitialStockModel {
-  final int id;
-
   final DateTime date;
   final int nmId;
   final int wh;
   final int sizeOptionId;
-  final String? name;
+
   final int qty;
 
   InitialStockModel({
-    this.id = 0,
     required this.date,
     required this.nmId,
     required this.wh,
     required this.sizeOptionId,
-    this.name,
     required this.qty,
   });
 
   InitialStockModel copyWith({
-    int? id,
     DateTime? date,
     int? nmId,
     int? wh,
     int? sizeOptionId,
-    String? name,
     int? qty,
   }) {
     return InitialStockModel(
-      id: id ?? this.id,
       date: date ?? this.date,
       nmId: nmId ?? this.nmId,
       wh: wh ?? this.wh,
       sizeOptionId: sizeOptionId ?? this.sizeOptionId,
-      name: name ?? this.name,
       qty: qty ?? this.qty,
     );
   }
 
+  String get nmIdWhSizeOptionId => '${nmId}_${wh}_$sizeOptionId';
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
       'date': date.millisecondsSinceEpoch,
       'nmId': nmId,
+      'sizeOptionId': sizeOptionId,
       'wh': wh,
-      'name': name,
       'qty': qty,
+      'nmIdWhSizeOptionId': nmIdWhSizeOptionId
     };
   }
 
   factory InitialStockModel.fromMap(Map<String, dynamic> map) {
     return InitialStockModel(
-      id: map['id'] as int,
       date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
-      nmId: map['nmId'] as int,
-      sizeOptionId: map['sizeOptionId'] as int,
-      wh: map['wh'] as int,
-      name: map['name'] != null ? map['name'] as String : null,
-      qty: map['qty'] as int,
+      nmId: map['nmId'] != null ? map['nmId'] as int : 0,
+      sizeOptionId:
+          map['sizeOptionId'] != null ? map['sizeOptionId'] as int : 0,
+      wh: map['wh'] != null ? map['wh'] as int : 0,
+      qty: map['qty'] != null ? map['qty'] as int : 0,
     );
   }
 
@@ -71,30 +64,26 @@ class InitialStockModel {
 
   @override
   String toString() {
-    return 'InitialStockModel(id: $id, date: $date, nmId: $nmId, wh: $wh, sizeOptionId: $sizeOptionId, name: $name, qty: $qty)';
+    return 'InitialStockModel( date: $date, nmId: $nmId, wh: $wh, sizeOptionId: $sizeOptionId,  qty: $qty)';
   }
 
   @override
   bool operator ==(covariant InitialStockModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id &&
-        other.date == date &&
+    return other.date == date &&
         other.nmId == nmId &&
         other.wh == wh &&
         other.sizeOptionId == sizeOptionId &&
-        other.name == name &&
         other.qty == qty;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        date.hashCode ^
+    return date.hashCode ^
         nmId.hashCode ^
         sizeOptionId.hashCode ^
         wh.hashCode ^
-        name.hashCode ^
         qty.hashCode;
   }
 }

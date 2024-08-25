@@ -160,7 +160,7 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
   void goToSeoToolScreen(
       {required CardOfProductModel product, required CardItem card}) {
     Navigator.of(context).pushNamed(
-      "MainNavigationRouteNames.seoToolScreen",
+      MainNavigationRouteNames.seoToolScreen,
       arguments: (product, card),
     );
     return;

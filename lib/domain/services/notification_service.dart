@@ -55,6 +55,7 @@ class NotificationService
     });
   }
 
+  @override
   Future<Either<RewildError, bool>> checkForParent(
       {required int campaignId}) async {
     final resource =
@@ -63,6 +64,7 @@ class NotificationService
     return resource;
   }
 
+  @override
   Future<Either<RewildError, void>> addForParent(
       {required List<ReWildNotificationModel> notifications,
       required int parentId,
@@ -87,6 +89,7 @@ class NotificationService
     });
   }
 
+  @override
   Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
       {required int parentId}) async {
     final either =

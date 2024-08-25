@@ -4,12 +4,15 @@ import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/domain/entities/lemma_by_filter.dart';
+import 'package:rewild_bot_front/domain/services/filter_values_service.dart';
 
-class FilterApiClient {
+class FilterApiClient implements FilterServiceFilterApiClient {
   const FilterApiClient();
 
+  @override
   Future<Either<RewildError, List<String>>> getFilterValues({
     required String token,
     required String filterName,
@@ -44,6 +47,7 @@ class FilterApiClient {
     }
   }
 
+  @override
   Future<Either<RewildError, List<KwByLemma>>> getKeywordsByLemmas({
     required String token,
     required List<int> lemmasIDs,
@@ -66,8 +70,20 @@ class FilterApiClient {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return right(data.map((e) => KwByLemma.fromMap(e)).toList());
+        final Map<String, dynamic> json = jsonDecode(response.body);
+
+        if (json.containsKey('keywords')) {
+          final List<dynamic> keywordsList = json['keywords'];
+          return right(keywordsList.map((e) => KwByLemma.fromMap(e)).toList());
+        } else {
+          return left(RewildError(
+            sendToTg: true,
+            "Unexpected response structure: missing 'keywords'",
+            source: "FilterApiClient",
+            name: "getKeywordsByLemmas",
+            args: [],
+          ));
+        }
       } else {
         return left(RewildError(
           sendToTg: true,
@@ -88,6 +104,7 @@ class FilterApiClient {
     }
   }
 
+  @override
   Future<Either<RewildError, List<KwByLemma>>> getKeywordsByWords({
     required String token,
     required List<String> words,
@@ -106,8 +123,11 @@ class FilterApiClient {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return right(data.map((e) => KwByLemma.fromMap(e)).toList());
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        final List<dynamic> keywordList = responseData['keywords'];
+
+        return right(keywordList.map((e) => KwByLemma.fromMap(e)).toList());
       } else {
         return left(RewildError(
           sendToTg: true,
@@ -128,6 +148,7 @@ class FilterApiClient {
     }
   }
 
+  @override
   Future<Either<RewildError, List<LemmaByFilterId>>> getLemmasByFilterId({
     required String token,
     required int filterID,
@@ -150,8 +171,22 @@ class FilterApiClient {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return right(data.map((e) => LemmaByFilterId.fromMap(e)).toList());
+        final Map<String, dynamic> jsonResponse = jsonDecode(response.body);
+
+        // Check if 'lemmas' key is present in the JSON and is a List
+        if (jsonResponse.containsKey('lemmas') &&
+            jsonResponse['lemmas'] is List) {
+          final List<dynamic> data = jsonResponse['lemmas'];
+          return right(data.map((e) => LemmaByFilterId.fromMap(e)).toList());
+        } else {
+          return left(RewildError(
+            sendToTg: true,
+            "Unexpected response format",
+            source: "FilterApiClient",
+            name: "getLemmasByFilterId",
+            args: [],
+          ));
+        }
       } else {
         return left(RewildError(
           sendToTg: true,

@@ -29,94 +29,92 @@ class MainNavigationScreenAdvertWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    return SafeArea(
-      child: !apiKeyExists
-          ? const EmptyApiKey(
-              text:
-                  'Для работы с рекламным кабинетом WB вам необходимо добавить токен "Продвижение"',
-              route: MainNavigationRouteNames.apiKeysScreen,
-            )
-          : adverts.isNotEmpty
-              ? SingleChildScrollView(
-                  child: Column(children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 15.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: screenHeight * 0.1,
-                          ),
-                          Text(
-                            'Кампании',
-                            style: TextStyle(
-                                fontSize: screenWidth * 0.07,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
+    return !apiKeyExists
+        ? const EmptyApiKey(
+            text:
+                'Для работы с рекламным кабинетом WB вам необходимо добавить токен "Продвижение"',
+            route: MainNavigationRouteNames.apiKeysScreen,
+          )
+        : adverts.isNotEmpty
+            ? SingleChildScrollView(
+                child: Column(children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          height: screenHeight * 0.1,
+                        ),
+                        Text(
+                          'Кампании',
+                          style: TextStyle(
+                              fontSize: screenWidth * 0.07,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
                     ),
-                    Divider(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .surfaceContainerHighest
-                          .withOpacity(0.95),
+                  ),
+                  Divider(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest
+                        .withOpacity(0.95),
+                  ),
+                  if (balance != null)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text("Баланс: $balance руб.",
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
+                      ],
                     ),
-                    if (balance != null)
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text("Баланс: $balance руб.",
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    if (adverts.isNotEmpty)
-                      _AllAdvertsWidget(
-                          screenWidth: screenWidth,
-                          screenHeight: screenHeight,
-                          // paused: paused,
-                          callbackForUpdate: callbackForUpdate,
-                          budget: budget,
-                          adverts: adverts),
-                    Padding(
-                      padding: EdgeInsets.only(left: screenWidth * 0.05),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: screenHeight * 0.05,
-                          ),
-                          const LinkBtn(
-                            text: 'Аналитика',
-                            color: Color(0xFF4aa6db),
-                            // route: MainNavigationRouteNames
-                            //     .advertsAnaliticsNavScreen,
-                            route: "MainNavigationRouteNames.allAdvertsScreen",
-                            iconData: Icons.auto_graph_outlined,
-                          ),
-                          LinkBtn(
-                            text: 'Ключевые фразы',
-                            route:
-                                "MainNavigationRouteNames.editAdvertsKeywordsScreen",
-                            color: const Color(0xFFdfb446),
-                            child: SizedBox(
-                              width: MediaQuery.of(context).size.width * 0.05,
-                              height: MediaQuery.of(context).size.width * 0.05,
-                              child: Image.asset(
-                                IconConstant.iconKeyword,
-                                color: Theme.of(context).colorScheme.surface,
-                              ),
+                  if (adverts.isNotEmpty)
+                    _AllAdvertsWidget(
+                        screenWidth: screenWidth,
+                        screenHeight: screenHeight,
+                        // paused: paused,
+                        callbackForUpdate: callbackForUpdate,
+                        budget: budget,
+                        adverts: adverts),
+                  Padding(
+                    padding: EdgeInsets.only(left: screenWidth * 0.05),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: screenHeight * 0.05,
+                        ),
+                        const LinkBtn(
+                          text: 'Аналитика',
+                          color: Color(0xFF4aa6db),
+                          // route: MainNavigationRouteNames
+                          //     .advertsAnaliticsNavScreen,
+                          route: "MainNavigationRouteNames.allAdvertsScreen",
+                          iconData: Icons.auto_graph_outlined,
+                        ),
+                        LinkBtn(
+                          text: 'Ключевые фразы',
+                          route:
+                              "MainNavigationRouteNames.editAdvertsKeywordsScreen",
+                          color: const Color(0xFFdfb446),
+                          child: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.05,
+                            height: MediaQuery.of(context).size.width * 0.05,
+                            child: Image.asset(
+                              IconConstant.iconKeyword,
+                              color: Theme.of(context).colorScheme.surface,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ]),
-                )
-              : isLoading
-                  ? const Center(child: MyProgressIndicator())
-                  : const EmptyWidget(text: 'Нет активных рекламных кампаний'),
-    );
+                  ),
+                ]),
+              )
+            : isLoading
+                ? const Center(child: MyProgressIndicator())
+                : const EmptyWidget(text: 'Нет активных рекламных кампаний');
   }
 }
 

@@ -53,8 +53,7 @@ class _AddApiKeysScreenState extends State<AddApiKeysScreen> {
       overlayBackgroundColor: Colors.black,
       circularProgressColor: const Color(0xff83735c),
       appIcon: Image.asset(ImageConstant.imgLogoForLoading),
-      child: SafeArea(
-          child: Scaffold(
+      child: Scaffold(
         appBar: AppBar(
           title: RichText(
             text: TextSpan(
@@ -365,7 +364,7 @@ class _AddApiKeysScreenState extends State<AddApiKeysScreen> {
                   ),
                 ),
               ),
-      )),
+      ),
     );
   }
 

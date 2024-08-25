@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fpdart/fpdart.dart';
@@ -97,26 +99,6 @@ abstract class SingleCardScreenWeekOrdersService {
 }
 
 class SingleCardScreenViewModel extends ResourceChangeNotifier {
-  final SingleCardScreenCardOfProductService cardOfProductService;
-  final SingleCardScreenSellerService sellerService;
-  final SingleCardScreenCommissionService commissionService;
-  final SingleCardScreenInitialStockService initialStocksService;
-  final SingleCardScreenWarehouseService warehouseService;
-  final SingleCardScreenStockService stockService;
-  final SingleCardScreenTariffService tariffService;
-  final SingleCardScreenSupplyService supplyService;
-  final SingleCardScreenOrdersHistoryService ordersHistoryService;
-  final SingleCardScreenNotificationService notificationService;
-  final SingleCardScreenAuthService tokenProvider;
-  final SingleCardScreenPriceService priceService;
-  final SingleCardScreenSubscriptionsService subscriptionsService;
-  final SingleCardScreenWeekOrdersService weekOrdersService;
-
-  // Stream
-  Stream<StreamNotificationEvent> streamNotification;
-
-  final int id;
-
   SingleCardScreenViewModel(
       {required super.context,
       required this.tokenProvider,
@@ -138,292 +120,52 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     asyncInit();
   }
 
-  // // MONTH WEEK
-  // final DateTime _to = DateTime.now();
-  // DateTime get to => _to;
-  // // DateTime? _from;
-  // DateTime get from => _to.subtract(const Duration(days: 7));
-  // DateSundaysCalculator calculator = DateSundaysCalculator();
-  // DateTime get to => calculator.to;
-  // DateTime get from => calculator.from;
-  // Async init ================================================================
-  Future<void> asyncInit() async {
-    // Stream update track
-    streamNotification.listen((event) async {
-      if (event.parentType == ParentType.card) {
-        if (event.exists) {
-          setTracked();
-        } else {
-          setUntracked();
-        }
-      }
-    });
-    // Set Uri
-    websiteUri =
-        Uri.parse('https://www.wildberries.ru/catalog/$id/detail.aspx');
+  // constructor params
+  final SingleCardScreenCardOfProductService cardOfProductService;
+  final SingleCardScreenSellerService sellerService;
+  final SingleCardScreenCommissionService commissionService;
+  final SingleCardScreenInitialStockService initialStocksService;
+  final SingleCardScreenWarehouseService warehouseService;
+  final SingleCardScreenStockService stockService;
+  final SingleCardScreenTariffService tariffService;
+  final SingleCardScreenSupplyService supplyService;
+  final SingleCardScreenOrdersHistoryService ordersHistoryService;
+  final SingleCardScreenNotificationService notificationService;
+  final SingleCardScreenAuthService tokenProvider;
+  final SingleCardScreenPriceService priceService;
+  final SingleCardScreenSubscriptionsService subscriptionsService;
+  final SingleCardScreenWeekOrdersService weekOrdersService;
 
-    // Get card
-    final cardOfProduct = await fetch(() => cardOfProductService.getOne(id));
-    if (cardOfProduct == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                "Карточка не найдена. Артикул ($id) скопирован в буфер обмена"),
-          ),
-        );
-      }
-      await Clipboard.setData(ClipboardData(text: "$id"));
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-      return;
-    }
+  Stream<StreamNotificationEvent> streamNotification;
+  final int id;
 
-    // subscribed
-    final isSubscribed =
-        await fetch(() => subscriptionsService.isSubscribed(id));
-    if (isSubscribed != null) {
-      setIsSubscribed(isSubscribed);
-    }
+  // Fields ====================================================================
+  bool _isLoading = false;
 
-    _isNull = false;
-
-    // name, img, feedbacks, reviewRating
-    _name = cardOfProduct.name;
-    _img = cardOfProduct.img!.replaceFirst("/tm/", "/big/");
-    _feedbacks = cardOfProduct.feedbacks ?? 0;
-    _reviewRating = cardOfProduct.reviewRating ?? 0;
-    _price = cardOfProduct.basicPriceU ?? 0;
-    _pics = cardOfProduct.pics ?? 0;
-    _promo = cardOfProduct.promoTextCard ?? '';
-    _volume = cardOfProduct.volume;
-    _createdAt = cardOfProduct.createdAt;
-
-    // Seller
-    if (_sellerName == "-") {
-      if (cardOfProduct.supplierId != null) {
-        final seller = await fetch(
-            () => sellerService.get(supplierId: cardOfProduct.supplierId!));
-        if (seller == null) {
-          return;
-        }
-        _tradeMark = seller.trademark ?? '-';
-        _sellerName = seller.name;
-        // region
-        final ogrn = seller.ogrn;
-        _region = (ogrn != null && ogrn.length > 3)
-            ? "${RegionsNumsConstants.regions[ogrn.substring(3, 5)]}"
-            : "-";
-      }
-    }
-
-    // Token
-    final token = await fetch(() => tokenProvider.getToken());
-    if (token == null) {
-      return;
-    }
-
-    // Commission, category, subject
-    if (_subjectId == 0) {
-      _subjectId = cardOfProduct.subjectId ?? 0;
-    }
-    if (_commission == null && _subjectId != 0) {
-      final commissionResource = await fetch(
-          () => commissionService.get(token: token, id: _subjectId));
-      if (commissionResource == null) {
-        return;
-      }
-      _commission = commissionResource.commission;
-      _category = commissionResource.category;
-      _subject = commissionResource.subject;
-    }
-
-    // brand
-    _brand = cardOfProduct.brand ?? '-';
-    // get stocks
-    final stocks = await fetch(() => stockService.get(nmId: id));
-    if (stocks == null) {
-      return;
-    }
-
-    //  add stocks
-    for (final stock in stocks) {
-      final wareHouse =
-          await fetch(() => warehouseService.getById(id: stock.wh));
-      if (wareHouse == null) {
-        return;
-      }
-
-      _notificationScreenWarehouses[wareHouse] = stock.qty;
-      addWarehouse(wareHouse.name, stock.qty);
-
-      // tariff
-      final tariff = await fetch(() => tariffService.getByStoreId(stock.wh));
-      if (tariff == null) {
-        return;
-      }
-
-      if (wareHouse.name.contains("Склад продавца")) {
-        final tariff = await fetch(() => tariffService.getByStoreId(1));
-        if (tariff == null) {
-          return;
-        }
-
-        addTariff("Склад продавца", tariff);
-      } else {
-        addTariff(wareHouse.name, tariff);
-      }
-    }
-    // get supplies
-    final supplies = await fetch(() => supplyService.getForOne(
-            nmId: id,
-            dateFrom: yesterdayEndOfTheDay(),
-            dateTo: DateTime.now())) ??
-        [];
-
-    // get initial stocks
-    final initialStocks = await fetch(() => initialStocksService.get(nmId: id));
-    if (initialStocks == null) {
-      return;
-    }
-    // add initial stocks and orders
-    for (final initStock in initialStocks) {
-      final wh = initStock.wh;
-      final warehouse = await fetch(() => warehouseService.getById(id: wh));
-      if (warehouse == null) {
-        return;
-      }
-
-      addInitialStock(warehouse.name, initStock.qty);
-
-      // orders
-      final stock = warehouses[warehouse.name] ?? 0;
-      final iSt = _initialStocks[warehouse.name] ?? 0;
-      int supplyQty = 0;
-      final supply = supplies.where((element) =>
-          element.nmId == id &&
-          element.wh == wh &&
-          element.sizeOptionId == initStock.sizeOptionId);
-      if (supply.isNotEmpty) {
-        supplyQty = supply.first.qty;
-      }
-      addSupply(warehouse.name, supplyQty);
-      final qty = iSt + supplyQty - stock;
-      addOrder(warehouse.name, qty);
-      _stocksSum += stock;
-    }
-
-    _initStocksSum = _initialStocks.values.isNotEmpty
-        ? _initialStocks.values.reduce((value, element) => value + element)
-        : 0;
-    _supplySum = _supplies.values.isNotEmpty
-        ? _supplies.values.reduce((value, element) => value + element)
-        : 0;
-    final ordersHistory = await fetch(() => ordersHistoryService.get(nmId: id));
-    if (ordersHistory == null) {
-      return;
-    }
-
-    // _totalOrdersQty = ordersHistory.qty;
-    // is high buyout
-    _isHighBuyout = ordersHistory.highBuyout;
-
-    // Notification
-    final notificationsExists =
-        await fetch(() => notificationService.checkForParent(campaignId: id));
-    if (notificationsExists != null && notificationsExists) {
-      setTracked();
-    }
-
-    // logistics coef
-
-    final logisticsCoefResource =
-        await fetch(() => priceService.getPrice(token));
-    if (logisticsCoefResource == null) {
-      return;
-    }
-    setLogisticsCoef(logisticsCoefResource.logisticsCoef);
-
-    // Orders history
-    // MONTH WEEK
-    // DateTime to = DateTime.now();
-    // DateTime from;
-
-    // from = to.subtract(const Duration(days: 8));
-    // int unixFrom = from.millisecondsSinceEpoch;
-    // int unixTo = to.millisecondsSinceEpoch;
-    final ordersOrNull = await fetch(
-        () => weekOrdersService.getOrdersFromTo(token: token, skus: [id]));
-    if (ordersOrNull != null) {
-      for (final order in ordersOrNull) {
-        final wh = order.warehouse;
-        final period = order.period;
-        final warehouse = await fetch(() => warehouseService.getById(id: wh));
-        if (warehouse == null) {
-          return;
-        }
-        _addOrderHistoryFromServer(warehouse.name, order.qty, period);
-      }
-    }
-
+  void setIsLoading(bool value) {
+    _isLoading = value;
     notify();
   }
 
-  // orders history
-  // ignore: prefer_final_fields
-  Map<String, int> _weekOrdersHistoryFromServer = {};
-  // ignore: prefer_final_fields
-  Map<String, int> _monthOrdersHistoryFromServer = {};
+  bool get isLoading => _isLoading;
 
-  void _addOrderHistoryFromServer(String name, int qty, String period) {
-    if (!_weekOrdersHistoryFromServer.containsKey(name)) {
-      if (period.startsWith('m')) {
-        if (monthNum == 0) {
-          monthNum = int.tryParse(period.split('m')[1]) ?? 0;
-        }
-        _monthOrdersHistoryFromServer[name] = qty;
-      } else if (period.startsWith('w')) {
-        if (weekNum == 0) {
-          weekNum = int.tryParse(period.split('w')[1]) ?? 0;
-        }
-        _weekOrdersHistoryFromServer[name] = qty;
-      }
-      return;
-    }
-    if (period == 'm') {
-      _monthOrdersHistoryFromServer[name] =
-          _monthOrdersHistoryFromServer[name]! + qty;
-    } else if (period == 'w') {
-      _weekOrdersHistoryFromServer[name] =
-          _weekOrdersHistoryFromServer[name]! + qty;
-    }
-  }
-
-  Map<String, int> get weekOrdersHistoryFromServer =>
-      _weekOrdersHistoryFromServer;
-  Map<String, int> get monthOrdersHistoryFromServer =>
-      _monthOrdersHistoryFromServer;
-  // is subscribed
-  bool _subscribed = false;
-  bool get subscribed => _subscribed;
-  void setIsSubscribed(bool value) {
-    _subscribed = value;
-  }
-
+  // week orders
+  final Map<String, int> _weekOrdersHistoryFromServer = {};
   void addOrderHistoryFromServer(String name, int qty) {
     _weekOrdersHistoryFromServer[name] = qty;
   }
 
+  Map<String, int> get weekOrdersHistoryFromServer =>
+      _weekOrdersHistoryFromServer;
+
+  // month orders
+  final Map<String, int> _monthOrdersHistoryFromServer = {};
+  Map<String, int> get monthOrdersHistoryFromServer =>
+      _monthOrdersHistoryFromServer;
+
+  // number of week and month
   int weekNum = 0;
   int monthNum = 0;
-  // is user`s card
-  // bool _isUserCard = false;
-  // bool get isUserCard => _isUserCard;
-  // void setIsUserCard(bool value) {
-  //   _isUserCard = value;
-  //   notify();
-  // }
 
   // logistics coef
   int? _logisticsCoef;
@@ -524,11 +266,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   double? _commission;
   double? get commission => _commission;
 
-  // total oders qty
-  // int? _totalOrdersQty;
-  // int? get totalOrdersQty => _totalOrdersQty;
-
-  // is high buyout
+// is high buyout
   bool _isHighBuyout = false;
   bool get isHighBuyout => _isHighBuyout;
 
@@ -548,16 +286,6 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   Map<String, int> _warehouses = {};
   void setWarehouses(Map<String, int> warehouses) {
     _warehouses = warehouses;
-  }
-
-  void addWarehouse(String name, int qty) {
-    if (_warehouses[name] == null) {
-      _warehouses[name] = qty;
-
-      return;
-    }
-    final sumQty = _warehouses[name]! + qty;
-    _warehouses[name] = sumQty;
   }
 
   // returns copy of warehouses
@@ -586,6 +314,290 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     _initialStocks = initialStocks;
   }
 
+// Supplies
+  Map<String, int> _supplies = {};
+  Map<String, int> get supplies => _supplies;
+  // Initial Stocks
+  int _initStocksSum = 0;
+  int get initStocksSum => _initStocksSum;
+
+  // Supply
+  int _supplySum = 0;
+  int get supplySum => _supplySum;
+
+  // Sales
+  final Map<String, int> _orders = {};
+  void setOrders(Map<String, int> orders) {
+    _orders.clear();
+    _orders.addAll(orders);
+  }
+
+  void addOrder(String name, int qty) {
+    _orders[name] = qty;
+  }
+
+  Map<String, int> get orders => Map.from(_orders);
+  // Null
+  bool _isNull = true;
+  bool get isNull => _isNull;
+
+  // Methods ===================================================================
+  Future<void> asyncInit() async {
+    setIsLoading(true);
+    // Stream update track
+    streamNotification.listen((event) async {
+      if (event.parentType == ParentType.card) {
+        if (event.exists) {
+          setTracked();
+        } else {
+          setUntracked();
+        }
+      }
+    });
+    // Set Uri
+    websiteUri =
+        Uri.parse('https://www.wildberries.ru/catalog/$id/detail.aspx');
+
+    // Get card
+    final cardOfProduct = await fetch(() => cardOfProductService.getOne(id));
+    if (cardOfProduct == null) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                "Карточка не найдена. Артикул ($id) скопирован в буфер обмена"),
+          ),
+        );
+      }
+      await Clipboard.setData(ClipboardData(text: "$id"));
+      if (context.mounted) {
+        Navigator.pop(context);
+      }
+      setIsLoading(false);
+      return;
+    }
+
+    _isNull = false;
+
+    // name, img, feedbacks, reviewRating
+    _name = cardOfProduct.name;
+    _img = cardOfProduct.img!.replaceFirst("/tm/", "/big/");
+    _feedbacks = cardOfProduct.feedbacks ?? 0;
+    _reviewRating = cardOfProduct.reviewRating ?? 0;
+    _price = cardOfProduct.basicPriceU ?? 0;
+    _pics = cardOfProduct.pics ?? 0;
+    _promo = cardOfProduct.promoTextCard ?? '';
+    _volume = cardOfProduct.volume;
+    _createdAt = cardOfProduct.createdAt;
+
+    // Seller
+    if (_sellerName == "-") {
+      if (cardOfProduct.supplierId != null) {
+        final seller = await fetch(
+            () => sellerService.get(supplierId: cardOfProduct.supplierId!));
+        if (seller == null) {
+          setIsLoading(false);
+          return;
+        }
+        _tradeMark = seller.trademark ?? '-';
+        _sellerName = seller.name;
+        // region
+        final ogrn = seller.ogrn;
+        _region = (ogrn != null && ogrn.length > 3)
+            ? "${RegionsNumsConstants.regions[ogrn.substring(3, 5)]}"
+            : "-";
+      }
+    }
+
+    // Token
+    final token = await fetch(() => tokenProvider.getToken());
+    if (token == null) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Commission, category, subject
+    if (_subjectId == 0) {
+      _subjectId = cardOfProduct.subjectId ?? 0;
+    }
+    if (_commission == null && _subjectId != 0) {
+      final commissionResource = await fetch(
+          () => commissionService.get(token: token, id: _subjectId));
+      if (commissionResource == null) {
+        setIsLoading(false);
+        return;
+      }
+      _commission = commissionResource.commission;
+      _category = utf8.decode(commissionResource.category.runes.toList());
+      _subject = utf8.decode(commissionResource.subject.runes.toList());
+    }
+
+    // brand
+    _brand = cardOfProduct.brand ?? '-';
+    // get stocks
+    final stocks = await fetch(() => stockService.get(nmId: id));
+    if (stocks == null) {
+      setIsLoading(false);
+      return;
+    }
+
+    //  add stocks
+    for (final stock in stocks) {
+      final wareHouse =
+          await fetch(() => warehouseService.getById(id: stock.wh));
+      if (wareHouse == null) {
+        setIsLoading(false);
+        return;
+      }
+
+      _notificationScreenWarehouses[wareHouse] = stock.qty;
+      addWarehouse(wareHouse.name, stock.qty);
+
+      // tariff
+      final tariff = await fetch(() => tariffService.getByStoreId(stock.wh));
+      if (tariff == null) {
+        setIsLoading(false);
+        return;
+      }
+
+      if (wareHouse.name.contains("Склад продавца")) {
+        final tariff = await fetch(() => tariffService.getByStoreId(1));
+        if (tariff == null) {
+          setIsLoading(false);
+          return;
+        }
+
+        addTariff("Склад продавца", tariff);
+      } else {
+        addTariff(wareHouse.name, tariff);
+      }
+    }
+    // get supplies
+    final supplies = await fetch(() => supplyService.getForOne(
+            nmId: id,
+            dateFrom: yesterdayEndOfTheDay(),
+            dateTo: DateTime.now())) ??
+        [];
+
+    // get initial stocks
+    final initialStocks = await fetch(() => initialStocksService.get(nmId: id));
+    if (initialStocks == null) {
+      setIsLoading(false);
+      return;
+    }
+    // add initial stocks and orders
+    for (final initStock in initialStocks) {
+      final wh = initStock.wh;
+      final warehouse = await fetch(() => warehouseService.getById(id: wh));
+      if (warehouse == null) {
+        setIsLoading(false);
+        return;
+      }
+
+      addInitialStock(warehouse.name, initStock.qty);
+
+      // orders
+      final stock = warehouses[warehouse.name] ?? 0;
+      final iSt = _initialStocks[warehouse.name] ?? 0;
+      int supplyQty = 0;
+      final supply = supplies.where((element) =>
+          element.nmId == id &&
+          element.wh == wh &&
+          element.sizeOptionId == initStock.sizeOptionId);
+      if (supply.isNotEmpty) {
+        supplyQty = supply.first.qty;
+      }
+      addSupply(warehouse.name, supplyQty);
+      final qty = iSt + supplyQty - stock;
+      addOrder(warehouse.name, qty);
+      _stocksSum += stock;
+    }
+
+    _initStocksSum = _initialStocks.values.isNotEmpty
+        ? _initialStocks.values.reduce((value, element) => value + element)
+        : 0;
+    _supplySum = _supplies.values.isNotEmpty
+        ? _supplies.values.reduce((value, element) => value + element)
+        : 0;
+    final ordersHistory = await fetch(() => ordersHistoryService.get(nmId: id));
+    if (ordersHistory == null) {
+      setIsLoading(false);
+      return;
+    }
+
+    // _totalOrdersQty = ordersHistory.qty;
+    // is high buyout
+    _isHighBuyout = ordersHistory.highBuyout;
+
+    // Notification
+    final notificationsExists =
+        await fetch(() => notificationService.checkForParent(campaignId: id));
+    if (notificationsExists != null && notificationsExists) {
+      setTracked();
+    }
+
+    // logistics coef
+
+    final logisticsCoefResource =
+        await fetch(() => priceService.getPrice(token));
+    if (logisticsCoefResource == null) {
+      setIsLoading(false);
+      return;
+    }
+    setLogisticsCoef(logisticsCoefResource.logisticsCoef);
+
+    final ordersOrNull = await fetch(
+        () => weekOrdersService.getOrdersFromTo(token: token, skus: [id]));
+    if (ordersOrNull != null) {
+      for (final order in ordersOrNull) {
+        final wh = order.warehouse;
+        final period = order.period;
+        final warehouse = await fetch(() => warehouseService.getById(id: wh));
+        if (warehouse == null) {
+          setIsLoading(false);
+          return;
+        }
+        _addOrderHistoryFromServer(warehouse.name, order.qty, period);
+      }
+    }
+
+    setIsLoading(false);
+  } // asyncInit
+
+  void _addOrderHistoryFromServer(String name, int qty, String period) {
+    if (!_weekOrdersHistoryFromServer.containsKey(name)) {
+      if (period.startsWith('m')) {
+        if (monthNum == 0) {
+          monthNum = int.tryParse(period.split('m')[1]) ?? 0;
+        }
+        _monthOrdersHistoryFromServer[name] = qty;
+      } else if (period.startsWith('w')) {
+        if (weekNum == 0) {
+          weekNum = int.tryParse(period.split('w')[1]) ?? 0;
+        }
+        _weekOrdersHistoryFromServer[name] = qty;
+      }
+      return;
+    }
+    if (period == 'm') {
+      _monthOrdersHistoryFromServer[name] =
+          _monthOrdersHistoryFromServer[name]! + qty;
+    } else if (period == 'w') {
+      _weekOrdersHistoryFromServer[name] =
+          _weekOrdersHistoryFromServer[name]! + qty;
+    }
+  }
+
+  void addWarehouse(String name, int qty) {
+    if (_warehouses[name] == null) {
+      _warehouses[name] = qty;
+
+      return;
+    }
+    final sumQty = _warehouses[name]! + qty;
+    _warehouses[name] = sumQty;
+  }
+
   void addInitialStock(String name, int qty) {
     if (_initialStocks[name] == null) {
       _initialStocks[name] = qty;
@@ -595,9 +607,6 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     _initialStocks[name] = sumQty;
   }
 
-  // Supplies
-  Map<String, int> _supplies = {};
-  Map<String, int> get supplies => _supplies;
   void setSupplies(Map<String, int> supplies) {
     _supplies = supplies;
   }
@@ -610,26 +619,6 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     final sumQty = _supplies[name]! + qty;
     _supplies[name] = sumQty;
   }
-
-  // Initial Stocks
-  int _initStocksSum = 0;
-  int get initStocksSum => _initStocksSum;
-
-  // Supply
-  int _supplySum = 0;
-  int get supplySum => _supplySum;
-
-  // Sales
-  Map<String, int> _orders = {};
-  void setOrders(Map<String, int> orders) {
-    _orders = orders;
-  }
-
-  void addOrder(String name, int qty) {
-    _orders[name] = qty;
-  }
-
-  Map<String, int> get orders => Map.from(_orders);
 
   int calculateMaxTariffCost(Map<String, List<TariffModel>> tariffs) {
     int max = 0;
@@ -644,10 +633,6 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     }
     return ((max / 100) * ((volume! / 10) * 7 + logisticsCoef)).ceil();
   }
-
-  // Null
-  bool _isNull = true;
-  bool get isNull => _isNull;
 
   void notificationsScreen() {
     final state = NotificationCardState(
@@ -672,10 +657,4 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
         "MainNavigationRouteNames.expenseManagerScreen",
         arguments: (id, maxLogistic, _commission ?? 0));
   }
-
-  // void productKeywordsScreen() {
-  //   Navigator.of(context).pushNamed(
-  //       MainNavigationRouteNames.productKeywordsScreen,
-  //       arguments: id);
-  // }
 }

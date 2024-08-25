@@ -1,14 +1,10 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/constants/settings.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
-// import 'package:rewild_bot_front/core/utils/telegram.dart';
-// import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
@@ -280,8 +276,7 @@ class UpdateService
       {required String token,
       required List<CardOfProductModel> cardOfProductsToInsert}) async {
     // get all cards from local db
-    sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, "UpdateService insert");
+
     final cardsInDBEither = await cardOfProductDataProvider.getAll();
 
     if (cardsInDBEither.isLeft()) {
@@ -392,9 +387,7 @@ class UpdateService
         }
       }
     }
-    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        "UpdateService insert end ${newCards.length}");
-    // cardsNumberStreamController.add(newCards.length + cardsInDB.length);
+
     return right(newCards.length);
   }
 
@@ -428,6 +421,7 @@ class UpdateService
       return left(cardsOfProductsEither.fold(
           (l) => l, (r) => throw UnimplementedError()));
     }
+
     final allSavedCardsOfProducts =
         cardsOfProductsEither.fold((l) => throw UnimplementedError(), (r) => r);
 
@@ -443,19 +437,24 @@ class UpdateService
       return left(
           isUpdatedEither.fold((l) => l, (r) => throw UnimplementedError()));
     }
+
     final isUpdated =
         isUpdatedEither.fold((l) => throw UnimplementedError(), (r) => r);
+
+    // bool isUpdated = false;
 
     // were not updated - update
     // Update initial stocks!
     if (!isUpdated) {
       // Delete keywords by autocomplite
+
       final deleteKeywordsByAutocompliteEither =
           await cachedKwByAutocompliteDataProvider.deleteAll();
       if (deleteKeywordsByAutocompliteEither.isLeft()) {
         return left(deleteKeywordsByAutocompliteEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
+
       // Delete keywords by word
       final deleteKeywordsByWordEither =
           await cachedKwByLemmaByWordDataProvider.deleteAll();
@@ -463,6 +462,7 @@ class UpdateService
         return left(deleteKeywordsByWordEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
+
       // Delete keywords by lemmas
       final deleteKeywordsEither =
           await cachedKwByLemmaDataProvider.deleteAll();
@@ -471,6 +471,7 @@ class UpdateService
             (l) => l, (r) => throw UnimplementedError()));
       }
       // Delete lemmas
+
       final deleteLemmasEither = await lemmaDataProvider.deleteAll();
       if (deleteLemmasEither.isLeft()) {
         return left(deleteLemmasEither.fold(
@@ -489,6 +490,7 @@ class UpdateService
         return left(deleteCardKeywordsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
+
       // update old orders
       // update averageLogistic
       final pricesEither =
@@ -523,6 +525,7 @@ class UpdateService
         return left(fetchedTariffsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
+
       final fetchedTariffs = fetchedTariffsEither.fold(
           (l) => throw UnimplementedError(), (r) => r);
 
@@ -569,6 +572,7 @@ class UpdateService
 
     // regular part of update
     // fetch details for all saved cards from WB
+
     final fetchedCardsOfProductsEither = await detailsApiClient.get(
         ids: allSavedCardsOfProducts.map((e) => e.nmId).toList());
     if (fetchedCardsOfProductsEither is Left) {
@@ -584,6 +588,7 @@ class UpdateService
       // add the card to db
       final insertEither =
           await cardOfProductDataProvider.insertOrUpdate(card: card);
+
       if (insertEither is Left) {
         return left(
             insertEither.fold((l) => l, (r) => throw UnimplementedError()));
@@ -678,28 +683,16 @@ class UpdateService
               wh: stock.wh,
               sizeOptionId: stock.sizeOptionId,
             );
+
             if (supplyEither.isLeft()) {
               return left(supplyEither.fold(
                   (l) => l, (r) => throw UnimplementedError()));
             }
             // init stock exists and supply does not exists
             // first time insert supply
+
             final supply = supplyEither.getOrElse((l) => null);
             if (supply == null) {
-              // final savedStockEither = await stockDataProvider.getOne(
-              //   nmId: stock.nmId,
-              //   wh: stock.wh,
-              //   sizeOptionId: stock.sizeOptionId,
-              // );
-              // if (savedStockEither.isLeft()) {
-              //   print(
-              //       'savedStockEither ${stock.qty} - ${initStock.qty}  nmId: ${stock.nmId}, wh: ${stock.wh}, sizeOptionId: ${stock.sizeOptionId},');
-              //   return left(savedStockEither.fold(
-              //       (l) => l, (r) => throw UnimplementedError()));
-              // }
-              // final savedStockData =
-              //     savedStockEither.getOrElse((l) => throw UnimplementedError());
-
               final stockForSup = stocks.where((e) => e.nmId == stock.nmId);
               if (stockForSup.isNotEmpty) {
                 final savedStockData = stockForSup.first;
@@ -737,16 +730,15 @@ class UpdateService
               }
             }
           }
-
-          final insertStockEither =
-              await stockDataProvider.insert(stock: stock);
-          if (insertStockEither.isLeft()) {
-            return left(insertStockEither.fold(
-                (l) => l, (r) => throw UnimplementedError()));
-          }
         }
-      }
-    }
+
+        final insertStockEither = await stockDataProvider.insert(stock: stock);
+        if (insertStockEither.isLeft()) {
+          return left(insertStockEither.fold(
+              (l) => l, (r) => throw UnimplementedError()));
+        }
+      } // for stock
+    } // for size
     return right(null);
   }
 
@@ -772,6 +764,7 @@ class UpdateService
       for (final stock in initialStockModelsFromServer) {
         final insertStockEither = await initialStockModelDataProvider.insert(
             initialStockModel: stock);
+
         if (insertStockEither.isLeft()) {
           return left(insertStockEither.fold(
               (l) => l, (r) => throw UnimplementedError()));

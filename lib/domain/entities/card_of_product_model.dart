@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:rewild_bot_front/core/constants/notification_constants.dart';
+
 import 'package:rewild_bot_front/domain/entities/group_model.dart';
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
@@ -15,7 +16,7 @@ class CardOfProductModel {
 
   String name;
 
-  String? img;
+  String img;
 
   int? sellerId;
 
@@ -183,6 +184,7 @@ class CardOfProductModel {
     List<int> whIds = [];
     // Go through all stocks with current stocks (from Wb details)
     //  and calculate stocks and orders sum
+
     for (final size in sizes) {
       for (final stock in size.stocks) {
         whIds.add(stock.wh);
@@ -214,6 +216,7 @@ class CardOfProductModel {
         }
         // orders sum is
         _weekOrdersSum += (initStockQty + supplyQty) - stockQty;
+
         // _ordersSum += (initStockQty + supplyQty) - stockQty + ordersBeforeSupply;
       }
 
@@ -302,7 +305,7 @@ class CardOfProductModel {
     return CardOfProductModel(
       nmId: map['nmId'] as int,
       name: map['name'] as String,
-      img: map['img'] != null ? map['img'] as String : null,
+      img: map['img'] as String,
       sellerId: map['sellerId'] != null ? map['sellerId'] as int : null,
       tradeMark: map['tradeMark'] != null ? map['tradeMark'] as String : null,
       subjectId: map['subjectId'] != null ? map['subjectId'] as int : null,

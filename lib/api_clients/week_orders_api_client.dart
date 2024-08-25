@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:fpdart/fpdart.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
-import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/order_model.dart';
@@ -20,7 +20,7 @@ class WeekOrdersApiClient implements WeekOrdersServiceWeekOrdersApiClient {
         return left(RewildError(
           sendToTg: true,
           "Некорректные данные",
-          source: runtimeType.toString(),
+          source: "WeekOrdersApiClient",
           name: "getOrdersFromTo",
         ));
       }
@@ -45,7 +45,7 @@ class WeekOrdersApiClient implements WeekOrdersServiceWeekOrdersApiClient {
         return left(RewildError(
           sendToTg: true,
           "Ошибка сервера: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "WeekOrdersApiClient",
           name: "getOrdersFromTo",
           args: [],
         ));
@@ -54,7 +54,7 @@ class WeekOrdersApiClient implements WeekOrdersServiceWeekOrdersApiClient {
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: ${e.toString()}",
-        source: runtimeType.toString(),
+        source: "WeekOrdersApiClient",
         name: "getOrdersFromTo",
         args: [],
       ));

@@ -8,15 +8,20 @@ import 'package:rewild_bot_front/api_clients/advert_api_client.dart';
 import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
+import 'package:rewild_bot_front/api_clients/filter_api_client.dart';
+import 'package:rewild_bot_front/api_clients/search_api_client.dart';
+import 'package:rewild_bot_front/api_clients/search_query_api_client.dart';
 import 'package:rewild_bot_front/api_clients/initial_stocks_api_client.dart';
 import 'package:rewild_bot_front/api_clients/orders_history_api_client.dart';
 import 'package:rewild_bot_front/api_clients/price_api_client.dart';
 import 'package:rewild_bot_front/api_clients/product_card_service_api_client.dart';
+import 'package:rewild_bot_front/api_clients/product_keywords_api_client.dart';
 import 'package:rewild_bot_front/api_clients/questions_api_client.dart';
 import 'package:rewild_bot_front/api_clients/seller_api_client.dart';
 import 'package:rewild_bot_front/api_clients/subscription_api_client.dart';
 import 'package:rewild_bot_front/api_clients/warehouse_api_client.dart';
 import 'package:rewild_bot_front/api_clients/wb_content_api_client.dart';
+import 'package:rewild_bot_front/api_clients/wb_search_suggestion_api_client.dart';
 import 'package:rewild_bot_front/api_clients/week_orders_api_client.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/data_providers/average_logistics_data_provider.dart';
@@ -29,6 +34,7 @@ import 'package:rewild_bot_front/data_providers/card_keywords_data_provider/card
 import 'package:rewild_bot_front/data_providers/card_of_product_data_provider/card_of_product_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/commission_data_provider/commission_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/filter_data_provider/filter_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/filter_values_data_provider/filter_values_data_provider.dart';
 
 import 'package:rewild_bot_front/data_providers/group_data_provider/group_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/initial_stocks_data_provider/initial_stocks_data_provider.dart';
@@ -39,14 +45,19 @@ import 'package:rewild_bot_front/data_providers/orders_data_provider/orders_data
 import 'package:rewild_bot_front/data_providers/orders_history_data_provider/orders_history_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/secure_storage_data_provider/secure_storage_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/seller_data_provider/seller_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/seo_kw_by_lemma_data_provider/seo_kw_by_lemma_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/stock_data_provider/stock_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subscription_data_provider/subscription_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/supply_data_provider/supply_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/tariff_data_provider/tariff_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/total_cost_data_provider/total_cost_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/tracking_query_provider/tracking_query_provider.dart';
 import 'package:rewild_bot_front/data_providers/tracking_result_data_provider/tracking_result_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/user_sellers_data_provider/user_sellers_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/warehouse_data_provider/warehouse_data_provider.dart';
+import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
+import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 
 import 'package:rewild_bot_front/domain/entities/payment_info.dart';
 
@@ -58,10 +69,13 @@ import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
 import 'package:rewild_bot_front/domain/services/balance_service.dart';
+import 'package:rewild_bot_front/domain/services/card_keywords_service.dart';
 
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/commission_service.dart';
 import 'package:rewild_bot_front/domain/services/content_service.dart';
+import 'package:rewild_bot_front/domain/services/filter_values_service.dart';
+import 'package:rewild_bot_front/domain/services/geo_search_service.dart';
 
 import 'package:rewild_bot_front/domain/services/group_service.dart';
 import 'package:rewild_bot_front/domain/services/init_stock_service.dart';
@@ -70,13 +84,16 @@ import 'package:rewild_bot_front/domain/services/orders_history_service.dart';
 import 'package:rewild_bot_front/domain/services/price_service.dart';
 import 'package:rewild_bot_front/domain/services/question_service.dart';
 import 'package:rewild_bot_front/domain/services/seller_service.dart';
+import 'package:rewild_bot_front/domain/services/seo_service.dart';
 import 'package:rewild_bot_front/domain/services/stock_service.dart';
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
 import 'package:rewild_bot_front/domain/services/supply_service.dart';
 import 'package:rewild_bot_front/domain/services/tariff_service.dart';
 import 'package:rewild_bot_front/domain/services/total_cost_service.dart';
+import 'package:rewild_bot_front/domain/services/tracking_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 import 'package:rewild_bot_front/domain/services/warehouse_service.dart';
+import 'package:rewild_bot_front/domain/services/wb_search_suggestion_service.dart';
 import 'package:rewild_bot_front/domain/services/week_orders_service.dart';
 
 import 'package:rewild_bot_front/main.dart';
@@ -88,6 +105,16 @@ import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_screen.dart';
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
 import 'package:rewild_bot_front/presentation/app/app.dart';
+import 'package:rewild_bot_front/presentation/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_screen.dart';
+import 'package:rewild_bot_front/presentation/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_view_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_competitor_keyword_screen/competitor_keyword_expansion_screen.dart';
+import 'package:rewild_bot_front/presentation/expansion_subject_keyword_screen/subject_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_subject_keyword_screen/subject_keyword_expansion_screen.dart';
+import 'package:rewild_bot_front/presentation/expansion_words_keyword_screen/words_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_words_keyword_screen/words_keyword_expansion_screen.dart';
+import 'package:rewild_bot_front/presentation/geo_search_screen/geo_search_screen.dart';
+import 'package:rewild_bot_front/presentation/geo_search_screen/geo_search_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_screen.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
@@ -100,6 +127,11 @@ import 'package:rewild_bot_front/presentation/payment_screen/payment_screen.dart
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment_web_view/payment_web_view.dart';
 import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_screen.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_view_model.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
@@ -181,6 +213,19 @@ class _DIContainer {
       const OrdersHistoryApiClient();
 
   SellerApiClient _makeSellerApiClient() => const SellerApiClient();
+
+  ProductKeywordsApiClient _makeProductKeywordsApiClient() =>
+      const ProductKeywordsApiClient();
+
+  FilterApiClient _makeFilterApiClient() => const FilterApiClient();
+
+  WBSearchSuggestionApiClient _makeWBSearchSuggestionApiClient() =>
+      const WBSearchSuggestionApiClient();
+
+  SearchQueryApiClient _makeSearchQueryApiClient() =>
+      const SearchQueryApiClient();
+
+  GeoSearchApiClient _makeGeoSearchApiClient() => const GeoSearchApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -221,6 +266,9 @@ class _DIContainer {
 
   FilterDataProvider _makeFilterDataProvider() => const FilterDataProvider();
 
+  FilterValuesDataProvider _makeFilterValuesDataProvider() =>
+      const FilterValuesDataProvider();
+
   TrackingResultDataProvider _makeTrackingResultDataProvider() =>
       const TrackingResultDataProvider();
 
@@ -254,7 +302,18 @@ class _DIContainer {
 
   OrdersHistoryDataProvider _makeOrdersHistoryDataProvider() =>
       const OrdersHistoryDataProvider();
+  TrackingQueryDataProvider _makeTrackingQueryDataProvider() =>
+      const TrackingQueryDataProvider();
+
+  SeoKwByLemmaDataProvider _makeSeoKwByLemmaDataProvider() =>
+      const SeoKwByLemmaDataProvider();
   // Services ==================================================================
+  FilterValuesService _makeFilterValuesService() => FilterValuesService(
+      lemmaDataProvider: _makeLemmaDataProvider(),
+      cachedKwByWordDataProvider: _makeCachedKwByWordDataProvider(),
+      kwByLemmaDataProvider: _makeCachedKwByLemmaDataProvider(),
+      filterDataProvider: _makeFilterValuesDataProvider(),
+      filterApiClient: _makeFilterApiClient());
   AuthService _makeAuthService() => AuthService(
       secureDataProvider: _makeSecureDataProvider(),
       authApiClient: _makeAuthApiClient());
@@ -393,6 +452,31 @@ class _DIContainer {
         warehouseApiClient: _makeWarehouseApiClient(),
         warehouseProvider: _makeWarehouseDataProvider(),
       );
+
+  CardKeywordsService _makeProductKeywordsService() => CardKeywordsService(
+        apiClient: _makeProductKeywordsApiClient(),
+        cardKeywordsDataProvider: _makeCardKeywordsDataProvider(),
+      );
+
+  WBSearchSuggestionService _makeWBSearchSuggestionService() =>
+      WBSearchSuggestionService(
+          apiClient: _makeWBSearchSuggestionApiClient(),
+          kwByAutocompliteDataProvider:
+              _makeCachedKwByAutocompliteDataProvider(),
+          searchQueryApiClient: _makeSearchQueryApiClient());
+
+  GeoSearchService _makeGeoSearchService() => GeoSearchService(
+        geoSearchApiClient: _makeGeoSearchApiClient(),
+      );
+  TrackingService _makeTrackingService() => TrackingService(
+        geoSearchApiClient: _makeGeoSearchApiClient(),
+        queryDataProvider: _makeTrackingQueryDataProvider(),
+        subscriptionsDataProvider: _makeSubscriptionDataProvider(),
+        trackingDataProvider: _makeTrackingResultDataProvider(),
+      );
+  SeoService _makeSeoService() => SeoService(
+        seoServiceSeoKwByLemmaDataProvider: _makeSeoKwByLemmaDataProvider(),
+      );
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
           BuildContext context) =>
@@ -422,6 +506,7 @@ class _DIContainer {
           updateService: _makeUpdateService(),
           subscriptionsService: _makeSubscriptionService(),
           supplyService: _makeSupplyService(),
+          streamNotification: updatedNotificationStream,
           groupsProvider: _makeAllGroupsService(),
           filterService: _makeAllCardsFilterService(),
           notificationsService: _makeNotificationService(),
@@ -491,6 +576,104 @@ class _DIContainer {
           initialStocksService: _makeInitialStockService(),
           streamNotification: updatedNotificationStream,
           warehouseService: _makeWarehouseService());
+
+  CompetitorKeywordExpansionViewModel _makeCompetitorKwExpansionViewModel(
+      BuildContext context) {
+    return CompetitorKeywordExpansionViewModel(
+      context: context,
+      tokenService: _makeAuthService(),
+      keywordsService: _makeProductKeywordsService(),
+      cardsService: _makeCardOfProductService(),
+    );
+  }
+
+  SubjectKeywordExpansionViewModel _makeSubjectKeywordExpansionViewModel(
+      BuildContext context, int subjectId, List<KwByLemma> addedPhrases) {
+    return SubjectKeywordExpansionViewModel(
+      context: context,
+      subjectId: subjectId,
+      addedPhrases: addedPhrases,
+      seoCoreFilterValuesService: _makeFilterValuesService(),
+      seoCoreTokenService: _makeAuthService(),
+    );
+  }
+
+  WordsKeywordExpansionViewModel _makeWordsKeywordExpansionViewModel(
+      BuildContext context, List<KwByLemma> addedPhrases) {
+    return WordsKeywordExpansionViewModel(
+      context: context,
+      filterValuesService: _makeFilterValuesService(),
+      seoCoreTokenService: _makeAuthService(),
+      addedPhrases: addedPhrases,
+    );
+  }
+
+  AutocompliteKeywordExpansionViewModel _makeAutocompliteKwExpansionViewModel(
+      BuildContext context, List<KwByLemma> addedKeywords) {
+    return AutocompliteKeywordExpansionViewModel(
+      alreadyAddedPhrases: addedKeywords,
+      context: context,
+      tokenService: _makeAuthService(),
+      suggestionService: _makeWBSearchSuggestionService(),
+    );
+  }
+
+  GeoSearchViewModel _makeGeoSearchViewModel(
+    BuildContext context,
+  ) =>
+      GeoSearchViewModel(
+          context: context,
+          cardOfProductService: _makeCardOfProductService(),
+          geoSearchService: _makeGeoSearchService());
+
+  SeoToolViewModel _makeSeoToolViewModel(
+      BuildContext context, int productId, String imageUrl, CardItem cardItem) {
+    return SeoToolViewModel(
+        context: context,
+        imageUrl: imageUrl,
+        productId: productId,
+        cardItem: cardItem,
+        tokenService: _makeAuthService(),
+        contentService: _makeContentService());
+  }
+
+  SeoToolKwResearchViewModel _makeSeoToolKwResearchViewModel(
+      BuildContext context, int productId, int subjectId) {
+    return SeoToolKwResearchViewModel(
+        context: context,
+        productId: productId,
+        subjectId: subjectId,
+        tokenService: _makeAuthService(),
+        trackingService: _makeTrackingService(),
+        seoService: _makeSeoService());
+  }
+
+  SeoToolTitleGeneratorViewModel _makeSeoToolTitleGeneratorViewModel(
+    BuildContext context,
+  ) {
+    return SeoToolTitleGeneratorViewModel(
+      context: context,
+      balanceService: _makeBalanceService(),
+      priceService: _makePriceService(),
+      tokenService: _makeAuthService(),
+      contentService: _makeContentService(),
+    );
+  }
+
+  SeoToolDescriptionGeneratorViewModel
+      _makeSeoToolDescriptionGeneratorViewModel(
+    BuildContext context,
+  ) {
+    return SeoToolDescriptionGeneratorViewModel(
+      context: context,
+      balanceService: _makeBalanceService(),
+      priceService: _makePriceService(),
+      tokenService: _makeAuthService(),
+      contentService: _makeContentService(),
+      // promptService: _makePromptService(),
+      // gigachatService: _makeGigachatService(),
+    );
+  }
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -576,8 +759,94 @@ class ScreenFactoryDefault implements ScreenFactory {
     );
   }
 
-  // @override
-  // Widget makeScreen1() {
-  //   return Screen1();
-  // }
+  @override
+  Widget makeCompetitorKwExpansionScreen() {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeCompetitorKwExpansionViewModel(context),
+      child: const CompetitorKeywordExpansionScreen(),
+    );
+  }
+
+  @override
+  Widget makeSubjectKeywordExpansionScreen(
+      {required List<KwByLemma> addedKeywords, required int subjectId}) {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeSubjectKeywordExpansionViewModel(
+          context, subjectId, addedKeywords),
+      child: const SubjectKeywordExpansionScreen(),
+    );
+  }
+
+  @override
+  Widget makeWordsKeywordExpansionScreen(
+      {required List<KwByLemma> addedKeywords}) {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeWordsKeywordExpansionViewModel(
+          context, addedKeywords),
+      child: const WordsKeywordExpansionScreen(),
+    );
+  }
+
+  @override
+  Widget makeAutocompliteKwExpansionScreen({
+    required List<KwByLemma> addedKeywords,
+  }) {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeAutocompliteKwExpansionViewModel(
+          context, addedKeywords),
+      child: const AutocompliteKwExpansionScreen(),
+    );
+  }
+
+  @override
+  Widget makeGeoSearchScreen(String? initQuery) {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeGeoSearchViewModel(context),
+      child: GeoSearchScreen(
+        initQuery: initQuery,
+      ),
+    );
+  }
+
+  @override
+  Widget makeSeoToolScreen(
+      (CardOfProductModel, CardItem)? cardOfProductcardItem) {
+    if (cardOfProductcardItem == null ||
+        cardOfProductcardItem.$1.subjectId == null ||
+        cardOfProductcardItem.$1.img == null) {
+      return const SeoToolScreen();
+    }
+    final nmId = cardOfProductcardItem.$1.nmId;
+    final subjectId = cardOfProductcardItem.$1.subjectId;
+    final img = cardOfProductcardItem.$1.img;
+    final cardItem = cardOfProductcardItem.$2;
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SeoToolViewModel>(
+          create: (context) => _diContainer._makeSeoToolViewModel(
+              context, nmId, img ?? '', cardItem),
+        ),
+        ChangeNotifierProvider<SeoToolKwResearchViewModel>(
+            create: (context) => _diContainer._makeSeoToolKwResearchViewModel(
+                  context,
+                  nmId,
+                  subjectId!,
+                )),
+        ChangeNotifierProvider<SeoToolTitleGeneratorViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolTitleGeneratorViewModel(
+                  context,
+                )),
+        ChangeNotifierProvider<SeoToolDescriptionGeneratorViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolDescriptionGeneratorViewModel(
+                  context,
+                )),
+      ],
+      // create: (context) =>
+      //     _diContainer._makeSeoToolViewModel(context, productId),
+      child: const SeoToolScreen(),
+    );
+  }
 }

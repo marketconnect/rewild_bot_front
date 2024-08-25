@@ -23,11 +23,10 @@ class SingleCardScreen extends StatelessWidget {
     final openNotifications = model.notificationsScreen;
     // final openProductKeywordsScreen = model.productKeywordsScreen;
     final tracked = model.tracked;
-    final isLoading = model.loading;
+    final isLoading = model.isLoading;
     // final subscribed = model.subscribed;
 
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       appBar: AppBar(
           actions: [
             if (!isLoading)
@@ -44,7 +43,7 @@ class SingleCardScreen extends StatelessWidget {
           shadowColor: Colors.black,
           surfaceTintColor: Colors.transparent),
       body: isNull ? const _Shimmer() : const _Body(),
-    ));
+    );
   }
 }
 
@@ -494,18 +493,18 @@ class _ExpansionTile extends StatelessWidget {
     if (index == 4) {
       // Заказы
       // final isUserCard = model.isUserCard;
-      final subscribed = model.subscribed;
+      // final subscribed = model.subscribed;
       final todayDate = formateDate(DateTime.now());
 
-      if (!subscribed) {
-        children.add(Container(
-          // alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.only(top: model.screenHeight * 0.05),
-          child: Text("Подписка не активирована",
-              style: TextStyle(color: Theme.of(context).colorScheme.error)),
-        ));
-        return children;
-      }
+      // if (!subscribed) {
+      //   children.add(Container(
+      //     // alignment: Alignment.bottomCenter,
+      //     padding: EdgeInsets.only(top: model.screenHeight * 0.05),
+      //     child: Text("Подписка не активирована",
+      //         style: TextStyle(color: Theme.of(context).colorScheme.error)),
+      //   ));
+      //   return children;
+      // }
       final orders = model.orders;
 
       final justTodayAddedCard = isToday(model.createdAt);
@@ -558,17 +557,17 @@ class _ExpansionTile extends StatelessWidget {
     if (index == 5) {
       // История Заказов
       // final isUserCard = model.isUserCard;
-      final subscribed = model.subscribed;
+      // final subscribed = model.subscribed;
 
-      if (!subscribed) {
-        children.add(Container(
-          // alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.only(top: model.screenHeight * 0.05),
-          child: Text("Подписка не активирована",
-              style: TextStyle(color: Theme.of(context).colorScheme.error)),
-        ));
-        return children;
-      }
+      // if (!subscribed) {
+      //   children.add(Container(
+      //     // alignment: Alignment.bottomCenter,
+      //     padding: EdgeInsets.only(top: model.screenHeight * 0.05),
+      //     child: Text("Подписка не активирована",
+      //         style: TextStyle(color: Theme.of(context).colorScheme.error)),
+      //   ));
+      //   return children;
+      // }
       final weekOrders = model.weekOrdersHistoryFromServer;
       final justTodayAddedCard = isToday(model.createdAt);
       final weekPeriod = getWeekFromOrderNumber(model.weekNum);
@@ -626,17 +625,17 @@ class _ExpansionTile extends StatelessWidget {
     if (index == 6) {
       // История Заказов
       // final isUserCard = model.isUserCard;
-      final subscribed = model.subscribed;
+      // final subscribed = model.subscribed;
 
-      if (!subscribed) {
-        children.add(Container(
-          // alignment: Alignment.bottomCenter,
-          padding: EdgeInsets.only(top: model.screenHeight * 0.05),
-          child: Text("Подписка не активирована",
-              style: TextStyle(color: Theme.of(context).colorScheme.error)),
-        ));
-        return children;
-      }
+      // if (!subscribed) {
+      //   children.add(Container(
+      //     // alignment: Alignment.bottomCenter,
+      //     padding: EdgeInsets.only(top: model.screenHeight * 0.05),
+      //     child: Text("Подписка не активирована",
+      //         style: TextStyle(color: Theme.of(context).colorScheme.error)),
+      //   ));
+      //   return children;
+      // }
       final monthOrders = model.monthOrdersHistoryFromServer;
       final justTodayAddedCard = isToday(model.createdAt);
       //  final weekPeriod = getWeekFromOrderNumber(model.weekNum);

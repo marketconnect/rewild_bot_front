@@ -4,11 +4,19 @@ import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
 import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_view_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_subject_keyword_screen/subject_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_words_keyword_screen/words_keyword_expansion_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_view_model.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class AuthServiceSecureDataProvider {
@@ -30,8 +38,16 @@ class AuthService
     implements
         MainNavigationAuthService,
         AddApiKeysAuthService,
+        SeoToolDescriptionGeneratorTokenService,
+        SubjectKeywordExpansionTokenService,
+        WordsKeywordExpansionTokenService,
+        SeoToolKwResearchTokenService,
+        SeoToolTitleGeneratorTokenService,
         SingleCardScreenAuthService,
         PaymentScreenTokenService,
+        SeoToolTokenService,
+        CompetitorKeywordExpansionTokenService,
+        AutocompliteKeywordExpansionTokenService,
         PaymentWebViewTokenService,
         AllCardsSeoAuthService,
         AllCardsScreenAuthService,

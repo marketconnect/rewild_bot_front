@@ -8,6 +8,9 @@ import 'package:rewild_bot_front/domain/entities/subj_characteristic.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
 import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_view_model.dart';
 
 // NmIds Data Provider
 abstract class ContentServiceNmIdDataProvider {
@@ -56,7 +59,12 @@ abstract class ContentServiceActiveSellerDataProvider {
 }
 
 class ContentService
-    implements AllCardsSeoContentService, AddApiKeysContentService {
+    implements
+        AllCardsSeoContentService,
+        AddApiKeysContentService,
+        SeoToolDescriptionGeneratorContentService,
+        SeoToolTitleGeneratorContentService,
+        SeoToolContentService {
   final ContentServiceWbContentApiClient wbContentApiClient;
   final ContentServiceNmIdDataProvider nmIdDataProvider;
   final ContentServiceApiKeyDataProvider apiKeyDataProvider;
@@ -179,6 +187,7 @@ class ContentService
     return right(cardCatalog);
   }
 
+  // ignore: annotate_overrides
   Future<Either<RewildError, bool>> updateProductCard({
     required int nmID,
     required String vendorCode,

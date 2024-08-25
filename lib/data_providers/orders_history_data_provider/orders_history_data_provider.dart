@@ -22,27 +22,35 @@ class OrdersHistoryDataProvider
       final db = await _db;
       final txn = db.transaction('orders_history', idbModeReadOnly);
       final store = txn.objectStore('orders_history');
+      final index = store.index('nmId');
 
-      final index = store.index('nmId_updatetAt');
-      final range = KeyRange.bound(
-        [nmId, dateFrom.millisecondsSinceEpoch],
-        [nmId, dateTo.millisecondsSinceEpoch],
-      );
+      // Получаем все записи с заданным nmId
+      final results = await index.getAll(nmId);
 
-      final result = await index.get(range);
+      // Преобразуем результат в список Map<String, dynamic>
+      final List<Map<String, dynamic>> records =
+          results.cast<Map<String, dynamic>>();
+
+      // Фильтруем записи по дате
+      final filteredResults = records.where((record) {
+        final recordDate = record['updatetAt'] as int;
+        return recordDate >= dateFrom.millisecondsSinceEpoch &&
+            recordDate <= dateTo.millisecondsSinceEpoch;
+      }).toList();
 
       await txn.completed;
 
-      if (result == null) {
+      if (filteredResults.isEmpty) {
         return right(null);
       }
 
-      return right(OrdersHistoryModel.fromMap(result as Map<String, dynamic>));
+      // Возвращаем первый найденный результат
+      return right(OrdersHistoryModel.fromMap(filteredResults.first));
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
         'Не удалось получить историю заказов для $nmId: $e',
-        source: runtimeType.toString(),
+        source: "OrdersHistoryDataProvider",
         name: "get",
         args: [nmId, dateFrom, dateTo],
       ));
@@ -73,7 +81,7 @@ class OrdersHistoryDataProvider
       return left(RewildError(
         sendToTg: true,
         'Не удалось удалить историю заказов для $nmId: $e',
-        source: runtimeType.toString(),
+        source: "OrdersHistoryDataProvider",
         name: "delete",
         args: [nmId],
       ));
@@ -101,7 +109,7 @@ class OrdersHistoryDataProvider
       return left(RewildError(
         sendToTg: true,
         'Не удалось сохранить историю заказов для ${ordersHistory.nmId}: $e',
-        source: runtimeType.toString(),
+        source: "OrdersHistoryDataProvider",
         name: "insert",
         args: [ordersHistory],
       ));

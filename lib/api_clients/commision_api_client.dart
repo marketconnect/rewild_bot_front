@@ -16,6 +16,7 @@ class CommissionApiClient
         CommissionServiceCommissionApiClient {
   const CommissionApiClient();
 
+  @override
   Future<Either<RewildError, CommissionModel>> get({
     required String token,
     required int id,
@@ -40,6 +41,7 @@ class CommissionApiClient
           fbs: responseData['fbs'],
           fbo: responseData['fbo'],
         );
+
         return right(commission);
       } else {
         return left(RewildError(

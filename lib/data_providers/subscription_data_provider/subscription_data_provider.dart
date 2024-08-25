@@ -6,9 +6,12 @@ import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
 
 import 'package:intl/intl.dart';
+import 'package:rewild_bot_front/domain/services/tracking_service.dart';
 
 class SubscriptionDataProvider
-    implements SubscriptionServiceSubscriptionDataProvider {
+    implements
+        SubscriptionServiceSubscriptionDataProvider,
+        TrackingServiceSubscriptionDataProvider {
   const SubscriptionDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
@@ -122,6 +125,7 @@ class SubscriptionDataProvider
     }
   }
 
+  @override
   Future<Either<RewildError, List<SubscriptionModel>>>
       getActiveSubscriptions() async {
     try {

@@ -15,6 +15,23 @@ void main() {
         '<script src="https://telegram.org/js/telegram-web-app.js"></script>';
     content = content.replaceFirst('</head>', '$scriptTag\n</head>');
 
+    // Добавляем CSS-стили для обеспечения 100% высоты
+    const styleTag = '''
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        min-height: 100vh;
+        overflow: hidden;
+      }
+      body > * {
+        height: 100%;
+      }
+    </style>
+    ''';
+    content = content.replaceFirst('</head>', '$styleTag\n</head>');
+
     file.writeAsStringSync(content);
     // ignore: avoid_print
     print('index.html успешно обновлен.');

@@ -3,15 +3,19 @@ import 'package:idb_shim/idb.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
+import 'package:rewild_bot_front/domain/services/filter_values_service.dart';
 
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class CachedKwByLemmaDataProvider
-    implements UpdateServiceKwByLemmaDataProvider {
+    implements
+        UpdateServiceKwByLemmaDataProvider,
+        FilterServiceKwByLemmaDataProvider {
   const CachedKwByLemmaDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
+  @override
   Future<Either<RewildError, void>> insertAll(List<KwByLemma> lemmas) async {
     try {
       final db = await _db;
@@ -40,6 +44,7 @@ class CachedKwByLemmaDataProvider
     }
   }
 
+  @override
   Future<Either<RewildError, List<KwByLemma>>> getByLemmaId(int lemmaID) async {
     try {
       final db = await _db;

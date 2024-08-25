@@ -40,7 +40,7 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
 
     // buy btn
     final isSelectingForPayment = model.selectingForHandle;
-    final track = model.track;
+    // final track = model.track;
     if (selectedGroup != null) {
       final groupsIds = selectedGroup.cardsNmIds;
 
@@ -53,8 +53,8 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
     }
 
     final selectionInProcess = model.selectionInProcess;
-    final emptySubscriptionsQty = model.emptySubscriptionsQty;
-    final len = model.selectedLength;
+
+    // final len = model.selectedLength;
     final headerSliverBuilderItems = selectionInProcess
         ? [
             _HorizontalScrollMenu(
@@ -69,151 +69,104 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
                   cardsNmIds: productCards.map((e) => e.nmId).toList()),
           ];
 
-    return SafeArea(
-      child: Scaffold(
-        // floatingActionButton: filterIsEmpty || selectionInProcess
-        //     ? (isSelectingForPayment != null && isSelectingForPayment)
-        //         ? TextButton(
-        //             onPressed: () => track(),
-        //             child: Container(
-        //               alignment: Alignment.center,
-        //               width: MediaQuery.of(context).size.width * 0.45,
-        //               height: MediaQuery.of(context).size.width * 0.18,
-        //               decoration: BoxDecoration(
-        //                 color: Theme.of(context).colorScheme.primary,
-        //                 borderRadius: BorderRadius.circular(15),
-        //               ),
-        //               child: Text('Отслеживать',
-        //                   style: TextStyle(
-        //                       color: Theme.of(context).colorScheme.onPrimary,
-        //                       fontWeight: FontWeight.bold)),
-        //             ),
-        //           )
-        //         : null
-        //     : FloatingActionButton(
-        //         backgroundColor:
-        //             Theme.of(context).colorScheme.surfaceContainerHighest,
-        //         onPressed: () async {
-        //           await resetFilter();
-        //         },
-        //         child: Container(
-        //           width: 30,
-        //           height: 30,
-        //           decoration: const BoxDecoration(
-        //             color: Colors.transparent,
-        //           ),
-        //           child: Image.asset(
-        //             IconConstant.iconFilterDismiss,
-        //             color: Theme.of(context).colorScheme.onSurfaceVariant,
-        //           ),
-        //         ),
-        //       ),
-        floatingActionButton: filterIsEmpty || selectionInProcess
-            ? (isSelectingForPayment != null && isSelectingForPayment)
-                ? TextButton(
-                    onPressed: () {
-                      if (emptySubscriptionsQty - len < 0) {
-                        Navigator.of(context)
-                            .pushNamed(MainNavigationRouteNames.paymentScreen);
-                      } else {
-                        track();
-                      }
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      height: MediaQuery.of(context).size.width * 0.18,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: Text('Отслеживать',
-                          style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                              fontWeight: FontWeight.bold)),
+    return Scaffold(
+      floatingActionButton: filterIsEmpty || selectionInProcess
+          ? (isSelectingForPayment != null && isSelectingForPayment)
+              ? TextButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .pushNamed(MainNavigationRouteNames.paymentScreen);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    width: MediaQuery.of(context).size.width * 0.45,
+                    height: MediaQuery.of(context).size.width * 0.18,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(15),
                     ),
-                  )
-                : null
-            : FloatingActionButton(
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                onPressed: () async {
-                  await resetFilter();
-                },
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: const BoxDecoration(
-                    color: Colors.transparent,
+                    child: Text('Отслеживать',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold)),
                   ),
-                  child: Image.asset(
-                    IconConstant.iconFilterDismiss,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                )
+              : null
+          : FloatingActionButton(
+              backgroundColor:
+                  Theme.of(context).colorScheme.surfaceContainerHighest,
+              onPressed: () async {
+                await resetFilter();
+              },
+              child: Container(
+                width: 30,
+                height: 30,
+                decoration: const BoxDecoration(
+                  color: Colors.transparent,
+                ),
+                child: Image.asset(
+                  IconConstant.iconFilterDismiss,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
-
-        body: DefaultTabController(
-          length: selectionInProcess ? 1 : groups.length,
-          child: NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return headerSliverBuilderItems;
-            },
-            body: !isLoading &&
-                    productCards
-                        .isEmpty // Body ============================================================== Body
-                ? const _EmptyProductsCards()
-                : Stack(children: [
-                    RefreshIndicator(
-                      onRefresh: () async {
-                        await refresh();
+            ),
+      body: DefaultTabController(
+        length: selectionInProcess ? 1 : groups.length,
+        child: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return headerSliverBuilderItems;
+          },
+          body: !isLoading &&
+                  productCards
+                      .isEmpty // Body ============================================================== Body
+              ? const _EmptyProductsCards()
+              : Stack(children: [
+                  RefreshIndicator(
+                    onRefresh: () async {
+                      await refresh();
+                    },
+                    child: ListView.builder(
+                      itemCount: isLoading ? 7 : productCards.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (!isLoading && (index > (productCards.length - 1))) {
+                          return Container();
+                        }
+                        if ((!filterIsEmpty || selectionInProcess) &&
+                            index == productCards.length - 1) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 50.0),
+                            child: isLoading
+                                ? Shimmer(
+                                    gradient: shimmerGradient,
+                                    child: _GestureDetectorCard(
+                                        isShimmer: true,
+                                        productCard:
+                                            createFakeCardOfProductModel()),
+                                  )
+                                : _GestureDetectorCard(
+                                    productCard: productCards[index]),
+                          );
+                        }
+                        return isLoading
+                            ? Shimmer(
+                                gradient: shimmerGradient,
+                                child: _GestureDetectorCard(
+                                    isShimmer: true,
+                                    productCard:
+                                        createFakeCardOfProductModel()),
+                              )
+                            : _GestureDetectorCard(
+                                productCard: productCards[index]);
                       },
-                      child: ListView.builder(
-                        itemCount: isLoading ? 7 : productCards.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          if (!isLoading &&
-                              (index > (productCards.length - 1))) {
-                            return Container();
-                          }
-                          if ((!filterIsEmpty || selectionInProcess) &&
-                              index == productCards.length - 1) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 50.0),
-                              child: isLoading
-                                  ? Shimmer(
-                                      gradient: shimmerGradient,
-                                      child: _GestureDetectorCard(
-                                          isShimmer: true,
-                                          productCard:
-                                              createFakeCardOfProductModel()),
-                                    )
-                                  : _GestureDetectorCard(
-                                      productCard: productCards[index]),
-                            );
-                          }
-                          return isLoading
-                              ? Shimmer(
-                                  gradient: shimmerGradient,
-                                  child: _GestureDetectorCard(
-                                      isShimmer: true,
-                                      productCard:
-                                          createFakeCardOfProductModel()),
-                                )
-                              : _GestureDetectorCard(
-                                  productCard: productCards[index]);
-                        },
-                      ),
                     ),
-                    if (selectionInProcess &&
-                        selectingForPayment != null &&
-                        !selectingForPayment)
-                      const _BottomMergeBtn()
-                  ]),
-          ),
+                  ),
+                  if (selectionInProcess &&
+                      selectingForPayment != null &&
+                      !selectingForPayment)
+                    const _BottomMergeBtn()
+                ]),
         ),
       ),
-      // ),
     );
   }
 }
@@ -225,7 +178,7 @@ class _AppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<AllCardsScreenViewModel>();
     final nmIds = model.allNmIds;
-    final isLoading = model.loading;
+    final isLoading = model.isLoading;
     return SliverAppBar(
       // AppBar ========================================================== AppBar
       pinned: false,
@@ -343,8 +296,8 @@ class _GestureDetectorCard extends StatelessWidget {
     final onCardLongPress = model.onCardLongPress;
     final onCardTap = model.onCardTap;
     final id = productCard.nmId;
-    final missingInSubscriptions = model.missingCardIds;
-    final isNotPaid = missingInSubscriptions.contains(id);
+    // final missingInSubscriptions = model.missingCardIds;
+    // final isNotPaid = missingInSubscriptions.contains(id);
     final isSelected = model.selectedNmIds.contains(id);
     final selectedGroup = model.selectedGroup;
     final isSelectingForHandle = model.selectingForHandle;
@@ -355,15 +308,11 @@ class _GestureDetectorCard extends StatelessWidget {
         if (isShimmer) {
           return;
         }
-        if (isSelectingForHandle != null &&
-            isSelectingForHandle &&
-            !isNotPaid) {
+        if (isSelectingForHandle != null && isSelectingForHandle) {
           return;
         }
 
-        if (isSelectingForHandle != null &&
-            !isSelectingForHandle &&
-            isNotPaid) {
+        if (isSelectingForHandle != null && !isSelectingForHandle) {
           return;
         }
 
@@ -375,14 +324,10 @@ class _GestureDetectorCard extends StatelessWidget {
         }
         // accessible when first card selection is in process
         // or when selecting not for payment
-        if (isSelectingForHandle != null &&
-            isSelectingForHandle &&
-            !isNotPaid) {
+        if (isSelectingForHandle != null && isSelectingForHandle) {
           return;
         }
-        if (isSelectingForHandle != null &&
-            !isSelectingForHandle &&
-            isNotPaid) {
+        if (isSelectingForHandle != null && !isSelectingForHandle) {
           return;
         }
 
@@ -393,7 +338,6 @@ class _GestureDetectorCard extends StatelessWidget {
         isShimmer: isShimmer,
         userNmId: isUserNmId,
         grossProfit: grossProfitOrNull,
-        isNotPaid: isNotPaid,
         inAnyGroup: selectedGroup != null,
         isSelected: isSelected,
       ),
@@ -465,7 +409,7 @@ class _HorizontalScrollMenuState extends State<_HorizontalScrollMenu>
     final isLoading = model.isLoading;
     final selectGroup = model.selectGroup;
     final productsCardsIsEmpty = model.productCards.isEmpty;
-    final emptySubscriptionsQty = model.emptySubscriptionsQty;
+
     _tabController = TabController(
       length: selectionInProcess ? 1 : groups.length,
       vsync: this,
@@ -518,13 +462,13 @@ class _HorizontalScrollMenuState extends State<_HorizontalScrollMenu>
                             const SizedBox(
                               width: 5,
                             ),
-                            Text(
-                              '$len/${emptySubscriptionsQty - len}',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
+                            // Text(
+                            //   '$len/${emptySubscriptionsQty - len}',
+                            //   style: TextStyle(
+                            //     fontSize: 20,
+                            //     color: Theme.of(context).colorScheme.primary,
+                            //   ),
+                            // ),
                           ],
                         ),
                         SizedBox(

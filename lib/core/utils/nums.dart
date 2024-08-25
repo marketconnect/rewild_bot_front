@@ -1,3 +1,4 @@
+// ignore: depend_on_referenced_packages
 import 'package:fixnum/fixnum.dart';
 
 Int64 stringToInt64(String stringValue) {

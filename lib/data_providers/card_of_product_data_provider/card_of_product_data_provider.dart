@@ -41,7 +41,6 @@ class CardOfProductDataProvider
   }
 
   @override
-  @override
   Future<Either<RewildError, int>> insertOrUpdate(
       {required CardOfProductModel card}) async {
     try {
@@ -49,7 +48,6 @@ class CardOfProductDataProvider
       final txn = db.transaction('cards', idbModeReadWrite);
       final store = txn.objectStore('cards');
 
-      // Используем put для вставки или обновления записи
       await store.put(card.toMap());
 
       await txn.completed;

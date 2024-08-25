@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
-import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
+
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 // import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
@@ -17,6 +16,8 @@ import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_v
 
 import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
+import 'package:rewild_bot_front/presentation/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/geo_search_screen/geo_search_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
@@ -53,8 +54,7 @@ abstract class CardOfProductServiceStockDataProvider {
 
 // init stock
 abstract class CardOfProductServiceInitStockDataProvider {
-  Future<Either<RewildError, List<InitialStockModel>>> getAll(
-      {required DateTime dateFrom, required DateTime dateTo});
+  Future<Either<RewildError, List<InitialStockModel>>> getAll();
 }
 
 // supply
@@ -82,7 +82,9 @@ abstract class CardOfProductServiceNmIdDataProvider {
 class CardOfProductService
     implements
         MainNavigationCardService,
+        GeoSearchViewModelCardOfProductService,
         AddApiKeysCardOfProductService,
+        CompetitorKeywordExpansionCardOfProductService,
         AllCardsSeoScreenCardOfProductService,
         SingleCardScreenCardOfProductService,
         AllCardsScreenCardOfProductService,
@@ -125,54 +127,91 @@ class CardOfProductService
     // Cards
     final allCardsEither = await cardOfProductDataProvider.getAll(nmIds);
 
-    return allCardsEither.fold((l) => left(l), (allCards) async {
-      // get stocks
-      final stocksEither = await stockDataprovider.getAll();
-      return stocksEither.fold((l) => left(l), (stocks) async {
-        final dateFrom = yesterdayEndOfTheDay();
-        final dateTo = DateTime.now();
-        // get init stocks
-        final initStocksEither = await initStockDataProvider.getAll(
-          dateFrom: dateFrom,
-          dateTo: dateTo,
+    if (allCardsEither.isLeft()) {
+      return allCardsEither;
+    }
+
+    final allCards =
+        allCardsEither.fold((l) => <CardOfProductModel>[], (r) => r);
+
+    // get stocks
+    final stocksEither = await stockDataprovider.getAll();
+
+    if (stocksEither.isLeft()) {
+      return left(RewildError(
+        "Failed to get stocks",
+        sendToTg: true,
+        source: "CardOfProductService",
+        name: "getAll",
+        args: [],
+      ));
+    }
+
+    final stocks = stocksEither.fold((l) => <StocksModel>[], (r) => r);
+
+    // get init stocks
+    final initStocksEither = await initStockDataProvider.getAll(
+        // dateFrom: dateFrom,
+        // dateTo: dateTo,
         );
-        return initStocksEither.fold((l) => left(l), (initialStocks) async {
-          // append stocks and init stocks to cards
 
-          for (final card in allCards) {
-            // append stocks
-            final cardStocks =
-                stocks.where((stock) => stock.nmId == card.nmId).toList();
+    if (initStocksEither.isLeft()) {
+      return left(RewildError(
+        "Failed to get init stocks",
+        sendToTg: true,
+        source: "CardOfProductService",
+        name: "getAll",
+        args: [],
+      ));
+    }
 
-            final sizes = [SizeModel(stocks: cardStocks)];
-            final cardWithStocks = card.copyWith(sizes: sizes);
+    final initialStocks =
+        initStocksEither.fold((l) => <InitialStockModel>[], (r) => r);
+    // final dateFrom = yesterdayEndOfTheDay();
+    // final dateTo = DateTime.now();
+    // append stocks and init stocks to cards
 
-            // append init stocks
-            final initStocks = initialStocks
-                .where((initStock) => initStock.nmId == card.nmId)
-                .toList();
+    for (final card in allCards) {
+      // append stocks
+      final cardStocks =
+          stocks.where((stock) => stock.nmId == card.nmId).toList();
 
-            final newCard = cardWithStocks.copyWith(initialStocks: initStocks);
+      final sizes = [SizeModel(stocks: cardStocks)];
+      final cardWithStocks = card.copyWith(sizes: sizes);
 
-            // append supplies
-            final suppliesResource =
-                await supplyDataProvider.get(nmId: newCard.nmId);
-            suppliesResource.fold((l) => left(l), (supplies) {
-              newCard.setSupplies(supplies);
-              resultCards.add(newCard);
-            });
-          }
+      // append init stocks
+      final initStocks = initialStocks
+          .where((initStock) => initStock.nmId == card.nmId)
+          .toList();
 
-          return right(resultCards);
-        });
-      });
-    });
+      final newCard = cardWithStocks.copyWith(initialStocks: initStocks);
+
+      // append supplies
+      final suppliesResource = await supplyDataProvider.get(nmId: newCard.nmId);
+      if (suppliesResource.isLeft()) {
+        return left(RewildError(
+          "Failed to get supplies",
+          sendToTg: true,
+          source: "CardOfProductService",
+          name: "getAll",
+          args: [],
+        ));
+      }
+      final supplies = suppliesResource.fold((l) => <SupplyModel>[], (r) => r);
+
+      newCard.setSupplies(supplies);
+      resultCards.add(newCard);
+    }
+
+    return right(resultCards);
   }
 
+  @override
   Future<Either<RewildError, CardOfProductModel?>> getOne(int nmId) async {
     return await cardOfProductDataProvider.get(nmId: nmId);
   }
 
+  @override
   Future<Either<RewildError, List<CardOfProductModel>>>
       getNotUserCards() async {
     // get user nmIds
@@ -200,11 +239,13 @@ class CardOfProductService
     return await cardOfProductDataProvider.getAll(notUserNmIds);
   }
 
+  @override
   Future<Either<RewildError, String>> getImageForNmId(
       {required int nmId}) async {
     return await cardOfProductDataProvider.getImage(id: nmId);
   }
 
+  @override
   Future<Either<RewildError, List<int>>> getAllNmIds() async {
     final nmIdsEither = await cardOfProductDataProvider.getAllNmIds();
 

@@ -10,7 +10,7 @@ class ProductCardWidget extends StatelessWidget {
     super.key,
     required this.productCard,
     required this.userNmId,
-    required this.isNotPaid,
+    // required this.isNotPaid,
     this.inAnyGroup = false,
     this.isSelected = false,
     required this.grossProfit,
@@ -21,7 +21,7 @@ class ProductCardWidget extends StatelessWidget {
   final bool isSelected;
   final bool inAnyGroup;
   final bool isShimmer;
-  final bool isNotPaid;
+  // final bool isNotPaid;
   final bool userNmId;
   final double? grossProfit;
 
@@ -51,27 +51,23 @@ class ProductCardWidget extends StatelessWidget {
     final tracked = productCard.tracked;
     final justTodayAddedCard = isToday(productCard.createdAt);
 
-    final supplyText = !isNotPaid &&
-            productCard.supplies.isNotEmpty &&
-            supplySum > 0 &&
-            !justTodayAddedCard
-        ? " "
-        // ? " (п. ~$supplySum шт.)"
-        : "";
+    final supplyText =
+        productCard.supplies.isNotEmpty && supplySum > 0 && !justTodayAddedCard
+            ? " "
+            // ? " (п. ~$supplySum шт.)"
+            : "";
 
     String? ordersSumText;
-    if (isNotPaid && userNmId) {
-      ordersSumText = "Не отслеживается";
-    } else if (isNotPaid) {
-      ordersSumText = "";
-    } else if (salesSum > 0) {
+    if (salesSum > 0) {
       ordersSumText = "Заказы: $salesSum шт.";
-    } else if (salesSum < 0 &&
-        salesSum > -20 &&
-        supplyText.isEmpty &&
-        !justTodayAddedCard) {
-      ordersSumText = "Возврат: ${salesSum.abs()} шт.";
-    } else {
+    }
+    //  else if (salesSum < 0 &&
+    //     salesSum > -20 &&
+    //     supplyText.isEmpty &&
+    //     !justTodayAddedCard) {
+    //   ordersSumText = "Возврат: ${salesSum.abs()} шт.";
+    // }
+    else {
       ordersSumText = "";
     }
 
@@ -154,7 +150,7 @@ class ProductCardWidget extends StatelessWidget {
                                               .onSurface,
                                         ),
                                       )
-                                    : isNotPaid && !userNmId
+                                    : !userNmId
                                         ? Text('Не отслеживается',
                                             style: TextStyle(
                                                 color: Theme.of(context)
@@ -235,11 +231,9 @@ class ProductCardWidget extends StatelessWidget {
                                       Theme.of(context).colorScheme.onSurface,
                                 ),
                               )
-                            : Text(isNotPaid ? "" : '${(price / 100).floor()}₽',
+                            : Text('${(price / 100).floor()}₽',
                                 style: TextStyle(fontSize: screenWidth * 0.03)),
-                        if (!isNotPaid &&
-                            promoTextCard != null &&
-                            promoTextCard != "")
+                        if (promoTextCard != null && promoTextCard != "")
                           Container(
                               margin: const EdgeInsets.fromLTRB(0, 5, 5, 0),
                               alignment: Alignment.center,
@@ -273,7 +267,7 @@ class ProductCardWidget extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               ),
-            if (grossProfit != null && !isNotPaid)
+            if (grossProfit != null)
               Positioned(
                 right: screenWidth * 0.02,
                 bottom: screenWidth * 0.02,

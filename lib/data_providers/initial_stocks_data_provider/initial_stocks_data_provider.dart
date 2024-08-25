@@ -20,67 +20,38 @@ class InitialStockDataProvider
   Future<Database> get _db async => await DatabaseHelper().database;
 
   @override
-  Future<Either<RewildError, int>> insert(
-      {required InitialStockModel initialStockModel}) async {
+  @override
+  Future<Either<RewildError, int>> insert({
+    required InitialStockModel initialStockModel,
+  }) async {
     try {
       final db = await _db;
       final txn = db.transaction('initial_stocks', idbModeReadWrite);
       final store = txn.objectStore('initial_stocks');
 
-      await store.put(
-        initialStockModel.toMap(),
-      );
-
-      await txn.completed;
-      return right(initialStockModel.id);
-    } catch (e) {
-      return left(RewildError(
+      // Перед сохранением убедитесь, что ключ существует
+      if (initialStockModel.nmIdWhSizeOptionId.isEmpty) {
+        return left(RewildError(
           sendToTg: true,
-          'Failed to save initial stock: $e',
+          'Failed to save initial stock: nmIdWhSizeOptionId is empty',
           source: "InitialStockDataProvider",
           name: "insert",
-          args: [initialStockModel]));
-    }
-  }
+          args: [initialStockModel],
+        ));
+      }
 
-  static Future<Either<RewildError, int>> insertInBackground(
-      {required InitialStockModel initialStock}) async {
-    try {
-      final db = await DatabaseHelper().database;
-      final txn = db.transaction('initial_stocks', idbModeReadWrite);
-      final store = txn.objectStore('initial_stocks');
-
-      await store.add(initialStock.toMap(), initialStock.id);
-
+      await store.put(initialStockModel.toMap());
       await txn.completed;
-      return right(initialStock.id);
+
+      return right(1);
     } catch (e) {
       return left(RewildError(
-          sendToTg: true,
-          'Failed to save initial stock in background: $e',
-          source: "InitialStockDataProvider",
-          name: "insertInBackground",
-          args: [initialStock]));
-    }
-  }
-
-  Future<Either<RewildError, void>> delete({required int id}) async {
-    try {
-      final db = await _db;
-      final txn = db.transaction('initial_stocks', idbModeReadWrite);
-      final store = txn.objectStore('initial_stocks');
-
-      await store.delete(id);
-
-      await txn.completed;
-      return right(null);
-    } catch (e) {
-      return left(RewildError(
-          sendToTg: true,
-          'Failed to delete initial stock: $e',
-          source: "InitialStockDataProvider",
-          name: "delete",
-          args: [id]));
+        sendToTg: true,
+        'Failed to save initial stock: $e',
+        source: "InitialStockDataProvider",
+        name: "insert",
+        args: [initialStockModel],
+      ));
     }
   }
 
@@ -126,6 +97,7 @@ class InitialStockDataProvider
       final initStocks = result
           .map((e) => InitialStockModel.fromMap(e as Map<String, dynamic>))
           .toList();
+
       return right(initStocks);
     } catch (e) {
       return left(RewildError(
@@ -174,47 +146,25 @@ class InitialStockDataProvider
     }
   }
 
-  Future<Either<RewildError, int>> update(
-      {required InitialStockModel initialStock}) async {
-    try {
-      final db = await _db;
-      final txn = db.transaction('initial_stocks', idbModeReadWrite);
-      final store = txn.objectStore('initial_stocks');
-
-      await store.put(initialStock.toMap(), initialStock.id);
-
-      await txn.completed;
-      return right(initialStock.id);
-    } catch (e) {
-      return left(RewildError(
-          sendToTg: true,
-          'Failed to update initial stock: $e',
-          source: "InitialStockDataProvider",
-          name: "update",
-          args: [initialStock]));
-    }
-  }
-
   @override
-  Future<Either<RewildError, List<InitialStockModel>>> getAll({
-    required DateTime dateFrom,
-    required DateTime dateTo,
-  }) async {
+  Future<Either<RewildError, List<InitialStockModel>>> getAll() async {
     try {
       final db = await _db;
       final txn = db.transaction('initial_stocks', idbModeReadOnly);
       final store = txn.objectStore('initial_stocks');
 
-      final result = await store.getAll(KeyRange.bound(
-        dateFrom.millisecondsSinceEpoch,
-        dateTo.millisecondsSinceEpoch,
-      ));
+      final result = await store.getAll();
 
       await txn.completed;
 
-      final initStocks = result
-          .map((e) => InitialStockModel.fromMap(e as Map<String, dynamic>))
-          .toList();
+      if (result.isEmpty) {
+        return right([]);
+      }
+
+      final initStocks = result.map((e) {
+        return InitialStockModel.fromMap(e as Map<String, dynamic>);
+      }).toList();
+
       return right(initStocks);
     } catch (e) {
       return left(RewildError(
@@ -222,7 +172,7 @@ class InitialStockDataProvider
           'Failed to retrieve all initial stocks: $e',
           source: "InitialStockDataProvider",
           name: "getAll",
-          args: [dateFrom, dateTo]));
+          args: []));
     }
   }
 }

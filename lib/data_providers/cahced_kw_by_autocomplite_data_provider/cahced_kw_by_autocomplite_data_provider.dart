@@ -4,13 +4,17 @@ import 'package:idb_shim/idb.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/domain/services/wb_search_suggestion_service.dart';
 
 class CachedKwByAutocompliteDataProvider
-    implements UpdateServiceKwByAutocompliteDataProvider {
+    implements
+        UpdateServiceKwByAutocompliteDataProvider,
+        WbSearchSuggestionServiceKwByAutocompliteDataProvider {
   const CachedKwByAutocompliteDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
+  @override
   Future<Either<RewildError, void>> addAll(List<(String, int)> keywords) async {
     try {
       final db = await _db;
@@ -37,6 +41,7 @@ class CachedKwByAutocompliteDataProvider
     }
   }
 
+  @override
   Future<Either<RewildError, List<(String, int)>>> getAll() async {
     try {
       final db = await _db;

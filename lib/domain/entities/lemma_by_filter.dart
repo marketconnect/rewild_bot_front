@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class LemmaByFilterId {
   final int lemmaId;
   final String lemma;
@@ -12,9 +14,9 @@ class LemmaByFilterId {
 
   factory LemmaByFilterId.fromMap(Map<String, dynamic> json) {
     return LemmaByFilterId(
-      lemmaId: json['lemma_id'],
-      lemma: json['lemma'],
-      totalFrequency: json['total_frequency'],
+      lemmaId: json['lemmaID'],
+      lemma: utf8.decode(json['lemma'].runes.toList()),
+      totalFrequency: json['totalFrequency'],
     );
   }
   // fromJson

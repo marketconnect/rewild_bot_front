@@ -6,14 +6,18 @@ import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/tracking_query.dart';
 import 'package:rewild_bot_front/domain/entities/tracking_result.dart';
+import 'package:rewild_bot_front/domain/services/tracking_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class TrackingResultDataProvider
-    implements UpdateServiceTrackingResultDataProvider {
+    implements
+        UpdateServiceTrackingResultDataProvider,
+        TrackingServiceTrackingDataProvider {
   const TrackingResultDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
+  @override
   Future<Either<RewildError, void>> addTrackingResult(
       TrackingResult trackingResult) async {
     try {
@@ -44,6 +48,7 @@ class TrackingResultDataProvider
     }
   }
 
+  @override
   Future<Either<RewildError, List<TrackingResult>>>
       getAllTrackingResults() async {
     try {
@@ -110,6 +115,7 @@ class TrackingResultDataProvider
     }
   }
 
+  @override
   Future<Either<RewildError, List<TrackingQuery>>>
       getKeywordsWithoutTodayEntries(List<TrackingQuery> queries) async {
     try {

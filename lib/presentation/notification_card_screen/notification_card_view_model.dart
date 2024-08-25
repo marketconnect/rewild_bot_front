@@ -65,8 +65,6 @@ class NotificationCardState {
 }
 
 class CardNotificationViewModel extends ResourceChangeNotifier {
-  final NotificationCardNotificationService notificationService;
-  final NotificationCardState state;
   CardNotificationViewModel(
     this.state, {
     required this.notificationService,
@@ -75,17 +73,56 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     _asyncInit();
   }
 
+  // constructor params
+  final NotificationCardNotificationService notificationService;
+  final NotificationCardState state;
+
+  // // Fields
+  bool _isLoading = false;
+
+  void setIsLoading(bool isLoading) {
+    _isLoading = isLoading;
+    notify();
+  }
+
+  bool get isLoading => _isLoading;
+
+  bool _wasEmpty = true;
+  void setWasNotEmpty() {
+    _wasEmpty = false;
+  }
+
+  int? _stocks;
+
+  int get stocks => _stocks ?? 0;
+
+  // notifications
+  final Map<int, ReWildNotificationModel> _notifications = {};
+  void setNotifications(Map<int, ReWildNotificationModel> notifications) {
+    _notifications.clear();
+    _notifications.addAll(notifications);
+
+    notify();
+  }
+
+  Map<int, ReWildNotificationModel> get notifications => _notifications;
+
+  Map<Warehouse, int> get warehouses => state.warehouses;
+
+  // Methods ===================================================================
+
   Future<void> _asyncInit() async {
-    // SqfliteService.printTableContent('notifications');
-    // SqfliteService.printTableContent('background_messages');
+    setIsLoading(true);
     final savedNotifications = await fetch(
         () => notificationService.getForParent(parentId: state.nmId));
     if (savedNotifications == null) {
+      setIsLoading(false);
       return;
     }
 
     if (savedNotifications.isNotEmpty) {
       setWasNotEmpty();
+      setIsLoading(false);
     }
 
     Map<int, ReWildNotificationModel> notifications = {};
@@ -98,28 +135,9 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
         .fold(0, (previousValue, element) => previousValue! + element.value);
 
     setNotifications(notifications);
+
+    setIsLoading(false);
   }
-
-  // there were notifications before
-  bool _wasEmpty = true;
-  void setWasNotEmpty() {
-    _wasEmpty = false;
-  }
-
-  int? _stocks;
-
-  int get stocks => _stocks ?? 0;
-
-  // Fields
-  Map<int, ReWildNotificationModel> _notifications = {};
-  void setNotifications(Map<int, ReWildNotificationModel> notifications) {
-    _notifications = notifications;
-    notify();
-  }
-
-  Map<int, ReWildNotificationModel> get notifications => _notifications;
-
-  Map<Warehouse, int> get warehouses => state.warehouses;
 
   Future<void> save() async {
     final listToAdd = _notifications.values.toList();

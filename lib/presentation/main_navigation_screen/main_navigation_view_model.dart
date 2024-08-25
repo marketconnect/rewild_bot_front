@@ -251,7 +251,7 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
         notify();
       }
     }
-    setLoading(false);
+    setIsLoading(false);
   }
 
   // ApiKeysExists

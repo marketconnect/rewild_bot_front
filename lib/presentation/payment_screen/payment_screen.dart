@@ -16,86 +16,84 @@ class PaymentScreen extends StatelessWidget {
     final setActive = model.setActive;
     final units = model.units;
     final processPayment = model.processPayment;
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF8324FF),
-                Color(0xFFFBD4D9),
-              ],
-            ),
+    return Scaffold(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFF8324FF),
+              Color(0xFFFBD4D9),
+            ],
           ),
-          child: isLoading
-              ? const Center(child: MyProgressIndicator())
-              : Column(
-                  children: [
-                    SizedBox(
-                      height: 60,
-                      child: Row(children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.pop(context, false);
-                          },
-                          icon: const Icon(Icons.arrow_back_ios,
-                              color: Colors.white),
-                        )
-                      ]),
-                    ),
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Выберите тариф',
-                          style: TextStyle(
-                              fontSize: 22,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        )
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.05,
-                    ),
-                    _SubscriptionsCards(
-                        subscriptions: subscriptions,
-                        activeIndex: activeIndex,
-                        setActive: setActive),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.05,
-                    ),
-                    _Units(units: units, activeIndex: activeIndex),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        processPayment();
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width - 24,
-                        height: MediaQuery.of(context).size.height * 0.07,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Text(
-                          "Оплатить",
-                          style: TextStyle(
+        ),
+        child: isLoading
+            ? const Center(child: MyProgressIndicator())
+            : Column(
+                children: [
+                  SizedBox(
+                    height: 60,
+                    child: Row(children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pop(context, false);
+                        },
+                        icon: const Icon(Icons.arrow_back_ios,
+                            color: Colors.white),
+                      )
+                    ]),
+                  ),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Выберите тариф',
+                        style: TextStyle(
+                            fontSize: 22,
                             color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                            fontWeight: FontWeight.bold),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.05,
+                  ),
+                  _SubscriptionsCards(
+                      subscriptions: subscriptions,
+                      activeIndex: activeIndex,
+                      setActive: setActive),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.05,
+                  ),
+                  _Units(units: units, activeIndex: activeIndex),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () {
+                      processPayment();
+                    },
+                    child: Container(
+                      width: MediaQuery.of(context).size.width - 24,
+                      height: MediaQuery.of(context).size.height * 0.07,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        "Оплатить",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    )
-                  ],
-                ),
-        ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  )
+                ],
+              ),
       ),
     );
   }

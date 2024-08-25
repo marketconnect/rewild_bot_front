@@ -100,7 +100,7 @@ class NotificationCardSettingsScreen extends StatelessWidget {
             addNotification: add,
             dropNotification: drop,
           ),
-          if (!model.loading)
+          if (!model.isLoading)
             MutableNotificationCard(
               condition: NotificationConditionConstants.stocksLessThan,
               currentValue: notifStocks == null
@@ -112,7 +112,7 @@ class NotificationCardSettingsScreen extends StatelessWidget {
               addNotification: add,
               dropNotification: drop,
             ),
-          if (!model.loading)
+          if (!model.isLoading)
             for (var warehouse in warehouses.entries)
               MutableNotificationCard(
                 // since there can be many warehouses,

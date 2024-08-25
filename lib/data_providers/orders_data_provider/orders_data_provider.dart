@@ -17,6 +17,7 @@ class OrderDataProvider
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
+  @override
   Future<Either<RewildError, void>> insertAll(List<OrderModel> orders) async {
     try {
       final db = await _db;
@@ -48,6 +49,7 @@ class OrderDataProvider
     }
   }
 
+  @override
   Future<Either<RewildError, bool>> isUpdated(int skus) async {
     try {
       final db = await _db;

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rewild_bot_front/.env.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 class RewildError {
   final List<dynamic>? args;
@@ -17,6 +19,8 @@ class RewildError {
       this.error,
       this.stackTrace}) {
     debugPrint(toString());
+    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+        "Source: $source -> $name;\n message: $message;\n  err: $error;  $stackTrace $args");
   }
   @override
   String toString() {

@@ -24,12 +24,18 @@ class SupplyDataProvider
       final txn = db.transaction('supplies', idbModeReadWrite);
       final store = txn.objectStore('supplies');
 
-      // Add the supply to the store
+      final existingKey = await store.index('nmId_wh_sizeOptionId').getKey(
+        [supply.nmId, supply.wh, supply.sizeOptionId],
+      );
+
+      if (existingKey != null) {
+        await store.delete(existingKey);
+      }
+
       await store.put(supply.toMap());
 
       await txn.completed;
-      return right(
-          0); // IndexedDB does not return an ID like SQLite, so returning 0 or a placeholder value
+      return right(0);
     } catch (e) {
       return left(RewildError(
           sendToTg: true,
@@ -51,7 +57,6 @@ class SupplyDataProvider
       final txn = db.transaction('supplies', idbModeReadWrite);
       final store = txn.objectStore('supplies');
 
-      // Create a key to match the record to delete
       final key = _generateSupplyKey(nmId, wh, sizeOptionId);
 
       await store.delete(key);
@@ -74,7 +79,6 @@ class SupplyDataProvider
       final txn = db.transaction('supplies', idbModeReadWrite);
       final store = txn.objectStore('supplies');
 
-      // Clear all records in the store
       await store.clear();
       await txn.completed;
       return right(null);
@@ -99,7 +103,6 @@ class SupplyDataProvider
       final txn = db.transaction('supplies', idbModeReadOnly);
       final store = txn.objectStore('supplies');
 
-      // Create a key to match the record
       final key = _generateSupplyKey(nmId, wh, sizeOptionId);
 
       final result = await store.getObject(key) as Map<String, dynamic>?;
@@ -128,7 +131,6 @@ class SupplyDataProvider
       final txn = db.transaction('supplies', idbModeReadOnly);
       final store = txn.objectStore('supplies');
 
-      // Fetch all records and filter them based on nmId
       final result = await store.getAll();
       await txn.completed;
 
@@ -161,7 +163,6 @@ class SupplyDataProvider
       final txn = db.transaction('supplies', idbModeReadOnly);
       final store = txn.objectStore('supplies');
 
-      // Fetch all records and filter them based on nmId
       final result = await store.getAll();
       await txn.completed;
 
@@ -181,7 +182,6 @@ class SupplyDataProvider
     }
   }
 
-  // Helper method to generate a key based on nmId, wh, and sizeOptionId
   String _generateSupplyKey(int nmId, int? wh, int? sizeOptionId) {
     return '$nmId-${wh ?? ''}-${sizeOptionId ?? ''}';
   }

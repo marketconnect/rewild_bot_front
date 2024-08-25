@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
+import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 
 import 'package:rewild_bot_front/domain/entities/payment_info.dart';
 
@@ -17,6 +20,21 @@ abstract class ScreenFactory {
   Widget makeCardNotificationsSettingsScreen(NotificationCardState state);
 
   Widget makeAllCardsSeoScreen();
+
+  Widget makeCompetitorKwExpansionScreen();
+
+  Widget makeSubjectKeywordExpansionScreen(
+      {required List<KwByLemma> addedKeywords, required int subjectId});
+  Widget makeWordsKeywordExpansionScreen(
+      {required List<KwByLemma> addedKeywords});
+
+  Widget makeAutocompliteKwExpansionScreen(
+      {required List<KwByLemma> addedKeywords});
+// new
+
+  Widget makeGeoSearchScreen(String? initQuery);
+  Widget makeSeoToolScreen(
+      (CardOfProductModel, CardItem)? cardOfProductCardItem);
 }
 
 class MainNavigation implements AppNavigation {
@@ -104,6 +122,56 @@ class MainNavigation implements AppNavigation {
       case MainNavigationRouteNames.allCardsSeoScreen:
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeAllCardsSeoScreen(),
+        );
+      case MainNavigationRouteNames.competitorKwExpansionScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeCompetitorKwExpansionScreen(),
+        );
+      case MainNavigationRouteNames.subjectKeywordExpansionScreen:
+        final arguments = settings.arguments;
+        final addedKeywordsSubjectId = arguments is (List<KwByLemma>, int)
+            ? arguments
+            : (<KwByLemma>[], 0);
+        return MaterialPageRoute(
+            builder: (_) => screenFactory.makeSubjectKeywordExpansionScreen(
+                addedKeywords: addedKeywordsSubjectId.$1,
+                subjectId: addedKeywordsSubjectId.$2));
+
+      case MainNavigationRouteNames.wordsKeywordExpansionScreen:
+        final arguments = settings.arguments;
+        final addedKeywords =
+            arguments is List<KwByLemma> ? arguments : <KwByLemma>[];
+
+        return MaterialPageRoute(
+            builder: (_) => screenFactory.makeWordsKeywordExpansionScreen(
+                  addedKeywords: addedKeywords,
+                ));
+
+      case MainNavigationRouteNames.autocompliteKwExpansionScreen:
+        final arguments = settings.arguments;
+        final addedKeywords =
+            arguments is List<KwByLemma> ? arguments : <KwByLemma>[];
+
+        return MaterialPageRoute(
+            builder: (_) => screenFactory.makeAutocompliteKwExpansionScreen(
+                  addedKeywords: addedKeywords,
+                ));
+
+      case MainNavigationRouteNames.geoSearchScreen:
+        final arguments = settings.arguments;
+        final initQuery = arguments is String ? arguments : null;
+        return MaterialPageRoute(
+            builder: (_) => screenFactory.makeGeoSearchScreen(initQuery));
+
+      case MainNavigationRouteNames.seoToolScreen:
+        final arguments = settings.arguments;
+        final cardOfProductCardItem =
+            arguments is (CardOfProductModel, CardItem)
+                ? arguments
+                : (null, null) as (CardOfProductModel, CardItem);
+        return MaterialPageRoute(
+          builder: (_) =>
+              screenFactory.makeSeoToolScreen(cardOfProductCardItem),
         );
 
       default:

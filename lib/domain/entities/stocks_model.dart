@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:rewild_bot_front/domain/entities/size_model.dart';
 
 class StocksModel {
-  int id;
   final int wh;
   final int nmId;
   final int sizeOptionId;
@@ -13,7 +12,6 @@ class StocksModel {
 
   final List<SizeModel> sizes;
   StocksModel({
-    this.id = 0,
     required this.wh,
     required this.nmId,
     required this.sizeOptionId,
@@ -23,7 +21,6 @@ class StocksModel {
   });
 
   StocksModel copyWith({
-    int? id,
     int? wh,
     String? name,
     int? sizeOptionId,
@@ -31,7 +28,6 @@ class StocksModel {
   }) {
     return StocksModel(
       nmId: nmId,
-      id: id ?? this.id,
       wh: wh ?? this.wh,
       name: name ?? this.name,
       sizeOptionId: sizeOptionId ?? this.sizeOptionId,
@@ -39,20 +35,21 @@ class StocksModel {
     );
   }
 
+  String get nmIdWhSizeOptionId => '${nmId}_${wh}_$sizeOptionId';
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
-      'nmId': nmId, // Обязательно включите nmId в карту
+      'nmId': nmId,
       'wh': wh,
       'name': name,
       'qty': qty,
+      "nmIdWhSizeOptionId": nmIdWhSizeOptionId,
       'sizeOptionId': sizeOptionId,
     };
   }
 
   factory StocksModel.fromMap(Map<String, dynamic> map) {
     return StocksModel(
-      id: map['id'] as int,
       nmId: map['nmId'] as int,
       wh: map['wh'] as int,
       sizeOptionId: map['sizeOptionId'] as int,
@@ -68,15 +65,14 @@ class StocksModel {
 
   @override
   String toString() {
-    return 'StocksModel(id: $id, wh: $wh, nmId: $nmId, sizeOptionId: $sizeOptionId, name: $name, qty: $qty, sizes: $sizes)';
+    return 'StocksModel( wh: $wh, nmId: $nmId, sizeOptionId: $sizeOptionId, name: $name, qty: $qty, sizes: $sizes)';
   }
 
   @override
   bool operator ==(covariant StocksModel other) {
     if (identical(this, other)) return true;
 
-    return other.id == id &&
-        other.wh == wh &&
+    return other.wh == wh &&
         other.name == name &&
         other.qty == qty &&
         other.sizeOptionId == sizeOptionId;
@@ -84,10 +80,6 @@ class StocksModel {
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        wh.hashCode ^
-        name.hashCode ^
-        qty.hashCode ^
-        sizeOptionId.hashCode;
+    return wh.hashCode ^ name.hashCode ^ qty.hashCode ^ sizeOptionId.hashCode;
   }
 }

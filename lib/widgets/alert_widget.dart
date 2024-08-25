@@ -31,9 +31,7 @@ class AlertWidget extends StatelessWidget {
           },
         ),
       ),
-      body: SafeArea(
-        child: EmptyWidget(text: text, img: img),
-      ),
+      body: EmptyWidget(text: text, img: img),
     );
   }
 }

@@ -31,11 +31,11 @@ void main() async {
     final dbHelper = DatabaseHelper();
 
     // Дождитесь полной инициализации базы данных
-    await sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, "started");
+    // await sendMessageToTelegramBot(
+    //     TBot.tBotErrorToken, TBot.tBotErrorChatId, "started");
     await dbHelper.database;
-    await sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, "finished");
+    // await sendMessageToTelegramBot(
+    //     TBot.tBotErrorToken, TBot.tBotErrorChatId, "finished");
 
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {

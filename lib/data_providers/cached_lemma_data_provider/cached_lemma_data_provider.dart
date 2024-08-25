@@ -1,34 +1,60 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
+
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 import 'package:rewild_bot_front/domain/entities/lemma_by_filter.dart';
+import 'package:rewild_bot_front/domain/services/filter_values_service.dart';
 
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class CachedLemmaDataProvider implements UpdateServiceLemmaDataProvider {
+class CachedLemmaDataProvider
+    implements UpdateServiceLemmaDataProvider, FilterServiceLemmaDataProvider {
   const CachedLemmaDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
+  @override
   Future<Either<RewildError, void>> addAll(
       int subjectId, List<LemmaByFilterId> lemmas) async {
     try {
       final db = await _db;
-      final txn = db.transaction('cached_lemmas', idbModeReadWrite);
-      final store = txn.objectStore('cached_lemmas');
 
-      for (var lemma in lemmas) {
-        await store.put({
-          'subjectId': subjectId,
-          'lemmaId': lemma.lemmaId,
-          'lemma': lemma.lemma,
-          'totalFrequency': lemma.totalFrequency,
-        });
+      const int chunkSize = 50; // Further reduced chunk size
+
+      for (int i = 0; i < lemmas.length; i += chunkSize) {
+        // Create a new transaction for each chunk to avoid TransactionInactiveError
+        final txn = db.transaction('cached_lemmas', idbModeReadWrite);
+        final store = txn.objectStore('cached_lemmas');
+
+        final chunk = lemmas.sublist(
+            i, i + chunkSize > lemmas.length ? lemmas.length : i + chunkSize);
+        List<Future> putOperations = chunk.map((lemma) {
+          return store.put({
+            'subjectId': subjectId,
+            'lemmaId': lemma.lemmaId,
+            'lemma': lemma.lemma,
+            'totalFrequency': lemma.totalFrequency,
+          });
+        }).toList();
+
+        try {
+          await Future.wait(putOperations);
+        } catch (e) {
+          return left(RewildError(
+            e.toString(),
+            name: "addAll",
+            source: "CachedLemmaDataProvider",
+            sendToTg: true,
+            args: [subjectId, lemmas],
+          ));
+        }
+
+        await txn.completed;
       }
 
-      await txn.completed;
       return right(null);
     } catch (e) {
       return left(RewildError(
@@ -41,6 +67,7 @@ class CachedLemmaDataProvider implements UpdateServiceLemmaDataProvider {
     }
   }
 
+  @override
   Future<Either<RewildError, List<LemmaByFilterId>>> getAllForSubjectID(
       int subjectId) async {
     try {
