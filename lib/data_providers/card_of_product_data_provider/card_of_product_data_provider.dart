@@ -1,8 +1,10 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
@@ -41,12 +43,23 @@ class CardOfProductDataProvider
   }
 
   @override
-  Future<Either<RewildError, int>> insertOrUpdate(
-      {required CardOfProductModel card}) async {
+  @override
+  Future<Either<RewildError, int>> insertOrUpdate({
+    required CardOfProductModel card,
+  }) async {
     try {
       final db = await _db;
       final txn = db.transaction('cards', idbModeReadWrite);
       final store = txn.objectStore('cards');
+
+      if (card.img.isEmpty) {
+        final existingCardMap =
+            await store.getObject(card.nmId) as Map<String, dynamic>?;
+
+        if (existingCardMap != null && existingCardMap['img'] != null) {
+          card = card.copyWith(img: existingCardMap['img'] as String);
+        }
+      }
 
       await store.put(card.toMap());
 
@@ -143,6 +156,8 @@ class CardOfProductDataProvider
   Future<Either<RewildError, List<CardOfProductModel>>> getAll(
       [List<int>? nmIds]) async {
     try {
+      await sendMessageToTelegramBot(
+          TBot.tBotErrorToken, TBot.tBotErrorChatId, 'getAll nmIds: $nmIds');
       final db = await _db;
       List<Map<String, dynamic>> cards = [];
 
@@ -159,6 +174,8 @@ class CardOfProductDataProvider
           final card = await store.getObject(nmId);
           if (card != null) {
             cards.add(card as Map<String, dynamic>);
+            await sendMessageToTelegramBot(TBot.tBotErrorToken,
+                TBot.tBotErrorChatId, 'card img: ${card['img']}');
           }
         }
       } else {

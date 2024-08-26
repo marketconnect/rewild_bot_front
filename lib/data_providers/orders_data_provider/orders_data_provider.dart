@@ -32,6 +32,7 @@ class OrderDataProvider
           'qty': order.qty,
           'price': order.price,
           'period': order.period,
+          'skuWarehousePeriod': order.skuWarehousePeriod,
           'updatedAt': dateStr,
         });
       }
@@ -58,11 +59,24 @@ class OrderDataProvider
       final dateFormat = DateFormat('yyyy-MM-dd');
       final todayStr = dateFormat.format(DateTime.now());
 
-      final result =
-          await store.getObject({'sku': skus, 'updatedAt': todayStr});
+      // Создаем запрос по индексу `sku`
+      final index = store.index('sku');
+      final keyRange = KeyRange.only(skus);
+      final query = index.openCursor(range: keyRange);
+
+      bool isUpdated = false;
+      await for (var cursor in query) {
+        final value = cursor.value as Map<String, dynamic>;
+        final updatedAt = value['updatedAt'];
+        if (updatedAt == todayStr) {
+          isUpdated = true;
+          break;
+        }
+        cursor.next();
+      }
 
       await txn.completed;
-      return right(result != null);
+      return right(isUpdated);
     } catch (e) {
       return left(RewildError(
         "Failed to check update status for orders: ${e.toString()}",

@@ -31,7 +31,7 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      'ddda.db',
+      'qqq_rewild.db',
       version: 1,
       onUpgradeNeeded: _onUpgrade,
     );
@@ -93,9 +93,8 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('tariffs', () {
-      final store = db.createObjectStore('tariffs',
-          keyPath: 'storeId'); // Указываем keyPath
-      store.createIndex('storeId_type', ['storeId', 'type'], unique: true);
+      db.createObjectStore('tariffs',
+          keyPath: 'whIdwhType', autoIncrement: false); // Указываем keyPath
     });
 
     createStoreIfNotExists('supplies', () {
@@ -122,14 +121,16 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('stocks', () {
-      db.createObjectStore('stocks',
+      final store = db.createObjectStore('stocks',
           keyPath: 'nmIdWhSizeOptionId', autoIncrement: false);
+
+      store.createIndex('nmId', 'nmId', unique: false);
     });
 
     createStoreIfNotExists('orders', () {
-      final store = db.createObjectStore('orders');
-      store.createIndex('sku_warehouse_period', ['sku', 'warehouse', 'period'],
-          unique: true);
+      final store = db.createObjectStore('orders',
+          keyPath: 'skuWarehousePeriod', autoIncrement: false);
+
       store.createIndex('sku', 'sku', unique: false);
       store.createIndex('updatedAt', 'updatedAt', unique: false);
     });

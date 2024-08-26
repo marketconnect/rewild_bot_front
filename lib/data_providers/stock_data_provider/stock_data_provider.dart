@@ -1,8 +1,10 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
@@ -70,15 +72,30 @@ class StockDataProvider
       final txn = db.transaction('stocks', idbModeReadOnly);
       final store = txn.objectStore('stocks');
 
-      final result = await store.getObject(nmId);
+      // Предполагаем, что у вас есть индекс по полю nmId
+      final index = store.index('nmId');
+      final keyRange = KeyRange.only(nmId);
+      final query = index.openCursor(range: keyRange);
+
+      List<StocksModel> stocks = [];
+
+      await for (var cursor in query) {
+        final result = cursor.value as Map<String, dynamic>;
+        stocks.add(StocksModel.fromMap(result));
+        cursor.next();
+      }
 
       await txn.completed;
 
-      if (result == null) {
-        return right([]);
+      if (stocks.isEmpty) {
+        await sendMessageToTelegramBot(
+            TBot.tBotErrorToken, TBot.tBotErrorChatId, '$nmId not found');
+      } else {
+        await sendMessageToTelegramBot(
+            TBot.tBotErrorToken, TBot.tBotErrorChatId, stocks.toString());
       }
 
-      return right([StocksModel.fromMap(result as Map<String, dynamic>)]);
+      return right(stocks);
     } catch (e) {
       return left(RewildError(
           sendToTg: true,

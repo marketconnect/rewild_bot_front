@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 class OrderModel {
   final int sku;
   final int warehouse;
@@ -34,6 +36,8 @@ class OrderModel {
     );
   }
 
+  String get skuWarehousePeriod => '${sku}_${warehouse}_$period';
+
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'sku': sku,
@@ -41,17 +45,28 @@ class OrderModel {
       'qty': qty,
       'price': price,
       'period': period,
+      'skuWarehousePeriod': skuWarehousePeriod
     };
   }
 
   factory OrderModel.fromMap(Map<String, dynamic> map) {
-    return OrderModel(
-      sku: map['sku'] as int,
-      warehouse: map['warehouse'] as int,
-      qty: map['qty'] as int,
-      price: map['price'] as int,
-      period: map['period'] as String,
-    );
+    try {
+      return OrderModel(
+        sku: map['sku'] as int,
+        warehouse: map['warehouse'] as int,
+        qty: map['qty'] as int,
+        price: map['price'] as int,
+        period: map['period'] as String,
+      );
+    } catch (e) {
+      throw Exception(RewildError(
+        "Failed to parse OrderModel from map: ${e.toString()}",
+        name: "OrderModel.fromMap",
+        source: "OrderModel",
+        args: [map],
+        sendToTg: true,
+      ));
+    }
   }
 
   String toJson() => json.encode(toMap());

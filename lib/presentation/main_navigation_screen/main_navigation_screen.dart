@@ -104,9 +104,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   List<BottomNavigationBarItem> get _buildItems {
     return [
       buildBottomNavigationBarItem(
-          IconConstant.iconHome, 'Г1лавная', _widgetIndex == 0),
+          IconConstant.iconHome, 'Главная', _widgetIndex == 0),
       buildBottomNavigationBarItem(
-          IconConstant.iconProduct, 'Товары', _widgetIndex == 1),
+          IconConstant.iconProduct, 'Карточки', _widgetIndex == 1),
       buildBottomNavigationBarItem(
           IconConstant.iconTestimonial, 'Вопросы', _widgetIndex == 2),
       buildBottomNavigationBarItem(

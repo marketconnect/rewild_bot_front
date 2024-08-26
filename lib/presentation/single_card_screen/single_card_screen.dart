@@ -3,9 +3,11 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/color.dart';
 import 'package:rewild_bot_front/core/constants/numeric_constance.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
 import 'package:rewild_bot_front/widgets/network_image.dart';
@@ -396,7 +398,7 @@ class _ExpansionTile extends StatelessWidget {
       final commision = model.commission;
       final tariffs = model.tariffs;
       final volume = model.volume;
-      final logisticsCoef = model.logisticsCoef;
+      // final logisticsCoef = model.logisticsCoef;
 
       if (volume == null) {
         return children;
@@ -414,25 +416,19 @@ class _ExpansionTile extends StatelessWidget {
 
         final boxesCoefs = v.where((element) => element.isBoxes());
         final monoPaletsCoefs = v.where((element) => element.isMono());
-
+        sendMessageToTelegramBot(
+            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Volume: $volume');
         double? boxesTariff = 0;
         double? monoPaletsTariff = 0;
-        if (volume > 10) {
-          boxesTariff = boxesCoefs.isNotEmpty
-              ? (boxesCoefs.first.coef / 100) *
-                  ((volume / 10) * 7 + logisticsCoef)
-              : null;
-          monoPaletsTariff = monoPaletsCoefs.isNotEmpty
-              ? (monoPaletsCoefs.first.coef / 100) *
-                  ((volume / 10) * 7 + logisticsCoef)
-              : null;
-        } else {
-          boxesTariff =
-              boxesCoefs.isNotEmpty ? (boxesCoefs.first.coef / 100) * 25 : null;
-          monoPaletsTariff = monoPaletsCoefs.isNotEmpty
-              ? (monoPaletsCoefs.first.coef / 100) * 25
-              : null;
-        }
+
+        boxesTariff = boxesCoefs.isNotEmpty
+            ? (boxesCoefs.first.deliveryBase) +
+                (((volume / 10) - 1) * boxesCoefs.first.deliveryLiter)
+            : null;
+        monoPaletsTariff = monoPaletsCoefs.isNotEmpty
+            ? (monoPaletsCoefs.first.deliveryBase) *
+                (((volume / 10) - 1) * monoPaletsCoefs.first.deliveryLiter)
+            : null;
 
         if (boxesTariff == null && monoPaletsTariff == null) {
           return;

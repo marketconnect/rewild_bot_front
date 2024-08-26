@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/constants/regions_nums.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/commission_model.dart';
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
@@ -283,18 +285,20 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   String _region = '-';
   String get region => _region;
   // Warehouses
-  Map<String, int> _warehouses = {};
+  final Map<String, int> _warehouses = {};
   void setWarehouses(Map<String, int> warehouses) {
-    _warehouses = warehouses;
+    _warehouses.clear();
+    _warehouses.addAll(warehouses);
   }
 
   // returns copy of warehouses
   Map<String, int> get warehouses => Map.from(_warehouses);
 
   // Tarrifs
-  Map<String, List<TariffModel>> _tarrifs = {};
+  final Map<String, List<TariffModel>> _tarrifs = {};
   void setTarrifs(Map<String, List<TariffModel>> tarrifs) {
-    _tarrifs = tarrifs;
+    _tarrifs.clear();
+    _tarrifs.addAll(tarrifs);
   }
 
   void addTariff(String name, List<TariffModel> tariff) {
@@ -440,7 +444,8 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       setIsLoading(false);
       return;
     }
-
+    await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+        'Stocks length: ${stocks.length}');
     //  add stocks
     for (final stock in stocks) {
       final wareHouse =
@@ -459,7 +464,8 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
         setIsLoading(false);
         return;
       }
-
+      await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+          "Tariff: ${tariff.toString()}");
       if (wareHouse.name.contains("Склад продавца")) {
         final tariff = await fetch(() => tariffService.getByStoreId(1));
         if (tariff == null) {
@@ -623,14 +629,14 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   int calculateMaxTariffCost(Map<String, List<TariffModel>> tariffs) {
     int max = 0;
 
-    for (var entry in tariffs.entries) {
-      for (var tariff in entry.value) {
-        if (tariff.coef > max) {
-          // print('tar ${tariff.coef}');
-          max = tariff.coef;
-        }
-      }
-    }
+    // for (var entry in tariffs.entries) {
+    //   for (var tariff in entry.value) {
+    //     if (tariff.coef > max) {
+    //       // print('tar ${tariff.coef}');
+    //       max = tariff.coef;
+    //     }
+    //   }
+    // }
     return ((max / 100) * ((volume! / 10) * 7 + logisticsCoef)).ceil();
   }
 

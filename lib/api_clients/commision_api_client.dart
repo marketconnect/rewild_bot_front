@@ -80,10 +80,12 @@ class CommissionApiClient
         final responseData = jsonDecode(response.body);
         final tariffs = (responseData['tariff'] as List)
             .map((item) => TariffModel(
-                  coef: item['coef'],
-                  storeId: item['storeId'],
-                  type: item['type'],
-                  wh: item['wh'],
+                  deliveryBase: item['deliveryBase'],
+                  deliveryLiter: item['deliveryLiter'],
+                  storageBase: item['storageBase'],
+                  storageLiter: item['storageLiter'],
+                  warehouseId: item['warehouseId'],
+                  warehouseType: item['warehouseType'],
                 ))
             .toList();
 

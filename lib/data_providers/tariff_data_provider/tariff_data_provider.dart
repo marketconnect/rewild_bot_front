@@ -23,19 +23,26 @@ class TariffDataProvider
       final txn = db.transaction('tariffs', idbModeReadOnly);
       final store = txn.objectStore('tariffs');
 
-      // Get all tariffs and filter by storeId
-      final result = await store.getAll() as List<Map<String, dynamic>>;
+      // Получаем все тарифы
+      final result = await store.getAll();
       await txn.completed;
 
+      // Приводим к нужному типу, если результат не null
+
       final tariffs = result
-          .where((map) => map['storeId'] == storeId)
-          .map((map) => TariffModel(
-                storeId: map['storeId'] as int,
-                wh: map['wh'] as String,
-                coef: map['coef'] as int,
-                type: map['type'] as String,
-              ))
-          .toList();
+          .where(
+              (map) => map is Map<String, dynamic> && map['storeId'] == storeId)
+          .map((map) {
+        final tariffMap = map as Map<String, dynamic>;
+        return TariffModel(
+          warehouseId: tariffMap['warehouseId'] as int,
+          deliveryBase: tariffMap['deliveryBase'] as double,
+          deliveryLiter: tariffMap['deliveryLiter'] as double,
+          storageBase: tariffMap['storageBase'] as double,
+          storageLiter: tariffMap['storageLiter'] as double,
+          warehouseType: tariffMap['warehouseType'] as String,
+        );
+      }).toList();
 
       return right(tariffs);
     } catch (e) {
@@ -57,12 +64,7 @@ class TariffDataProvider
       final store = txn.objectStore('tariffs');
 
       for (var tariff in tariffs) {
-        await store.put({
-          'storeId': tariff.storeId,
-          'wh': tariff.wh,
-          'coef': tariff.coef,
-          'type': tariff.type,
-        });
+        await store.put(tariff.toMap());
       }
 
       await txn.completed;
