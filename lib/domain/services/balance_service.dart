@@ -3,6 +3,8 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
 
 abstract class BalanceServiceBalanceDataProvider {
   Future<Either<RewildError, double>> getUserBalance();
@@ -14,6 +16,8 @@ class BalanceService
     implements
         PaymentWebViewViewModelBalanceService,
         SeoToolDescriptionGeneratorBalanceService,
+        SeoToolCategoryDescriptionGeneratorBalanceService,
+        SeoToolCategoryTitleGeneratorBalanceService,
         SeoToolTitleGeneratorBalanceService {
   final BalanceServiceBalanceDataProvider balanceDataProvider;
   const BalanceService({required this.balanceDataProvider});

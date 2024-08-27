@@ -17,6 +17,10 @@ import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_desc_gene
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_kw_research_view_model.dart';
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_view_model.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class AuthServiceSecureDataProvider {
@@ -38,14 +42,18 @@ class AuthService
     implements
         MainNavigationAuthService,
         AddApiKeysAuthService,
-        SeoToolDescriptionGeneratorTokenService,
         SubjectKeywordExpansionTokenService,
         WordsKeywordExpansionTokenService,
+        SeoToolTokenService,
+        SeoToolCategoryTokenService,
+        SeoToolDescriptionGeneratorTokenService,
+        SeoToolCategoryDescriptionGeneratorTokenService,
         SeoToolKwResearchTokenService,
+        SeoToolCategoryKwResearchTokenService,
         SeoToolTitleGeneratorTokenService,
+        SeoToolCategoryTitleGeneratorTokenService,
         SingleCardScreenAuthService,
         PaymentScreenTokenService,
-        SeoToolTokenService,
         CompetitorKeywordExpansionTokenService,
         AutocompliteKeywordExpansionTokenService,
         PaymentWebViewTokenService,

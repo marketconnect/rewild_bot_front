@@ -4,6 +4,8 @@ import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
 // Token
@@ -22,7 +24,9 @@ class PriceService
     implements
         PaymentScreenPriceService,
         SeoToolDescriptionGeneratorModelPriceService,
+        SeoToolCategoryDescriptionGeneratorModelPriceService,
         SingleCardScreenPriceService,
+        SeoToolCategoryTitleGeneratorModelPriceService,
         SeoToolTitleGeneratorModelPriceService {
   final PriceServicePriceApiClient apiClient;
   // final PriceServiceTokenDataProvider tokenDataProvider;

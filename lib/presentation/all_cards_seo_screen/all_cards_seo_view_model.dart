@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
@@ -82,12 +84,12 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
   }
 
   // // content api key exists
-  // bool _apiKeyExists = false;
-  // void _setApiKeyExists(bool apiKeyExists) {
-  //   _apiKeyExists = apiKeyExists;
-  // }
+  bool _apiKeyExists = false;
+  void _setApiKeyExists(bool apiKeyExists) {
+    _apiKeyExists = apiKeyExists;
+  }
 
-  // bool get apiKeyExists => _apiKeyExists;
+  bool get apiKeyExists => _apiKeyExists;
 
   // methods ===================================================================
 
@@ -96,12 +98,14 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     // check if wb content api key exists
     final apiKey = await fetch(() => contentService.apiKeyExist());
     if (apiKey == null || !apiKey) {
-      if (context.mounted) {
-        Navigator.of(context)
-            .pushReplacementNamed(MainNavigationRouteNames.apiKeysScreen);
-      }
+      // if (context.mounted) {
+      //   Navigator.of(context)
+      //       .pushReplacementNamed(MainNavigationRouteNames.apiKeysScreen);
+      // }
+      _setIsLoading(false);
       return;
     }
+    _setApiKeyExists(apiKey);
     // get all users cards content
     final contentOrNull =
         await fetch(() => contentService.fetchNomenclatures());
@@ -162,6 +166,18 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.seoToolScreen,
       arguments: (product, card),
+    );
+    return;
+  }
+
+  void onAddApiKeyPressed() {
+    Navigator.of(context).pushNamed(MainNavigationRouteNames.apiKeysScreen);
+  }
+
+  void onSeoByCategoryPressed() {
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.seoToolCategoryScreen,
+      arguments: 436,
     );
     return;
   }

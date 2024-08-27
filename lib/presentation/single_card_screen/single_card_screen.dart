@@ -3,11 +3,12 @@ import 'package:intl/intl.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/color.dart';
 import 'package:rewild_bot_front/core/constants/numeric_constance.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
 import 'package:rewild_bot_front/widgets/network_image.dart';
@@ -416,17 +417,16 @@ class _ExpansionTile extends StatelessWidget {
 
         final boxesCoefs = v.where((element) => element.isBoxes());
         final monoPaletsCoefs = v.where((element) => element.isMono());
-        sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, 'Volume: $volume');
+
         double? boxesTariff = 0;
         double? monoPaletsTariff = 0;
 
-        boxesTariff = boxesCoefs.isNotEmpty
+        boxesTariff = boxesCoefs.isNotEmpty && volume <= 120
             ? (boxesCoefs.first.deliveryBase) +
                 (((volume / 10) - 1) * boxesCoefs.first.deliveryLiter)
             : null;
-        monoPaletsTariff = monoPaletsCoefs.isNotEmpty
-            ? (monoPaletsCoefs.first.deliveryBase) *
+        monoPaletsTariff = monoPaletsCoefs.isNotEmpty && volume <= 120
+            ? (monoPaletsCoefs.first.deliveryBase) +
                 (((volume / 10) - 1) * monoPaletsCoefs.first.deliveryLiter)
             : null;
 
@@ -490,6 +490,7 @@ class _ExpansionTile extends StatelessWidget {
       // Заказы
       // final isUserCard = model.isUserCard;
       // final subscribed = model.subscribed;
+
       final todayDate = formateDate(DateTime.now());
 
       // if (!subscribed) {
@@ -689,8 +690,18 @@ class _ExpansionTile extends StatelessWidget {
   }
 
   String formateDate(DateTime dateTime) {
-    final DateFormat formatter = DateFormat.MMMMd('ru');
-    return formatter.format(dateTime);
+    try {
+      final DateFormat formatter = DateFormat.MMMMd('ru');
+      return formatter.format(dateTime);
+    } catch (e) {
+      throw RewildError(
+        'форматирование даты: $e',
+        sendToTg: true,
+        name: 'formateDate',
+        source: 'SingleCardScreen',
+        args: [dateTime],
+      );
+    }
   }
 
   String formateDateAsMonth(DateTime dateTime) {

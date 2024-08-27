@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
@@ -23,6 +24,7 @@ void main() async {
         TBot.tBotErrorToken, TBot.tBotErrorChatId, details.toString());
     FlutterError.presentError(details);
   };
+  await initializeDateFormatting('ru', null);
 
   runZonedGuarded<Future<void>>(() async {
     WidgetsFlutterBinding.ensureInitialized();

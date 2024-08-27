@@ -1,5 +1,7 @@
 import 'package:fpdart/fpdart.dart';
+
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
@@ -21,35 +23,49 @@ class WarehouseService implements SingleCardScreenWarehouseService {
 
   @override
   Future<Either<RewildError, Warehouse>> getById({required int id}) async {
+    // try get from db
     final getEither = await warehouseProvider.get(id: id);
-    return getEither.fold((l) => left(l), (name) async {
-      // warehouse exists
+
+    if (getEither.isRight()) {
+      final name = getEither.fold((l) => null, (name) => name);
       if (name != null) {
         Warehouse warehouse = Warehouse(
           id: id,
           name: name,
         );
+
         return right(warehouse);
       }
-      // warehouse does`t exist
-      final fetchedWarehusesEither = await warehouseApiClient.getAll();
-      return fetchedWarehusesEither.fold((l) => left(l),
-          (fetchedWarehouses) async {
-        final okEither =
-            await warehouseProvider.update(warehouses: fetchedWarehouses);
-        return okEither.fold((l) => left(l), (ok) async {
-          final againGetEither = await warehouseProvider.get(id: id);
-          return againGetEither.fold((l) => left(l), (name) {
-            // warehouse exists
+    }
 
-            Warehouse warehouse = Warehouse(
-              id: id,
-              name: name ?? "",
-            );
-            return right(warehouse);
-          });
-        });
-      });
-    });
+    // warehouse does`t exist
+    final fetchedWarehusesEither = await warehouseApiClient.getAll();
+    if (fetchedWarehusesEither.isLeft()) {
+      return left(fetchedWarehusesEither.fold(
+          (l) => l, (r) => throw UnimplementedError()));
+    }
+    final fetchedWarehouses = fetchedWarehusesEither.fold(
+        (l) => throw UnimplementedError(), (r) => r);
+
+    final okEither =
+        await warehouseProvider.update(warehouses: fetchedWarehouses);
+    if (okEither.isLeft()) {
+      return left(okEither.fold((l) => l, (r) => throw UnimplementedError()));
+    }
+
+    // try again get from db
+    final againGetEither = await warehouseProvider.get(id: id);
+    if (againGetEither.isLeft()) {
+      return left(
+          againGetEither.fold((l) => l, (r) => throw UnimplementedError()));
+    }
+    final name = againGetEither.fold((l) => null, (name) => name);
+
+    // warehouse exists
+    Warehouse warehouse = Warehouse(
+      id: id,
+      name: name ?? "",
+    );
+    return right(warehouse);
   }
 }

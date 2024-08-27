@@ -87,13 +87,13 @@ class StockDataProvider
 
       await txn.completed;
 
-      if (stocks.isEmpty) {
-        await sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, '$nmId not found');
-      } else {
-        await sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, stocks.toString());
-      }
+      // if (stocks.isEmpty) {
+      //   await sendMessageToTelegramBot(
+      //       TBot.tBotErrorToken, TBot.tBotErrorChatId, '$nmId not found');
+      // } else {
+      //   await sendMessageToTelegramBot(
+      //       TBot.tBotErrorToken, TBot.tBotErrorChatId, stocks.toString());
+      // }
 
       return right(stocks);
     } catch (e) {

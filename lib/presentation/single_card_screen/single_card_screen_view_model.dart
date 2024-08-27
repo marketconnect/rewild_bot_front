@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
+// import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/constants/regions_nums.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+// import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/commission_model.dart';
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
@@ -330,7 +330,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   int get supplySum => _supplySum;
 
   // Sales
-  final Map<String, int> _orders = {};
+  Map<String, int> _orders = {};
   void setOrders(Map<String, int> orders) {
     _orders.clear();
     _orders.addAll(orders);
@@ -385,7 +385,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
 
     // name, img, feedbacks, reviewRating
     _name = cardOfProduct.name;
-    _img = cardOfProduct.img!.replaceFirst("/tm/", "/big/");
+    _img = cardOfProduct.img.replaceFirst("/tm/", "/big/");
     _feedbacks = cardOfProduct.feedbacks ?? 0;
     _reviewRating = cardOfProduct.reviewRating ?? 0;
     _price = cardOfProduct.basicPriceU ?? 0;
@@ -444,8 +444,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       setIsLoading(false);
       return;
     }
-    await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        'Stocks length: ${stocks.length}');
+
     //  add stocks
     for (final stock in stocks) {
       final wareHouse =
@@ -464,8 +463,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
         setIsLoading(false);
         return;
       }
-      await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          "Tariff: ${tariff.toString()}");
+
       if (wareHouse.name.contains("Склад продавца")) {
         final tariff = await fetch(() => tariffService.getByStoreId(1));
         if (tariff == null) {

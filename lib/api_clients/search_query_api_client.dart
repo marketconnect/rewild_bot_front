@@ -13,7 +13,7 @@ class SearchQueryApiClient
   @override
   Future<Either<RewildError, List<(String, int)>>> getSearchQuery(
       {required String token, required List<String> queries}) async {
-    final url = Uri.parse('https://your-api-server.com/getSearchQuery');
+    final url = Uri.parse('https://rewild.website/api/getSearchQuery');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

@@ -23,4 +23,6 @@ abstract class MainNavigationRouteNames {
   static const String geoSearchScreen = 'geo_search_screen';
 
   static const String seoToolScreen = '/seo_tool_screen';
+
+  static const String seoToolCategoryScreen = '/seo_tool_category_screen';
 }

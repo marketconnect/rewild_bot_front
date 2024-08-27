@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 import 'package:rewild_bot_front/domain/entities/commission_model.dart';
 
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
@@ -67,7 +68,7 @@ class CommissionApiClient
   Future<Either<RewildError, List<TariffModel>>> getTarrifs({
     required String token,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/getTariffs');
+    final url = Uri.parse('https://rewild.website/api/getTariffsV2');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -78,18 +79,34 @@ class CommissionApiClient
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        final tariffs = (responseData['tariff'] as List)
-            .map((item) => TariffModel(
-                  deliveryBase: item['deliveryBase'],
-                  deliveryLiter: item['deliveryLiter'],
-                  storageBase: item['storageBase'],
-                  storageLiter: item['storageLiter'],
-                  warehouseId: item['warehouseId'],
-                  warehouseType: item['warehouseType'],
-                ))
-            .toList();
 
-        return right(tariffs);
+        // Изменено на 'tariffs'
+        if (responseData['tariffs'] is List) {
+          final tariffs = (responseData['tariffs'] as List).map((item) {
+            return TariffModel(
+              deliveryBase: item['deliveryBase'] as double,
+              deliveryLiter: item['deliveryLiter'] as double,
+              storageBase: item['storageBase'] == null
+                  ? 0.0
+                  : item['storageBase'] as double,
+              storageLiter: item['storageLiter'] == null
+                  ? 0.0
+                  : item['storageLiter'] as double,
+              warehouseId: item['warehouseId'] ?? 0,
+              warehouseType: item['warehouseType'] as String,
+            );
+          }).toList();
+
+          return right(tariffs);
+        } else {
+          return left(RewildError(
+            sendToTg: true,
+            "Неверный формат данных: ожидается список тарифов",
+            source: "CommissionApiClient",
+            name: "getTarrifs",
+            args: [],
+          ));
+        }
       } else {
         return left(RewildError(
           sendToTg: true,

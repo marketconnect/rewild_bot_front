@@ -35,6 +35,8 @@ abstract class ScreenFactory {
   Widget makeGeoSearchScreen(String? initQuery);
   Widget makeSeoToolScreen(
       (CardOfProductModel, CardItem)? cardOfProductCardItem);
+
+  Widget makeSeoToolCategoryScreen({required int subjectId});
 }
 
 class MainNavigation implements AppNavigation {
@@ -172,6 +174,14 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) =>
               screenFactory.makeSeoToolScreen(cardOfProductCardItem),
+        );
+
+      case MainNavigationRouteNames.seoToolCategoryScreen:
+        final arguments = settings.arguments;
+        final subjectId = arguments is int ? arguments : 0;
+        return MaterialPageRoute(
+          builder: (_) =>
+              screenFactory.makeSeoToolCategoryScreen(subjectId: subjectId),
         );
 
       default:

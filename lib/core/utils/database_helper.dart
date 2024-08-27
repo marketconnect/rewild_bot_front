@@ -31,7 +31,7 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      'qqq_rewild.db',
+      'qq1qw_rewild.db',
       version: 1,
       onUpgradeNeeded: _onUpgrade,
     );
@@ -238,6 +238,7 @@ class DatabaseHelper {
       final store =
           db.createObjectStore('seo_kw_by_lemma', keyPath: ['nmId', 'keyword']);
       store.createIndex('lemma', 'lemma', unique: false);
+      store.createIndex('nmId', 'nmId', unique: false);
       store.createIndex('freq', 'freq', unique: false);
       store.createIndex('lemmaID', 'lemmaID', unique: false);
     });

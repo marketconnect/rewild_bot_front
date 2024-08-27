@@ -156,8 +156,6 @@ class CardOfProductDataProvider
   Future<Either<RewildError, List<CardOfProductModel>>> getAll(
       [List<int>? nmIds]) async {
     try {
-      await sendMessageToTelegramBot(
-          TBot.tBotErrorToken, TBot.tBotErrorChatId, 'getAll nmIds: $nmIds');
       final db = await _db;
       List<Map<String, dynamic>> cards = [];
 
@@ -174,8 +172,6 @@ class CardOfProductDataProvider
           final card = await store.getObject(nmId);
           if (card != null) {
             cards.add(card as Map<String, dynamic>);
-            await sendMessageToTelegramBot(TBot.tBotErrorToken,
-                TBot.tBotErrorChatId, 'card img: ${card['img']}');
           }
         }
       } else {

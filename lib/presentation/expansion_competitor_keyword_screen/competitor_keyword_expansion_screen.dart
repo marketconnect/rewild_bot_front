@@ -85,7 +85,7 @@ class _CompetitorKeywordExpansionScreenState
                         children: [
                           ReWildNetworkImage(
                             width: screenWidth * 0.2,
-                            image: card.img ?? "",
+                            image: card.img,
                           ),
                           const SizedBox(width: 16),
                           Expanded(

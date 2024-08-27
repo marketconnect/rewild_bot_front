@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
@@ -17,6 +18,7 @@ class AllCardsSeoScreen extends StatelessWidget {
     final goToSeoToolScreen = model.goToSeoToolScreen;
     final getCardContent = model.getCardContent;
     final products = model.cards;
+    final apikeyExists = model.apiKeyExists;
 
     return OverlayLoaderWithAppIcon(
       isLoading: isLoading,
@@ -29,23 +31,35 @@ class AllCardsSeoScreen extends StatelessWidget {
             scrolledUnderElevation: 2,
             shadowColor: Colors.black,
             surfaceTintColor: Colors.transparent),
-        body: ListView.builder(
-          padding: const EdgeInsets.all(8.0),
-          itemCount: products.length,
-          itemBuilder: (context, index) {
-            final product = products[index];
-            final cardContent = getCardContent(product.nmId);
-            return GestureDetector(
-              onTap: () {
-                if (cardContent == null) return;
-                goToSeoToolScreen(product: product, card: cardContent);
-              },
-              child: ProductCard(
-                productCard: product,
+        body: apikeyExists || isLoading
+            ? ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                itemCount: products.length,
+                itemBuilder: (context, index) {
+                  final product = products[index];
+                  final cardContent = getCardContent(product.nmId);
+                  return GestureDetector(
+                    onTap: () {
+                      if (cardContent == null) return;
+                      goToSeoToolScreen(product: product, card: cardContent);
+                    },
+                    child: ProductCard(
+                      productCard: product,
+                    ),
+                  );
+                },
+              )
+            : ApiKeyMissingWidget(
+                onAddApiKeyPressed: () => model.onAddApiKeyPressed(),
+                onSeoByCategoryPressed: () => model.onSeoByCategoryPressed(),
               ),
-            );
-          },
-        ),
+        floatingActionButton: apikeyExists
+            ? FloatingActionButton(
+                onPressed: () {},
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                child: const Icon(Icons.category))
+            : null,
       ),
     );
   }
@@ -74,7 +88,7 @@ class ProductCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: ReWildNetworkImage(
-                  width: 100, height: 100, image: productCard.img ?? ""),
+                  width: 100, height: 100, image: productCard.img),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -112,6 +126,73 @@ class ProductCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ApiKeyMissingWidget extends StatelessWidget {
+  final VoidCallback onAddApiKeyPressed;
+  final VoidCallback onSeoByCategoryPressed;
+
+  const ApiKeyMissingWidget({
+    super.key,
+    required this.onAddApiKeyPressed,
+    required this.onSeoByCategoryPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.info_outline,
+            color: Theme.of(context).primaryColor,
+            size: 48,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'API ключ не добавлен',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Theme.of(context).primaryColor,
+                ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Для подключения к API портала продавца, вы можете добавить API токен. ',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: onAddApiKeyPressed,
+            // icon: const Icon(Icons.vpn_key),
+            label: const Text('Добавить API токен'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(
+                  vertical: MediaQuery.of(context).size.height * 0.05),
+            ),
+          ),
+          const SizedBox(height: 16),
+          OutlinedButton.icon(
+            onPressed: onSeoByCategoryPressed,
+            label: const Text('Без API'),
+            style: OutlinedButton.styleFrom(
+              side: BorderSide(color: Theme.of(context).primaryColor),
+              padding: EdgeInsets.symmetric(
+                  vertical: MediaQuery.of(context).size.height * 0.05),
+            ),
+          ),
+        ],
       ),
     );
   }

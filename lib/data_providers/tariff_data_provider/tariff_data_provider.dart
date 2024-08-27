@@ -1,7 +1,9 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:idb_shim/idb.dart';
+
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
+
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
 import 'package:rewild_bot_front/domain/services/tariff_service.dart';
 
@@ -30,8 +32,8 @@ class TariffDataProvider
       // Приводим к нужному типу, если результат не null
 
       final tariffs = result
-          .where(
-              (map) => map is Map<String, dynamic> && map['storeId'] == storeId)
+          .where((map) =>
+              map is Map<String, dynamic> && map['warehouseId'] == storeId)
           .map((map) {
         final tariffMap = map as Map<String, dynamic>;
         return TariffModel(

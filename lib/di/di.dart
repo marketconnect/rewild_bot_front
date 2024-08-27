@@ -132,6 +132,11 @@ import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_kw_resear
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_screen.dart';
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_screen.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_view_model.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen.dart';
 import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
 
@@ -674,6 +679,48 @@ class _DIContainer {
       // gigachatService: _makeGigachatService(),
     );
   }
+
+  SeoToolCategoryViewModel _makeSeoToolCategoryViewModel(
+    BuildContext context,
+  ) {
+    return SeoToolCategoryViewModel(
+      context: context,
+      tokenService: _makeAuthService(),
+    );
+  }
+
+  SeoToolCategoryKwResearchViewModel _makeSeoToolCategoryKwResearchViewModel(
+      BuildContext context, int subjectId) {
+    return SeoToolCategoryKwResearchViewModel(
+        context: context,
+        subjectId: subjectId,
+        tokenService: _makeAuthService(),
+        seoService: _makeSeoService());
+  }
+
+  SeoToolCategoryTitleGeneratorViewModel
+      _makeSeoToolCategoryTitleGeneratorViewModel(
+    BuildContext context,
+  ) {
+    return SeoToolCategoryTitleGeneratorViewModel(
+      context: context,
+      balanceService: _makeBalanceService(),
+      priceService: _makePriceService(),
+      tokenService: _makeAuthService(),
+    );
+  }
+
+  SeoToolCategoryDescriptionGeneratorViewModel
+      _makeSeoToolCategoryDescriptionGeneratorViewModel(
+    BuildContext context,
+  ) {
+    return SeoToolCategoryDescriptionGeneratorViewModel(
+      context: context,
+      balanceService: _makeBalanceService(),
+      priceService: _makePriceService(),
+      tokenService: _makeAuthService(),
+    );
+  }
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -813,8 +860,7 @@ class ScreenFactoryDefault implements ScreenFactory {
   Widget makeSeoToolScreen(
       (CardOfProductModel, CardItem)? cardOfProductcardItem) {
     if (cardOfProductcardItem == null ||
-        cardOfProductcardItem.$1.subjectId == null ||
-        cardOfProductcardItem.$1.img == null) {
+        cardOfProductcardItem.$1.subjectId == null) {
       return const SeoToolScreen();
     }
     final nmId = cardOfProductcardItem.$1.nmId;
@@ -824,8 +870,8 @@ class ScreenFactoryDefault implements ScreenFactory {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<SeoToolViewModel>(
-          create: (context) => _diContainer._makeSeoToolViewModel(
-              context, nmId, img ?? '', cardItem),
+          create: (context) =>
+              _diContainer._makeSeoToolViewModel(context, nmId, img, cardItem),
         ),
         ChangeNotifierProvider<SeoToolKwResearchViewModel>(
             create: (context) => _diContainer._makeSeoToolKwResearchViewModel(
@@ -847,6 +893,38 @@ class ScreenFactoryDefault implements ScreenFactory {
       // create: (context) =>
       //     _diContainer._makeSeoToolViewModel(context, productId),
       child: const SeoToolScreen(),
+    );
+  }
+
+  @override
+  Widget makeSeoToolCategoryScreen({required int subjectId}) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SeoToolCategoryViewModel>(
+          create: (context) => _diContainer._makeSeoToolCategoryViewModel(
+            context,
+          ),
+        ),
+        ChangeNotifierProvider<SeoToolCategoryKwResearchViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolCategoryKwResearchViewModel(
+                  context,
+                  subjectId,
+                )),
+        ChangeNotifierProvider<SeoToolCategoryTitleGeneratorViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolCategoryTitleGeneratorViewModel(
+                  context,
+                )),
+        ChangeNotifierProvider<SeoToolCategoryDescriptionGeneratorViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolCategoryDescriptionGeneratorViewModel(
+                  context,
+                )),
+      ],
+      // create: (context) =>
+      //     _diContainer._makeSeoToolViewModel(context, productId),
+      child: const SeoToolCategoryScreen(),
     );
   }
 }

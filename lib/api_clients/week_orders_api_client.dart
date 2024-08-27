@@ -39,8 +39,7 @@ class WeekOrdersApiClient implements WeekOrdersServiceWeekOrdersApiClient {
 
       if (response.statusCode == 200) {
         final responseBody = response.body;
-        await sendMessageToTelegramBot(TBot.tBotErrorToken,
-            TBot.tBotErrorChatId, "Response body: $responseBody");
+
         // Декодируем ответ и получаем объект
         final responseData = jsonDecode(responseBody);
 
