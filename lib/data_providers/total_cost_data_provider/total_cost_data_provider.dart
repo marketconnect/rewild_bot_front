@@ -27,6 +27,7 @@ class TotalCostCalculatorDataProvider
         'nmId': nmId,
         'expenseName': name,
         'expenseValue': value,
+        'nmId_expenseName': '${nmId.toString()}_$name',
       });
 
       await txn.completed;
@@ -48,7 +49,7 @@ class TotalCostCalculatorDataProvider
       final db = await _db;
       final txn = db.transaction('total_cost_calculator', idbModeReadWrite);
       final store = txn.objectStore('total_cost_calculator');
-      final index = store.index('nmId_expenseName');
+      final index = store.index('nmId');
 
       final keys = await index.getAllKeys(nmId);
 
@@ -94,6 +95,7 @@ class TotalCostCalculatorDataProvider
           'nmId': nmId,
           'expenseName': expense.key,
           'expenseValue': expense.value,
+          'nmId_expenseName': '${nmId.toString()}_$expense.key',
         });
       }
 
@@ -117,7 +119,7 @@ class TotalCostCalculatorDataProvider
       final txn = db.transaction('total_cost_calculator', idbModeReadWrite);
       final store = txn.objectStore('total_cost_calculator');
       final index = store.index('nmId_expenseName');
-      final key = await index.getKey([nmId, name]);
+      final key = await index.getKey("${nmId}_$name");
 
       if (key != null) {
         await store.delete(key);
@@ -142,10 +144,11 @@ class TotalCostCalculatorDataProvider
       final db = await _db;
       final txn = db.transaction('total_cost_calculator', idbModeReadOnly);
       final store = txn.objectStore('total_cost_calculator');
-      final ids = await store.getAllKeys();
-      await txn.completed;
 
-      return right(ids.map((id) => id as int).toList());
+      final costs = await store.getAll();
+      await txn.completed;
+      final c = costs.map((cost) => cost as Map<String, dynamic>);
+      return right(c.map((e) => e['nmId'] as int).toList());
     } catch (e) {
       return left(RewildError(
         "Failed to get nmIds: $e",
@@ -163,7 +166,7 @@ class TotalCostCalculatorDataProvider
       final db = await _db;
       final txn = db.transaction('total_cost_calculator', idbModeReadOnly);
       final store = txn.objectStore('total_cost_calculator');
-      final index = store.index('nmId_expenseName');
+      final index = store.index('nmId');
       final expensesRows = await index.getAll(nmId);
 
       TotalCostCalculator calculator = TotalCostCalculator(nmId: nmId);

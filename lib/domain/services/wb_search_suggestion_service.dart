@@ -1,6 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/presentation/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_view_model.dart';
 
 // suggestions
 abstract class WBSearchSuggestionServiceApiClient {

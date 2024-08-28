@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
 
 // API
 abstract class AdvertServiceAdvertApiClient {
@@ -58,7 +59,8 @@ abstract class AdvertServiceActiveSellerDataProvider {
   Future<Either<RewildError, List<UserSeller>>> getActive();
 }
 
-class AdvertService implements MainNavigationAdvertService {
+class AdvertService
+    implements MainNavigationAdvertService, ReportAdvertService {
   final AdvertServiceAdvertApiClient advertApiClient;
   final AdvertServiceApiKeyDataProvider apiKeysDataProvider;
   final StreamController<StreamAdvertEvent> updatedAdvertStreamController;

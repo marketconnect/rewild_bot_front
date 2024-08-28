@@ -31,7 +31,7 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      'qq1qw_rewild.db',
+      'p_rewild.db',
       version: 1,
       onUpgradeNeeded: _onUpgrade,
     );
@@ -127,6 +127,10 @@ class DatabaseHelper {
       store.createIndex('nmId', 'nmId', unique: false);
     });
 
+    createStoreIfNotExists('answers', () {
+      db.createObjectStore('answers', keyPath: 'id', autoIncrement: true);
+    });
+
     createStoreIfNotExists('orders', () {
       final store = db.createObjectStore('orders',
           keyPath: 'skuWarehousePeriod', autoIncrement: false);
@@ -197,8 +201,9 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('total_cost_calculator', () {
-      db.createObjectStore('total_cost_calculator',
-          keyPath: ['nmId', 'expenseName']);
+      final store = db.createObjectStore('total_cost_calculator',
+          keyPath: "nmId_expenseName", autoIncrement: false);
+      store.createIndex('nmId', 'nmId', unique: false);
     });
 
     createStoreIfNotExists('sellers', () {

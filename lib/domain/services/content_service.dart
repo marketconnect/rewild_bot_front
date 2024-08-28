@@ -6,11 +6,11 @@ import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/nm_id.dart';
 import 'package:rewild_bot_front/domain/entities/subj_characteristic.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
-import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
 
 // NmIds Data Provider
 abstract class ContentServiceNmIdDataProvider {

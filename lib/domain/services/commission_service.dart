@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/commission_model.dart';
-import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class CommissionServiceCommissionApiClient {
   Future<Either<RewildError, CommissionModel>> get(

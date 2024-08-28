@@ -4,7 +4,7 @@ import 'package:rewild_bot_front/domain/entities/geo_search_model.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/domain/entities/tracking_query.dart';
 import 'package:rewild_bot_front/domain/entities/tracking_result.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
 
 // subscription data provider
 abstract class TrackingServiceSubscriptionDataProvider {

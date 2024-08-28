@@ -4,9 +4,11 @@ import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 
 import 'package:rewild_bot_front/domain/entities/payment_info.dart';
+import 'package:rewild_bot_front/domain/entities/question_model.dart';
+import 'package:rewild_bot_front/domain/entities/review_model.dart';
 
 import 'package:rewild_bot_front/presentation/app/app.dart';
-import 'package:rewild_bot_front/presentation/notification_card_screen/notification_card_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 abstract class ScreenFactory {
@@ -33,10 +35,29 @@ abstract class ScreenFactory {
 // new
 
   Widget makeGeoSearchScreen(String? initQuery);
+
   Widget makeSeoToolScreen(
       (CardOfProductModel, CardItem)? cardOfProductCardItem);
 
   Widget makeSeoToolCategoryScreen({required int subjectId});
+
+  Widget makeExpenseManagerScreen((int, int, double) nmIdPlusAverageLogistics);
+
+  Widget makeRealizationReportScreen();
+
+  Widget makeAllProductsQuestionsScreen();
+
+  Widget makeAllQuestionsScreen(int nmId);
+
+  Widget makeSingleQuestionScreen(QuestionModel question);
+
+  Widget makeAllProductsReviewsScreen();
+
+  Widget makeAllReviewsScreen(int nmId);
+
+  Widget makeSingleReviewScreen(ReviewModel? review);
+
+  Widget makeFeedbackNotificationSettingsScreen();
 }
 
 class MainNavigation implements AppNavigation {
@@ -129,6 +150,12 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeCompetitorKwExpansionScreen(),
         );
+
+      case MainNavigationRouteNames.allProductsQuestionsScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAllProductsQuestionsScreen(),
+        );
+
       case MainNavigationRouteNames.subjectKeywordExpansionScreen:
         final arguments = settings.arguments;
         final addedKeywordsSubjectId = arguments is (List<KwByLemma>, int)
@@ -138,6 +165,18 @@ class MainNavigation implements AppNavigation {
             builder: (_) => screenFactory.makeSubjectKeywordExpansionScreen(
                 addedKeywords: addedKeywordsSubjectId.$1,
                 subjectId: addedKeywordsSubjectId.$2));
+
+      case MainNavigationRouteNames.allProductsReviewsScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAllProductsReviewsScreen(),
+        );
+
+      case MainNavigationRouteNames.singleReviewScreen:
+        final arguments = settings.arguments;
+        final review = arguments is ReviewModel ? arguments : null;
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeSingleReviewScreen(review),
+        );
 
       case MainNavigationRouteNames.wordsKeywordExpansionScreen:
         final arguments = settings.arguments;
@@ -159,11 +198,23 @@ class MainNavigation implements AppNavigation {
                   addedKeywords: addedKeywords,
                 ));
 
+      case MainNavigationRouteNames.allReviewsScreen:
+        final arguments = settings.arguments;
+        final nmId = arguments is int ? arguments : 0;
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAllReviewsScreen(nmId),
+        );
+
       case MainNavigationRouteNames.geoSearchScreen:
         final arguments = settings.arguments;
         final initQuery = arguments is String ? arguments : null;
         return MaterialPageRoute(
             builder: (_) => screenFactory.makeGeoSearchScreen(initQuery));
+
+      case MainNavigationRouteNames.realizationReportScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeRealizationReportScreen(),
+        );
 
       case MainNavigationRouteNames.seoToolScreen:
         final arguments = settings.arguments;
@@ -182,6 +233,34 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) =>
               screenFactory.makeSeoToolCategoryScreen(subjectId: subjectId),
+        );
+
+      case MainNavigationRouteNames.expenseManagerScreen:
+        final arguments = settings.arguments;
+
+        final nmIdAndAvgLog =
+            arguments is (int, int, double) ? arguments : (0, 0, 0.0);
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeExpenseManagerScreen(nmIdAndAvgLog),
+        );
+      case MainNavigationRouteNames.allQuestionsScreen:
+        final arguments = settings.arguments;
+        final nmId = arguments is int ? arguments : 0;
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAllQuestionsScreen(nmId),
+        );
+      case MainNavigationRouteNames.feedbackNotificationScreen:
+        return MaterialPageRoute(
+          builder: (_) =>
+              screenFactory.makeFeedbackNotificationSettingsScreen(),
+        );
+
+      case MainNavigationRouteNames.singleQuestionScreen:
+        final arguments = settings.arguments;
+        final question =
+            arguments is QuestionModel ? arguments : QuestionModel.empty();
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeSingleQuestionScreen(question),
         );
 
       default:

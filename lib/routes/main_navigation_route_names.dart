@@ -25,4 +25,23 @@ abstract class MainNavigationRouteNames {
   static const String seoToolScreen = '/seo_tool_screen';
 
   static const String seoToolCategoryScreen = '/seo_tool_category_screen';
+
+  static const String expenseManagerScreen = 'expense_manager_screen';
+
+  static const String realizationReportScreen = 'realization_report_screen';
+
+  static const String allProductsQuestionsScreen = 'products_feedback_screen';
+
+  static const String allQuestionsScreen = 'all_questions_screen';
+
+  static const String singleQuestionScreen = '/single_question_screen';
+
+  static const String allProductsReviewsScreen = 'products_reviews_screen';
+
+  static const String allReviewsScreen = 'all_reviews_screen';
+
+  static const String singleReviewScreen = 'single_review_screen';
+
+  static const String feedbackNotificationScreen =
+      '/feedback_notification_screen';
 }

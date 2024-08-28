@@ -2,7 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/geo_search_model.dart';
 import 'package:rewild_bot_front/domain/entities/wb_search_log.dart';
-import 'package:rewild_bot_front/presentation/geo_search_screen/geo_search_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo_search_view_model.dart';
 
 // Api client
 abstract class GeoSearchServiceGeoSearchApiClient {

@@ -5,7 +5,7 @@ import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
-import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 
 abstract class ApiKeysServiceApiKeysDataProvider {
   Future<Either<RewildError, List<ApiKeyModel>>> getAllWBApiKeys(

@@ -4,6 +4,9 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/entities/question_model.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/all_products_questions_screen/all_products_questions_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/all_questions_screen/all_questions_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/single_question_screen/single_question_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 abstract class QuestionServiceQuestionApiClient {
@@ -37,7 +40,12 @@ abstract class QuestionServiceActiveSellerDataProvider {
   Future<Either<RewildError, List<UserSeller>>> getActive();
 }
 
-class QuestionService implements MainNavigationQuestionService {
+class QuestionService
+    implements
+        SingleQuestionViewModelQuestionService,
+        MainNavigationQuestionService,
+        AllQuestionsViewModelQuestionService,
+        AllProductsQuestionsViewModelQuestionService {
   final QuestionServiceQuestionApiClient questionApiClient;
   final QuestionServiceApiKeyDataProvider apiKeysDataProvider;
   final QuestionServiceActiveSellerDataProvider activeSellerDataProvider;

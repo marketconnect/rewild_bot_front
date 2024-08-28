@@ -52,7 +52,9 @@
     pdf: ^3.11.1
     screenshot: ^3.0.0
     printing: ^5.13.2
-    fl_chart: ^0.68.0
+    # fl_chart: ^0.68.0
+    pie_chart: ^5.4.0
+
        
 
 

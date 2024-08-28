@@ -2,7 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
-import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class InitStockServiceInitStockDataProvider {
   Future<Either<RewildError, List<InitialStockModel>>> getAll();

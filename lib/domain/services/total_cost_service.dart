@@ -1,7 +1,9 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/total_cost_calculator.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
 
 abstract class TotalCostServiceTotalCostDataProvider {
   Future<Either<RewildError, void>> addOrUpdateExpense(
@@ -14,25 +16,33 @@ abstract class TotalCostServiceTotalCostDataProvider {
       int nmId, Map<String, double> expenses);
 }
 
-class TotalCostService implements AllCardsScreenTotalCostService {
+class TotalCostService
+    implements
+        AllCardsScreenTotalCostService,
+        ExpenseManagerTotalCostService,
+        ReportTotalCostService {
   final TotalCostServiceTotalCostDataProvider totalCostDataProvider;
   TotalCostService({required this.totalCostDataProvider});
 
+  @override
   Future<Either<RewildError, TotalCostCalculator>> getTotalCost(
       int nmId) async {
     return await totalCostDataProvider.getTotalCost(nmId);
   }
 
+  @override
   Future<Either<RewildError, void>> addOrUpdateExpense(
       int nmId, String name, double value) async {
     // print('nmId: $nmId, name: $name, value: $value');
     return await totalCostDataProvider.addOrUpdateExpense(nmId, name, value);
   }
 
+  @override
   Future<Either<RewildError, void>> removeExpense(int nmId, String name) async {
     return await totalCostDataProvider.removeExpense(nmId, name);
   }
 
+  @override
   Future<Either<RewildError, void>> updateWith(
       {required int nmIdFrom, required int nmIdTo}) async {
     final deleteRes = await totalCostDataProvider.deleteAll(nmIdTo);
@@ -58,6 +68,7 @@ class TotalCostService implements AllCardsScreenTotalCostService {
     return right(null);
   }
 
+  @override
   Future<Either<RewildError, List<int>>> getAllNmIds() async {
     final result = await totalCostDataProvider.getAllNmIds();
     if (result.isLeft()) {

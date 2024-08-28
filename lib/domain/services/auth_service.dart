@@ -1,27 +1,29 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
-import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
-import 'package:rewild_bot_front/presentation/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_view_model.dart';
-import 'package:rewild_bot_front/presentation/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
-import 'package:rewild_bot_front/presentation/expansion_subject_keyword_screen/subject_keyword_expansion_model.dart';
-import 'package:rewild_bot_front/presentation/expansion_words_keyword_screen/words_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_subject_keyword_screen/subject_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_words_keyword_screen/words_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_kw_research_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_title_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen/seo_tool_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/seo_tool_screen_category/seo_tool_category_view_model.dart';
-import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class AuthServiceSecureDataProvider {
   Future<Either<RewildError, void>> updateUserInfo(
@@ -41,6 +43,7 @@ abstract class AuthServiceAuthApiClient {
 class AuthService
     implements
         MainNavigationAuthService,
+        SingleReviewViewModelTokenService,
         AddApiKeysAuthService,
         SubjectKeywordExpansionTokenService,
         WordsKeywordExpansionTokenService,
@@ -49,6 +52,7 @@ class AuthService
         SeoToolDescriptionGeneratorTokenService,
         SeoToolCategoryDescriptionGeneratorTokenService,
         SeoToolKwResearchTokenService,
+        ExpenseManagerScreenTokenService,
         SeoToolCategoryKwResearchTokenService,
         SeoToolTitleGeneratorTokenService,
         SeoToolCategoryTitleGeneratorTokenService,

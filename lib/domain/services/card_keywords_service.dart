@@ -1,7 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
-import 'package:rewild_bot_front/presentation/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
 
 // API client
 abstract class CardKeywordsServiceApiClient {

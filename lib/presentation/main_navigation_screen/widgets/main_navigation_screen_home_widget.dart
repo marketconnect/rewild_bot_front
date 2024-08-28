@@ -69,9 +69,9 @@ class _MainNavigationScreenHomeWidgetState
                 iconData: Icons.key,
               ),
               _Link(
-                text: 'СЕО',
+                text: 'Финансы',
                 color: Colors.orangeAccent,
-                route: MainNavigationRouteNames.allCardsSeoScreen,
+                route: MainNavigationRouteNames.realizationReportScreen,
                 iconData: Icons.dashboard,
               ),
             ],

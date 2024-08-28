@@ -3,8 +3,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/domain/entities/lemma_by_filter.dart';
-import 'package:rewild_bot_front/presentation/expansion_subject_keyword_screen/subject_keyword_expansion_model.dart';
-import 'package:rewild_bot_front/presentation/expansion_words_keyword_screen/words_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_subject_keyword_screen/subject_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_words_keyword_screen/words_keyword_expansion_model.dart';
 
 // Api
 abstract class FilterServiceFilterApiClient {

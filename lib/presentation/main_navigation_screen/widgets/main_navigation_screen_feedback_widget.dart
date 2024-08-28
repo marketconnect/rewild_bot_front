@@ -53,19 +53,18 @@ class MainNavigationScreenFeedBackWidget extends StatelessWidget {
                       color: const Color(0xFFd2a941),
                       imageSrc: IconConstant.iconQuestions,
                       route:
-                          "MainNavigationRouteNames.allProductsQuestionsScreen",
+                          MainNavigationRouteNames.allProductsQuestionsScreen,
                     ),
                     _Link(
                       text: 'Отзывы',
                       color: const Color(0xFF8c56ce),
                       imageSrc: IconConstant.iconRatingStars,
-                      route:
-                          "MainNavigationRouteNames.allProductsReviewsScreen",
+                      route: MainNavigationRouteNames.allProductsReviewsScreen,
                     ),
                     _Link(
                       text: 'Настройка уведомлений',
                       route:
-                          "MainNavigationRouteNames.feedbackNotificationScreen",
+                          MainNavigationRouteNames.feedbackNotificationScreen,
                       color: const Color(0xFF4aa6db),
                       imageSrc: IconConstant.iconNotificationSettings,
                     ),

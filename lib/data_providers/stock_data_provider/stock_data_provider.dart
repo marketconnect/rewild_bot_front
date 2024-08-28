@@ -1,10 +1,8 @@
 import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
@@ -20,7 +18,6 @@ class StockDataProvider
 
   Future<Database> get _db async => await DatabaseHelper().database;
 
-  @override
   @override
   Future<Either<RewildError, int>> insert({required StocksModel stock}) async {
     try {

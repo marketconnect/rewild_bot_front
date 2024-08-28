@@ -4,11 +4,11 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
-import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 // Api
 abstract class SubscriptionServiceSubscriptionApiClient {

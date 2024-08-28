@@ -12,16 +12,22 @@ import 'package:rewild_bot_front/domain/entities/size_model.dart';
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
-import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/single_question_screen/single_question_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/reviews/all_products_reviews_screen/all_products_reviews_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
-import 'package:rewild_bot_front/presentation/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
-import 'package:rewild_bot_front/presentation/geo_search_screen/geo_search_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/all_products_questions_screen/all_products_questions_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo_search_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
-import 'package:rewild_bot_front/presentation/payment_screen/payment_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 // API clients
 abstract class CardOfProductServiceSellerApiClient {
@@ -81,8 +87,14 @@ abstract class CardOfProductServiceNmIdDataProvider {
 
 class CardOfProductService
     implements
+        SingleQuestionViewModelCardOfProductService,
+        SingleReviewCardOfProductService,
+        AllProductsReviewsCardOfProductService,
         MainNavigationCardService,
         GeoSearchViewModelCardOfProductService,
+        ReportCardOfProductService,
+        AllProductsQuestionsCardOfProductService,
+        ExpenseManagerCardOfProductService,
         AddApiKeysCardOfProductService,
         CompetitorKeywordExpansionCardOfProductService,
         AllCardsSeoScreenCardOfProductService,

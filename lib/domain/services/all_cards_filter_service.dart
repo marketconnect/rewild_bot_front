@@ -3,7 +3,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/filter_model.dart';
 import 'package:rewild_bot_front/domain/entities/seller_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 
 abstract class AllCardsFilterFilterDataProvider {
   Future<Either<RewildError, void>> insert({required FilterModel filter});

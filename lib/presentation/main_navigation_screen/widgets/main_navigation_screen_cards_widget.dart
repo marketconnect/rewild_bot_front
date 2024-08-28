@@ -47,7 +47,7 @@ class MainNavigationScreenCardsWidget extends StatelessWidget {
           child: Column(
             children: [
               LinkBtn(
-                text: 'Аналитика',
+                text: 'Карточки',
                 color: Colors.blueAccent,
                 route: MainNavigationRouteNames.allCardsScreen,
                 // route: '',
@@ -55,19 +55,19 @@ class MainNavigationScreenCardsWidget extends StatelessWidget {
               ),
 
               LinkBtn(
-                text: 'Финансы',
+                text: 'СЕО',
                 color: Colors.greenAccent,
-                route: "MainNavigationRouteNames.realizationReportScreen",
+                route: MainNavigationRouteNames.allCardsSeoScreen,
                 // route: '',
                 iconData: Icons.currency_ruble,
               ),
-              LinkBtn(
-                text: 'Анализ спроса',
-                color: Color(0xFFCDDC39),
-                route: "MainNavigationRouteNames.allCategoriesScreen",
-                // route: '',
-                iconData: Icons.pie_chart,
-              ),
+              // LinkBtn(
+              //   text: 'Анализ спроса',
+              //   color: Color(0xFFCDDC39),
+              //   route: "MainNavigationRouteNames.allCategoriesScreen",
+              //   // route: '',
+              //   iconData: Icons.pie_chart,
+              // ),
               //               NavigationScreenCustomCard(
               //   icon: Icons.pie_chart,
               //   backgroundColor: Colors.purple.shade300,

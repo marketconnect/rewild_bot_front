@@ -5,9 +5,10 @@ import 'package:rewild_bot_front/core/constants/notification_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
 import 'package:rewild_bot_front/domain/entities/stream_notification_event.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/notification_card_screen/notification_card_view_model.dart';
-import 'package:rewild_bot_front/presentation/single_card_screen/single_card_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 // import 'package:rewild/presentation/single_advert_stats_screen/single_advert_stats_view_model.dart';
 
@@ -28,6 +29,7 @@ abstract class NotificationServiceNotificationDataProvider {
 class NotificationService
     implements
         AllCardsScreenNotificationsService,
+        NotificationFeedbackNotificationService,
         SingleCardScreenNotificationService,
         NotificationCardNotificationService {
   final NotificationServiceNotificationDataProvider notificationDataProvider;

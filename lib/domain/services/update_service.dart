@@ -15,14 +15,14 @@ import 'package:rewild_bot_front/domain/entities/size_model.dart';
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
-import 'package:rewild_bot_front/presentation/add_api_keys_screen/add_api_keys_view_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_screen/all_cards_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/all_cards_seo_screen/all_cards_seo_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
 
 // Tariffs Api
 abstract class UpdateServiceTariffApiClient {
