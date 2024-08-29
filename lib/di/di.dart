@@ -22,6 +22,7 @@ import 'package:rewild_bot_front/api_clients/seller_api_client.dart';
 import 'package:rewild_bot_front/api_clients/statistics_api_client.dart';
 import 'package:rewild_bot_front/api_clients/subscription_api_client.dart';
 import 'package:rewild_bot_front/api_clients/warehouse_api_client.dart';
+import 'package:rewild_bot_front/api_clients/wb_auto_campaign_api_client.dart';
 import 'package:rewild_bot_front/api_clients/wb_content_api_client.dart';
 import 'package:rewild_bot_front/api_clients/wb_search_suggestion_api_client.dart';
 import 'package:rewild_bot_front/api_clients/week_orders_api_client.dart';
@@ -41,6 +42,7 @@ import 'package:rewild_bot_front/data_providers/filter_values_data_provider/filt
 
 import 'package:rewild_bot_front/data_providers/group_data_provider/group_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/initial_stocks_data_provider/initial_stocks_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/keyword_data_provider/keyword_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/last_update_day_data_provider/last_update_day_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/nm_id_data_provider/nm_id_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/notification_data_provider/notification_data_provider.dart';
@@ -69,6 +71,7 @@ import 'package:rewild_bot_front/domain/entities/review_model.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/domain/entities/stream_notification_event.dart';
 import 'package:rewild_bot_front/domain/services/advert_service.dart';
+import 'package:rewild_bot_front/domain/services/adverts_analitics_service.dart';
 import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
 import 'package:rewild_bot_front/domain/services/answer_service.dart';
 
@@ -85,6 +88,7 @@ import 'package:rewild_bot_front/domain/services/geo_search_service.dart';
 
 import 'package:rewild_bot_front/domain/services/group_service.dart';
 import 'package:rewild_bot_front/domain/services/init_stock_service.dart';
+import 'package:rewild_bot_front/domain/services/keywords_service.dart';
 import 'package:rewild_bot_front/domain/services/notification_service.dart';
 import 'package:rewild_bot_front/domain/services/orders_history_service.dart';
 import 'package:rewild_bot_front/domain/services/price_service.dart';
@@ -106,6 +110,16 @@ import 'package:rewild_bot_front/domain/services/wb_search_suggestion_service.da
 import 'package:rewild_bot_front/domain/services/week_orders_service.dart';
 
 import 'package:rewild_bot_front/main.dart';
+import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_screen.dart';
+import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_view_model.dart';
+import 'package:rewild_bot_front/presentation/adverts/all_adverts_stat_screen/all_adverts_stat_screen.dart';
+import 'package:rewild_bot_front/presentation/adverts/all_adverts_stat_screen/all_adverts_stat_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/adverts/all_adverts_words_screen/all_adverts_words_screen.dart';
+import 'package:rewild_bot_front/presentation/adverts/all_adverts_words_screen/all_adverts_words_view_model.dart';
+import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_screen.dart';
+import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_view_model.dart';
+import 'package:rewild_bot_front/presentation/adverts/single_auto_words_screen/single_auto_words_screen.dart';
+import 'package:rewild_bot_front/presentation/adverts/single_auto_words_screen/single_auto_words_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_screen.dart';
 import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/questions/single_question_screen/single_question_screen.dart';
@@ -262,6 +276,9 @@ class _DIContainer {
   StatisticsApiClient _makeStatisticsApiClient() => const StatisticsApiClient();
   ReviewApiClient _makeReviewApiClient() => const ReviewApiClient();
 
+  AutoCampaignApiClient _makeAutoCampaignApiClient() =>
+      const AutoCampaignApiClient();
+
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -345,6 +362,9 @@ class _DIContainer {
       const SeoKwByLemmaDataProvider();
 
   AnswerDataProvider _makeAnswerDataProvider() => const AnswerDataProvider();
+
+  KeywordDataProvider _makeKeywordsDataProvider() =>
+      const KeywordDataProvider();
   // Services ==================================================================
   FilterValuesService _makeFilterValuesService() => FilterValuesService(
       lemmaDataProvider: _makeLemmaDataProvider(),
@@ -537,7 +557,21 @@ class _DIContainer {
         apiKeysDataProvider: _makeSecureDataProvider(),
         reviewApiClient: _makeReviewApiClient(),
       );
-
+  // Keyword
+  KeywordsService _makeKeywordsService() => KeywordsService(
+        advertApiClient: _makeAdvertApiClient(),
+        apiKeysDataProvider: _makeSecureDataProvider(),
+        geoSearchApiClient: _makeGeoSearchApiClient(),
+        activeSellerDataProvider: _makeUserSellersDataProvider(),
+        autoAdvertApiClient: _makeAutoCampaignApiClient(),
+        keywordsDataProvider: _makeKeywordsDataProvider(),
+      );
+  AdvertsAnaliticsService _makeAdvertsAnaliticsService() =>
+      AdvertsAnaliticsService(
+        activeSellerDataProvider: _makeUserSellersDataProvider(),
+        apiClient: _makeAdvertApiClient(),
+        apiKeyDataProvider: _makeSecureDataProvider(),
+      );
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
           BuildContext context) =>
@@ -858,6 +892,49 @@ class _DIContainer {
         notificationService: _makeNotificationService(),
         context: context,
       );
+
+  CampaignManagementViewModel _makeCampaignManagementViewModel(
+          BuildContext context, int campaignId) =>
+      CampaignManagementViewModel(
+        campaignId: campaignId,
+        advertService: _makeAdvertService(),
+        notificationService: _makeNotificationService(),
+        context: context,
+      );
+  AllAdvertsWordsViewModel _makeAdvertsToolsViewModel(BuildContext context) =>
+      AllAdvertsWordsViewModel(
+          context: context,
+          cardOfProductService: _makeCardOfProductService(),
+          advertService: _makeAdvertService());
+
+  SingleAutoWordsViewModel _makeAutoStatWordsViewModel(
+          BuildContext context, (int, int?, String) campaignIdGnum) =>
+      SingleAutoWordsViewModel(campaignIdGnum,
+          context: context,
+          advertService: _makeAdvertService(),
+          cardOfProductService: _makeCardOfProductService(),
+          keywordService: _makeKeywordsService());
+
+  AllAdvertsStatScreenViewModel _makeAllAdvertsScreenViewModel(
+          BuildContext context) =>
+      AllAdvertsStatScreenViewModel(
+        context: context,
+        cardOfProductService: _makeCardOfProductService(),
+        updatedAdvertStream: updatedAdvertStream,
+        advertService: _makeAdvertService(),
+      );
+
+  AdvertAnaliticsViewModel _makeAdvertAnaliticsViewModel(
+          BuildContext context, (int, DateTime, String) campaignInfo) =>
+      AdvertAnaliticsViewModel(
+        campaignInfo: campaignInfo,
+        context: context,
+        cardOfProductService: _makeCardOfProductService(),
+        authService: _makeAuthService(),
+        tariffService: _makeTariffService(),
+        totalCostService: _makeTotalCostService(),
+        advAnaliticsService: _makeAdvertsAnaliticsService(),
+      );
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -999,6 +1076,14 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
+  Widget makeAllAdvertsScreen() {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeAllAdvertsScreenViewModel(context),
+      child: const AllAdvertsStatScreen(),
+    );
+  }
+
+  @override
   Widget makeAutocompliteKwExpansionScreen({
     required List<KwByLemma> addedKeywords,
   }) {
@@ -1070,6 +1155,41 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (context) =>
           _diContainer._makeFeedbackNotificationViewModel(context),
       child: const NotificationFeedbackSettingsScreen(),
+    );
+  }
+
+  @override
+  Widget makeCampaignManagementScreen(int campaignId) {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeCampaignManagementViewModel(context, campaignId),
+      child: const CampaignManagementScreen(),
+    );
+  }
+
+  @override
+  Widget makeAdvertsToolsScreen() {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeAdvertsToolsViewModel(context),
+      child: const AllAdvertsWordsScreen(),
+    );
+  }
+
+  @override
+  Widget makeAutoStatsWordsScreen((int, int?, String) idGnum) {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeAutoStatWordsViewModel(context, idGnum),
+      child: const SingleAutoWordsScreen(),
+    );
+  }
+
+  @override
+  Widget makeAdvertAnaliticsScreen((int, DateTime, String) campaignInfo) {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeAdvertAnaliticsViewModel(context, campaignInfo),
+      child: const AdvertAnaliticsScreen(),
     );
   }
 

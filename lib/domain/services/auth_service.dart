@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
+import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
@@ -43,6 +44,7 @@ abstract class AuthServiceAuthApiClient {
 class AuthService
     implements
         MainNavigationAuthService,
+        AdvertAnaliticsAuthService,
         SingleReviewViewModelTokenService,
         AddApiKeysAuthService,
         SubjectKeywordExpansionTokenService,
@@ -100,7 +102,7 @@ class AuthService
           sendToTg: true,
           "Username not found",
           name: "getUsername",
-          source: runtimeType.toString(),
+          source: "AuthService",
           args: [],
         ));
       }
@@ -129,7 +131,7 @@ class AuthService
       return left(RewildError(
         sendToTg: true,
         'No username data',
-        source: runtimeType.toString(),
+        source: "AuthService",
         name: 'getToken',
       ));
     }

@@ -21,8 +21,7 @@ class EmptyApiKey extends StatelessWidget {
             ),
             const SizedBox(height: 20), // Небольшой отступ между виджетами
             TextButton(
-              onPressed: () =>
-                  Navigator.of(context).pushReplacementNamed(route),
+              onPressed: () => Navigator.of(context).pushNamed(route),
               child: Container(
                 alignment: Alignment.center,
                 decoration: BoxDecoration(

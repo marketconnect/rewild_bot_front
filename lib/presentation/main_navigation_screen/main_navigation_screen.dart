@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import 'package:rewild_bot_front/core/constants/icon_constant.dart';
+
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/widgets/main_navigation_screen_advert_widget.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/widgets/main_navigation_screen_cards_widget.dart';
@@ -38,7 +40,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
   @override
   Widget build(BuildContext context) {
     final model = context.watch<MainNavigationViewModel>();
-    // final adverts = model.adverts;
+    final adverts = model.adverts;
+
     final advertApiKeyExists = model.advertApiKeyExists;
     final feedbackApiKeyExists = model.feedbackApiKeyExists;
     final cardsNumber = model.trackedCardsNumber;
@@ -63,7 +66,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
         apiKeyExists: feedbackApiKeyExists,
       ),
       MainNavigationScreenAdvertWidget(
-        adverts: const [],
+        adverts: adverts,
         balance: balance,
         apiKeyExists: advertApiKeyExists,
         callbackForUpdate: callback,

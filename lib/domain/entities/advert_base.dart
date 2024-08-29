@@ -8,6 +8,7 @@ class Advert {
   int dailyBudget;
   int status;
   int type;
+  int? subjectId;
 
   Advert({
     required this.campaignId,
@@ -19,6 +20,7 @@ class Advert {
     required this.dailyBudget,
     required this.status,
     required this.type,
+    this.subjectId,
   });
 
   Advert copyWith({
@@ -31,6 +33,7 @@ class Advert {
     int? dailyBudget,
     int? status,
     int? type,
+    int? subjectId,
   }) {
     return Advert(
       campaignId: campaignId ?? this.campaignId,
@@ -42,6 +45,7 @@ class Advert {
       dailyBudget: dailyBudget ?? this.dailyBudget,
       status: status ?? this.status,
       type: type ?? this.type,
+      subjectId: subjectId ?? this.subjectId,
     );
   }
 

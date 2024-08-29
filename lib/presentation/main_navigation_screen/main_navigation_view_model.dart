@@ -1,15 +1,18 @@
 // card
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
-// import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
 
+// import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
+// card
 abstract class MainNavigationCardService {
   Future<Either<RewildError, int>> count();
 }
@@ -124,10 +127,10 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
       notify();
     });
 
-    final cardsQty = await fetch(() => cardService.count());
-    if (cardsQty == null) {
-      return;
-    }
+    // final cardsQty = await fetch(() => cardService.count());
+    // if (cardsQty == null) {
+    //   return;
+    // }
 
     // subscription
     final subscriptions =
@@ -228,8 +231,8 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     if (_advertApiKey == null) {
       return;
     }
-    // final balance =
-    //     await fetch(() => advertService.getBallance(token: _advertApiKey!));
+    final balance =
+        await fetch(() => advertService.getBallance(token: _advertApiKey!));
     if (balance == null) {
       return;
     }
@@ -271,10 +274,9 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
 
   // Home screen feedBack
   Future<String> userName() async {
-    // var userName = await fetch(() => questionService.getUsername());
-    // userName ??= "anonymous";
-    // return userName;
-    return "anonymous";
+    var userName = await fetch(() => questionService.getUsername());
+    userName ??= "anonymous";
+    return userName;
   }
 
   Future<void> goToSubscriptionsScreeen(BuildContext context) async {

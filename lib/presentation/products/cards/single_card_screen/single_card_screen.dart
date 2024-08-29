@@ -24,10 +24,9 @@ class SingleCardScreen extends StatelessWidget {
     final model = context.watch<SingleCardScreenViewModel>();
     final isNull = model.isNull;
     final openNotifications = model.notificationsScreen;
-    // final openProductKeywordsScreen = model.productKeywordsScreen;
+
     final tracked = model.tracked;
     final isLoading = model.isLoading;
-    // final subscribed = model.subscribed;
 
     return Scaffold(
       appBar: AppBar(
@@ -489,7 +488,7 @@ class _ExpansionTile extends StatelessWidget {
           .toList();
     }
     if (index == 4 && model.orders.isNotEmpty) {
-      final todayDate = formateDate(DateTime.now());
+      // final todayDate = formateDate(DateTime.now());
 
       final orders = model.orders;
 
@@ -533,12 +532,12 @@ class _ExpansionTile extends StatelessWidget {
                 isDark: widgetsContent.indexOf(e) % 2 != 0,
               ))
           .toList();
-      children.add(
-        _InfoRowTile(
-            content: _InfoRowContent(header: '', text: ''),
-            text: 'За $todayDate',
-            parentContext: context),
-      );
+      // children.add(
+      //   _InfoRowTile(
+      //       content: _InfoRowContent(header: '', text: ''),
+      //       text: 'За $todayDate',
+      //       parentContext: context),
+      // );
     }
     if (index == 5 && model.weekOrdersHistoryFromServer.isNotEmpty) {
       final weekOrders = model.weekOrdersHistoryFromServer;

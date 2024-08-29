@@ -43,48 +43,44 @@ class _AllProductsQuestionsScreenState
     // filter by period
     final setPeriod = model.setPeriod;
     final period = model.period;
-    return SizedBox(
-        width: double.infinity,
-        // the most important part of this example
-        child: OverlayLoaderWithAppIcon(
-          isLoading: isClosing || isQuestionsLoading,
-          overlayBackgroundColor: Colors.black,
-          circularProgressColor: const Color(0xff83735c),
-          appIcon: Image.asset(ImageConstant.imgLogoForLoading),
-          child: Scaffold(
-            appBar: _AppBar(
-                onClose: onClose,
-                apiKeyexists: apiKeyexists,
-                setPeriod: setPeriod,
-                period: period),
-            body: !apiKeyexists
-                ? const EmptyWidget(
-                    text: 'Создайте API ключ, чтобы видеть вопросы',
-                  )
-                : (itemsIdsList.isEmpty)
-                    ? EmptyWidget(
-                        text:
-                            'Нет вопросов${period == 'w' ? ' за последнюю неделю' : period == 'm' ? ' за последний месяц' : ''}')
-                    : SingleChildScrollView(
-                        child: Column(children: [
-                          Column(
-                            children: itemsIdsList.toList().map((e) {
-                              return _ProductCard(
-                                nmId: e,
-                                image: getImages(e),
-                                goTo: goTo,
-                                newItemsQty: getNewQuestionsQty(e),
-                                supplierArticle: getSupplierArticle(e),
-                                difCurrentPrevUnansweredQty:
-                                    model.difQuestion(e),
-                                oldItemsQty: getallQuestionsQty(e),
-                              );
-                            }).toList(),
-                          )
-                        ]),
-                      ),
-          ),
-        ));
+    return OverlayLoaderWithAppIcon(
+      isLoading: isClosing || isQuestionsLoading,
+      overlayBackgroundColor: Colors.black,
+      circularProgressColor: const Color(0xff83735c),
+      appIcon: Image.asset(ImageConstant.imgLogoForLoading),
+      child: Scaffold(
+        appBar: _AppBar(
+            onClose: onClose,
+            apiKeyexists: apiKeyexists,
+            setPeriod: setPeriod,
+            period: period),
+        body: !apiKeyexists
+            ? const EmptyWidget(
+                text: 'Создайте API ключ, чтобы видеть вопросы',
+              )
+            : (itemsIdsList.isEmpty)
+                ? EmptyWidget(
+                    text:
+                        'Нет вопросов${period == 'w' ? ' за последнюю неделю' : period == 'm' ? ' за последний месяц' : ''}')
+                : SingleChildScrollView(
+                    child: Column(children: [
+                      Column(
+                        children: itemsIdsList.toList().map((e) {
+                          return _ProductCard(
+                            nmId: e,
+                            image: getImages(e),
+                            goTo: goTo,
+                            newItemsQty: getNewQuestionsQty(e),
+                            supplierArticle: getSupplierArticle(e),
+                            difCurrentPrevUnansweredQty: model.difQuestion(e),
+                            oldItemsQty: getallQuestionsQty(e),
+                          );
+                        }).toList(),
+                      )
+                    ]),
+                  ),
+      ),
+    );
   }
 }
 

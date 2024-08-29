@@ -8,11 +8,13 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/geo_search_model.dart';
 import 'package:rewild_bot_front/domain/entities/wb_search_log.dart';
 import 'package:rewild_bot_front/domain/services/geo_search_service.dart';
+import 'package:rewild_bot_front/domain/services/keywords_service.dart';
 import 'package:rewild_bot_front/domain/services/tracking_service.dart';
 
 class GeoSearchApiClient
     implements
         GeoSearchServiceGeoSearchApiClient,
+        KeywordsServiceGeoSearchApiClient,
         TrackingServiceGeoSearchApiClient {
   const GeoSearchApiClient();
   static const String baseUrl =

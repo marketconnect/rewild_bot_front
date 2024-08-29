@@ -89,7 +89,7 @@ class RealizationReportService implements ReportRealizationReportService {
       return left(RewildError('Api key not found',
           name: 'fetchReportDetailByPeriod',
           sendToTg: false,
-          source: runtimeType.toString(),
+          source: "RealizationReportService",
           args: []));
     }
 
@@ -99,7 +99,7 @@ class RealizationReportService implements ReportRealizationReportService {
       return left(RewildError('Api key not found',
           name: 'fetchReportDetailByPeriod',
           sendToTg: false,
-          source: runtimeType.toString(),
+          source: "RealizationReportService",
           args: []));
     }
     final result = await statisticsApiClient.fetchReportDetailByPeriod(

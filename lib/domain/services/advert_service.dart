@@ -1,13 +1,19 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/.env.dart';
 import 'package:rewild_bot_front/core/constants/advertising_constants.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
+import 'package:rewild_bot_front/presentation/adverts/all_adverts_stat_screen/all_adverts_stat_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/adverts/all_adverts_words_screen/all_adverts_words_view_model.dart';
+import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_view_model.dart';
+import 'package:rewild_bot_front/presentation/adverts/single_auto_words_screen/single_auto_words_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
 
@@ -60,7 +66,13 @@ abstract class AdvertServiceActiveSellerDataProvider {
 }
 
 class AdvertService
-    implements MainNavigationAdvertService, ReportAdvertService {
+    implements
+        MainNavigationAdvertService,
+        SingleAutoWordsAdvertService,
+        AllAdvertsStatScreenAdvertService,
+        ReportAdvertService,
+        AllAdvertsWordsAdvertService,
+        CampaignManagementAdvertService {
   final AdvertServiceAdvertApiClient advertApiClient;
   final AdvertServiceApiKeyDataProvider apiKeysDataProvider;
   final StreamController<StreamAdvertEvent> updatedAdvertStreamController;
@@ -98,6 +110,7 @@ class AdvertService
     });
   }
 
+  @override
   Future<Either<RewildError, int>> getExpensesSum({
     required DateTime from,
     required DateTime to,
@@ -134,6 +147,7 @@ class AdvertService
   }
 
   // budget
+  @override
   Future<Either<RewildError, int>> depositCampaignBudget({
     required int campaignId,
     required int sum,
@@ -240,8 +254,11 @@ class AdvertService
         .toList());
   }
 
+  @override
   Future<Either<RewildError, Advert>> getAdvert(
       {required String token, required int campaignId}) async {
+    sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, "getAdvert");
     final advInfoResult =
         await advertApiClient.getAdverts(token: token, ids: [campaignId]);
     return advInfoResult.fold((l) => left(l), (r) {
@@ -249,6 +266,7 @@ class AdvertService
     });
   }
 
+  @override
   Future<Either<RewildError, bool>> setCpm(
       {required int campaignId,
       required int type,
@@ -308,6 +326,7 @@ class AdvertService
     });
   }
 
+  @override
   Future<Either<RewildError, List<Advert>>> getAll(
       {required String token, List<int>? types}) async {
     // get ids of all adverts filtered by types if types is not null
@@ -330,6 +349,8 @@ class AdvertService
   @override
   Future<Either<RewildError, bool>> checkAdvertIsActive(
       {required String token, required int campaignId}) async {
+    sendMessageToTelegramBot(
+        TBot.tBotErrorToken, TBot.tBotErrorChatId, "checkAdvertIsActive");
     final getAdvertsResult =
         await advertApiClient.getAdverts(token: token, ids: [campaignId]);
 

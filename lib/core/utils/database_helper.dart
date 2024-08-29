@@ -31,7 +31,7 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      'p_rewild.db',
+      'b_rewild.db',
       version: 1,
       onUpgradeNeeded: _onUpgrade,
     );
@@ -47,11 +47,16 @@ class DatabaseHelper {
     }
     // final db = event.database;
     // if (event.oldVersion < 2) {
-    //   if (!db.objectStoreNames.contains('tracking_queries')) {
-    //     final store = db.createObjectStore('tracking_queries',
-    //         keyPath: 'id', autoIncrement: true);
-    //     store.createIndex('nmId', 'nmId', unique: false);
-    //     store.createIndex('query_geo', ['query', 'geo'], unique: false);
+    //   if (!db.objectStoreNames.contains('keywords')) {
+    //     final store = db.createObjectStore('keywords',
+    //         keyPath: 'campaignId_keyword', autoIncrement: false);
+    //     store.createIndex('keyword', 'keyword', unique: false);
+    //     store.createIndex('campaignId', 'campaignId', unique: false);
+
+    //     // final store = db.createObjectStore('tracking_queries',
+    //     //     keyPath: 'id', autoIncrement: true);
+    //     // store.createIndex('nmId', 'nmId', unique: false);
+    //     // store.createIndex('query_geo', ['query', 'geo'], unique: false);
     //   }
     // }
     // Do not delete me !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -125,6 +130,13 @@ class DatabaseHelper {
           keyPath: 'nmIdWhSizeOptionId', autoIncrement: false);
 
       store.createIndex('nmId', 'nmId', unique: false);
+    });
+
+    createStoreIfNotExists('keywords', () {
+      final store = db.createObjectStore('keywords',
+          keyPath: 'campaignIdKeyword', autoIncrement: false);
+      store.createIndex('keyword', 'keyword', unique: false);
+      store.createIndex('campaignId', 'campaignId', unique: false);
     });
 
     createStoreIfNotExists('answers', () {

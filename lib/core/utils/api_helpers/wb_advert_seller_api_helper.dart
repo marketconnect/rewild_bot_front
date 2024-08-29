@@ -151,16 +151,16 @@ class WbAdvertApiHelper {
 
   // Auto ================================================================= Auto
   // Статистика автоматической кампании
-  static ApiHelper autoGetStat = ApiHelper(
-    host: host,
-    url: '/adv/v1/auto/stat',
-    requestLimitPerMinute: 10, // 10 per minute
-    statusCodeDescriptions: {
-      400: 'Кампания не найдена',
-      401: 'Пустой авторизационный заголовок',
-      429: 'Превышен лимит запросов в минуту',
-    },
-  );
+  // static ApiHelper autoGetStat = ApiHelper(
+  //   host: host,
+  //   url: '/adv/v1/auto/stat',
+  //   requestLimitPerMinute: 10, // 10 per minute
+  //   statusCodeDescriptions: {
+  //     400: 'Кампания не найдена',
+  //     401: 'Пустой авторизационный заголовок',
+  //     429: 'Превышен лимит запросов в минуту',
+  //   },
+  // );
 
   static ApiHelper searchCatalogueGetStat = ApiHelper(
     host: host,

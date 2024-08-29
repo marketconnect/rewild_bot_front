@@ -44,4 +44,14 @@ abstract class MainNavigationRouteNames {
 
   static const String feedbackNotificationScreen =
       '/feedback_notification_screen';
+
+  static const String campaignManagementScreen = 'campaign_management_screen';
+
+  static const String editAdvertsKeywordsScreen = '/edit_adv_kw_screen';
+
+  static const String autoStatWordsScreen = '/auto_stat_words';
+
+  static const String allAdvertsScreen = '/all_averts_screen';
+
+  static const String advertAnaliticsScreen = 'advert_analitics_screen';
 }

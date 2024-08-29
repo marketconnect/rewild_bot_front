@@ -58,6 +58,16 @@ abstract class ScreenFactory {
   Widget makeSingleReviewScreen(ReviewModel? review);
 
   Widget makeFeedbackNotificationSettingsScreen();
+
+  Widget makeCampaignManagementScreen(int campaignId);
+
+  Widget makeAdvertsToolsScreen();
+
+  Widget makeAutoStatsWordsScreen((int, int?, String) value);
+
+  Widget makeAllAdvertsScreen();
+
+  Widget makeAdvertAnaliticsScreen((int, DateTime, String) campaignInfo);
 }
 
 class MainNavigation implements AppNavigation {
@@ -155,6 +165,13 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeAllProductsQuestionsScreen(),
         );
+      case MainNavigationRouteNames.campaignManagementScreen:
+        final arguments = settings.arguments;
+        final campaignId = arguments is int ? arguments : 0;
+        return MaterialPageRoute(
+          builder: (_) =>
+              screenFactory.makeCampaignManagementScreen(campaignId),
+        );
 
       case MainNavigationRouteNames.subjectKeywordExpansionScreen:
         final arguments = settings.arguments;
@@ -187,6 +204,10 @@ class MainNavigation implements AppNavigation {
             builder: (_) => screenFactory.makeWordsKeywordExpansionScreen(
                   addedKeywords: addedKeywords,
                 ));
+      case MainNavigationRouteNames.allAdvertsScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAllAdvertsScreen(),
+        );
 
       case MainNavigationRouteNames.autocompliteKwExpansionScreen:
         final arguments = settings.arguments;
@@ -204,6 +225,14 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeAllReviewsScreen(nmId),
         );
+      case MainNavigationRouteNames.autoStatWordsScreen:
+        final arguments = settings.arguments;
+        final campaignIdGNum =
+            arguments is (int, int?, String) ? arguments : (0, null, "");
+        return MaterialPageRoute(
+          builder: (_) =>
+              screenFactory.makeAutoStatsWordsScreen(campaignIdGNum),
+        );
 
       case MainNavigationRouteNames.geoSearchScreen:
         final arguments = settings.arguments;
@@ -214,6 +243,10 @@ class MainNavigation implements AppNavigation {
       case MainNavigationRouteNames.realizationReportScreen:
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeRealizationReportScreen(),
+        );
+      case MainNavigationRouteNames.editAdvertsKeywordsScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAdvertsToolsScreen(),
         );
 
       case MainNavigationRouteNames.seoToolScreen:
@@ -253,6 +286,14 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) =>
               screenFactory.makeFeedbackNotificationSettingsScreen(),
+        );
+      case MainNavigationRouteNames.advertAnaliticsScreen:
+        final arguments = settings.arguments;
+        final campaignInfo = arguments is (int, DateTime, String)
+            ? arguments
+            : (0, DateTime.now(), "");
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAdvertAnaliticsScreen(campaignInfo),
         );
 
       case MainNavigationRouteNames.singleQuestionScreen:

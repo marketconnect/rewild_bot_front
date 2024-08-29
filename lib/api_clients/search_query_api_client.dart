@@ -37,7 +37,7 @@ class SearchQueryApiClient
         return left(RewildError(
           sendToTg: true,
           "Ошибка при получении данных: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "SearchQueryApiClient",
           name: "getSearchQuery",
           args: [queries],
         ));
@@ -46,7 +46,7 @@ class SearchQueryApiClient
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "SearchQueryApiClient",
         name: "getSearchQuery",
         args: [queries],
       ));

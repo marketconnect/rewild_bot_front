@@ -10,7 +10,7 @@ class Keyword {
   int todayClicks;
   double todayCtr;
   double todaySum;
-
+  String get campaignIdKeyword => '${campaignId}_$keyword';
   int diff = 0;
   void setDiff(int oldValue) {
     diff = count - oldValue;
@@ -40,6 +40,7 @@ class Keyword {
       'count': count,
       'diff': diff,
       '_isNew': _isNew,
+      'campaignIdKeyword': campaignIdKeyword,
     };
   }
 

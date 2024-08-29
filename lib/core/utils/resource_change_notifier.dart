@@ -14,8 +14,6 @@ class ResourceChangeNotifier extends ChangeNotifier {
     required this.context,
   });
 
-  bool isConnected = false;
-
   // bool _external = false;
   // late bool _loading = true;
   // void setLoading(bool value) {

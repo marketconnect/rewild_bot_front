@@ -48,7 +48,7 @@ class WBSearchSuggestionService
       return left(RewildError('err in fetchSuggestions',
           name: 'fetchSuggestions',
           sendToTg: false,
-          source: runtimeType.toString()));
+          source: "WbSearchSuggestionSevice"));
     }
     final suggestions =
         suggestionsEither.fold((l) => throw UnimplementedError(), (r) => r);
@@ -69,7 +69,7 @@ class WBSearchSuggestionService
       return left(RewildError('err in fetchFrequency',
           name: 'fetchFrequency',
           sendToTg: false,
-          source: runtimeType.toString()));
+          source: "WbSearchSuggestionSevice"));
     }
     final localDbFreq =
         localFreqEither.fold((l) => throw UnimplementedError(), (r) => r);

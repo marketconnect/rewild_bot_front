@@ -55,6 +55,7 @@ class SeoToolCategoryKwResearchViewModel extends ResourceChangeNotifier {
   }
 
   // token
+  // ignore: unused_field
   String? _token;
 
   // Selected phrases
@@ -67,6 +68,7 @@ class SeoToolCategoryKwResearchViewModel extends ResourceChangeNotifier {
   List<KwByLemma> get corePhrases => _corePhrases;
 
   //   // is not empty
+  // ignore: prefer_final_fields
   bool _isNotEmpty = false;
 
   bool get isNotEmpty => _isNotEmpty;

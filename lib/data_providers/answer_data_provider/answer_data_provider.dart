@@ -24,7 +24,7 @@ class AnswerDataProvider implements AnswerServiceAnswerDataProvider {
       return left(RewildError(
           sendToTg: true,
           e.toString(),
-          source: runtimeType.toString(),
+          source: "AnswerDataProvider",
           name: "delete",
           args: [id, type]));
     }
@@ -48,7 +48,7 @@ class AnswerDataProvider implements AnswerServiceAnswerDataProvider {
       return left(RewildError(
           sendToTg: true,
           e.toString(),
-          source: runtimeType.toString(),
+          source: "AnswerDataProvider",
           name: "insert",
           args: [id, answer, type]));
     }
@@ -80,7 +80,7 @@ class AnswerDataProvider implements AnswerServiceAnswerDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: runtimeType.toString(),
+        source: "AnswerDataProvider",
         name: "getAllIds",
         args: [type],
       ));
@@ -110,7 +110,7 @@ class AnswerDataProvider implements AnswerServiceAnswerDataProvider {
       return left(RewildError(
           sendToTg: true,
           e.toString(),
-          source: runtimeType.toString(),
+          source: "AnswerDataProvider",
           name: "getAll",
           args: [type]));
     }

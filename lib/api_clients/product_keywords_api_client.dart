@@ -21,7 +21,7 @@ class ProductKeywordsApiClient implements CardKeywordsServiceApiClient {
         return left(RewildError(
           sendToTg: true,
           "Некорректные данные",
-          source: runtimeType.toString(),
+          source: "ProductKeywordsApiClient",
           name: "getKeywordsForProduct",
         ));
       }
@@ -58,7 +58,7 @@ class ProductKeywordsApiClient implements CardKeywordsServiceApiClient {
         return left(RewildError(
           sendToTg: true,
           "Ошибка при получении ключевых слов: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "ProductKeywordsApiClient",
           name: "getKeywordsForProduct",
           args: [skus],
         ));
@@ -67,7 +67,7 @@ class ProductKeywordsApiClient implements CardKeywordsServiceApiClient {
       return left(RewildError(
         sendToTg: true,
         "Неизвестная ошибка: $e",
-        source: runtimeType.toString(),
+        source: "ProductKeywordsApiClient",
         name: "getKeywordsForProduct",
         args: [skus],
       ));

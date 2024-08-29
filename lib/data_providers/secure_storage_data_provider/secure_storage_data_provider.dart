@@ -6,11 +6,13 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/services/advert_service.dart';
+import 'package:rewild_bot_front/domain/services/adverts_analitics_service.dart';
 
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
 import 'package:rewild_bot_front/domain/services/balance_service.dart';
 import 'package:rewild_bot_front/domain/services/content_service.dart';
+import 'package:rewild_bot_front/domain/services/keywords_service.dart';
 import 'package:rewild_bot_front/domain/services/question_service.dart';
 import 'package:rewild_bot_front/domain/services/realization_report_service.dart';
 import 'package:rewild_bot_front/domain/services/review_service.dart';
@@ -18,6 +20,8 @@ import 'package:rewild_bot_front/domain/services/review_service.dart';
 class SecureStorageProvider
     implements
         ApiKeysServiceApiKeysDataProvider,
+        KeywordsServiceApiKeyDataProvider,
+        AdvertsAnaliticsServiceApiKeyDataProvider,
         ReviewServiceApiKeyDataProvider,
         ContentServiceApiKeyDataProvider,
         RealizationReportServiceApiKeyDataProvider,

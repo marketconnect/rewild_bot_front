@@ -90,13 +90,13 @@ class MainNavigationScreenAdvertWidget extends StatelessWidget {
                           color: Color(0xFF4aa6db),
                           // route: MainNavigationRouteNames
                           //     .advertsAnaliticsNavScreen,
-                          route: "MainNavigationRouteNames.allAdvertsScreen",
+                          route: MainNavigationRouteNames.allAdvertsScreen,
                           iconData: Icons.auto_graph_outlined,
                         ),
                         LinkBtn(
                           text: 'Ключевые фразы',
-                          route:
-                              "MainNavigationRouteNames.editAdvertsKeywordsScreen",
+                          route: MainNavigationRouteNames
+                              .editAdvertsKeywordsScreen,
                           color: const Color(0xFFdfb446),
                           child: SizedBox(
                             width: MediaQuery.of(context).size.width * 0.05,
@@ -169,7 +169,7 @@ class _AllAdvertsWidget extends StatelessWidget {
                   return GestureDetector(
                     onTap: () async {
                       final res = await Navigator.of(context).pushNamed(
-                        "MainNavigationRouteNames.campaignManagementScreen",
+                        MainNavigationRouteNames.campaignManagementScreen,
                         arguments: adverts[index].campaignId,
                         // adverts[index].type
                         // ),

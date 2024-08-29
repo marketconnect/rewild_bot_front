@@ -43,7 +43,7 @@ class WBSearchSuggestionApiClient
         return Left(RewildError(
           sendToTg: false,
           "Error during fetch: ${response.statusCode}",
-          source: runtimeType.toString(),
+          source: "WbSearchSuggestionApiClient",
           name: "fetchSuggestions",
           args: [query, gender, locale, lang],
         ));
@@ -52,7 +52,7 @@ class WBSearchSuggestionApiClient
       return Left(RewildError(
         sendToTg: false,
         "Error during fetch: $e",
-        source: runtimeType.toString(),
+        source: "WbSearchSuggestionApiClient",
         name: "fetchSuggestions",
         args: [query, gender, locale, lang],
       ));

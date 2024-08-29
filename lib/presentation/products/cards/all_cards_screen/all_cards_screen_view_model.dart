@@ -288,9 +288,8 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     final token = await _getToken();
 
     // Update
-    if (isConnected) {
-      await fetch(() => updateService.update(token));
-    }
+
+    await fetch(() => updateService.update(token));
 
     // get cards
     final fetchedCardsOfProducts =

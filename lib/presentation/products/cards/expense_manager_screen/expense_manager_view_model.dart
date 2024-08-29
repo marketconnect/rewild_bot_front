@@ -1,8 +1,8 @@
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/total_cost_calculator.dart';
 
@@ -53,8 +53,7 @@ class ExpenseManagerViewModel extends ResourceChangeNotifier {
 
   _asyncInit() async {
     // SqfliteService.printTableContent('total_cost_calculator');
-    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        "HERE ${nmIdPlusAverageLogisticsCom.toString()}");
+
     setIsLoading(true);
     // token
     final tokenEither = await tokenService.getToken();
@@ -81,8 +80,7 @@ class ExpenseManagerViewModel extends ResourceChangeNotifier {
     }
 
     // average logistics
-    sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, "HERE YES");
+
     setAverageLogistics(nmIdPlusAverageLogisticsCom.$2);
     setCommission(nmIdPlusAverageLogisticsCom.$3);
     // card
@@ -117,8 +115,6 @@ class ExpenseManagerViewModel extends ResourceChangeNotifier {
       if (k == TotalCostCalculator.priceKey) {
         setRealProductPrice(expense.value.toInt());
       } else if (k == TotalCostCalculator.logisticsKey) {
-        sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, "HERE NO");
         setAverageLogistics(expense.value.toInt());
         _averageLogisticCustom = true;
       } else if (k == TotalCostCalculator.returnsKey) {
@@ -238,8 +234,6 @@ class ExpenseManagerViewModel extends ResourceChangeNotifier {
   int get averageLogistics =>
       _averageLogistics == 0 ? averageLogisticsFromServer : _averageLogistics;
   void setAverageLogistics(int logistics) {
-    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        "setAverageLogistics = $logistics");
     _averageLogistics = logistics;
     notify();
   }
