@@ -513,12 +513,11 @@ class AdvertAnaliticsViewModel extends ResourceChangeNotifier {
       setAverageLogisticCost(averageLogisticCostFromServerOrNull);
     }
     // gross profit
-    Map<int, int> nmIdGrossProfit = {};
+    Map<int, double> nmIdGrossProfit = {};
     for (final nmId in nmIdOrders.keys) {
       final totalCost = _totalCosts[nmId];
       if (totalCost != null) {
-        nmIdGrossProfit[nmId] =
-            totalCost.grossProfit(_averageLogisticCost).round();
+        nmIdGrossProfit[nmId] = totalCost.grossProfit(_averageLogisticCost);
       }
     }
 
@@ -646,7 +645,7 @@ class AdvertAnaliticsViewModel extends ResourceChangeNotifier {
     return dynamicData;
   }
 
-  int _calculatePercentageChange(num oldValue, num newValue) {
+  num _calculatePercentageChange(num oldValue, num newValue) {
     if (oldValue == 0) {
       if (newValue == 0) {
         return 0;
@@ -657,7 +656,7 @@ class AdvertAnaliticsViewModel extends ResourceChangeNotifier {
 
     num change = ((newValue - oldValue) / oldValue) * 100;
 
-    return change.round();
+    return change;
   }
 
   double? analyzeCorrelation(List<double> xList, List<double> yList) {
