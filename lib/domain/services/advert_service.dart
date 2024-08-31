@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/constants/advertising_constants.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
@@ -10,6 +10,7 @@ import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
+import 'package:rewild_bot_front/env.dart';
 import 'package:rewild_bot_front/presentation/adverts/all_adverts_stat_screen/all_adverts_stat_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/adverts/all_adverts_words_screen/all_adverts_words_view_model.dart';
 import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_view_model.dart';

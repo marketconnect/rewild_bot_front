@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-
-import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
@@ -13,11 +12,61 @@ class SubscriptionApiClient
     implements SubscriptionServiceSubscriptionApiClient {
   const SubscriptionApiClient();
 
+  // Добавляем новые методы ниже...
+
   @override
-  Future<Either<RewildError, List<SubscriptionModel>>> getSubscription({
+  Future<Either<RewildError, AddSubscriptionV2Response>> addSubscriptionV2({
+    required String token,
+    required String subscriptionType,
+    required String startDate,
+    required String endDate,
+  }) async {
+    final url = Uri.parse("https://rewild.website/api/addSubscriptionV2");
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'subscriptionType': subscriptionType,
+          'startDate': startDate,
+          'endDate': endDate,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return right(AddSubscriptionV2Response(
+          err: data['err'],
+          subscriptionId: data['subscription_id'],
+        ));
+      } else {
+        return left(RewildError(
+          sendToTg: true,
+          "Ошибка при добавлении подписки V2: ${response.statusCode}",
+          source: "SubscriptionApiClient",
+          name: "addSubscriptionV2",
+          args: [subscriptionType, startDate, endDate],
+        ));
+      }
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        "Неизвестная ошибка: $e",
+        source: "SubscriptionApiClient",
+        name: "addSubscriptionV2",
+        args: [subscriptionType, startDate, endDate],
+      ));
+    }
+  }
+
+  @override
+  Future<Either<RewildError, SubscriptionV2Response>> getSubscriptionV2({
     required String token,
   }) async {
-    final url = Uri.parse("https://rewild.website/api/getSubscriptions");
+    final url = Uri.parse("https://rewild.website/api/getSubscriptionV2");
     try {
       final response = await http.post(
         url,
@@ -28,29 +77,19 @@ class SubscriptionApiClient
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-
-        // Handle empty response from server
-        if (data.isEmpty) {
-          return right([]);
-        }
-
-        List<SubscriptionModel> subscriptions = data.map((item) {
-          return SubscriptionModel(
-            cardId: item['cardId'],
-            startDate: item['startDate'],
-            endDate: item['endDate'],
-            status: item['status'],
-          );
-        }).toList();
-
-        return right(subscriptions);
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return right(SubscriptionV2Response(
+          id: data['id'],
+          subscriptionTypeName: data['subscription_type_name'],
+          startDate: data['start_date'],
+          endDate: data['end_date'],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,
-          "Ошибка при получении подписок: ${response.statusCode}",
+          "Ошибка при получении подписки V2: ${response.statusCode}",
           source: "SubscriptionApiClient",
-          name: "getSubscriptions",
+          name: "getSubscriptionV2",
           args: [token],
         ));
       }
@@ -59,20 +98,22 @@ class SubscriptionApiClient
         sendToTg: true,
         "Неизвестная ошибка: $e",
         source: "SubscriptionApiClient",
-        name: "getSubscriptions",
+        name: "getSubscriptionV2",
         args: [token],
       ));
     }
   }
 
   @override
-  Future<Either<RewildError, List<SubscriptionModel>>> addZeroSubscriptions({
+  Future<Either<RewildError, UpdateSubscriptionV2Response>>
+      updateSubscriptionV2({
     required String token,
-    required int qty,
+    required int subscriptionID,
+    required String subscriptionType,
     required String startDate,
     required String endDate,
   }) async {
-    final url = Uri.parse("https://rewild.website/api/addZeroSubscriptions");
+    final url = Uri.parse("https://rewild.website/api/updateSubscriptionV2");
     try {
       final response = await http.post(
         url,
@@ -81,31 +122,25 @@ class SubscriptionApiClient
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'qty': qty,
+          'subscriptionID': subscriptionID,
+          'subscriptionType': subscriptionType,
           'startDate': startDate,
           'endDate': endDate,
         }),
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        List<SubscriptionModel> subscriptions = data.map((item) {
-          return SubscriptionModel(
-            cardId: item['cardId'],
-            startDate: item['startDate'],
-            endDate: item['endDate'],
-            status: item['status'],
-          );
-        }).toList();
-
-        return right(subscriptions);
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return right(UpdateSubscriptionV2Response(
+          err: data['err'],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,
-          "Ошибка при добавлении подписок: ${response.statusCode}",
+          "Ошибка при обновлении подписки V2: ${response.statusCode}",
           source: "SubscriptionApiClient",
-          name: "addZeroSubscriptions",
-          args: [qty, startDate, endDate],
+          name: "updateSubscriptionV2",
+          args: [subscriptionID, subscriptionType, startDate, endDate],
         ));
       }
     } catch (e) {
@@ -113,20 +148,20 @@ class SubscriptionApiClient
         sendToTg: true,
         "Неизвестная ошибка: $e",
         source: "SubscriptionApiClient",
-        name: "addZeroSubscriptions",
-        args: [qty, startDate, endDate],
+        name: "updateSubscriptionV2",
+        args: [subscriptionID, subscriptionType, startDate, endDate],
       ));
     }
   }
 
   @override
-  Future<Either<RewildError, List<SubscriptionModel>>> createSubscriptions({
+  Future<Either<RewildError, ExtendSubscriptionV2Response>>
+      extendSubscriptionV2({
     required String token,
-    required List<int> cardIds,
-    required String startDate,
-    required String endDate,
+    required int subscriptionId,
+    required String newEndDate,
   }) async {
-    final url = Uri.parse("https://rewild.website/api/createSubscriptions");
+    final url = Uri.parse("https://rewild.website/api/extendSubscriptionV2");
     try {
       final response = await http.post(
         url,
@@ -135,31 +170,23 @@ class SubscriptionApiClient
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'cardIds': cardIds,
-          'startDate': startDate,
-          'endDate': endDate,
+          'subscription_id': subscriptionId,
+          'new_end_date': newEndDate,
         }),
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        List<SubscriptionModel> subscriptions = data.map((item) {
-          return SubscriptionModel(
-            cardId: item['cardId'],
-            startDate: item['startDate'],
-            endDate: item['endDate'],
-            status: item['status'],
-          );
-        }).toList();
-
-        return right(subscriptions);
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return right(ExtendSubscriptionV2Response(
+          err: data['err'],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,
-          "Ошибка при создании подписок: ${response.statusCode}",
+          "Ошибка при продлении подписки V2: ${response.statusCode}",
           source: "SubscriptionApiClient",
-          name: "createSubscriptions",
-          args: [cardIds, startDate, endDate],
+          name: "extendSubscriptionV2",
+          args: [subscriptionId, newEndDate],
         ));
       }
     } catch (e) {
@@ -167,18 +194,19 @@ class SubscriptionApiClient
         sendToTg: true,
         "Неизвестная ошибка: $e",
         source: "SubscriptionApiClient",
-        name: "createSubscriptions",
-        args: [cardIds, startDate, endDate],
+        name: "extendSubscriptionV2",
+        args: [subscriptionId, newEndDate],
       ));
     }
   }
 
   @override
-  Future<Either<RewildError, List<SubscriptionModel>>> clearSubscriptions({
+  Future<Either<RewildError, AddCardsToSubscriptionResponse>>
+      addCardsToSubscription({
     required String token,
-    required List<int> cardIds,
+    required List<CardToSubscription> cards,
   }) async {
-    final url = Uri.parse("https://rewild.website/api/clearSubscriptions");
+    final url = Uri.parse("https://rewild.website/api/addCardsToSubscription");
     try {
       final response = await http.post(
         url,
@@ -187,29 +215,28 @@ class SubscriptionApiClient
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'cardIds': cardIds,
+          'cards': cards
+              .map((card) => {
+                    'sku': card.sku,
+                    'name': card.name,
+                    'image': card.image,
+                  })
+              .toList(),
         }),
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        List<SubscriptionModel> subscriptions = data.map((item) {
-          return SubscriptionModel(
-            cardId: item['cardId'],
-            startDate: item['startDate'],
-            endDate: item['endDate'],
-            status: item['status'],
-          );
-        }).toList();
-
-        return right(subscriptions);
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return right(AddCardsToSubscriptionResponse(
+          err: data['err'],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,
-          "Ошибка при очистке подписок: ${response.statusCode}",
+          "Ошибка при добавлении карт в подписку: ${response.statusCode}",
           source: "SubscriptionApiClient",
-          name: "clearSubscriptions",
-          args: [cardIds],
+          name: "addCardsToSubscription",
+          args: [cards],
         ));
       }
     } catch (e) {
@@ -217,18 +244,20 @@ class SubscriptionApiClient
         sendToTg: true,
         "Неизвестная ошибка: $e",
         source: "SubscriptionApiClient",
-        name: "clearSubscriptions",
-        args: [cardIds],
+        name: "addCardsToSubscription",
+        args: [cards],
       ));
     }
   }
 
   @override
-  Future<Either<RewildError, List<SubscriptionModel>>> deleteSubscriptions({
+  Future<Either<RewildError, RemoveCardFromSubscriptionResponse>>
+      removeCardFromSubscription({
     required String token,
-    required List<int> cardIds,
+    required int sku,
   }) async {
-    final url = Uri.parse("https://rewild.website/api/deleteSubscriptions");
+    final url =
+        Uri.parse("https://rewild.website/api/removeCardFromSubscription");
     try {
       final response = await http.post(
         url,
@@ -237,29 +266,22 @@ class SubscriptionApiClient
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'cardIds': cardIds,
+          'sku': sku,
         }),
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        List<SubscriptionModel> subscriptions = data.map((item) {
-          return SubscriptionModel(
-            cardId: item['cardId'],
-            startDate: item['startDate'],
-            endDate: item['endDate'],
-            status: item['status'],
-          );
-        }).toList();
-
-        return right(subscriptions);
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        return right(RemoveCardFromSubscriptionResponse(
+          err: data['err'],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,
-          "Ошибка при удалении подписок: ${response.statusCode}",
+          "Ошибка при удалении карты из подписки: ${response.statusCode}",
           source: "SubscriptionApiClient",
-          name: "deleteSubscriptions",
-          args: [cardIds],
+          name: "removeCardFromSubscription",
+          args: [sku],
         ));
       }
     } catch (e) {
@@ -267,8 +289,8 @@ class SubscriptionApiClient
         sendToTg: true,
         "Неизвестная ошибка: $e",
         source: "SubscriptionApiClient",
-        name: "deleteSubscriptions",
-        args: [cardIds],
+        name: "removeCardFromSubscription",
+        args: [sku],
       ));
     }
   }

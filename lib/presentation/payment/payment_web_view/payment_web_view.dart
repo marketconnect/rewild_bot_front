@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'dart:html';
 import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/domain/entities/payment_info.dart';
+import 'package:rewild_bot_front/env.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
 
