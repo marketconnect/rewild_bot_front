@@ -7,7 +7,8 @@ import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
-import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
+
 import 'package:rewild_bot_front/env.dart';
 
 enum PaymentResult {
@@ -28,13 +29,13 @@ abstract class PaymentWebViewTokenService {
 
 // Subscriptions
 abstract class PaymentWebViewSubscriptionsService {
-  Future<Either<RewildError, List<SubscriptionModel>>> addZeroSubscriptions({
-    required String token,
-    required int qty,
-    required String startDate,
-    required String endDate,
-  });
-  Future<Either<RewildError, List<SubscriptionModel>>> createSubscriptions({
+  // Future<Either<RewildError, List<SubscriptionModel>>> addZeroSubscriptions({
+  //   required String token,
+  //   required int qty,
+  //   required String startDate,
+  //   required String endDate,
+  // });
+  Future<Either<RewildError, AddSubscriptionV2Response>> createSubscriptions({
     required String token,
     required List<int> cardIds,
     required String startDate,
@@ -134,26 +135,25 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
     // Add subscriptions on a server and local storage with the _syncSubscriptions
     // inside the subService createSubscriptions
     if (zeroSubs.isNotEmpty) {
-      final subsResult = await fetch(() => subService.addZeroSubscriptions(
-            token: token,
-            qty: zeroSubs.length,
-            startDate: formattedToday,
-            endDate: formatedEndDate,
-          ));
+      // final subsResult = await fetch(() => subService.addZeroSubscriptions(
+      //       token: token,
+      //       qty: zeroSubs.length,
+      //       startDate: formattedToday,
+      //       endDate: formatedEndDate,
+      //     ));
 
-      if (subsResult == null) {
-        _sendPaymentInfo(
-          'Сумма пополнения: $amount руб. [$cardsIds]',
-          PaymentResult.creationSubscriptionError,
-        );
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content:
-                Text('Что-то пошло не так, пожалуйста, попробуйте позже!'),
-          ));
-        }
-        return;
+      // if (subsResult == null) {
+      _sendPaymentInfo(
+        'Сумма пополнения: $amount руб. [$cardsIds]',
+        PaymentResult.creationSubscriptionError,
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Что-то пошло не так, пожалуйста, попробуйте позже!'),
+        ));
       }
+      return;
+      // }
     }
 
     // get non zero subs

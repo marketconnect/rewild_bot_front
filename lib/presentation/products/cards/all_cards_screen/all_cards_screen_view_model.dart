@@ -17,7 +17,8 @@ import 'package:rewild_bot_front/domain/entities/group_model.dart';
 import 'package:rewild_bot_front/domain/entities/nm_id.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
 import 'package:rewild_bot_front/domain/entities/stream_notification_event.dart';
-import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
+
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
@@ -81,10 +82,10 @@ abstract class AllCardsScreenSubscriptionsService {
       {required String token, required List<int> cardIds});
   // Future<Either<RewildError, List<SubscriptionModel>>> getLocalSubscriptions(
   //     {required String token});
-  Future<Either<RewildError, List<SubscriptionModel>>> getSubscriptions(
+  Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});
 
-  Future<Either<RewildError, List<SubscriptionModel>>> createSubscriptions({
+  Future<Either<RewildError, AddSubscriptionV2Response>> createSubscriptions({
     required String token,
     required List<int> cardIds,
     required String startDate,
@@ -408,7 +409,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
   Future<void> _handleSubscriptions(String token) async {
     final localSubscriptionsResult =
-        await fetch(() => subscriptionsService.getSubscriptions(token: token));
+        await fetch(() => subscriptionsService.getSubscription(token: token));
     if (localSubscriptionsResult != null) {
       // Get IDs of cards with active subscriptions
       // Set<SubscriptionModel> subscribedCards =

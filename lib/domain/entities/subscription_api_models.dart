@@ -13,16 +13,16 @@ class AddSubscriptionV2Response {
 }
 
 class SubscriptionV2Response {
-  final int? id;
-  final String? subscriptionTypeName;
-  final String? startDate;
-  final String? endDate;
+  final int id;
+  final String subscriptionTypeName;
+  final String startDate;
+  final String endDate;
 
   SubscriptionV2Response({
-    this.id,
-    this.subscriptionTypeName,
-    this.startDate,
-    this.endDate,
+    required this.id,
+    required this.subscriptionTypeName,
+    required this.startDate,
+    required this.endDate,
   });
 
   factory SubscriptionV2Response.fromJson(Map<String, dynamic> json) {
@@ -31,6 +31,26 @@ class SubscriptionV2Response {
       subscriptionTypeName: json['subscription_type_name'],
       startDate: json['start_date'],
       endDate: json['end_date'],
+    );
+  }
+
+  // toMap
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'subscription_type_name': subscriptionTypeName,
+      'start_date': startDate,
+      'end_date': endDate,
+    };
+  }
+
+  // fromMap
+  factory SubscriptionV2Response.fromMap(Map<String, dynamic> map) {
+    return SubscriptionV2Response(
+      id: map['id'],
+      subscriptionTypeName: map['subscription_type_name'],
+      startDate: map['start_date'],
+      endDate: map['end_date'],
     );
   }
 }

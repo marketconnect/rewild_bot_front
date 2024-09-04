@@ -660,7 +660,7 @@ class _DIContainer {
           ordersHistoryService: _makeOrdersHistoryService(),
           weekOrdersService: _makeWeekOrdersService(),
           tariffService: _makeTariffService(),
-          subscriptionsService: _makeSubscriptionService(),
+          // subscriptionsService: _makeSubscriptionService(),
           tokenProvider: _makeAuthService(),
           commissionService: _makeCommissionService(),
           sellerService: _makeSellerService(),

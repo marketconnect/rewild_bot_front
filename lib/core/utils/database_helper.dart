@@ -1,7 +1,8 @@
 import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/idb_browser.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/utils/telegram.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -31,7 +32,7 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      'b_rewild.db',
+      'b_rewild_b.db',
       version: 1,
       onUpgradeNeeded: _onUpgrade,
     );
@@ -223,10 +224,7 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('subs', () {
-      final store =
-          db.createObjectStore('subs', keyPath: 'id', autoIncrement: true);
-      store.createIndex('card_id', 'card_id', unique: true);
-      store.createIndex('end_date', 'end_date');
+      db.createObjectStore('subs', keyPath: 'id', autoIncrement: false);
     });
 
     createStoreIfNotExists('groups', () {

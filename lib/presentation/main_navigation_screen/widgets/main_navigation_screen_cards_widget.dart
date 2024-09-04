@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/link_btn.dart';
 
-class MainNavigationScreenCardsWidget extends StatelessWidget {
+class MainNavigationScreenCardsWidget extends StatefulWidget {
   const MainNavigationScreenCardsWidget(
       {super.key,
       required this.cardsNumber,
@@ -12,10 +13,19 @@ class MainNavigationScreenCardsWidget extends StatelessWidget {
   final int cardsNumber;
   final int subsNum;
   final Function goToSubscriptionsScreen;
+
+  @override
+  State<MainNavigationScreenCardsWidget> createState() =>
+      _MainNavigationScreenCardsWidgetState();
+}
+
+class _MainNavigationScreenCardsWidgetState
+    extends State<MainNavigationScreenCardsWidget> {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+
     return SingleChildScrollView(
       child: Column(children: [
         Padding(
@@ -35,9 +45,9 @@ class MainNavigationScreenCardsWidget extends StatelessWidget {
           ),
         ),
         _InfoRow(
-          cardsNum: cardsNumber,
-          subsNum: subsNum,
-          goToSubscriptionsScreen: goToSubscriptionsScreen,
+          cardsNum: widget.cardsNumber,
+          subsNum: widget.subsNum,
+          goToSubscriptionsScreen: widget.goToSubscriptionsScreen,
         ),
         SizedBox(
           height: screenHeight * 0.04,
@@ -100,20 +110,22 @@ class _InfoRow extends StatelessWidget {
   final Function goToSubscriptionsScreen;
   final int cardsNum;
   final int subsNum;
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
+
     return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
       Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(15.0),
         child: SizedBox(
-          width: screenWidth * 0.3,
+          width: screenWidth * 0.4,
           child: Text('$cardsNum шт/$subsNum',
-              maxLines: 1,
+              maxLines: 2,
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,
-                  fontSize: screenWidth * 0.1,
+                  fontSize: screenWidth * 0.08,
                   fontWeight: FontWeight.bold)),
         ),
       ),

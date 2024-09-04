@@ -7,7 +7,8 @@ import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
-import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
+
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
@@ -35,7 +36,7 @@ abstract class MainNavigationQuestionService {
 
 // subscription
 abstract class MainNavigationSubscriptionService {
-  Future<Either<RewildError, List<SubscriptionModel>>> getSubscriptions(
+  Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});
 }
 
@@ -134,13 +135,38 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
 
     // subscription
     final subscriptions =
-        await fetch(() => subscriptionService.getSubscriptions(token: token));
+        await fetch(() => subscriptionService.getSubscription(token: token));
     if (subscriptions == null) {
       return;
     }
-    setSubscriptionsNum(subscriptions.length);
-    setTrackedCardsNumber(
-        subscriptions.where((element) => element.cardId != 0).toList().length);
+
+    // get subscription cards quantity ('Free', 3),('Basic', 25),('Standard', 50),('Premium', 100);
+
+    switch (subscriptions.subscriptionTypeName) {
+      case "Free":
+        setSubscriptionsNum(3);
+        break;
+      case "Basic":
+        setSubscriptionsNum(25);
+        break;
+      case "Standard":
+        setSubscriptionsNum(50);
+        break;
+      case "Premium":
+        setSubscriptionsNum(100);
+        break;
+      default:
+        break;
+    }
+
+    // get added cards quantity
+    final cardsQtyOrNull = await fetch(() => cardService.count());
+    if (cardsQtyOrNull == null) {
+      return;
+    }
+    setTrackedCardsNumber(cardsQtyOrNull);
+
+    // setTrackedCardsNumber(subscriptions.where((element) => element.cardId != 0).toList().length);
 
     // Api keys exist
     // Advert
@@ -286,12 +312,12 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     if (res == true) {
       // subscription
       final token = await _getToken();
-      final subscriptions =
-          await fetch(() => subscriptionService.getSubscriptions(token: token));
-      if (subscriptions == null) {
+      final subscription =
+          await fetch(() => subscriptionService.getSubscription(token: token));
+      if (subscription == null) {
         return;
       }
-      setSubscriptionsNum(subscriptions.length);
+      setSubscriptionsNum(subscription.subscriptionTypeName == "free" ? 3 : 25);
     }
   }
 }

@@ -57,7 +57,6 @@ class StatisticsApiClient
     }
   }
 
-  @override
   Future<Either<RewildError, List<Income>>> fetchIncomes(
       {required String token, required DateTime dateFrom}) async {
     final String formattedDateFrom =

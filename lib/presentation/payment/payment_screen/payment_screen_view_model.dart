@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
 import 'package:rewild_bot_front/domain/entities/payment_info.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
@@ -19,9 +20,9 @@ abstract class PaymentScreenTokenService {
 
 // Subscriptions
 abstract class PaymentScreenSubscriptionsService {
-  Future<Either<RewildError, List<SubscriptionModel>>> getSubscriptions(
+  Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});
-  Future<Either<RewildError, List<SubscriptionModel>>> createSubscriptions({
+  Future<Either<RewildError, AddSubscriptionV2Response>> createSubscriptions({
     required String token,
     required List<int> cardIds,
     required String startDate,
@@ -77,17 +78,17 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
       _cards = cardsFromLocalStorage;
     }
 
-    final savedSubscriptions =
-        await fetch(() => subService.getSubscriptions(token: token));
-    if (savedSubscriptions != null) {
-      _subscriptions = savedSubscriptions;
-      _emptySubscriptions =
-          savedSubscriptions.where((e) => e.cardId == 0).toList();
-      if (savedSubscriptions.length > 50) {
+    final savedSubscription =
+        await fetch(() => subService.getSubscription(token: token));
+    if (savedSubscription != null) {
+      // TODO modify to use info about saved and not saved cards
+      // _subscriptions = savedSubscriptions;
+      // _emptySubscriptions =          savedSubscriptions.where((e) => e.cardId == 0).toList();
+      if (savedSubscription.subscriptionTypeName == "Premium") {
         setTypeOfUserSubscriptions(3);
-      } else if (savedSubscriptions.length > 20) {
+      } else if (savedSubscription.subscriptionTypeName == "Paid") {
         setTypeOfUserSubscriptions(2);
-      } else if (savedSubscriptions.isNotEmpty) {
+      } else if (savedSubscription.subscriptionTypeName == "Free") {
         setTypeOfUserSubscriptions(1);
       }
     }

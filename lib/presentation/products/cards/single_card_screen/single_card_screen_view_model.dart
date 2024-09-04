@@ -88,9 +88,9 @@ abstract class SingleCardScreenAuthService {
 }
 
 // subscriptions
-abstract class SingleCardScreenSubscriptionsService {
-  Future<Either<RewildError, bool>> isSubscribed(int nmId);
-}
+// abstract class SingleCardScreenSubscriptionsService {
+//   Future<Either<RewildError, bool>> isSubscribed(int nmId);
+// }
 
 // price
 abstract class SingleCardScreenPriceService {
@@ -108,7 +108,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       required this.tokenProvider,
       required this.id,
       required this.initialStocksService,
-      required this.subscriptionsService,
+      // required this.subscriptionsService,
       required this.notificationService,
       required this.stockService,
       required this.sellerService,
@@ -137,7 +137,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   final SingleCardScreenNotificationService notificationService;
   final SingleCardScreenAuthService tokenProvider;
   final SingleCardScreenPriceService priceService;
-  final SingleCardScreenSubscriptionsService subscriptionsService;
+  // final SingleCardScreenSubscriptionsService subscriptionsService;
   final SingleCardScreenWeekOrdersService weekOrdersService;
 
   Stream<StreamNotificationEvent> streamNotification;

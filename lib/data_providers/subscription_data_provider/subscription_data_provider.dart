@@ -2,10 +2,10 @@ import 'package:idb_shim/idb.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
+
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
 
-import 'package:intl/intl.dart';
 import 'package:rewild_bot_front/domain/services/tracking_service.dart';
 
 class SubscriptionDataProvider
@@ -17,25 +17,25 @@ class SubscriptionDataProvider
   Future<Database> get _db async => await DatabaseHelper().database;
 
   @override
-  Future<Either<RewildError, int>> save(SubscriptionModel subscription) async {
+  Future<Either<RewildError, int>> save(
+      SubscriptionV2Response subscription) async {
     try {
       final db = await _db;
       final txn = db.transaction('subs', idbModeReadWrite);
       final store = txn.objectStore('subs');
 
-      // Check if subscription with this card_id already exists
-      if (subscription.cardId != 0) {
-        final index = store.index('card_id');
-        final existingSub = await index.count(subscription.cardId);
-
-        // If yes - return 0
-        if (existingSub > 0) {
-          await txn.completed;
-          return right(0);
-        }
+      // Убедимся, что 'id' больше нуля
+      if (subscription.id <= 0) {
+        return left(RewildError(
+          sendToTg: true,
+          "Некорректный ключ 'id' для объекта Subscription",
+          source: "SubscriptionDataProvider",
+          name: "save",
+          args: [subscription.toMap()],
+        ));
       }
 
-      // If not, insert a new record
+      // Передаем только объект данных без отдельного параметра ключа
       final id = await store.put(subscription.toMap());
       await txn.completed;
       return right(id as int);
@@ -45,30 +45,25 @@ class SubscriptionDataProvider
         e.toString(),
         source: "SubscriptionDataProvider",
         name: "save",
-        args: [subscription],
+        args: [subscription.toMap()],
       ));
     }
   }
 
   @override
-  Future<Either<RewildError, List<SubscriptionModel>>>
-      getAllNotExpired() async {
+  Future<Either<RewildError, List<SubscriptionV2Response>>> get() async {
     try {
       final db = await _db;
       final txn = db.transaction('subs', idbModeReadOnly);
       final store = txn.objectStore('subs');
-      final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-      final index = store.index('end_date');
-      final cursorStream = index.openCursor(autoAdvance: true);
-
-      final List<SubscriptionModel> subscriptions = [];
+      // get all subscriptions
+      final cursorStream = store.openCursor(autoAdvance: true);
+      final List<SubscriptionV2Response> subscriptions = [];
 
       await for (final cursor in cursorStream) {
         final value = cursor.value as Map<String, dynamic>;
-        if (value['end_date'] >= today) {
-          subscriptions.add(SubscriptionModel.fromMap(value));
-        }
+
+        subscriptions.add(SubscriptionV2Response.fromMap(value));
       }
 
       await txn.completed;
@@ -78,30 +73,8 @@ class SubscriptionDataProvider
         sendToTg: true,
         e.toString(),
         source: "SubscriptionDataProvider",
-        name: "getAllNotExpired",
-      ));
-    }
-  }
-
-  @override
-  Future<Either<RewildError, SubscriptionModel?>> getOne(int nmId) async {
-    try {
-      final db = await _db;
-      final txn = db.transaction('subs', idbModeReadOnly);
-      final store = txn.objectStore('subs');
-      final result = await store.getObject(nmId);
-
-      await txn.completed;
-      return right(result != null
-          ? SubscriptionModel.fromMap(result as Map<String, dynamic>)
-          : null);
-    } catch (e) {
-      return left(RewildError(
-        sendToTg: true,
-        e.toString(),
-        source: "SubscriptionDataProvider",
-        name: "getOne",
-        args: [nmId],
+        name: "getSubscriptions",
+        args: [],
       ));
     }
   }
@@ -124,71 +97,93 @@ class SubscriptionDataProvider
       ));
     }
   }
+  // @override
+  // Future<Either<RewildError, List<SubscriptionModel>>>
+  //     getAllNotExpired() async {
+  //   try {
+  //     final db = await _db;
+  //     final txn = db.transaction('subs', idbModeReadOnly);
+  //     final store = txn.objectStore('subs');
+  //     final today = DateFormat('yyyy-MM-dd').format(DateTime.now());
 
-  @override
-  Future<Either<RewildError, List<SubscriptionModel>>>
-      getActiveSubscriptions() async {
-    try {
-      final db = await _db;
-      final txn = db.transaction('subs', idbModeReadOnly);
-      final store = txn.objectStore('subs');
-      final tomorrow = DateFormat('yyyy-MM-dd')
-          .format(DateTime.now().add(const Duration(days: 1)));
+  //     final index = store.index('end_date');
+  //     final cursorStream = index.openCursor(autoAdvance: true);
 
-      final index = store.index('end_date');
-      final cursorStream = index.openCursor(autoAdvance: true);
+  //     final List<SubscriptionModel> subscriptions = [];
 
-      final List<SubscriptionModel> subscriptions = [];
+  //     await for (final cursor in cursorStream) {
+  //       final value = cursor.value as Map<String, dynamic>;
+  //       if (value['end_date'] >= today) {
+  //         subscriptions.add(SubscriptionModel.fromMap(value));
+  //       }
+  //     }
 
-      await for (final cursor in cursorStream) {
-        final value = cursor.value as Map<String, dynamic>;
-        if (value['end_date'] > tomorrow) {
-          subscriptions.add(SubscriptionModel.fromMap(value));
-        }
-      }
+  //     await txn.completed;
+  //     return right(subscriptions);
+  //   } catch (e) {
+  //     return left(RewildError(
+  //       sendToTg: true,
+  //       e.toString(),
+  //       source: "SubscriptionDataProvider",
+  //       name: "getAllNotExpired",
+  //     ));
+  //   }
+  // }
 
-      await txn.completed;
-      return right(subscriptions);
-    } catch (e) {
-      return left(RewildError(
-        sendToTg: true,
-        e.toString(),
-        source: "SubscriptionDataProvider",
-        name: "getActiveSubscriptions",
-      ));
-    }
-  }
+  // @override
+  // Future<Either<RewildError, SubscriptionModel?>> getOne(int nmId) async {
+  //   try {
+  //     final db = await _db;
+  //     final txn = db.transaction('subs', idbModeReadOnly);
+  //     final store = txn.objectStore('subs');
+  //     final result = await store.getObject(nmId);
 
-  static Future<Either<RewildError, List<SubscriptionModel>>>
-      getActiveSubscriptionsInBg() async {
-    try {
-      final db = await DatabaseHelper().database;
-      final txn = db.transaction('subs', idbModeReadOnly);
-      final store = txn.objectStore('subs');
-      final tomorrow = DateFormat('yyyy-MM-dd')
-          .format(DateTime.now().add(const Duration(days: 1)));
+  //     await txn.completed;
+  //     return right(result != null
+  //         ? SubscriptionModel.fromMap(result as Map<String, dynamic>)
+  //         : null);
+  //   } catch (e) {
+  //     return left(RewildError(
+  //       sendToTg: true,
+  //       e.toString(),
+  //       source: "SubscriptionDataProvider",
+  //       name: "getOne",
+  //       args: [nmId],
+  //     ));
+  //   }
+  // }
 
-      final index = store.index('end_date');
-      final cursorStream = index.openCursor(autoAdvance: true);
+  // @override
+  // Future<Either<RewildError, List<SubscriptionModel>>>
+  //     getActiveSubscriptions() async {
+  //   try {
+  //     final db = await _db;
+  //     final txn = db.transaction('subs', idbModeReadOnly);
+  //     final store = txn.objectStore('subs');
+  //     final tomorrow = DateFormat('yyyy-MM-dd')
+  //         .format(DateTime.now().add(const Duration(days: 1)));
 
-      final List<SubscriptionModel> subscriptions = [];
+  //     final index = store.index('end_date');
+  //     final cursorStream = index.openCursor(autoAdvance: true);
 
-      await for (final cursor in cursorStream) {
-        final value = cursor.value as Map<String, dynamic>;
-        if (value['end_date'] > tomorrow) {
-          subscriptions.add(SubscriptionModel.fromMap(value));
-        }
-      }
+  //     final List<SubscriptionModel> subscriptions = [];
 
-      await txn.completed;
-      return right(subscriptions);
-    } catch (e) {
-      return left(RewildError(
-        sendToTg: true,
-        e.toString(),
-        source: 'SubscriptionDataProvider',
-        name: "getActiveSubscriptionsInBg",
-      ));
-    }
-  }
+  //     await for (final cursor in cursorStream) {
+  //       final value = cursor.value as Map<String, dynamic>;
+  //       if (value['end_date'] > tomorrow) {
+  //         subscriptions.add(SubscriptionModel.fromMap(value));
+  //       }
+  //     }
+
+  //     await txn.completed;
+  //     return right(subscriptions);
+  //   } catch (e) {
+  //     return left(RewildError(
+  //       sendToTg: true,
+  //       e.toString(),
+  //       source: "SubscriptionDataProvider",
+  //       name: "getActiveSubscriptions",
+  //     ));
+  //   }
+  // }
 }

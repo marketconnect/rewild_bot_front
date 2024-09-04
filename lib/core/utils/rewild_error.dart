@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:rewild_bot_front/.env.dart';
+
 import 'package:rewild_bot_front/core/utils/telegram.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class RewildError {
   final List<dynamic>? args;

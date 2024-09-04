@@ -4,13 +4,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:rewild_bot_front/.env.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/di/di.dart';
 
 import 'dart:js' as js;
+
+import 'package:rewild_bot_front/env.dart';
 
 abstract class AppFactory {
   Widget makeApp();
@@ -32,12 +33,13 @@ void main() async {
     setUrlStrategy(PathUrlStrategy());
     final dbHelper = DatabaseHelper();
 
-    // Дождитесь полной инициализации базы данных
     // await sendMessageToTelegramBot(
     //     TBot.tBotErrorToken, TBot.tBotErrorChatId, "started");
     await dbHelper.database;
     // await sendMessageToTelegramBot(
     //     TBot.tBotErrorToken, TBot.tBotErrorChatId, "finished");
+    // await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+    //     ' ${(html.window.navigator.userAgent)}');
 
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {
