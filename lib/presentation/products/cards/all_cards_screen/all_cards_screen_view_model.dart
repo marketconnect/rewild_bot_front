@@ -78,7 +78,7 @@ abstract class AllCardsScreenUpdateService {
 
 // Subscriptions
 abstract class AllCardsScreenSubscriptionsService {
-  Future<Either<RewildError, void>> clearSubscriptions(
+  Future<Either<RewildError, void>> removeCardsFromSubscription(
       {required String token, required List<int> cardIds});
   // Future<Either<RewildError, List<SubscriptionModel>>> getLocalSubscriptions(
   //     {required String token});
@@ -91,6 +91,8 @@ abstract class AllCardsScreenSubscriptionsService {
     required String startDate,
     required String endDate,
   });
+
+  Future<Either<RewildError, List<int>>> getCardsIds();
 }
 
 // Notifications
@@ -412,27 +414,26 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
         await fetch(() => subscriptionsService.getSubscription(token: token));
     if (localSubscriptionsResult != null) {
       // Get IDs of cards with active subscriptions
-      // Set<SubscriptionModel> subscribedCards =
-      //     localSubscriptionsResult.where((sub) {
-      //   DateTime endDate;
-      //   try {
-      //     endDate = dateFormat.parse(sub.endDate);
-      //   } catch (e) {
-      //     return false; // If parsing fails, treat the subscription as inactive
-      //   }
-      //   return endDate
-      //       .isAfter(DateTime.now()); // Only consider active subscriptions
-      // }).toSet();
+      Set<int> subscribedCards = localSubscriptionsResult.where((sub) {
+        DateTime endDate;
+        try {
+          endDate = dateFormat.parse(sub.endDate);
+        } catch (e) {
+          return false; // If parsing fails, treat the subscription as inactive
+        }
+        return endDate
+            .isAfter(DateTime.now()); // Only consider active subscriptions
+      }).toSet();
 
       // Find missing card IDs
-      //   final subscribedCardsIds = subscribedCards.map((sub) => sub.cardId);
-      //   _missingCardIds = _productCards
-      //       .where((card) => !subscribedCardsIds.contains(card.nmId))
-      //       .map((card) => card.nmId)
-      //       .toList();
+      final subscribedCardsIds = subscribedCards.map((sub) => sub.cardId);
+      _missingCardIds = _productCards
+          .where((card) => !subscribedCardsIds.contains(card.nmId))
+          .map((card) => card.nmId)
+          .toList();
 
-      //   setEmptySubscriptionsQty(
-      //       subscribedCards.where((element) => element.cardId == 0).length);
+      setEmptySubscriptionsQty(
+          subscribedCards.where((element) => element.cardId == 0).length);
     }
   }
 
@@ -492,7 +493,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     // delete cards
     await fetch(() => updateService.delete(token: token, nmIds: idsForDelete));
     // delete subscriptions
-    await fetch(() => subscriptionsService.clearSubscriptions(
+    await fetch(() => subscriptionsService.removeCardsFromSubscription(
         token: token, cardIds: idsForDelete));
 
     _update();

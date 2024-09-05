@@ -10,7 +10,7 @@ class ProductCardWidget extends StatelessWidget {
     super.key,
     required this.productCard,
     required this.userNmId,
-    // required this.isNotPaid,
+    required this.isNotPaid,
     this.inAnyGroup = false,
     this.isSelected = false,
     required this.grossProfit,
@@ -21,7 +21,7 @@ class ProductCardWidget extends StatelessWidget {
   final bool isSelected;
   final bool inAnyGroup;
   final bool isShimmer;
-  // final bool isNotPaid;
+  final bool isNotPaid;
   final bool userNmId;
   final double? grossProfit;
 
@@ -32,7 +32,6 @@ class ProductCardWidget extends StatelessWidget {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
     DateTime now = DateTime.now();
 
-    // Убедитесь, что сравниваемые даты имеют одинаковый год, месяц и день.
     return date.year == now.year &&
         date.month == now.month &&
         date.day == now.day;

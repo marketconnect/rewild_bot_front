@@ -6,7 +6,6 @@ import 'package:rewild_bot_front/presentation/feedback/reviews/all_products_revi
 import 'package:rewild_bot_front/widgets/empty_widget.dart';
 import 'package:rewild_bot_front/widgets/network_image.dart';
 import 'package:rewild_bot_front/widgets/popum_menu_item.dart';
-import 'package:rewild_bot_front/widgets/progress_indicator.dart';
 
 class AllProductsReviewsScreen extends StatefulWidget {
   const AllProductsReviewsScreen({super.key});

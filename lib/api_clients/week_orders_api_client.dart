@@ -39,10 +39,11 @@ class WeekOrdersApiClient implements WeekOrdersServiceWeekOrdersApiClient {
       if (response.statusCode == 200) {
         final responseBody = response.body;
 
-        // Декодируем ответ и получаем объект
         final responseData = jsonDecode(responseBody);
 
-        // Извлекаем список заказов из объекта
+        if (responseData['orders'] == null) {
+          return right([]);
+        }
         final ordersData = responseData['orders'] as List<dynamic>;
         final filteredOrdersData = ordersData
             .where((o) =>

@@ -296,8 +296,8 @@ class _GestureDetectorCard extends StatelessWidget {
     final onCardLongPress = model.onCardLongPress;
     final onCardTap = model.onCardTap;
     final id = productCard.nmId;
-    // final missingInSubscriptions = model.missingCardIds;
-    // final isNotPaid = missingInSubscriptions.contains(id);
+    final missingInSubscriptions = model.missingCardIds;
+    final isNotPaid = missingInSubscriptions.contains(id);
     final isSelected = model.selectedNmIds.contains(id);
     final selectedGroup = model.selectedGroup;
     final isSelectingForHandle = model.selectingForHandle;
@@ -340,6 +340,7 @@ class _GestureDetectorCard extends StatelessWidget {
         grossProfit: grossProfitOrNull,
         inAnyGroup: selectedGroup != null,
         isSelected: isSelected,
+        isNotPaid: ,
       ),
     );
   }

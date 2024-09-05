@@ -128,19 +128,11 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
       notify();
     });
 
-    // final cardsQty = await fetch(() => cardService.count());
-    // if (cardsQty == null) {
-    //   return;
-    // }
-
-    // subscription
     final subscriptions =
         await fetch(() => subscriptionService.getSubscription(token: token));
     if (subscriptions == null) {
       return;
     }
-
-    // get subscription cards quantity ('Free', 3),('Basic', 25),('Standard', 50),('Premium', 100);
 
     switch (subscriptions.subscriptionTypeName) {
       case "Free":

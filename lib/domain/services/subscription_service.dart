@@ -4,12 +4,10 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 
-import 'package:rewild_bot_front/domain/entities/subscription_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
-import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 // Api
 abstract class SubscriptionServiceSubscriptionApiClient {
@@ -44,19 +42,26 @@ abstract class SubscriptionServiceSubscriptionApiClient {
   });
 
   Future<Either<RewildError, RemoveCardFromSubscriptionResponse>>
-      removeCardFromSubscription({
+      removeCardsFromSubscription({
     required String token,
-    required int sku,
+    required List<int> skus,
   });
 }
 
-// Data Provider
+// Subs data Provider
 abstract class SubscriptionServiceSubscriptionDataProvider {
   Future<Either<RewildError, int>> save(SubscriptionV2Response subscription);
   Future<Either<RewildError, List<SubscriptionV2Response>>> get();
   Future<Either<RewildError, bool>> deleteAll();
   // Future<Either<RewildError, List<SubscriptionModel>>> getAllNotExpired();
   // Future<Either<RewildError, SubscriptionModel?>> getOne(int nmId);
+}
+
+// Cards data Provider
+abstract class SubsServiceCardsDataProvider {
+  Future<Either<RewildError, List<int>>> getAllIds();
+  Future<Either<RewildError, void>> addAllIds(List<int> ids);
+  Future<Either<RewildError, bool>> deleteAll();
 }
 
 // Failed request
@@ -80,12 +85,13 @@ class SubscriptionService
         AllCardsScreenSubscriptionsService {
   final SubscriptionServiceSubscriptionApiClient apiClient;
   final SubscriptionServiceSubscriptionDataProvider dataProvider;
-
+  final SubsServiceCardsDataProvider cardsDataProvider;
   final StreamController<(int, int)> cardsNumberStreamController;
 
   SubscriptionService(
       {required this.apiClient,
       required this.dataProvider,
+      required this.cardsDataProvider,
       // required this.subsToDeleteDataProvider,
       // required this.userNameStorage,
       required this.cardsNumberStreamController});
@@ -130,6 +136,55 @@ class SubscriptionService
     return right(subscriptionsfromServer);
   }
 
+  @override
+  Future<Either<RewildError, void>> addCardsToSubscription({
+    required String token,
+    required List<CardToSubscription> cards,
+  }) async {
+    final apiResult =
+        await apiClient.addCardsToSubscription(token: token, cards: cards);
+    if (apiResult.isLeft()) {
+      return apiResult; // If the API deletion fails, return the error
+    }
+
+    final cardsIds = apiResult.fold(
+        (l) => throw UnimplementedError(), (r) => r.subscriptionCardIds);
+
+    final res = await _syncCardsSubscriptions(cardsIds);
+    if (res.isLeft()) {
+      return res;
+    }
+    return right(null); // Return success
+  }
+
+  @override
+  Future<Either<RewildError, List<int>>> getCardsIds() async {
+    final res = await cardsDataProvider.getAllIds();
+    if (res.isLeft()) {
+      return res;
+    }
+    return right(res.fold((l) => throw UnimplementedError(), (r) => r));
+  }
+
+  @override
+  Future<Either<RewildError, void>> removeCardsFromSubscription(
+      {required String token, required List<int> cardIds}) async {
+    // Delete from API client
+    final apiResult = await apiClient.removeCardsFromSubscription(
+        token: token, skus: cardIds);
+    if (apiResult.isLeft()) {
+      return apiResult; // If the API deletion fails, return the error
+    }
+    final apiSubsResp =
+        apiResult.fold((l) => throw UnimplementedError(), (r) => r);
+
+    final res = await _syncCardsSubscriptions(apiSubsResp.subscriptionCardIds);
+    if (res.isLeft()) {
+      return res;
+    }
+    return right(null); // Return success
+  }
+
   Future<Either<RewildError, void>> _syncSubscriptions(
       SubscriptionV2Response sub) async {
     // Get subscriptions from API client
@@ -147,27 +202,21 @@ class SubscriptionService
     return right(null);
   }
 
-  @override
-  Future<Either<RewildError, void>> clearSubscriptions(
-      {required String token, required List<int> cardIds}) async {
-    // Delete from API client
+  Future<Either<RewildError, void>> _syncCardsSubscriptions(
+      List<int> skus) async {
+    // Get subscriptions from API client
 
-    // TODO mopdify to use list of skus
-    for (final cardId in cardIds) {
-      final apiResult =
-          await apiClient.removeCardFromSubscription(token: token, sku: cardId);
-      if (apiResult.isLeft()) {
-        return apiResult; // If the API deletion fails, return the error
-      }
-      // final apiSubs =
-      //     apiResult.fold((l) => throw UnimplementedError(), (r) => r);
+    // If the API returns no error, delete all local subscriptions
+    await cardsDataProvider.deleteAll();
+    // Save subscriptions to local data provider
+
+    final saveResult = await cardsDataProvider.addAllIds(skus);
+    if (saveResult.isLeft()) {
+      return saveResult;
     }
 
-    // final res = await _syncSubscriptions(apiSubs);
-    // if (res.isLeft()) {
-    //   return res;
-    // }
-    return right(null); // Return success
+    // _addSubsToStream(subs);
+    return right(null);
   }
 
   // void _addSubsToStream(List<SubscriptionV2Response> subs) {

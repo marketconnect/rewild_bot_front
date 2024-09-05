@@ -80,26 +80,26 @@ class ExtendSubscriptionV2Response {
 }
 
 class AddCardsToSubscriptionResponse {
-  final String? err;
+  final List<int> subscriptionCardIds;
 
-  AddCardsToSubscriptionResponse({this.err});
+  AddCardsToSubscriptionResponse({required this.subscriptionCardIds});
 
   factory AddCardsToSubscriptionResponse.fromJson(Map<String, dynamic> json) {
     return AddCardsToSubscriptionResponse(
-      err: json['err'],
+      subscriptionCardIds: json['subscription_card_ids'],
     );
   }
 }
 
 class RemoveCardFromSubscriptionResponse {
-  final String? err;
+  final List<int> subscriptionCardIds;
 
-  RemoveCardFromSubscriptionResponse({this.err});
+  RemoveCardFromSubscriptionResponse({required this.subscriptionCardIds});
 
   factory RemoveCardFromSubscriptionResponse.fromJson(
       Map<String, dynamic> json) {
     return RemoveCardFromSubscriptionResponse(
-      err: json['err'],
+      subscriptionCardIds: json['subscription_card_ids'],
     );
   }
 }

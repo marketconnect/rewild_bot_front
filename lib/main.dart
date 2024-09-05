@@ -33,13 +33,7 @@ void main() async {
     setUrlStrategy(PathUrlStrategy());
     final dbHelper = DatabaseHelper();
 
-    // await sendMessageToTelegramBot(
-    //     TBot.tBotErrorToken, TBot.tBotErrorChatId, "started");
     await dbHelper.database;
-    // await sendMessageToTelegramBot(
-    //     TBot.tBotErrorToken, TBot.tBotErrorChatId, "finished");
-    // await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-    //     ' ${(html.window.navigator.userAgent)}');
 
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {

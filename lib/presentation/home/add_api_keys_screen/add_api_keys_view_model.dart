@@ -5,13 +5,11 @@ import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/utils/jwt_decode.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/api_key_model.dart';
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/user_seller.dart';
-import 'package:rewild_bot_front/env.dart';
 
 // Api key service
 abstract class AddApiKeysScreenApiKeysService {
@@ -297,12 +295,8 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
     final allSavedCardsOrNull =
         await fetch(() => cardOfProductService.getAll(nmIds));
     if (allSavedCardsOrNull != null) {
-      await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          'allCardsOrNull  != null ${allSavedCardsOrNull.length}');
       savedNmIds = allSavedCardsOrNull.map((e) => e.nmId).toList();
     }
-    await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        'allCardsOrNull ${allSavedCardsOrNull!.length}');
 
     // get cards that are not in local storage
     List<CardItem> notSavedCards = [];
@@ -315,12 +309,8 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
     }
 
     List<CardOfProductModel> cardOfProducts = [];
-    await sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        'notSavedCards ${notSavedCards.length}');
-    for (final c in notSavedCards) {
-      await sendMessageToTelegramBot(
-          TBot.tBotErrorToken, TBot.tBotErrorChatId, '${c.toMap()}');
 
+    for (final c in notSavedCards) {
       final nmId = c.nmID;
       final img = c.photos.first.big;
       final cardOfProduct = CardOfProductModel(

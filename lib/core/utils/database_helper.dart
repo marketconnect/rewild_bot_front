@@ -227,6 +227,11 @@ class DatabaseHelper {
       db.createObjectStore('subs', keyPath: 'id', autoIncrement: false);
     });
 
+    createStoreIfNotExists('subscribed_cards', () {
+      db.createObjectStore('subscribed_cards',
+          keyPath: 'id', autoIncrement: true);
+    });
+
     createStoreIfNotExists('groups', () {
       final store =
           db.createObjectStore('groups', keyPath: 'id', autoIncrement: true);

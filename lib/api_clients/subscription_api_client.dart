@@ -228,9 +228,7 @@ class SubscriptionApiClient
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-        return right(AddCardsToSubscriptionResponse(
-          err: data['err'],
-        ));
+        return right(AddCardsToSubscriptionResponse.fromJson(data));
       } else {
         return left(RewildError(
           sendToTg: true,
@@ -253,9 +251,9 @@ class SubscriptionApiClient
 
   @override
   Future<Either<RewildError, RemoveCardFromSubscriptionResponse>>
-      removeCardFromSubscription({
+      removeCardsFromSubscription({
     required String token,
-    required int sku,
+    required List<int> skus,
   }) async {
     final url =
         Uri.parse("https://rewild.website/api/removeCardFromSubscription");
@@ -267,22 +265,20 @@ class SubscriptionApiClient
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'sku': sku,
+          'skus': skus,
         }),
       );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-        return right(RemoveCardFromSubscriptionResponse(
-          err: data['err'],
-        ));
+        return right(RemoveCardFromSubscriptionResponse.fromJson(data));
       } else {
         return left(RewildError(
           sendToTg: true,
           "Ошибка при удалении карты из подписки: ${response.statusCode}",
           source: "SubscriptionApiClient",
           name: "removeCardFromSubscription",
-          args: [sku],
+          args: [skus],
         ));
       }
     } catch (e) {
@@ -291,7 +287,7 @@ class SubscriptionApiClient
         "Неизвестная ошибка: $e",
         source: "SubscriptionApiClient",
         name: "removeCardFromSubscription",
-        args: [sku],
+        args: [skus],
       ));
     }
   }
