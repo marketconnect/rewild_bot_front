@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
@@ -22,9 +23,10 @@ abstract class PaymentScreenTokenService {
 abstract class PaymentScreenSubscriptionsService {
   Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});
-  Future<Either<RewildError, AddSubscriptionV2Response>> createSubscriptions({
+  Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
     required String token,
-    required List<int> cardIds,
+    required int subscriptionID,
+    required String subscriptionType,
     required String startDate,
     required String endDate,
   });
@@ -317,7 +319,7 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
             description:
                 'Тариф «${_subscriptionsInfo[_activeIndex]['title']}» на 1 мес.',
             endDate: endDate,
-            cards: cardsToAdd));
+            subscriptionType: getSubscriptionTypeByIndex(index: activeIndex)));
     if (res == true) {
       if (context.mounted) {
         Navigator.of(context).pop(true);

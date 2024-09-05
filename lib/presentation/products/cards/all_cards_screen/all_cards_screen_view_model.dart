@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 
 import 'package:rewild_bot_front/core/constants/notification_constants.dart';
+import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
@@ -22,7 +23,6 @@ import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
-// total costs
 abstract class AllCardsScreenTotalCostService {
   Future<Either<RewildError, Map<int, double>>> getAllGrossProfit(
       int averageLogistics);
@@ -82,17 +82,19 @@ abstract class AllCardsScreenSubscriptionsService {
       {required String token, required List<int> cardIds});
   // Future<Either<RewildError, List<SubscriptionModel>>> getLocalSubscriptions(
   //     {required String token});
-  Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
-      {required String token});
-
-  Future<Either<RewildError, AddSubscriptionV2Response>> createSubscriptions({
+  Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
     required String token,
-    required List<int> cardIds,
+    required int subscriptionID,
+    required String subscriptionType,
     required String startDate,
     required String endDate,
   });
-
-  Future<Either<RewildError, List<int>>> getCardsIds();
+  Future<Either<RewildError, SubscriptionV2Response?>> getSubscriptionLocal();
+  Future<Either<RewildError, List<int>>> getSubscribedCardsIds();
+  Future<Either<RewildError, void>> addCardsToSubscription({
+    required String token,
+    required List<CardOfProductModel> cardModels,
+  });
 }
 
 // Notifications
@@ -101,6 +103,19 @@ abstract class AllCardsScreenNotificationsService {
 }
 
 class AllCardsScreenViewModel extends ResourceChangeNotifier {
+  final AllCardsScreenAuthService tokenService;
+  final AllCardsScreenCardOfProductService cardsOfProductsService;
+  final AllCardsScreenUpdateService updateService;
+  final AllCardsScreenGroupsService groupsProvider;
+  final AllCardsScreenFilterService filterService;
+  final AllCardsScreenTotalCostService totalCostService;
+  final AllCardsScreenSupplyService supplyService;
+  final AllCardsScreenNotificationsService notificationsService;
+  final AllCardsScreenSubscriptionsService subscriptionsService;
+
+  final AllCardsScreenAverageLogisticsService averageLogisticsService;
+  // Stream
+  Stream<StreamNotificationEvent> streamNotification;
   AllCardsScreenViewModel(
       {required super.context,
       required this.tokenService,
@@ -117,35 +132,46 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     asyncInit();
   }
 
-  // constructor params
-  final AllCardsScreenAuthService tokenService;
-  final AllCardsScreenCardOfProductService cardsOfProductsService;
-  final AllCardsScreenUpdateService updateService;
-  final AllCardsScreenGroupsService groupsProvider;
-  final AllCardsScreenFilterService filterService;
-  final AllCardsScreenTotalCostService totalCostService;
-  final AllCardsScreenSupplyService supplyService;
-  final AllCardsScreenNotificationsService notificationsService;
-  final AllCardsScreenSubscriptionsService subscriptionsService;
+  Future<void> asyncInit() async {
+    // SqfliteService.printTableContent('subs');
+    setLoading(true);
 
-  final AllCardsScreenAverageLogisticsService averageLogisticsService;
-  // Stream
-  Stream<StreamNotificationEvent> streamNotification;
+    streamNotification.listen((event) async {
+      if (event.parentType == ParentType.card) {
+        await _update();
+      }
+    });
+    final userNmIdsOrNull =
+        await fetch(() => cardsOfProductsService.getAllUserNmIds());
+    if (userNmIdsOrNull != null) {
+      setUserNmIds(userNmIdsOrNull.map((e) => e.nmId).toList());
+    }
+    _groups.insert(
+        0,
+        GroupModel(
+            name: "Все",
+            bgColor: const Color(0xFF6750A4).value,
+            cardsNmIds: [],
+            fontColor: const Color(0xFFFFFFFF).value));
 
-  // other fields
+    await _update(false);
+    setLoading(false);
+
+    // await p();
+  }
+
   final dateFormat = DateFormat('yyyy-MM-dd');
 
   // user`s nmIds
-  final List<int> _userNmIds = [];
-  void setUserNmIds(List<int> value) {
-    _userNmIds.clear();
-    _userNmIds.addAll(value);
-    notify();
-  }
+  List<int> _userNmIds = [];
 
   bool isUserNmId(int nmId) => _userNmIds.contains(nmId);
   bool get someUserNmIdIsSelected =>
       _selectedNmIds.any((element) => isUserNmId(element));
+  void setUserNmIds(List<int> value) {
+    _userNmIds = value;
+    notify();
+  }
 
   // selecting cards process
   bool? _selectingForPayment;
@@ -160,15 +186,28 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     notify();
   }
 
-  // loading
-  bool _isLoading = true;
+  // Subscription
+  List<int> _missingCardIds = [];
 
-  void setIsLoading(bool value) {
-    _isLoading = value;
+  List<int> get missingCardIds => _missingCardIds;
+
+  // empty subscriptions qty
+  int get emptySubscriptionsQty => _emptySubscriptionsQty;
+  int _emptySubscriptionsQty = 0;
+  void setEmptySubscriptionsQty(int value) {
+    _emptySubscriptionsQty = value;
     notify();
   }
 
-  bool get isLoading => _isLoading;
+  // loading
+  bool _loading = true;
+
+  void setLoading(bool value) {
+    _loading = value;
+    notify();
+  }
+
+  bool get isLoading => _loading;
 
   // filter
   FilterModel? _filter;
@@ -177,12 +216,34 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
   bool _filterIsEmpty = true;
   bool get filterIsEmpty => _filterIsEmpty;
 
-  List<int> get allNmIds => _productCards.map((e) => e.nmId).toList();
+  void checkFilter() {
+    if (_filter == null) {
+      _filterIsEmpty = true;
+      return;
+    }
 
-  final List<CardOfProductModel> _productCards = [];
+    if (_filter!.subjects != null && _filter!.subjects!.isNotEmpty ||
+        _filter!.brands != null && _filter!.brands!.isNotEmpty ||
+        _filter!.suppliers != null && _filter!.suppliers!.isNotEmpty ||
+        _filter!.promos != null && _filter!.promos!.isNotEmpty ||
+        _filter!.withSales != null ||
+        _filter!.withStocks != null) {
+      _filterIsEmpty = false;
+
+      return;
+    }
+    _filterIsEmpty = true;
+  }
+
+  Future<void> resetFilter() async {
+    await fetch(() => filterService.deleteFilter());
+    await _update();
+  }
+
+  List<CardOfProductModel> _productCards = [];
+  List<int> get allNmIds => _productCards.map((e) => e.nmId).toList();
   void setProductCards(List<CardOfProductModel> productCards) {
-    _productCards.clear();
-    _productCards.addAll(productCards);
+    _productCards = productCards;
   }
 
   List<CardOfProductModel> get productCards => _productCards;
@@ -220,63 +281,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
   Map<int, double> _totalCostsGrossProfit = {};
 
   Map<int, double> get grossProfit => _totalCostsGrossProfit;
-
-  // Methods ===================================================================
-  Future<void> asyncInit() async {
-    // SqfliteService.printTableContent('subs');
-    setIsLoading(true);
-
-    streamNotification.listen((event) async {
-      if (event.parentType == ParentType.card) {
-        await _update();
-      }
-    });
-
-    final userNmIdsOrNull =
-        await fetch(() => cardsOfProductsService.getAllUserNmIds());
-
-    if (userNmIdsOrNull != null) {
-      setUserNmIds(userNmIdsOrNull.map((e) => e.nmId).toList());
-    }
-
-    _groups.insert(
-        0,
-        GroupModel(
-            name: "Все",
-            bgColor: const Color(0xFF6750A4).value,
-            cardsNmIds: [],
-            fontColor: const Color(0xFFFFFFFF).value));
-
-    await _update(false);
-
-    setIsLoading(false);
-
-    // await p();
-  }
-
-  void checkFilter() {
-    if (_filter == null) {
-      _filterIsEmpty = true;
-      return;
-    }
-
-    if (_filter!.subjects != null && _filter!.subjects!.isNotEmpty ||
-        _filter!.brands != null && _filter!.brands!.isNotEmpty ||
-        _filter!.suppliers != null && _filter!.suppliers!.isNotEmpty ||
-        _filter!.promos != null && _filter!.promos!.isNotEmpty ||
-        _filter!.withSales != null ||
-        _filter!.withStocks != null) {
-      _filterIsEmpty = false;
-
-      return;
-    }
-    _filterIsEmpty = true;
-  }
-
-  Future<void> resetFilter() async {
-    await fetch(() => filterService.deleteFilter());
-    await _update();
-  }
 
   Future<void> _update([bool toNotify = true]) async {
     // filter
@@ -322,7 +326,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     final dateFrom = yesterdayEndOfTheDay();
     final dateTo = DateTime.now();
     // calculate stocks, initial stocks, supplies, was ordered field
-    for (final card in fetchedCardsOfProducts) {
+    for (CardOfProductModel card in fetchedCardsOfProducts) {
       card.calculate(dateFrom, dateTo);
       final oldCard = oldCards.where((old) {
         return old.nmId == card.nmId;
@@ -362,9 +366,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       }
     }
     // Filter cards
-    setProductCards(_productCards.where((card) {
+    _productCards = _productCards.where((card) {
       return filterCard(card);
-    }).toList());
+    }).toList();
     // Filter groups
     _groups = _groups.where((group) {
       if (group.name == "Все") {
@@ -386,7 +390,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     // Define a date format that matches the Go date format
     // Get local subscriptions
     // final token = await _getToken();
-    await _handleSubscriptions(token);
+    await _handleSubscriptions();
 
     // Total costs
     int averageLogistics = 50;
@@ -409,36 +413,46 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     notify();
   }
 
-  Future<void> _handleSubscriptions(String token) async {
-    final localSubscriptionsResult =
-        await fetch(() => subscriptionsService.getSubscription(token: token));
-    if (localSubscriptionsResult != null) {
+  Future<void> _handleSubscriptions() async {
+    // Get local subscription
+    final localSubscriptionOrNull =
+        await fetch(() => subscriptionsService.getSubscriptionLocal());
+    if (localSubscriptionOrNull != null) {
       // Get IDs of cards with active subscriptions
-      Set<int> subscribedCards = localSubscriptionsResult.where((sub) {
-        DateTime endDate;
-        try {
-          endDate = dateFormat.parse(sub.endDate);
-        } catch (e) {
-          return false; // If parsing fails, treat the subscription as inactive
-        }
-        return endDate
-            .isAfter(DateTime.now()); // Only consider active subscriptions
-      }).toSet();
+      // Set<SubscriptionModel> subscribedCards =
+      //     localSubscriptionOrNull.where((sub) {
+      //   DateTime endDate;
+      //   try {
+      //     endDate = dateFormat.parse(sub.endDate);
+      //   } catch (e) {
+      //     return false; // If parsing fails, treat the subscription as inactive
+      //   }
+      //   return endDate
+      //       .isAfter(DateTime.now()); // Only consider active subscriptions
+      // }).toSet();
 
       // Find missing card IDs
-      final subscribedCardsIds = subscribedCards.map((sub) => sub.cardId);
+      final subscribedCardsIdsOrNull =
+          await fetch(() => subscriptionsService.getSubscribedCardsIds());
+
+      if (subscribedCardsIdsOrNull == null) {
+        return;
+      }
+
       _missingCardIds = _productCards
-          .where((card) => !subscribedCardsIds.contains(card.nmId))
+          .where((card) => !subscribedCardsIdsOrNull.contains(card.nmId))
           .map((card) => card.nmId)
           .toList();
 
+      final subCardsQtyLimit = getSubscriptionLimit(
+          subscriptionTypeName: localSubscriptionOrNull.subscriptionTypeName);
       setEmptySubscriptionsQty(
-          subscribedCards.where((element) => element.cardId == 0).length);
+          subCardsQtyLimit - subscribedCardsIdsOrNull.length);
     }
   }
 
   // Future<void> p() async {
-  //   const timeDuration = SettingsConstants.updatePeriod;
+  //   const timeDuration = TimeConstants.updatePeriod;
 
   //   Timer.periodic(timeDuration, (Timer t) async {
   //     if (!context.mounted) {
@@ -451,7 +465,8 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
   void onCardTap(int nmId) {
     // If there are no selected cards and the card is paid or user`s, open single card screen
-    if (_selectedNmIds.isEmpty && (isUserNmId(nmId))) {
+    if (_selectedNmIds.isEmpty &&
+        (!_missingCardIds.contains(nmId) || isUserNmId(nmId))) {
       Navigator.of(context).pushNamed(
         MainNavigationRouteNames.singleCardScreen,
         arguments: nmId,
@@ -468,10 +483,10 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> deleteUnsubscribedCards() async {
-  //   // delete cards
-  //   await fetch(() => updateService.deleteLocal(nmIds: _missingCardIds));
-  // }
+  Future<void> deleteUnsubscribedCards() async {
+    // delete cards
+    await fetch(() => updateService.deleteLocal(nmIds: _missingCardIds));
+  }
 
   Future<void> deleteCards() async {
     List<int> idsForDelete = [];
@@ -507,10 +522,10 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
   }
 
   void combine() {
-    Navigator.of(context).pushReplacementNamed(
-      "MainNavigationRouteNames.addGroupsScreen",
-      arguments: _selectedNmIds,
-    );
+    // Navigator.of(context).pushReplacementNamed(
+    //   MainNavigationRouteNames.addGroupsScreen,
+    //   arguments: _selectedNmIds,
+    // );
   }
 
   Future<void> track() async {
@@ -529,12 +544,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     }
 
     onClearSelected();
-    final result = await subscriptionsService.createSubscriptions(
+    final result = await subscriptionsService.addCardsToSubscription(
       token: token,
-      cardIds: selectedCardModels.map((e) => e.nmId).toList(),
-      startDate: dateFormat.format(DateTime.now()),
-      endDate:
-          dateFormat.format(DateTime.now().subtract(const Duration(days: 1))),
+      cardModels: selectedCardModels.toList(),
     );
     if (result.isLeft()) {
       return;
@@ -549,14 +561,14 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       return;
     }
 
-    await _handleSubscriptions(token);
+    await _handleSubscriptions();
   }
 
   void _select(int nmId) {
-    // if (_selectingForPayment == null) {
-    //   final selectedCardWithoutSubscription = _missingCardIds.contains(nmId);
-    //   setIsSelectingForPayment(selectedCardWithoutSubscription);
-    // }
+    if (_selectingForPayment == null) {
+      final selectedCardWithoutSubscription = _missingCardIds.contains(nmId);
+      setIsSelectingForPayment(selectedCardWithoutSubscription);
+    }
 
     bool found = _selectedNmIds.contains(nmId);
     if (found) {

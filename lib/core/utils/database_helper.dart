@@ -33,7 +33,7 @@ class DatabaseHelper {
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
       'b_rewild_b.db',
-      version: 1,
+      version: 2,
       onUpgradeNeeded: _onUpgrade,
     );
 
@@ -43,7 +43,7 @@ class DatabaseHelper {
   Future<void> _onUpgrade(VersionChangeEvent event) async {
     sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
         "${event.oldVersion} -> ${event.newVersion}");
-    if (event.oldVersion < 1) {
+    if (event.oldVersion < 2) {
       await _onCreate(event);
     }
     // final db = event.database;
@@ -229,7 +229,7 @@ class DatabaseHelper {
 
     createStoreIfNotExists('subscribed_cards', () {
       db.createObjectStore('subscribed_cards',
-          keyPath: 'id', autoIncrement: true);
+          keyPath: 'sku', autoIncrement: false);
     });
 
     createStoreIfNotExists('groups', () {
@@ -270,9 +270,11 @@ class DatabaseHelper {
       store.createIndex('query_geo', ['query', 'geo'], unique: false);
     });
 
-    db.createObjectStore('orders_history', keyPath: 'id', autoIncrement: true)
-      ..createIndex('nmId', 'nmId', unique: false)
-      ..createIndex('nmId_updatetAt', ['nmId', 'updatetAt'], unique: false);
+    createStoreIfNotExists('orders_history', () {
+      db.createObjectStore('orders_history', keyPath: 'id', autoIncrement: true)
+        ..createIndex('nmId', 'nmId', unique: false)
+        ..createIndex('nmId_updatetAt', ['nmId', 'updatetAt'], unique: false);
+    });
   }
 
   Future<void> cleanInvalidRecords() async {

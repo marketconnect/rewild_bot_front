@@ -13,56 +13,6 @@ class SubscriptionApiClient
     implements SubscriptionServiceSubscriptionApiClient {
   const SubscriptionApiClient();
 
-  // Добавляем новые методы ниже...
-
-  @override
-  Future<Either<RewildError, AddSubscriptionV2Response>> addSubscriptionV2({
-    required String token,
-    required String subscriptionType,
-    required String startDate,
-    required String endDate,
-  }) async {
-    final url = Uri.parse("https://rewild.website/api/addSubscriptionV2");
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'subscriptionType': subscriptionType,
-          'startDate': startDate,
-          'endDate': endDate,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        return right(AddSubscriptionV2Response(
-          err: data['err'],
-          subscriptionId: data['subscription_id'],
-        ));
-      } else {
-        return left(RewildError(
-          sendToTg: true,
-          "Ошибка при добавлении подписки V2: ${response.statusCode}",
-          source: "SubscriptionApiClient",
-          name: "addSubscriptionV2",
-          args: [subscriptionType, startDate, endDate],
-        ));
-      }
-    } catch (e) {
-      return left(RewildError(
-        sendToTg: true,
-        "Неизвестная ошибка: $e",
-        source: "SubscriptionApiClient",
-        name: "addSubscriptionV2",
-        args: [subscriptionType, startDate, endDate],
-      ));
-    }
-  }
-
   @override
   Future<Either<RewildError, SubscriptionV2Response>> getSubscriptionV2({
     required String token,
@@ -106,8 +56,7 @@ class SubscriptionApiClient
   }
 
   @override
-  Future<Either<RewildError, UpdateSubscriptionV2Response>>
-      updateSubscriptionV2({
+  Future<Either<RewildError, SubscriptionV2Response>> updateSubscriptionV2({
     required String token,
     required int subscriptionID,
     required String subscriptionType,
@@ -132,8 +81,11 @@ class SubscriptionApiClient
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-        return right(UpdateSubscriptionV2Response(
-          err: data['err'],
+        return right(SubscriptionV2Response(
+          id: data['id'],
+          subscriptionTypeName: data['subscription_type_name'],
+          startDate: data['start_date'],
+          endDate: data['end_date'],
         ));
       } else {
         return left(RewildError(
@@ -207,7 +159,8 @@ class SubscriptionApiClient
     required String token,
     required List<CardToSubscription> cards,
   }) async {
-    final url = Uri.parse("https://rewild.website/api/addCardsToSubscription");
+    final url =
+        Uri.parse("https://rewild.website/api/addCardsToSubscriptionV2");
     try {
       final response = await http.post(
         url,
@@ -235,7 +188,7 @@ class SubscriptionApiClient
           "Ошибка при добавлении карт в подписку: ${response.statusCode}",
           source: "SubscriptionApiClient",
           name: "addCardsToSubscription",
-          args: [cards],
+          args: [cards.toString()],
         ));
       }
     } catch (e) {
@@ -244,7 +197,7 @@ class SubscriptionApiClient
         "Неизвестная ошибка: $e",
         source: "SubscriptionApiClient",
         name: "addCardsToSubscription",
-        args: [cards],
+        args: [cards.toString()],
       ));
     }
   }
@@ -256,7 +209,7 @@ class SubscriptionApiClient
     required List<int> skus,
   }) async {
     final url =
-        Uri.parse("https://rewild.website/api/removeCardFromSubscription");
+        Uri.parse("https://rewild.website/api/removeCardFromSubscriptionV2");
     try {
       final response = await http.post(
         url,

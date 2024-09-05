@@ -1,17 +1,3 @@
-class AddSubscriptionV2Response {
-  final String? err;
-  final int? subscriptionId;
-
-  AddSubscriptionV2Response({this.err, this.subscriptionId});
-
-  factory AddSubscriptionV2Response.fromJson(Map<String, dynamic> json) {
-    return AddSubscriptionV2Response(
-      err: json['err'],
-      subscriptionId: json['subscription_id'],
-    );
-  }
-}
-
 class SubscriptionV2Response {
   final int id;
   final String subscriptionTypeName;
@@ -51,18 +37,6 @@ class SubscriptionV2Response {
       subscriptionTypeName: map['subscription_type_name'],
       startDate: map['start_date'],
       endDate: map['end_date'],
-    );
-  }
-}
-
-class UpdateSubscriptionV2Response {
-  final String? err;
-
-  UpdateSubscriptionV2Response({this.err});
-
-  factory UpdateSubscriptionV2Response.fromJson(Map<String, dynamic> json) {
-    return UpdateSubscriptionV2Response(
-      err: json['err'],
     );
   }
 }

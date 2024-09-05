@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
@@ -11,22 +12,15 @@ import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_w
 
 // Api
 abstract class SubscriptionServiceSubscriptionApiClient {
-  Future<Either<RewildError, AddSubscriptionV2Response>> addSubscriptionV2({
+  Future<Either<RewildError, SubscriptionV2Response>> updateSubscriptionV2({
     required String token,
+    required int subscriptionID,
     required String subscriptionType,
     required String startDate,
     required String endDate,
   });
   Future<Either<RewildError, SubscriptionV2Response>> getSubscriptionV2({
     required String token,
-  });
-  Future<Either<RewildError, UpdateSubscriptionV2Response>>
-      updateSubscriptionV2({
-    required String token,
-    required int subscriptionID,
-    required String subscriptionType,
-    required String startDate,
-    required String endDate,
   });
 
   Future<Either<RewildError, ExtendSubscriptionV2Response>>
@@ -76,6 +70,9 @@ abstract class SubscriptionServiceUserNameSecureStorage {
   Future<Either<RewildError, String?>> getServerToken();
 }
 
+// When the app starts it fetches subscriptions from the server
+// and saves them in the local database.
+// Then it uses local database to fetch subscriptions (getSubscriptionLocal method).
 class SubscriptionService
     implements
         PaymentScreenSubscriptionsService,
@@ -84,36 +81,77 @@ class SubscriptionService
         MainNavigationSubscriptionService,
         AllCardsScreenSubscriptionsService {
   final SubscriptionServiceSubscriptionApiClient apiClient;
-  final SubscriptionServiceSubscriptionDataProvider dataProvider;
+  final SubscriptionServiceSubscriptionDataProvider subsDataProvider;
   final SubsServiceCardsDataProvider cardsDataProvider;
   final StreamController<(int, int)> cardsNumberStreamController;
 
   SubscriptionService(
       {required this.apiClient,
-      required this.dataProvider,
+      required this.subsDataProvider,
       required this.cardsDataProvider,
-      // required this.subsToDeleteDataProvider,
-      // required this.userNameStorage,
       required this.cardsNumberStreamController});
 
-  Future<Either<RewildError, bool>> subscriptionsIsNotEmpty() async {
-    final subsEither = await dataProvider.get();
-    if (subsEither.isRight()) {
-      return right(subsEither
-          .fold((l) => throw UnimplementedError(), (r) => r)
-          .isNotEmpty);
-    }
-    final subs = subsEither.fold((l) => throw UnimplementedError(), (r) => r);
-    for (var sub in subs) {
-      if (DateTime.parse(sub.endDate).isAfter(DateTime.now())) {
-        return right(true);
-      }
-    }
+  @override
 
-    return right(false);
+  /// Update subscription on server and in local db
+  /// Return either [RewildError] if error occurred or [SubscriptionV2Response] of updated subscription
+  Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
+    required String token,
+    required int subscriptionID,
+    required String subscriptionType,
+    required String startDate,
+    required String endDate,
+  }) async {
+    // Create subscriptions in the API client
+    final subOnServerEither = await apiClient.updateSubscriptionV2(
+        subscriptionID: subscriptionID,
+        token: token,
+        subscriptionType: subscriptionType,
+        startDate: startDate,
+        endDate: endDate);
+    if (subOnServerEither.isLeft()) {
+      return left(subOnServerEither.fold(
+          (l) => l,
+          (r) =>
+              throw UnimplementedError())); // If API creation fails, return the error
+    }
+    final subscriptionOnServer =
+        subOnServerEither.fold((l) => throw UnimplementedError(), (r) => r);
+
+    final res = await _syncSubscriptions(subscriptionOnServer);
+    if (res.isLeft()) {
+      return res.fold((l) => left(l), (r) => throw UnimplementedError());
+    }
+    return right(
+        subscriptionOnServer); // Return the list of saved subscriptions
   }
 
   @override
+
+  /// Get local subscription
+  /// Return either [RewildError] if error occurred or [SubscriptionV2Response]
+  /// of local subscription. If there are no subscriptions, return null.
+  Future<Either<RewildError, SubscriptionV2Response?>>
+      getSubscriptionLocal() async {
+    final subscriptions = await subsDataProvider.get();
+    if (subscriptions.isLeft()) {
+      return left(
+          subscriptions.fold((l) => l, (r) => throw UnimplementedError()));
+    }
+
+    final subs =
+        subscriptions.fold((l) => throw UnimplementedError(), (r) => r);
+    if (subs.isEmpty) {
+      return right(null);
+    }
+    return right(subs.first);
+  }
+
+  @override
+
+  /// Get subscription from server and update local subscriptions
+  /// Return either [RewildError] if error occurred or [SubscriptionV2Response]
+  /// of updated subscription.
   Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token}) async {
     // get subscriptions from server
@@ -127,7 +165,6 @@ class SubscriptionService
         (l) => throw UnimplementedError(), (r) => r);
 
     // update local subscriptions
-
     final voidEither = await _syncSubscriptions(subscriptionsfromServer);
     if (voidEither is Left) {
       return voidEither.fold((l) => left(l), (r) => throw UnimplementedError());
@@ -137,10 +174,19 @@ class SubscriptionService
   }
 
   @override
+
+  /// Add cards to subscription on server and in local db
+  ///
+  /// Return either [RewildError] if error occurred or [void] if success
   Future<Either<RewildError, void>> addCardsToSubscription({
     required String token,
-    required List<CardToSubscription> cards,
+    required List<CardOfProductModel> cardModels,
   }) async {
+    List<CardToSubscription> cards = [];
+    for (final card in cardModels) {
+      cards.add(
+          CardToSubscription(image: card.img, name: card.name, sku: card.nmId));
+    }
     final apiResult =
         await apiClient.addCardsToSubscription(token: token, cards: cards);
     if (apiResult.isLeft()) {
@@ -158,7 +204,11 @@ class SubscriptionService
   }
 
   @override
-  Future<Either<RewildError, List<int>>> getCardsIds() async {
+
+  /// Get a list of IDs of cards that are subscribed from local db
+  ///
+  /// Return either [RewildError] if error occurred or [List<int>] of IDs of cards with active subscriptions
+  Future<Either<RewildError, List<int>>> getSubscribedCardsIds() async {
     final res = await cardsDataProvider.getAllIds();
     if (res.isLeft()) {
       return res;
@@ -167,6 +217,10 @@ class SubscriptionService
   }
 
   @override
+
+  /// Remove cards from subscription on server and in local db
+  ///
+  /// Return either [RewildError] if error occurred or [void] if success
   Future<Either<RewildError, void>> removeCardsFromSubscription(
       {required String token, required List<int> cardIds}) async {
     // Delete from API client
@@ -185,15 +239,17 @@ class SubscriptionService
     return right(null); // Return success
   }
 
+  /// Synchronize subscriptions with local data provider
+  /// Return either [RewildError] if error occurred or [void] if success
+  /// This function is not exposed in the public API of the service and is supposed to be used internally.
+  /// [sub] is the subscription to be saved
   Future<Either<RewildError, void>> _syncSubscriptions(
       SubscriptionV2Response sub) async {
-    // Get subscriptions from API client
+    await subsDataProvider.deleteAll();
 
-    // If the API returns no error, delete all local subscriptions
-    await dataProvider.deleteAll();
     // Save subscriptions to local data provider
 
-    final saveResult = await dataProvider.save(sub);
+    final saveResult = await subsDataProvider.save(sub);
     if (saveResult.isLeft()) {
       return saveResult;
     }
@@ -202,6 +258,10 @@ class SubscriptionService
     return right(null);
   }
 
+  /// Synchronize subscribed cards ids with local db
+  /// Return either [RewildError] if error occurred or [void] if success
+  /// This function is not exposed in the public API of the service and is supposed to be used internally.
+  /// [skus] is the list of card IDs to be saved
   Future<Either<RewildError, void>> _syncCardsSubscriptions(
       List<int> skus) async {
     // Get subscriptions from API client
@@ -227,77 +287,5 @@ class SubscriptionService
   //   final takenSubsLength =
   //       activeSubs.where((element) => element.cardId != 0).length;
   //   cardsNumberStreamController.add((totalSubsLength, takenSubsLength));
-  // }
-
-  @override
-  Future<Either<RewildError, AddSubscriptionV2Response>> createSubscriptions({
-    required String token,
-    required List<int> cardIds,
-    required String startDate,
-    required String endDate,
-  }) async {
-    // Create subscriptions in the API client
-    final allSubsOnServerEither = await apiClient.addSubscriptionV2(
-        token: token,
-        subscriptionType: "Premium",
-        startDate: startDate,
-        endDate: endDate);
-    if (allSubsOnServerEither.isLeft()) {
-      return left(allSubsOnServerEither.fold(
-          (l) => l,
-          (r) =>
-              throw UnimplementedError())); // If API creation fails, return the error
-    }
-    final allSubscriptionsOnServer =
-        allSubsOnServerEither.fold((l) => throw UnimplementedError(), (r) => r);
-    // Save all server`s subscriptions to the local data provider
-    // List<SubscriptionModel> allSubscriptionsFromServer = [];
-
-    // TODO add sync
-    // final res = await _syncSubscriptions(allSubscriptionsOnServer);
-    // if (res.isLeft()) {
-    //   return res.fold((l) => left(l), (r) => throw UnimplementedError());
-    // }
-    return right(
-        allSubscriptionsOnServer); // Return the list of saved subscriptions
-  }
-
-  // @override
-  // Future<Either<RewildError, List<SubscriptionModel>>> addZeroSubscriptions({
-  //   required String token,
-  //   required int qty,
-  //   required String startDate,
-  //   required String endDate,
-  // }) async {
-  //   // Create subscriptions in the API client
-  //   final allSubsOnServerEither = await apiClient.addZeroSubscriptions(
-  //       token: token, qty: qty, startDate: startDate, endDate: endDate);
-  //   if (allSubsOnServerEither.isLeft()) {
-  //     return allSubsOnServerEither; // If API creation fails, return the error
-  //   }
-
-  //   final allSubscriptionsOnServer =
-  //       allSubsOnServerEither.fold((l) => throw UnimplementedError(), (r) => r);
-
-  //   // Save all server`s subscriptions to the local data provider
-  //   List<SubscriptionModel> allSubscriptionsFromServer = [];
-
-  //   final res = await _syncSubscriptions(allSubscriptionsOnServer);
-  //   if (res.isLeft()) {
-  //     return res.fold((l) => left(l), (r) => throw UnimplementedError());
-  //   }
-
-  //   return right(
-  //       allSubscriptionsFromServer); // Return the list of saved subscriptions
-  // }
-
-  // @override
-  // Future<Either<RewildError, bool>> isSubscribed(int nmId) async {
-  //   final subsEither = await dataProvider.getOne(nmId);
-  //   if (subsEither.isLeft()) {
-  //     return left(subsEither.fold((l) => l, (r) => throw UnimplementedError()));
-  //   }
-  //   final subs = subsEither.fold((l) => throw UnimplementedError(), (r) => r);
-  //   return right(subs != null);
   // }
 }

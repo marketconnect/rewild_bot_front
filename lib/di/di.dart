@@ -52,6 +52,7 @@ import 'package:rewild_bot_front/data_providers/secure_storage_data_provider/sec
 import 'package:rewild_bot_front/data_providers/seller_data_provider/seller_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/seo_kw_by_lemma_data_provider/seo_kw_by_lemma_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/stock_data_provider/stock_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/subscribed_cards_data_provider/subscribed_cards_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subscription_data_provider/subscription_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/supply_data_provider/supply_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/tariff_data_provider/tariff_data_provider.dart';
@@ -365,6 +366,9 @@ class _DIContainer {
 
   KeywordDataProvider _makeKeywordsDataProvider() =>
       const KeywordDataProvider();
+
+  SubscribedCardsDataProvider _makeSubscribedCardsDataProvider() =>
+      const SubscribedCardsDataProvider();
   // Services ==================================================================
   FilterValuesService _makeFilterValuesService() => FilterValuesService(
       lemmaDataProvider: _makeLemmaDataProvider(),
@@ -412,9 +416,10 @@ class _DIContainer {
       updatedAdvertStreamController: updatedAdvertStreamController);
 
   SubscriptionService _makeSubscriptionService() => SubscriptionService(
+        cardsDataProvider: _makeSubscribedCardsDataProvider(),
         apiClient: _makeSubscriptionApiClient(),
         cardsNumberStreamController: subscriptionStreamController,
-        dataProvider: _makeSubscriptionDataProvider(),
+        subsDataProvider: _makeSubscriptionDataProvider(),
       );
 
   AllCardsFilterService _makeAllCardsFilterService() => AllCardsFilterService(

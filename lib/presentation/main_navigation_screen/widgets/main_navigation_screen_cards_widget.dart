@@ -121,7 +121,7 @@ class _InfoRow extends StatelessWidget {
         padding: const EdgeInsets.all(15.0),
         child: SizedBox(
           width: screenWidth * 0.4,
-          child: Text('$cardsNum шт/$subsNum',
+          child: Text('$cardsNum из $subsNum',
               maxLines: 2,
               style: TextStyle(
                   color: Theme.of(context).colorScheme.onSurface,

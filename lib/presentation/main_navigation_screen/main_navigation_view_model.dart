@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
+import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
@@ -38,6 +39,7 @@ abstract class MainNavigationQuestionService {
 abstract class MainNavigationSubscriptionService {
   Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});
+  Future<Either<RewildError, List<int>>> getSubscribedCardsIds();
 }
 
 // advert
@@ -133,30 +135,16 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     if (subscriptions == null) {
       return;
     }
-
-    switch (subscriptions.subscriptionTypeName) {
-      case "Free":
-        setSubscriptionsNum(3);
-        break;
-      case "Basic":
-        setSubscriptionsNum(25);
-        break;
-      case "Standard":
-        setSubscriptionsNum(50);
-        break;
-      case "Premium":
-        setSubscriptionsNum(100);
-        break;
-      default:
-        break;
-    }
+    setSubscriptionsNum(getSubscriptionLimit(
+        subscriptionTypeName: subscriptions.subscriptionTypeName));
 
     // get added cards quantity
-    final cardsQtyOrNull = await fetch(() => cardService.count());
+    final cardsQtyOrNull =
+        await fetch(() => subscriptionService.getSubscribedCardsIds());
     if (cardsQtyOrNull == null) {
       return;
     }
-    setTrackedCardsNumber(cardsQtyOrNull);
+    setTrackedCardsNumber(cardsQtyOrNull.length);
 
     // setTrackedCardsNumber(subscriptions.where((element) => element.cardId != 0).toList().length);
 

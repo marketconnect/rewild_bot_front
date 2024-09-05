@@ -65,7 +65,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
     final balanceSuccess = model.balanceSuccess;
     final successCallback = model.successCallback;
     final errorCallback = model.errorCallback;
-    final cardModels = widget.paymentInfo.cards;
+    // final subscriptionType = widget.paymentInfo.subscriptionType;
     final amount = widget.paymentInfo.amount;
     final endDate = widget.paymentInfo.endDate;
     final onlybalance = widget.paymentInfo.onlyBalance;
@@ -74,11 +74,12 @@ class _PaymentWebViewState extends State<PaymentWebView> {
       if (onlybalance) {
         balanceSuccess(amount: amount.toDouble());
       } else {
-        successCallback(
-            amount: amount, cardModels: cardModels, endDate: endDate);
+        successCallback(amount: amount, endDate: endDate);
       }
     } else if (url.startsWith('https://marketconnect.ru/error')) {
-      errorCallback(amount, cardModels);
+      errorCallback(
+        amount,
+      );
     }
   }
 

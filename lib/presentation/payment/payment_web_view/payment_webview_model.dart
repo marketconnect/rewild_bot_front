@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
@@ -16,6 +17,7 @@ enum PaymentResult {
   refused,
   error,
   cardsIdsIsEmpty,
+  getSubscriptionError,
   getTokenError,
   creationSubscriptionError,
   putCardsOnServerError,
@@ -29,15 +31,11 @@ abstract class PaymentWebViewTokenService {
 
 // Subscriptions
 abstract class PaymentWebViewSubscriptionsService {
-  // Future<Either<RewildError, List<SubscriptionModel>>> addZeroSubscriptions({
-  //   required String token,
-  //   required int qty,
-  //   required String startDate,
-  //   required String endDate,
-  // });
-  Future<Either<RewildError, AddSubscriptionV2Response>> createSubscriptions({
+  Future<Either<RewildError, SubscriptionV2Response?>> getSubscriptionLocal();
+  Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
     required String token,
-    required List<int> cardIds,
+    required int subscriptionID,
+    required String subscriptionType,
     required String startDate,
     required String endDate,
   });
@@ -55,32 +53,81 @@ abstract class PaymentWebViewViewModelBalanceService {
 }
 
 class PaymentWebViewModel extends ResourceChangeNotifier {
-  final PaymentWebViewTokenService tokenService;
-  final PaymentWebViewSubscriptionsService subService;
-  final PaymentWebViewUpdateService updateService;
-  final PaymentWebViewViewModelBalanceService balanceService;
-
   PaymentWebViewModel({
     required super.context,
     required this.tokenService,
     required this.subService,
     required this.balanceService,
     required this.updateService,
-  });
+  }) {
+    _asyncInit();
+  }
 
-  Future<void> errorCallback(
-      int amount, List<CardOfProductModel> cardModels) async {
-    final cardsIds = cardModels.map((e) => e.nmId).toList().join(',');
+  //
+  final PaymentWebViewTokenService tokenService;
+  final PaymentWebViewSubscriptionsService subService;
+  final PaymentWebViewUpdateService updateService;
+  final PaymentWebViewViewModelBalanceService balanceService;
+
+  late int _subscriptionId;
+  late String _subscriptionType;
+  late String _token;
+
+  Future<void> _asyncInit() async {
+    final values = await Future.wait([
+      fetch(() => tokenService.getToken()),
+      fetch(() => subService.getSubscriptionLocal())
+    ]);
+
+    final token = values[0] as String?;
+    final subscription = values[1] as SubscriptionV2Response?;
+
+    if (token == null ||
+        subscription == null ||
+        subscription.id == 0 ||
+        subscription.subscriptionTypeName == '') {
+      _sendPaymentInfo(
+        'Оплата не прошла! Попробуйте позже. Токен: $token Подписка: ${subscription.toString()}',
+        PaymentResult.error,
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Оплата не прошла! Попробуйте позже.'),
+          ),
+        );
+        Navigator.of(context).pop(false);
+      }
+
+      return;
+    }
+
+    _subscriptionId = subscription.id;
+    _subscriptionType = subscription.subscriptionTypeName;
+    _token = token;
+  }
+
+  Future<void> errorCallback(int amount) async {
+    int subscriptionId = 0;
+    String subscriptionType = '';
+    final subscriptionOrNull =
+        await fetch(() => subService.getSubscriptionLocal());
+    if (subscriptionOrNull != null) {
+      subscriptionId = subscriptionOrNull.id;
+      subscriptionType = subscriptionOrNull.subscriptionTypeName;
+    }
     _sendPaymentInfo(
-      'Сумма пополнения: $amount руб. [$cardsIds]',
+      'Сумма пополнения: $amount руб. Тип подписки:$subscriptionType id: $subscriptionId',
       PaymentResult.refused,
     );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Оплата не прошла! Попробуйте позже.'),
-      ),
-    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Оплата не прошла! Попробуйте позже.'),
+        ),
+      );
+    }
 
     await Future.delayed(const Duration(seconds: 3), () {});
     if (context.mounted) {
@@ -100,103 +147,42 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
     }
   }
 
-  //
   Future<void> successCallback(
-      {required int amount,
-      required List<CardOfProductModel> cardModels,
-      required DateTime endDate}) async {
-    final cardsIds = cardModels.map((e) => e.nmId).toList().join(',');
-
-    if (cardsIds.isEmpty) {
-      _sendPaymentInfo(
-        'Сумма пополнения: $amount руб. [$cardsIds]',
-        PaymentResult.cardsIdsIsEmpty,
-      );
-      return;
-    }
-    // prepare date
-    DateTime today = DateTime.now();
-    // DateTime endDate = DateTime(today.year, today.month + 1, today.day);
+      {required int amount, required DateTime endDate}) async {
+    final today = DateTime.now();
     String formattedToday = DateFormat('yyyy-MM-dd').format(today);
     String formatedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
 
-    // Token
-    final token = await fetch(() => tokenService.getToken());
-    if (token == null) {
-      _sendPaymentInfo(
-        'Сумма пополнения: $amount руб. [$cardsIds]',
-        PaymentResult.getTokenError,
-      );
-      return;
-    }
-    // get zero subs
-    final zeroSubs = cardModels.where((element) => element.nmId == 0);
-    // get non zero subs
-    // Add subscriptions on a server and local storage with the _syncSubscriptions
-    // inside the subService createSubscriptions
-    if (zeroSubs.isNotEmpty) {
-      // final subsResult = await fetch(() => subService.addZeroSubscriptions(
-      //       token: token,
-      //       qty: zeroSubs.length,
-      //       startDate: formattedToday,
-      //       endDate: formatedEndDate,
-      //     ));
-
-      // if (subsResult == null) {
-      _sendPaymentInfo(
-        'Сумма пополнения: $amount руб. [$cardsIds]',
-        PaymentResult.creationSubscriptionError,
-      );
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Что-то пошло не так, пожалуйста, попробуйте позже!'),
-        ));
-      }
-      return;
-      // }
-    }
-
-    // get non zero subs
-    final nonZeroSubs = cardModels.where((element) => element.nmId != 0);
-
-    if (nonZeroSubs.isEmpty) {
-      return;
-    }
-
-    // Attention that we do not add cards only update subscriptions
-    // because if sku is zero it is not neccessary
-    // if sku is not zero means that card is already tracked
-    final nonZeroSubsResult = await fetch(() => subService.createSubscriptions(
-          token: token,
-          cardIds: nonZeroSubs.map((e) => e.nmId).toList(),
+    final responseOrNull = await fetch(() => subService.updateSubscription(
+          token: _token,
+          subscriptionID: _subscriptionId,
+          subscriptionType: _subscriptionType,
           startDate: formattedToday,
           endDate: formatedEndDate,
         ));
 
-    if (nonZeroSubsResult == null) {
+    if (responseOrNull == null) {
       _sendPaymentInfo(
-        'Сумма пополнения: $amount руб. [$cardsIds]',
+        'Сумма пополнения: $amount руб. Тип подписки: "$_subscriptionType", дата окончания: $endDate, id: $_subscriptionId',
         PaymentResult.creationSubscriptionError,
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Что-то пошло не так, пожалуйста, попробуйте позже!'),
+          content: Text(
+              'Что-то пошло не так, мы уже работаем над этой проблемой. Ваша подписка будет обновлена.'),
         ));
       }
       return;
     }
 
     _sendPaymentInfo(
-      'Сумма пополнения: $amount руб. [$cardsIds]',
+      'Сумма пополнения: $amount руб. Тип подписки: "$_subscriptionType", дата окончания: $endDate, id: $_subscriptionId',
       PaymentResult.success,
     );
 
     // balance
-    double sumToAdd = cardModels.length == 20
-        ? 50
-        : cardModels.length == 50
-            ? 100
-            : 150;
+    double sumToAdd =
+        getSubscriptionBalance(subscriptionTypeName: _subscriptionType);
     await fetch(() => balanceService.addBalance(sumToAdd));
 
     if (context.mounted) {
@@ -230,6 +216,9 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
         break;
       case PaymentResult.putCardsOnServerError:
         hashtag = "#ошибкаПриОтправкеКартНаСервер";
+        break;
+      case PaymentResult.getSubscriptionError:
+        hashtag = "#ошибкаПриПолученииПодписки";
         break;
       default:
         hashtag = "#неопределенноеСобытие";

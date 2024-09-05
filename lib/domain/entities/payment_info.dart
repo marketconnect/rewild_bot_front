@@ -1,15 +1,15 @@
-import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
-
 class PaymentInfo {
   final int amount;
   final String description;
-  final List<CardOfProductModel> cards;
+  // final List<CardOfProductModel> cards;
+  final String subscriptionType;
+
   final DateTime endDate;
   final bool onlyBalance;
   const PaymentInfo({
     required this.amount,
     required this.description,
-    required this.cards,
+    required this.subscriptionType,
     required this.endDate,
     this.onlyBalance = false,
   });
@@ -18,7 +18,7 @@ class PaymentInfo {
     return PaymentInfo(
       amount: 0,
       description: "",
-      cards: [],
+      subscriptionType: "",
       endDate: DateTime.now(),
     );
   }

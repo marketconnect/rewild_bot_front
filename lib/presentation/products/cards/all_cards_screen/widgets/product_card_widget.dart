@@ -57,7 +57,9 @@ class ProductCardWidget extends StatelessWidget {
             : "";
 
     String? ordersSumText;
-    if (salesSum > 0) {
+    if (isNotPaid && userNmId) {
+      ordersSumText = "Не отслеживается";
+    } else if (salesSum > 0) {
       ordersSumText = "Заказы: $salesSum шт.";
     }
     //  else if (salesSum < 0 &&

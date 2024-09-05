@@ -15,11 +15,14 @@ class SubscribedCardsDataProvider implements SubsServiceCardsDataProvider {
       final db = await _db;
       final txn = db.transaction('subscribed_cards', idbModeReadOnly);
       final store = txn.objectStore('subscribed_cards');
-      // get all subscriptions
+      // Get all subscriptions
       final cursorStream = store.openCursor(autoAdvance: true);
       final subscriptions = <int>[];
       await for (var cursor in cursorStream) {
-        subscriptions.add(cursor.key as int);
+        // Use cursor.value to get the stored object
+        final data = cursor.value as Map<String, dynamic>;
+        subscriptions
+            .add(data['sku'] as int); // Extract 'sku' from the stored object
       }
       await txn.completed;
       return right(subscriptions);
@@ -27,19 +30,21 @@ class SubscribedCardsDataProvider implements SubsServiceCardsDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: "SubscriptionDataProvider",
+        source: "SubscribedCardsDataProvider",
         name: "getAllIds",
       ));
     }
   }
 
+  @override
   Future<Either<RewildError, void>> addAllIds(List<int> ids) async {
     try {
       final db = await _db;
       final txn = db.transaction('subscribed_cards', idbModeReadWrite);
       final store = txn.objectStore('subscribed_cards');
       for (var id in ids) {
-        await store.put(id);
+        // Correctly create the object with 'sku' key
+        await store.put({'sku': id}); // Use map with 'sku' field
       }
       await txn.completed;
       return right(null);
@@ -47,12 +52,13 @@ class SubscribedCardsDataProvider implements SubsServiceCardsDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: "SubscriptionDataProvider",
-        name: "addAll",
+        source: "SubscribedCardsDataProvider",
+        name: "addAllIds",
       ));
     }
   }
 
+  @override
   Future<Either<RewildError, bool>> deleteAll() async {
     try {
       final db = await _db;
@@ -65,7 +71,7 @@ class SubscribedCardsDataProvider implements SubsServiceCardsDataProvider {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: "SubscriptionDataProvider",
+        source: "SubscribedCardsDataProvider",
         name: "deleteAll",
       ));
     }
