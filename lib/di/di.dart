@@ -15,7 +15,7 @@ import 'package:rewild_bot_front/api_clients/search_query_api_client.dart';
 import 'package:rewild_bot_front/api_clients/initial_stocks_api_client.dart';
 import 'package:rewild_bot_front/api_clients/orders_history_api_client.dart';
 import 'package:rewild_bot_front/api_clients/price_api_client.dart';
-import 'package:rewild_bot_front/api_clients/product_card_service_api_client.dart';
+import 'package:rewild_bot_front/api_clients/card_of_product_api_client.dart';
 import 'package:rewild_bot_front/api_clients/product_keywords_api_client.dart';
 import 'package:rewild_bot_front/api_clients/questions_api_client.dart';
 import 'package:rewild_bot_front/api_clients/seller_api_client.dart';
@@ -634,7 +634,7 @@ class _DIContainer {
         context: context,
         subService: _makeSubscriptionService(),
         tokenService: _makeAuthService(),
-        updateService: _makeUpdateService(),
+        // updateService: _makeUpdateService(),
         balanceService: _makeBalanceService(),
       );
   MyWebViewScreenViewModel _makeMyWebViewScreenViewModel(context) =>

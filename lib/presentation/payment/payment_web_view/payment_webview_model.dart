@@ -7,7 +7,7 @@ import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
-import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
+
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 
 import 'package:rewild_bot_front/env.dart';
@@ -42,11 +42,11 @@ abstract class PaymentWebViewSubscriptionsService {
 }
 
 // update
-abstract class PaymentWebViewUpdateService {
-  Future<Either<RewildError, void>> putOnServerNewCards(
-      {required String token,
-      required List<CardOfProductModel> cardOfProductsToPutOnServer});
-}
+// abstract class PaymentWebViewUpdateService {
+//   Future<Either<RewildError, void>> putOnServerNewCards(
+//       {required String token,
+//       required List<CardOfProductModel> cardOfProductsToPutOnServer});
+// }
 
 abstract class PaymentWebViewViewModelBalanceService {
   Future<Either<RewildError, void>> addBalance(double amountToAdd);
@@ -58,7 +58,7 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
     required this.tokenService,
     required this.subService,
     required this.balanceService,
-    required this.updateService,
+    // required this.updateService,
   }) {
     _asyncInit();
   }
@@ -66,7 +66,7 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
   //
   final PaymentWebViewTokenService tokenService;
   final PaymentWebViewSubscriptionsService subService;
-  final PaymentWebViewUpdateService updateService;
+  // final PaymentWebViewUpdateService updateService;
   final PaymentWebViewViewModelBalanceService balanceService;
 
   late int _subscriptionId;

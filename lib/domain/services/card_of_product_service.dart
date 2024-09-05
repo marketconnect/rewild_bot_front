@@ -46,8 +46,8 @@ abstract class CardOfProductServiceWarehouseApiCient {
 
 // Card
 abstract class CardOfProductServiceCardOfProductApiClient {
-  Future<Either<RewildError, void>> delete(
-      {required String token, required int id});
+  // Future<Either<RewildError, void>> delete(
+  //     {required String token, required int id});
 }
 
 // Data providers

@@ -22,7 +22,6 @@ import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
 
 // Tariffs Api
 abstract class UpdateServiceTariffApiClient {
@@ -67,12 +66,12 @@ abstract class UpdateServiceCardOfProductDataProvider {
 
 // Card of product api client
 abstract class UpdateServiceCardOfProductApiClient {
-  Future<Either<RewildError, void>> save(
-      {required String token, required List<CardOfProductModel> productCards});
+  // Future<Either<RewildError, void>> save(
+  //     {required String token, required List<CardOfProductModel> productCards});
   Future<Either<RewildError, List<CardOfProductModel>>> getAll(
       {required String token});
-  Future<Either<RewildError, void>> delete(
-      {required String token, required int id});
+  // Future<Either<RewildError, void>> delete(
+  //     {required String token, required int id});
 }
 
 // initial stock api client
@@ -174,7 +173,7 @@ class UpdateService
     implements
         AllCardsScreenUpdateService,
         MyWebViewScreenViewModelUpdateService,
-        PaymentWebViewUpdateService,
+        // PaymentWebViewUpdateService,
         AllCardsSeoUpdateService,
         AddApiKeysUpdateService,
         MainNavigationUpdateService {
@@ -391,21 +390,21 @@ class UpdateService
     return right(newCards.length);
   }
 
-  @override
-  Future<Either<RewildError, void>> putOnServerNewCards(
-      {required String token,
-      required List<CardOfProductModel> cardOfProductsToPutOnServer}) async {
-    // get rid of duplicates
-    final uniqueNewCards = cardOfProductsToPutOnServer.toSet().toList();
-    final saveOnServerEither = await cardOfProductApiClient.save(
-        token: token, productCards: uniqueNewCards);
+  // @override
+  // Future<Either<RewildError, void>> putOnServerNewCards(
+  //     {required String token,
+  //     required List<CardOfProductModel> cardOfProductsToPutOnServer}) async {
+  //   // get rid of duplicates
+  //   final uniqueNewCards = cardOfProductsToPutOnServer.toSet().toList();
+  //   final saveOnServerEither = await cardOfProductApiClient.save(
+  //       token: token, productCards: uniqueNewCards);
 
-    if (saveOnServerEither.isLeft()) {
-      return left(
-          saveOnServerEither.fold((l) => l, (r) => throw UnimplementedError()));
-    }
-    return right(null);
-  }
+  //   if (saveOnServerEither.isLeft()) {
+  //     return left(
+  //         saveOnServerEither.fold((l) => l, (r) => throw UnimplementedError()));
+  //   }
+  //   return right(null);
+  // }
 
   // update cards ==============================================================
   @override
@@ -775,46 +774,46 @@ class UpdateService
     return right(initialStockModelsFromServer);
   }
 
-  @override
-  Future<Either<RewildError, int>> delete(
-      {required String token, required List<int> nmIds}) async {
-    for (final id in nmIds) {
-      // delete card from the server
+  // @override
+  // Future<Either<RewildError, int>> delete(
+  //     {required String token, required List<int> nmIds}) async {
+  //   for (final id in nmIds) {
+  //     // delete card from the server
 
-      final deleteFromServerEither =
-          await cardOfProductApiClient.delete(token: token, id: id);
-      if (deleteFromServerEither.isLeft()) {
-        return left(deleteFromServerEither.fold(
-            (l) => l, (r) => throw UnimplementedError()));
-      }
+  //     final deleteFromServerEither =
+  //         await cardOfProductApiClient.delete(token: token, id: id);
+  //     if (deleteFromServerEither.isLeft()) {
+  //       return left(deleteFromServerEither.fold(
+  //           (l) => l, (r) => throw UnimplementedError()));
+  //     }
 
-      // delete card from the local storage
-      final deleteEither = await cardOfProductDataProvider.delete(id: id);
-      if (deleteEither.isLeft()) {
-        return left(
-            deleteEither.fold((l) => l, (r) => throw UnimplementedError()));
-      }
+  //     // delete card from the local storage
+  //     final deleteEither = await cardOfProductDataProvider.delete(id: id);
+  //     if (deleteEither.isLeft()) {
+  //       return left(
+  //           deleteEither.fold((l) => l, (r) => throw UnimplementedError()));
+  //     }
 
-      // delete notifications for this card
-      final deleteNotificationsEither =
-          await notificationDataProvider.deleteAll(parentId: id);
-      if (deleteNotificationsEither.isLeft()) {
-        return left(deleteNotificationsEither.fold(
-            (l) => l, (r) => throw UnimplementedError()));
-      }
-    }
-    // get all cards from local db
+  //     // delete notifications for this card
+  //     final deleteNotificationsEither =
+  //         await notificationDataProvider.deleteAll(parentId: id);
+  //     if (deleteNotificationsEither.isLeft()) {
+  //       return left(deleteNotificationsEither.fold(
+  //           (l) => l, (r) => throw UnimplementedError()));
+  //     }
+  //   }
+  //   // get all cards from local db
 
-    final cardsInDBEither = await cardOfProductDataProvider.getAll();
-    if (cardsInDBEither.isLeft()) {
-      return left(
-          cardsInDBEither.fold((l) => l, (r) => throw UnimplementedError()));
-    }
-    // final cardsInDB =
-    // cardsInDBEither.getOrElse((l) => throw UnimplementedError());
-    // cardsNumberStreamController.add(cardsInDB.length);
-    return right(nmIds.length);
-  }
+  //   final cardsInDBEither = await cardOfProductDataProvider.getAll();
+  //   if (cardsInDBEither.isLeft()) {
+  //     return left(
+  //         cardsInDBEither.fold((l) => l, (r) => throw UnimplementedError()));
+  //   }
+  //   // final cardsInDB =
+  //   // cardsInDBEither.getOrElse((l) => throw UnimplementedError());
+  //   // cardsNumberStreamController.add(cardsInDB.length);
+  //   return right(nmIds.length);
+  // }
 
   @override
   Future<Either<RewildError, int>> deleteLocal(

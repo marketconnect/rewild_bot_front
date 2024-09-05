@@ -68,12 +68,12 @@ abstract class AllCardsScreenSupplyService {
 // Update
 abstract class AllCardsScreenUpdateService {
   Future<Either<RewildError, void>> update(String token);
-  Future<Either<RewildError, int>> delete(
-      {required String token, required List<int> nmIds});
+  // Future<Either<RewildError, int>> delete(
+  //     {required String token, required List<int> nmIds});
   Future<Either<RewildError, int>> deleteLocal({required List<int> nmIds});
-  Future<Either<RewildError, void>> putOnServerNewCards(
-      {required String token,
-      required List<CardOfProductModel> cardOfProductsToPutOnServer});
+  // Future<Either<RewildError, void>> putOnServerNewCards(
+  //     {required String token,
+  //     required List<CardOfProductModel> cardOfProductsToPutOnServer});
 }
 
 // Subscriptions
@@ -506,7 +506,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     final token = await _getToken();
 
     // delete cards
-    await fetch(() => updateService.delete(token: token, nmIds: idsForDelete));
+    // await fetch(() => updateService.delete(token: token, nmIds: idsForDelete));
     // delete subscriptions
     await fetch(() => subscriptionsService.removeCardsFromSubscription(
         token: token, cardIds: idsForDelete));
@@ -553,13 +553,13 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     }
 
     // putOnServerNewCards returns void so fetch is not used here
-    final cardsResult = await updateService.putOnServerNewCards(
-      token: token,
-      cardOfProductsToPutOnServer: selectedCardModels.toList(),
-    );
-    if (cardsResult is Left) {
-      return;
-    }
+    // final cardsResult = await updateService.putOnServerNewCards(
+    //   token: token,
+    //   cardOfProductsToPutOnServer: selectedCardModels.toList(),
+    // );
+    // if (cardsResult is Left) {
+    //   return;
+    // }
 
     await _handleSubscriptions();
   }
