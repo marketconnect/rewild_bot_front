@@ -14,6 +14,9 @@ import 'package:rewild_bot_front/domain/entities/notification.dart';
 import 'package:rewild_bot_front/widgets/my_dialog_textfield_radio.dart';
 import 'package:rewild_bot_front/widgets/my_dialog_textfield_radio_checkbox.dart';
 
+import 'package:rewild_bot_front/env.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
+
 abstract class CampaignManagementNotificationService {
   Future<Either<RewildError, void>> addForParent(
       {required List<ReWildNotificationModel> notifications,
@@ -257,6 +260,8 @@ class CampaignManagementViewModel extends ResourceChangeNotifier {
     if (_apiKey == null) {
       return;
     }
+    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+        'campaignId: $campaignId,cpm: $cpm, type: $_advType, param: $option,');
     await fetch(() => advertService.setCpm(
         campaignId: campaignId, cpm: cpm, type: _advType!, param: option));
     // _wasCpmOrBudgetChanged = true;
