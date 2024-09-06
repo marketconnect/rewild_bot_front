@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
+import 'package:rewild_bot_front/env.dart';
 
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
@@ -20,6 +22,8 @@ class PaymentScreen extends StatelessWidget {
     final processPayment = model.processPayment;
     final todayPlusOneMonth =
         formatDate(model.todayPlusOneMonth.toIso8601String());
+    final currentSubscriptionEndDatePlusOneMonth =
+        model.currentSubscriptionEndDatePlusOneMonth;
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -68,6 +72,8 @@ class PaymentScreen extends StatelessWidget {
                       activeIndex: activeIndex,
                       indexOfCurrentSubscription: indexOfCurrentSubscription,
                       todayPlusOneMonth: todayPlusOneMonth,
+                      currentSubscriptionEndDatePlusOneMonth:
+                          currentSubscriptionEndDatePlusOneMonth,
                       setActive: setActive),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.05,
@@ -162,6 +168,7 @@ class _SubscriptionsCards extends StatefulWidget {
     required this.setActive,
     required this.indexOfCurrentSubscription,
     required this.todayPlusOneMonth,
+    required this.currentSubscriptionEndDatePlusOneMonth,
   });
 
   final List<Map<String, dynamic>> subscriptions;
@@ -169,6 +176,7 @@ class _SubscriptionsCards extends StatefulWidget {
   final int activeIndex;
   final void Function(int value) setActive;
   final String todayPlusOneMonth;
+  final DateTime currentSubscriptionEndDatePlusOneMonth;
 
   @override
   State<_SubscriptionsCards> createState() => _SubscriptionsCardsState();
@@ -203,8 +211,6 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
 
   @override
   Widget build(BuildContext context) {
-    final prolongation =
-        widget.indexOfCurrentSubscription == widget.activeIndex;
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.25,
       child: ListView.builder(
@@ -212,7 +218,16 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
         controller: _scrollController,
         itemCount: widget.subscriptions.length,
         itemBuilder: (context, index) {
-          final active = index == widget.activeIndex;
+          sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+              '${index} < ${widget.indexOfCurrentSubscription} ? ${formatDate(widget.currentSubscriptionEndDatePlusOneMonth.toIso8601String())} : ${widget.todayPlusOneMonth}');
+          // The active index is always one greater than the subscribed index.
+          // So when the subscribed index is the last index,
+          // the active index is the last index - 1
+          // This is presented in the second part of the || condition
+          final active = index == widget.activeIndex ||
+              widget.activeIndex == widget.subscriptions.length &&
+                  widget.activeIndex - 1 == index;
+
           return GestureDetector(
             onTap: () => widget.setActive(
               index,
@@ -284,11 +299,12 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           if (widget.subscriptions[index]['endDate'] != null)
+                            // if the card represents current user subscription
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                      prolongation
+                                      active // if the card represents
                                           ? 'Продлить до ${widget.subscriptions[index]['endDatePlusOneMonth']}'
                                           : 'Оплачено до ${widget.subscriptions[index]['endDate']}',
                                       style: TextStyle(
@@ -304,7 +320,13 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text('до ${widget.todayPlusOneMonth}',
+                                  // if the card does not represents current user subscription
+                                  // and the card is less (by type of subscription) than the current user subscription
+                                  // then we need to show the end_date of the card
+                                  // month after the current user subscription
+                                  // instead of the month after today
+                                  Text(
+                                      'До ${index < widget.indexOfCurrentSubscription ? formatDate(widget.currentSubscriptionEndDatePlusOneMonth.toIso8601String()) : widget.todayPlusOneMonth}',
                                       style: TextStyle(
                                         color: active
                                             ? Colors.black

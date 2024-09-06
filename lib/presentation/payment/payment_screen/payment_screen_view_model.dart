@@ -5,12 +5,10 @@ import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/payment_info.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
-import 'package:rewild_bot_front/env.dart';
 
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
@@ -144,8 +142,7 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
     if (days > 1) {
       unspent = ((days - 1) * (currentMonthPrice / 31)).floor();
     }
-    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        "unspent: $typeOfUserSubscription");
+
     _subscriptionsInfo.add({
       'title': 'Базовый',
       'price': '₽${value.price1}',
