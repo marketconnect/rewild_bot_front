@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
-import 'package:rewild_bot_front/env.dart';
 
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
@@ -218,8 +216,6 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
         controller: _scrollController,
         itemCount: widget.subscriptions.length,
         itemBuilder: (context, index) {
-          sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-              '${index} < ${widget.indexOfCurrentSubscription} ? ${formatDate(widget.currentSubscriptionEndDatePlusOneMonth.toIso8601String())} : ${widget.todayPlusOneMonth}');
           // The active index is always one greater than the subscribed index.
           // So when the subscribed index is the last index,
           // the active index is the last index - 1

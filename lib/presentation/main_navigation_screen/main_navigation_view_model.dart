@@ -297,7 +297,8 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
       if (subscription == null) {
         return;
       }
-      setSubscriptionsNum(subscription.subscriptionTypeName == "free" ? 3 : 25);
+      setSubscriptionsNum(getSubscriptionLimit(
+          subscriptionTypeName: subscription.subscriptionTypeName));
     }
   }
 }
