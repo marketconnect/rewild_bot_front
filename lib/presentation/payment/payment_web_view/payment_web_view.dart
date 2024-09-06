@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'dart:ui' as ui;
-import 'package:provider/provider.dart';
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/domain/entities/payment_info.dart';
 import 'package:rewild_bot_front/env.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
@@ -74,7 +74,10 @@ class _PaymentWebViewState extends State<PaymentWebView> {
       if (onlybalance) {
         balanceSuccess(amount: amount.toDouble());
       } else {
-        successCallback(amount: amount, endDate: endDate);
+        successCallback(
+            amount: amount,
+            endDate: endDate,
+            subscriptionType: widget.paymentInfo.subscriptionType);
       }
     } else if (url.startsWith('https://marketconnect.ru/error')) {
       errorCallback(
@@ -85,6 +88,34 @@ class _PaymentWebViewState extends State<PaymentWebView> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO remove me
+    // TODO remove me
+    // TODO remove me
+    // TODO remove me
+    // TODO remove me
+    final model = context.read<PaymentWebViewModel>();
+    final successCallback = model.successCallback;
+    final amount = widget.paymentInfo.amount;
+    final endDate = widget.paymentInfo.endDate;
+
+    return Scaffold(
+      body: Container(
+        color: Colors.white,
+        child: Center(
+          child: TextButton(
+              onPressed: () => successCallback(
+                  amount: amount,
+                  endDate: endDate,
+                  subscriptionType: widget.paymentInfo.subscriptionType),
+              child: const Text("Жми")),
+        ),
+      ),
+    );
+    // TODO remove me
+    // TODO remove me
+    // TODO remove me
+    // TODO remove me
+    // TODO remove me
     return Stack(children: [
       Scaffold(
         appBar: AppBar(

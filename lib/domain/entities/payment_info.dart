@@ -1,6 +1,7 @@
 class PaymentInfo {
   final int amount;
   final String description;
+
   // final List<CardOfProductModel> cards;
   final String subscriptionType;
 

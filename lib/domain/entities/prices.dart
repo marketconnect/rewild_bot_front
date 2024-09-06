@@ -25,6 +25,24 @@ class Prices {
     required this.clientSecret,
   });
 
+  int getPriceBySubscriptionType(String subscriptionType) {
+    switch (subscriptionType) {
+      case "Free":
+        return 0;
+      case "Basic":
+        return price1;
+
+      case "Standard":
+        return price2;
+
+      case "Premium":
+        return price3;
+
+      default:
+        return 0;
+    }
+  }
+
   // Copy with method should also be updated
   Prices copyWith({
     int? price1,

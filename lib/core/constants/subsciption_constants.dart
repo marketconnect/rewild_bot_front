@@ -40,3 +40,18 @@ String getSubscriptionTypeByIndex({required int index}) {
       return "Free";
   }
 }
+
+int getSubscriptionIndexByType({required String subscriptionType}) {
+  switch (subscriptionType) {
+    case "Basic":
+      return 1;
+    case "Standard":
+      return 2;
+    case "Premium":
+      return 3;
+    case "Free":
+      return 0;
+    default:
+      return -1;
+  }
+}

@@ -16,7 +16,7 @@ abstract class ScreenFactory {
   Widget makeApiKeysScreen();
   Widget makeAllCardsScreen();
   Widget makeMyWebViewScreen((List<int>, String?) nmIdsSearchString);
-  Widget makePaymentScreen(List<int> cardNmIds);
+  Widget makePaymentScreen();
   Widget makePaymentWebView(PaymentInfo paymentInfo);
   Widget makeSingleCardScreen(int id);
   Widget makeCardNotificationsSettingsScreen(NotificationCardState state);
@@ -98,10 +98,8 @@ class MainNavigation implements AppNavigation {
             },
             settings: settings);
       case MainNavigationRouteNames.paymentScreen:
-        final arguments = settings.arguments;
-        final cardNmIds = arguments is List<int> ? arguments : <int>[];
         return MaterialPageRoute(
-          builder: (_) => screenFactory.makePaymentScreen(cardNmIds),
+          builder: (_) => screenFactory.makePaymentScreen(),
         );
 
       case MainNavigationRouteNames.paymentWebView:

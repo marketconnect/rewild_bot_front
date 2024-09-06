@@ -16,8 +16,6 @@ import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
 //
 import 'package:shimmer/shimmer.dart';
 
-import 'package:shimmer/shimmer.dart';
-
 class AllCardsScreen extends StatefulWidget {
   const AllCardsScreen({super.key});
 
@@ -73,43 +71,6 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
 
     return SafeArea(
       child: Scaffold(
-        // floatingActionButton: filterIsEmpty || selectionInProcess
-        //     ? (isSelectingForPayment != null && isSelectingForPayment)
-        //         ? TextButton(
-        //             onPressed: () => track(),
-        //             child: Container(
-        //               alignment: Alignment.center,
-        //               width: MediaQuery.of(context).size.width * 0.45,
-        //               height: MediaQuery.of(context).size.width * 0.18,
-        //               decoration: BoxDecoration(
-        //                 color: Theme.of(context).colorScheme.primary,
-        //                 borderRadius: BorderRadius.circular(15),
-        //               ),
-        //               child: Text('Отслеживать',
-        //                   style: TextStyle(
-        //                       color: Theme.of(context).colorScheme.onPrimary,
-        //                       fontWeight: FontWeight.bold)),
-        //             ),
-        //           )
-        //         : null
-        //     : FloatingActionButton(
-        //         backgroundColor:
-        //             Theme.of(context).colorScheme.surfaceContainerHighest,
-        //         onPressed: () async {
-        //           await resetFilter();
-        //         },
-        //         child: Container(
-        //           width: 30,
-        //           height: 30,
-        //           decoration: const BoxDecoration(
-        //             color: Colors.transparent,
-        //           ),
-        //           child: Image.asset(
-        //             IconConstant.iconFilterDismiss,
-        //             color: Theme.of(context).colorScheme.onSurfaceVariant,
-        //           ),
-        //         ),
-        //       ),
         floatingActionButton: filterIsEmpty || selectionInProcess
             ? (isSelectingForPayment != null && isSelectingForPayment)
                 ? TextButton(
@@ -154,7 +115,6 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
                   ),
                 ),
               ),
-
         body: DefaultTabController(
           length: selectionInProcess ? 1 : groups.length,
           child: NestedScrollView(
@@ -520,13 +480,18 @@ class _HorizontalScrollMenuState extends State<_HorizontalScrollMenu>
                             const SizedBox(
                               width: 5,
                             ),
-                            Text(
-                              '$len/${emptySubscriptionsQty - len}',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
+                            emptySubscriptionsQty - len > 0
+                                ? Text(
+                                    '$len/${emptySubscriptionsQty - len}',
+                                    style: TextStyle(
+                                      fontSize: 20,
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                                  )
+                                : const Icon(
+                                    Icons.update,
+                                  ),
                           ],
                         ),
                         SizedBox(

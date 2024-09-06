@@ -30,7 +30,6 @@ import 'package:rewild_bot_front/presentation/products/cards/expense_manager_scr
 import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo_search_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
-import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
@@ -108,8 +107,7 @@ class CardOfProductService
         CompetitorKeywordExpansionCardOfProductService,
         AllCardsSeoScreenCardOfProductService,
         SingleCardScreenCardOfProductService,
-        AllCardsScreenCardOfProductService,
-        PaymentScreenCardsService {
+        AllCardsScreenCardOfProductService {
   final CardOfProductServiceWarehouseDataProvider warehouseDataprovider;
   final CardOfProductServiceStockDataProvider stockDataprovider;
   final CardOfProductServiceWarehouseApiCient warehouseApiClient;

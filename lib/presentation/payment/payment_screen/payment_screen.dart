@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
@@ -15,7 +16,10 @@ class PaymentScreen extends StatelessWidget {
     final isLoading = model.isLoading;
     final setActive = model.setActive;
     final units = model.units;
+    final indexOfCurrentSubscription = model.indexOfCurrentSubscription;
     final processPayment = model.processPayment;
+    final todayPlusOneMonth =
+        formatDate(model.todayPlusOneMonth.toIso8601String());
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(
@@ -62,6 +66,8 @@ class PaymentScreen extends StatelessWidget {
                   _SubscriptionsCards(
                       subscriptions: subscriptions,
                       activeIndex: activeIndex,
+                      indexOfCurrentSubscription: indexOfCurrentSubscription,
+                      todayPlusOneMonth: todayPlusOneMonth,
                       setActive: setActive),
                   SizedBox(
                     height: MediaQuery.of(context).size.height * 0.05,
@@ -80,9 +86,11 @@ class PaymentScreen extends StatelessWidget {
                         color: Colors.black,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: const Text(
-                        "Оплатить",
-                        style: TextStyle(
+                      child: Text(
+                        indexOfCurrentSubscription == activeIndex
+                            ? "Продлить"
+                            : "Оплатить",
+                        style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
                         ),
@@ -110,12 +118,14 @@ class _Units extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final index =
+        activeIndex > units.length - 1 ? units.length - 1 : activeIndex;
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: units[activeIndex]
+        children: units[index]
             .map((unit) => Padding(
                   padding: const EdgeInsets.only(bottom: 8.0),
                   child: Row(
@@ -150,11 +160,15 @@ class _SubscriptionsCards extends StatefulWidget {
     required this.subscriptions,
     required this.activeIndex,
     required this.setActive,
+    required this.indexOfCurrentSubscription,
+    required this.todayPlusOneMonth,
   });
 
   final List<Map<String, dynamic>> subscriptions;
+  final int indexOfCurrentSubscription;
   final int activeIndex;
   final void Function(int value) setActive;
+  final String todayPlusOneMonth;
 
   @override
   State<_SubscriptionsCards> createState() => _SubscriptionsCardsState();
@@ -189,6 +203,8 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
 
   @override
   Widget build(BuildContext context) {
+    final prolongation =
+        widget.indexOfCurrentSubscription == widget.activeIndex;
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.25,
       child: ListView.builder(
@@ -198,7 +214,9 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
         itemBuilder: (context, index) {
           final active = index == widget.activeIndex;
           return GestureDetector(
-            onTap: () => widget.setActive(index),
+            onTap: () => widget.setActive(
+              index,
+            ),
             child: Container(
               width: MediaQuery.of(context).size.height * 0.3,
               margin: const EdgeInsets.symmetric(horizontal: 12),
@@ -227,7 +245,6 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
                           style: TextStyle(
                             fontSize:
                                 MediaQuery.of(context).size.height * 0.025,
-                            // fontWeight: FontWeight.bold,
                             color: active ? Colors.black : Colors.white,
                           ),
                         ),
@@ -271,7 +288,9 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(
-                                      'Оплачено до ${widget.subscriptions[index]['endDate']}',
+                                      prolongation
+                                          ? 'Продлить до ${widget.subscriptions[index]['endDatePlusOneMonth']}'
+                                          : 'Оплачено до ${widget.subscriptions[index]['endDate']}',
                                       style: TextStyle(
                                         color: active
                                             ? Colors.black
@@ -285,7 +304,7 @@ class _SubscriptionsCardsState extends State<_SubscriptionsCards> {
                             Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text('На месяц',
+                                  Text('до ${widget.todayPlusOneMonth}',
                                       style: TextStyle(
                                         color: active
                                             ? Colors.black

@@ -106,23 +106,8 @@ class SecureStorageProvider
       final username =
           resultEither.fold((l) => throw UnimplementedError(), (r) => r);
       if (username == null) {
-        // final chatId = await TelegramWebApp.getChatId();
+        final chatId = await TelegramWebApp.getChatId();
 
-        // TODO remove this
-        // TODO remove this
-        // TODO remove this
-        // TODO remove this
-        // TODO remove this
-        String chatId = await TelegramWebApp.getChatId();
-        if (chatId == "Telegram object is null") {
-          chatId = "drop_me_please";
-        }
-
-        // TODO remove this
-        // TODO remove this
-        // TODO remove this
-        // TODO remove this
-        // TODO remove this
         // Save username
         final result = await _write(key: 'username', value: chatId);
         if (result.isLeft()) {

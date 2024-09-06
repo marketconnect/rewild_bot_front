@@ -617,15 +617,13 @@ class _DIContainer {
 
   PaymentScreenViewModel _makePaymentScreenViewModel(
     BuildContext context,
-    List<int> cardNmIds,
   ) =>
       PaymentScreenViewModel(
-          context: context,
-          subService: _makeSubscriptionService(),
-          cardService: _makeCardOfProductService(),
-          tokenService: _makeAuthService(),
-          paymentStoreService: _makePriceService(),
-          cardNmIds: cardNmIds);
+        context: context,
+        subService: _makeSubscriptionService(),
+        tokenService: _makeAuthService(),
+        paymentStoreService: _makePriceService(),
+      );
 
   PaymentWebViewModel _makePaymentWebViewModel(
     BuildContext context,
@@ -1001,10 +999,9 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makePaymentScreen(List<int> cardNmIds) {
+  Widget makePaymentScreen() {
     return ChangeNotifierProvider(
-      create: (context) =>
-          _diContainer._makePaymentScreenViewModel(context, cardNmIds),
+      create: (context) => _diContainer._makePaymentScreenViewModel(context),
       child: const PaymentScreen(),
     );
   }

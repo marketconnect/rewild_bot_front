@@ -70,7 +70,7 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
   final PaymentWebViewViewModelBalanceService balanceService;
 
   late int _subscriptionId;
-  late String _subscriptionType;
+  // late String _subscriptionType;
   late String _token;
 
   Future<void> _asyncInit() async {
@@ -87,7 +87,7 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
         subscription.id == 0 ||
         subscription.subscriptionTypeName == '') {
       _sendPaymentInfo(
-        'Оплата не прошла! Попробуйте позже. Токен: $token Подписка: ${subscription.toString()}',
+        'Оплата не прошла! Попробуйте позже. Токен: $token Подписка: ${subscription == null ? 'null' : subscription.toMap()}',
         PaymentResult.error,
       );
       if (context.mounted) {
@@ -103,7 +103,7 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
     }
 
     _subscriptionId = subscription.id;
-    _subscriptionType = subscription.subscriptionTypeName;
+    // _subscriptionType = subscription.subscriptionTypeName;
     _token = token;
   }
 
@@ -148,7 +148,9 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
   }
 
   Future<void> successCallback(
-      {required int amount, required DateTime endDate}) async {
+      {required int amount,
+      required DateTime endDate,
+      required String subscriptionType}) async {
     final today = DateTime.now();
     String formattedToday = DateFormat('yyyy-MM-dd').format(today);
     String formatedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
@@ -156,14 +158,14 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
     final responseOrNull = await fetch(() => subService.updateSubscription(
           token: _token,
           subscriptionID: _subscriptionId,
-          subscriptionType: _subscriptionType,
+          subscriptionType: subscriptionType,
           startDate: formattedToday,
           endDate: formatedEndDate,
         ));
 
     if (responseOrNull == null) {
       _sendPaymentInfo(
-        'Сумма пополнения: $amount руб. Тип подписки: "$_subscriptionType", дата окончания: $endDate, id: $_subscriptionId',
+        'Сумма пополнения: $amount руб. Тип подписки: "$subscriptionType", дата окончания: $endDate, id: $_subscriptionId',
         PaymentResult.creationSubscriptionError,
       );
       if (context.mounted) {
@@ -176,13 +178,13 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
     }
 
     _sendPaymentInfo(
-      'Сумма пополнения: $amount руб. Тип подписки: "$_subscriptionType", дата окончания: $endDate, id: $_subscriptionId',
+      'Сумма пополнения: $amount руб. Тип подписки: "$subscriptionType", дата окончания: $endDate, id: $_subscriptionId',
       PaymentResult.success,
     );
 
     // balance
     double sumToAdd =
-        getSubscriptionBalance(subscriptionTypeName: _subscriptionType);
+        getSubscriptionBalance(subscriptionTypeName: subscriptionType);
     await fetch(() => balanceService.addBalance(sumToAdd));
 
     if (context.mounted) {
