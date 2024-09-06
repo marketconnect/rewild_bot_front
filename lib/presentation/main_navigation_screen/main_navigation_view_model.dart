@@ -6,13 +6,12 @@ import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
-import 'package:rewild_bot_front/env.dart';
+
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // import 'package:rewild_bot_front/domain/entities/hive/subscription_model.dart';
@@ -292,8 +291,6 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     final res = await Navigator.of(context)
         .pushNamed(MainNavigationRouteNames.paymentScreen);
 
-    sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, "res: $res");
     if (res == true) {
       // subscription
       final token = await _getToken();
@@ -302,8 +299,7 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
       if (subscription == null) {
         return;
       }
-      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          "subscription: ${subscription.toMap()}");
+
       setSubscriptionsNum(getSubscriptionLimit(
           subscriptionTypeName: subscription.subscriptionTypeName));
     }

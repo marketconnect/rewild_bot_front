@@ -93,24 +93,24 @@ class _PaymentWebViewState extends State<PaymentWebView> {
     // TODO remove me
     // TODO remove me
     // TODO remove me
-    final model = context.read<PaymentWebViewModel>();
-    final successCallback = model.successCallback;
-    final amount = widget.paymentInfo.amount;
-    final endDate = widget.paymentInfo.endDate;
+    // final model = context.read<PaymentWebViewModel>();
+    // final successCallback = model.successCallback;
+    // final amount = widget.paymentInfo.amount;
+    // final endDate = widget.paymentInfo.endDate;
 
-    return Scaffold(
-      body: Container(
-        color: Colors.white,
-        child: Center(
-          child: TextButton(
-              onPressed: () => successCallback(
-                  amount: amount,
-                  endDate: endDate,
-                  subscriptionType: widget.paymentInfo.subscriptionType),
-              child: const Text("Жми")),
-        ),
-      ),
-    );
+    // return Scaffold(
+    //   body: Container(
+    //     color: Colors.white,
+    //     child: Center(
+    //       child: TextButton(
+    //           onPressed: () => successCallback(
+    //               amount: amount,
+    //               endDate: endDate,
+    //               subscriptionType: widget.paymentInfo.subscriptionType),
+    //           child: const Text("Жми")),
+    //     ),
+    //   ),
+    // );
     // TODO remove me
     // TODO remove me
     // TODO remove me

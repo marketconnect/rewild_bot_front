@@ -124,13 +124,13 @@ class ReviewService
       {required Set<int> nmIds}) async {
     Map<int, int> result = {};
 
-    for (final nmId in nmIds) {
-      // final qtyEither =
-      //     await unansweredFeedbackQtyDataProvider.getQtyOfNmId(nmId: nmId);
-      // if (qtyEither.isRight()) {
-      //   result[nmId] = qtyEither.getOrElse((l) => 0);
-      // }
-    }
+    // for (final nmId in nmIds) {
+    // final qtyEither =
+    //     await unansweredFeedbackQtyDataProvider.getQtyOfNmId(nmId: nmId);
+    // if (qtyEither.isRight()) {
+    //   result[nmId] = qtyEither.getOrElse((l) => 0);
+    // }
+    // }
     return Future.value(right(result));
   }
 
