@@ -543,6 +543,7 @@ class AdvertApiClient
           switch (advType) {
             case AdvertTypeConstants.auto:
               // auto
+
               res.add(AdvertAutoModel.fromJson(stat));
             case AdvertTypeConstants.searchPlusCatalog:
               // search+catalogue
@@ -625,6 +626,7 @@ class AdvertApiClient
   }
 
   // wb api returns only one intreval per campaignId
+  @override
   Future<Either<RewildError, CampaignData?>> getSingleCampaignDataByInterval({
     required int campaignId,
     required (String, String) interval,

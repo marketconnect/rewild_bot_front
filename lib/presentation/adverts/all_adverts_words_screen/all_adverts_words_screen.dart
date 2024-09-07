@@ -20,10 +20,7 @@ class AllAdvertsWordsScreen extends StatelessWidget {
     final autoAdverts = adverts
         .where((advert) => advert.type == AdvertTypeConstants.auto)
         .toList();
-    // final searchAdverts = adverts
-    //     .where((advert) => advert.type == AdvertTypeConstants.inSearch)
-    //     .toList();
-    // final loadingText = model.loadingText;
+
     final isLoading = model.isLoading;
     return OverlayLoaderWithAppIcon(
       isLoading: isLoading,
@@ -32,15 +29,7 @@ class AllAdvertsWordsScreen extends StatelessWidget {
       appIcon: Image.asset(ImageConstant.imgLogoForLoading),
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        body:
-            // isLoading
-            //     ? Center(
-            //         child: MyProgressIndicator(
-            //           text: loadingText,
-            //         ),
-            //       )
-            //     :
-            Padding(
+        body: Padding(
           padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
           child: SizedBox(
             height: MediaQuery.of(context).size.height,
@@ -77,26 +66,6 @@ class AllAdvertsWordsScreen extends StatelessWidget {
                               )
                               .toList(),
                         ),
-                        // if (searchAdverts.isNotEmpty)
-                        //   const _Title(text: 'В поиске'),
-                        // Column(
-                        //   children: searchAdverts
-                        //       .map(
-                        //         (advert) => GestureDetector(
-                        //           onTap: () {
-                        //             Navigator.of(context).pushNamed(
-                        //                 MainNavigationRouteNames
-                        //                     .searchStatWordsScreen,
-                        //                 arguments: advert.campaignId);
-                        //             return;
-                        //           },
-                        //           child: _Card(
-                        //             advert: advert,
-                        //           ),
-                        //         ),
-                        //       )
-                        //       .toList(),
-                        // ),
                       ],
                     ),
                   ),

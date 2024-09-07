@@ -51,6 +51,6 @@ class Advert {
 
   @override
   String toString() {
-    return 'Advert(campaignId: $campaignId, name: $name, endTime: $endTime, createTime: $createTime, changeTime: $changeTime, startTime: $startTime, dailyBudget: $dailyBudget, status: $status, type: $type)';
+    return 'Advert(campaignId: $campaignId, name: $name, endTime: $endTime, createTime: $createTime, changeTime: $changeTime, startTime: $startTime, dailyBudget: $dailyBudget, status: $status, type: $type, subjectId: $subjectId)';
   }
 }

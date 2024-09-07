@@ -98,6 +98,7 @@ class QuestionService
   }
 
   // Function to get unanswered questions by nmId
+  @override
   Future<Either<RewildError, List<QuestionModel>>> getUnansweredQuestions(
       {required String token,
       required int take,
@@ -115,6 +116,7 @@ class QuestionService
   }
 
   // Function to get unanswered questions and answered questions by nmId
+  @override
   Future<Either<RewildError, List<QuestionModel>>> getQuestions({
     int? nmId,
     required String token,
@@ -158,6 +160,7 @@ class QuestionService
   }
 
   // Function to publish question on wb server
+  @override
   Future<Either<RewildError, bool>> publishQuestion(
       {required String token,
       required String id,

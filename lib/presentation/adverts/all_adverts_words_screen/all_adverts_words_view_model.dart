@@ -4,6 +4,7 @@ import 'package:rewild_bot_front/core/constants/geo_constants.dart';
 import 'package:rewild_bot_front/core/utils/extensions/strings.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+
 import 'package:rewild_bot_front/domain/entities/advert_auto_model.dart';
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 
@@ -34,9 +35,10 @@ class AllAdvertsWordsViewModel extends ResourceChangeNotifier {
   }
 
   // adverts
-  late List<Advert> _adverts = [];
+  final List<Advert> _adverts = [];
   void setAdverts(List<Advert> value) {
-    _adverts = value;
+    _adverts.clear();
+    _adverts.addAll(value);
   }
 
   List<Advert> get adverts => _adverts;
@@ -76,16 +78,15 @@ class AllAdvertsWordsViewModel extends ResourceChangeNotifier {
       return;
     }
     setApiKey(apiKey);
-    final adverts = await fetch(() => advertService.getAll(
-        token: _apiKey!,
-        // types: [AdvertTypeConstants.inSearch, AdvertTypeConstants.auto]));
-        types: [AdvertTypeConstants.auto]));
+    final adverts = await fetch(() => advertService
+        .getAll(token: _apiKey!, types: [AdvertTypeConstants.auto]));
     if (adverts == null) {
       return;
     }
 
     List<int> campaignIds = [];
     setIsLoading(false);
+    List<Advert> allAdverts = [];
     for (var advert in adverts) {
       campaignIds.add(advert.campaignId);
       List<int> nmIds = [];
@@ -97,44 +98,29 @@ class AllAdvertsWordsViewModel extends ResourceChangeNotifier {
           final n = nms.length > 3 ? 3 : nms.length;
           nmIds = nms.map((e) => e).toList().sublist(0, n);
         }
+
         if (params.subject != null) {
           final name = params.subject!.name ?? "";
           addSubject(advert.campaignId, name.capitalize());
-          advert = advert.copyWith(subjectId: params.subject!.id);
+
+          final newAdvert = advert.copyWith(subjectId: params.subject!.id);
+          if (nmIds.isNotEmpty) {
+            final image = await fetch(
+              () => cardOfProductService.getImageForNmId(nmId: nmIds.first),
+            );
+
+            if (image == null) {
+              continue;
+            }
+
+            addImage(newAdvert.campaignId, image);
+          }
+          allAdverts.add(newAdvert);
         }
       }
-      // else if (advert is AdvertSearchModel) {
-      //   final params = advert.params!;
-      //   for (final param in params) {
-      //     if (param.nms != null) {
-      //       final nms = param.nms!;
-      //       final n = nms.length > 3 ? 3 : nms.length;
-      //       nmIds = nms.map((e) => e.nm).toList().sublist(0, n);
-      //     }
-      //     if (param.subjectName != null) {
-      //       final name = param.subjectName ?? "";
-      //       addSubject(
-      //         advert.campaignId,
-      //         name.capitalize(),
-      //       );
-      //     }
-      //   }
-      //   // cpm = params.first.price!.toString();
-      // }
-      if (nmIds.isNotEmpty) {
-        final image = await fetch(
-          () => cardOfProductService.getImageForNmId(nmId: nmIds.first),
-        );
 
-        if (image == null) {
-          continue;
-        }
-
-        addImage(advert.campaignId, image);
-      }
-
-      adverts.sort((a, b) => b.status.compareTo(a.status));
-      setAdverts(adverts);
+      allAdverts.sort((a, b) => b.status.compareTo(a.status));
+      setAdverts(allAdverts);
 
       notify();
     }

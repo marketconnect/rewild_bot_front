@@ -121,6 +121,7 @@ class NotificationService
     });
   }
 
+  @override
   Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
       List<int> conditions) async {
     final either = await notificationDataProvider.getByCondition(conditions);

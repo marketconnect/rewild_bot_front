@@ -8,7 +8,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/constants/advertising_constants.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/advert_auto_model.dart';
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
@@ -16,7 +15,6 @@ import 'package:rewild_bot_front/domain/entities/auto_campaign_stat.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/keyword.dart';
 import 'package:rewild_bot_front/domain/entities/wb_search_log.dart';
-import 'package:rewild_bot_front/env.dart';
 
 // Card of product
 abstract class SingleAutoWordsCardOfProductService {
@@ -66,7 +64,6 @@ class SingleAutoWordsViewModel extends ResourceChangeNotifier {
   }
 
   void _asyncInit() async {
-    // SqfliteService.printTableContent("keywords");
     await update();
   }
 
@@ -517,8 +514,7 @@ class SingleAutoWordsViewModel extends ResourceChangeNotifier {
     if (_apiKey == null) {
       return;
     }
-    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        'campaignId: ${campaignIdSubjIdGnum.$1},cpm: $cpm, type: ${AdvertTypeConstants.auto}, param: ${campaignIdSubjIdGnum.$2}!,');
+
     await fetch(() => advertService.setCpm(
           campaignId: campaignIdSubjIdGnum.$1,
           cpm: cpm,

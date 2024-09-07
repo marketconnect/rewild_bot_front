@@ -20,12 +20,12 @@ class _AllProductsQuestionsScreenState
   @override
   Widget build(BuildContext context) {
     final model = context.watch<AllProductsQuestionsViewModel>();
-    final screenWidth = MediaQuery.of(context).size.width;
+    // final screenWidth = MediaQuery.of(context).size.width;
     final apiKeyexists = model.apiKeyExists;
 
     final isQuestionsLoading = model.isQuestionsLoading;
 
-    final questionsQty = model.questionsQty;
+    // final questionsQty = model.questionsQty;
     final onClose = model.onClose;
 
     final itemsIdsList = model.questions;

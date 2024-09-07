@@ -77,6 +77,10 @@ class AdvertAutoParams {
           : null,
     );
   }
+
+  @override
+  toString() =>
+      'AdvertAutoParams(cpm: $cpm, subject: $subject, sets: $sets, nms: $nms, active: $active, nmCPM: $nmCPM, subject: ${subject.toString()})';
 }
 
 class AdvertAutoSubject {
@@ -94,6 +98,9 @@ class AdvertAutoSubject {
       id: json['id'],
     );
   }
+
+  @override
+  String toString() => 'AdvertAutoSubject(name: $name, id: $id)';
 }
 
 class AdvertAutoSet {

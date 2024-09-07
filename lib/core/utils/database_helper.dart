@@ -41,8 +41,6 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(VersionChangeEvent event) async {
-    sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-        "${event.oldVersion} -> ${event.newVersion}");
     if (event.oldVersion < 2) {
       await _onCreate(event);
     }
@@ -304,8 +302,6 @@ class DatabaseHelper {
       try {
         await store.clear();
         await txn.completed;
-        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-            "Successfully cleared store: $storeName");
       } catch (e) {
         sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
             "Failed to clear store $storeName: $e");
