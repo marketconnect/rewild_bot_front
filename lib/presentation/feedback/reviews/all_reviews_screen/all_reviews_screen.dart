@@ -194,8 +194,7 @@ class _AllReviewsScreenState extends State<AllReviewsScreen> {
                     itemBuilder: (context, index) {
                       var review = displayedReviews[index];
                       // ignore: prefer_null_aware_operators
-                      final answer =
-                          review.answer == null ? null : review.answer!.text;
+                      final answer = review.answer?.text;
                       return GestureDetector(
                         onTap: () async {
                           if (answer != null) {

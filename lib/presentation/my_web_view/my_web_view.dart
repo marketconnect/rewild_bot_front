@@ -1,5 +1,3 @@
-import 'dart:ui_web';
-
 import 'package:flutter/material.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
@@ -10,7 +8,6 @@ import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_vie
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
 import 'package:web/web.dart' as html;
-import 'dart:js_interop';
 
 class MyWebViewScreen extends StatefulWidget {
   const MyWebViewScreen({super.key, required this.nmIds, this.searchString});

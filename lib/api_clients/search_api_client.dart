@@ -114,6 +114,7 @@ class GeoSearchApiClient
     }
   }
 
+  @override
   Future<Either<RewildError, Map<int, WbSearchLog>>> getProductsNmIdAdv(
       {required String gNum,
       required String query,

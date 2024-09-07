@@ -68,6 +68,8 @@ abstract class ScreenFactory {
   Widget makeAllAdvertsScreen();
 
   Widget makeAdvertAnaliticsScreen((int, DateTime, String) campaignInfo);
+
+  Widget makeAddCardOptionScreen();
 }
 
 class MainNavigation implements AppNavigation {
@@ -300,6 +302,11 @@ class MainNavigation implements AppNavigation {
             arguments is QuestionModel ? arguments : QuestionModel.empty();
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeSingleQuestionScreen(question),
+        );
+
+      case MainNavigationRouteNames.addCardOptionScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAddCardOptionScreen(),
         );
 
       default:

@@ -186,7 +186,7 @@ class _AppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<AllCardsScreenViewModel>();
-    final nmIds = model.allNmIds;
+    // final nmIds = model.allNmIds;
     final isLoading = model.isLoading;
     return SliverAppBar(
       // AppBar ========================================================== AppBar
@@ -197,8 +197,13 @@ class _AppBar extends StatelessWidget {
         if (!isLoading)
           IconButton(
               onPressed: () => Navigator.of(context).pushNamed(
-                  MainNavigationRouteNames.myWebViewScreen,
-                  arguments: (nmIds, null)),
+                    MainNavigationRouteNames.addCardOptionScreen,
+                  )
+              // Navigator.of(context).pushNamed(
+              //     MainNavigationRouteNames.myWebViewScreen,
+              //     arguments: (nmIds, null)
+              //     )
+              ,
               icon: Icon(Icons.add_circle_outline,
                   size: 30, color: Theme.of(context).colorScheme.primary)),
         IconButton(

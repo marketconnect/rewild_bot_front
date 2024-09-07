@@ -134,6 +134,8 @@ import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_scr
 
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_screen.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/add_card_option_screen/add_card_option_screen.dart';
+import 'package:rewild_bot_front/presentation/products/cards/add_card_option_screen/add_card_option_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_screen.dart';
@@ -938,6 +940,9 @@ class _DIContainer {
         totalCostService: _makeTotalCostService(),
         advAnaliticsService: _makeAdvertsAnaliticsService(),
       );
+
+  AddCardOptionViewModel _makeAddCardOptionViewModel(BuildContext context) =>
+      AddCardOptionViewModel(context: context);
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -945,6 +950,78 @@ class ScreenFactoryDefault implements ScreenFactory {
 
   // ignore: library_private_types_in_public_api
   const ScreenFactoryDefault(this._diContainer);
+
+  @override
+  Widget makeSeoToolScreen(
+      (CardOfProductModel, CardItem)? cardOfProductCardItem) {
+    if (cardOfProductCardItem == null ||
+        cardOfProductCardItem.$1.subjectId == null) {
+      return const SeoToolScreen();
+    }
+    final nmId = cardOfProductCardItem.$1.nmId;
+    final subjectId = cardOfProductCardItem.$1.subjectId;
+    final img = cardOfProductCardItem.$1.img;
+    final cardItem = cardOfProductCardItem.$2;
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SeoToolViewModel>(
+          create: (context) =>
+              _diContainer._makeSeoToolViewModel(context, nmId, img, cardItem),
+        ),
+        ChangeNotifierProvider<SeoToolKwResearchViewModel>(
+            create: (context) => _diContainer._makeSeoToolKwResearchViewModel(
+                  context,
+                  nmId,
+                  subjectId!,
+                )),
+        ChangeNotifierProvider<SeoToolTitleGeneratorViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolTitleGeneratorViewModel(
+                  context,
+                )),
+        ChangeNotifierProvider<SeoToolDescriptionGeneratorViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolDescriptionGeneratorViewModel(
+                  context,
+                )),
+      ],
+      // create: (context) =>
+      //     _diContainer._makeSeoToolViewModel(context, productId),
+      child: const SeoToolScreen(),
+    );
+  }
+
+  @override
+  Widget makeSeoToolCategoryScreen({required int subjectId}) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SeoToolCategoryViewModel>(
+          create: (context) => _diContainer._makeSeoToolCategoryViewModel(
+            context,
+          ),
+        ),
+        ChangeNotifierProvider<SeoToolCategoryKwResearchViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolCategoryKwResearchViewModel(
+                  context,
+                  subjectId,
+                )),
+        ChangeNotifierProvider<SeoToolCategoryTitleGeneratorViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolCategoryTitleGeneratorViewModel(
+                  context,
+                )),
+        ChangeNotifierProvider<SeoToolCategoryDescriptionGeneratorViewModel>(
+            create: (context) =>
+                _diContainer._makeSeoToolCategoryDescriptionGeneratorViewModel(
+                  context,
+                )),
+      ],
+      // create: (context) =>
+      //     _diContainer._makeSeoToolViewModel(context, productId),
+      child: const SeoToolCategoryScreen(),
+    );
+  }
 
   @override
   Widget makeMainNavigationScreen() {
@@ -1196,74 +1273,10 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeSeoToolScreen(
-      (CardOfProductModel, CardItem)? cardOfProductcardItem) {
-    if (cardOfProductcardItem == null ||
-        cardOfProductcardItem.$1.subjectId == null) {
-      return const SeoToolScreen();
-    }
-    final nmId = cardOfProductcardItem.$1.nmId;
-    final subjectId = cardOfProductcardItem.$1.subjectId;
-    final img = cardOfProductcardItem.$1.img;
-    final cardItem = cardOfProductcardItem.$2;
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<SeoToolViewModel>(
-          create: (context) =>
-              _diContainer._makeSeoToolViewModel(context, nmId, img, cardItem),
-        ),
-        ChangeNotifierProvider<SeoToolKwResearchViewModel>(
-            create: (context) => _diContainer._makeSeoToolKwResearchViewModel(
-                  context,
-                  nmId,
-                  subjectId!,
-                )),
-        ChangeNotifierProvider<SeoToolTitleGeneratorViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolTitleGeneratorViewModel(
-                  context,
-                )),
-        ChangeNotifierProvider<SeoToolDescriptionGeneratorViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolDescriptionGeneratorViewModel(
-                  context,
-                )),
-      ],
-      // create: (context) =>
-      //     _diContainer._makeSeoToolViewModel(context, productId),
-      child: const SeoToolScreen(),
-    );
-  }
-
-  @override
-  Widget makeSeoToolCategoryScreen({required int subjectId}) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<SeoToolCategoryViewModel>(
-          create: (context) => _diContainer._makeSeoToolCategoryViewModel(
-            context,
-          ),
-        ),
-        ChangeNotifierProvider<SeoToolCategoryKwResearchViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolCategoryKwResearchViewModel(
-                  context,
-                  subjectId,
-                )),
-        ChangeNotifierProvider<SeoToolCategoryTitleGeneratorViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolCategoryTitleGeneratorViewModel(
-                  context,
-                )),
-        ChangeNotifierProvider<SeoToolCategoryDescriptionGeneratorViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolCategoryDescriptionGeneratorViewModel(
-                  context,
-                )),
-      ],
-      // create: (context) =>
-      //     _diContainer._makeSeoToolViewModel(context, productId),
-      child: const SeoToolCategoryScreen(),
+  Widget makeAddCardOptionScreen() {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeAddCardOptionViewModel(context),
+      child: const AddCardOptionScreen(),
     );
   }
 }

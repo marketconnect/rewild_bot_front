@@ -332,7 +332,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   int get supplySum => _supplySum;
 
   // Sales
-  Map<String, int> _orders = {};
+  final Map<String, int> _orders = {};
   void setOrders(Map<String, int> orders) {
     _orders.clear();
     _orders.addAll(orders);
