@@ -160,8 +160,8 @@ import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_screen.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
-import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view.dart';
-import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
+// import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view.dart';
+// import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_screen.dart';
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
 
@@ -637,11 +637,11 @@ class _DIContainer {
         // updateService: _makeUpdateService(),
         balanceService: _makeBalanceService(),
       );
-  WbWebViewScreenViewModel _makeWbWebViewScreenViewModel(context) =>
-      WbWebViewScreenViewModel(
-          context: context,
-          updateService: _makeUpdateService(),
-          tokenProvider: _makeAuthService());
+  // WbWebViewScreenViewModel _makeWbWebViewScreenViewModel(context) =>
+  //     WbWebViewScreenViewModel(
+  //         context: context,
+  //         updateService: _makeUpdateService(),
+  //         tokenProvider: _makeAuthService());
 
   AllCardsSeoViewModel _makeAllCardsSeoViewModel(context) =>
       AllCardsSeoViewModel(
@@ -1083,14 +1083,14 @@ class ScreenFactoryDefault implements ScreenFactory {
     );
   }
 
-  @override
-  Widget makeWbWebViewSceen((List<int>, String?) nmIdsSearchString) {
-    return ChangeNotifierProvider(
-      create: (context) => _diContainer._makeWbWebViewScreenViewModel(context),
-      child: WbWebViewScreen(
-          nmIds: nmIdsSearchString.$1, searchString: nmIdsSearchString.$2),
-    );
-  }
+  // @override
+  // Widget makeWbWebViewSceen((List<int>, String?) nmIdsSearchString) {
+  //   return ChangeNotifierProvider(
+  //     create: (context) => _diContainer._makeWbWebViewScreenViewModel(context),
+  //     child: WbWebViewScreen(
+  //         nmIds: nmIdsSearchString.$1, searchString: nmIdsSearchString.$2),
+  //   );
+  // }
 
   @override
   Widget makeAllCardsSeoScreen() {

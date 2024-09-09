@@ -19,7 +19,6 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
   Future<Either<RewildError, List<CardOfProductModel>>> get(
       {required List<int> ids}) async {
     try {
-      print("getDetails: $ids");
       final params = {
         'appType': '1',
         'curr': 'rub',
@@ -57,7 +56,6 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
         },
       );
       if (response.statusCode == 200) {
-        print("getDetails: ${response.body}");
         final data = jsonDecode(response.body);
         final productCardsJson = data['data']['products'];
         List<CardOfProductModel> resultProductCardsList = [];

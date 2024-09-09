@@ -7,7 +7,7 @@ import 'package:rewild_bot_front/core/utils/extensions/strings.dart';
 import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
-import 'package:web/web.dart' as html;
+// import 'package:web/web.dart' as html;
 
 class WbWebViewScreen extends StatefulWidget {
   const WbWebViewScreen({super.key, required this.nmIds, this.searchString});
@@ -72,9 +72,9 @@ class _WbWebViewScreenState extends State<WbWebViewScreen> {
     iframeElement.contentWindow?.postMessage(script, '*');
   }
 
-  void dartPrint(String message) {
-    print('JS say: $message');
-  }
+  // void dartPrint(String message) {
+  //   print('JS say: $message');
+  // }
 
   /// Регистрируем в текущем контексте
 

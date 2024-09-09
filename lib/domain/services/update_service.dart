@@ -442,7 +442,7 @@ class UpdateService
     // Update initial stocks!
     if (!isUpdated) {
       // Delete keywords by autocomplite
-      print('update 3');
+
       final deleteKeywordsByAutocompliteEither =
           await cachedKwByAutocompliteDataProvider.deleteAll();
       if (deleteKeywordsByAutocompliteEither.isLeft()) {
@@ -564,7 +564,7 @@ class UpdateService
       // set that today was updated already
       await lastUpdateDayDataProvider.update();
     } // day first time update
-    print('update 3');
+
     // regular part of update
     // fetch details for all saved cards from WB
 
@@ -599,13 +599,13 @@ class UpdateService
       }
 
       // delete stocks
-      print('delete stocks for ${card.nmId}');
+
       final deleteEither = await stockDataProvider.delete(card.nmId);
       if (deleteEither.isLeft()) {
         return left(
             deleteEither.fold((l) => l, (r) => throw UnimplementedError()));
       }
-      print('deleted stocks for ${card.nmId} = OK!');
+
       // add stocks
       final addStocksEither = await _addStocks(card.sizes, stocks);
       if (addStocksEither.isLeft()) {
