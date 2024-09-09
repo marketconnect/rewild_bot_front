@@ -13,7 +13,7 @@ import 'package:rewild_bot_front/presentation/products/seo/expansion_words_keywo
 import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
-import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
@@ -65,7 +65,7 @@ class AuthService
         PaymentWebViewTokenService,
         AllCardsSeoAuthService,
         AllCardsScreenAuthService,
-        MyWebViewScreenViewModelAuthService {
+        WbWebViewScreenViewModelAuthService {
   final AuthServiceSecureDataProvider secureDataProvider;
   final AuthServiceAuthApiClient authApiClient;
 

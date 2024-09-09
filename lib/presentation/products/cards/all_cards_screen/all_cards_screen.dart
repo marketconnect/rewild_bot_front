@@ -199,6 +199,7 @@ class _AppBar extends StatelessWidget {
               onPressed: () => Navigator.of(context).pushNamed(
                     MainNavigationRouteNames.addCardOptionScreen,
                   )
+
               // Navigator.of(context).pushNamed(
               //     MainNavigationRouteNames.myWebViewScreen,
               //     arguments: (nmIds, null)
@@ -383,7 +384,7 @@ class _EmptyProductsCards extends StatelessWidget {
           CustomElevatedButton(
             onTap: () {
               Navigator.of(context).pushNamed(
-                MainNavigationRouteNames.myWebViewScreen,
+                "MainNavigationRouteNames.wbWebViewScreen",
               );
             },
             text: "Добавить",

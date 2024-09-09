@@ -15,7 +15,7 @@ abstract class ScreenFactory {
   Widget makeMainNavigationScreen();
   Widget makeApiKeysScreen();
   Widget makeAllCardsScreen();
-  Widget makeMyWebViewScreen((List<int>, String?) nmIdsSearchString);
+
   Widget makePaymentScreen();
   Widget makePaymentWebView(PaymentInfo paymentInfo);
   Widget makeSingleCardScreen(int id);
@@ -70,6 +70,8 @@ abstract class ScreenFactory {
   Widget makeAdvertAnaliticsScreen((int, DateTime, String) campaignInfo);
 
   Widget makeAddCardOptionScreen();
+
+  // Widget makeWbWebViewSceen((List<int>, String?) nmIdsSearchString);
 }
 
 class MainNavigation implements AppNavigation {
@@ -111,21 +113,6 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) => screenFactory.makePaymentWebView(args),
         );
-      case MainNavigationRouteNames.myWebViewScreen:
-        final arguments = settings.arguments;
-        final nmIdsSearchQuery =
-            arguments is (List<int>, String?) ? arguments : (<int>[], null);
-        return PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                screenFactory.makeMyWebViewScreen(nmIdsSearchQuery),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            settings: settings);
 
       case MainNavigationRouteNames.singleCardScreen:
         final arguments = settings.arguments;
@@ -308,6 +295,22 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeAddCardOptionScreen(),
         );
+
+      // case MainNavigationRouteNames.wbWebViewScreen:
+      //   final arguments = settings.arguments;
+      //   final nmIdsSearchQuery =
+      //       arguments is (List<int>, String?) ? arguments : (<int>[], null);
+      //   return PageRouteBuilder(
+      //       pageBuilder: (context, animation, secondaryAnimation) =>
+      //           screenFactory.makeWbWebViewSceen(nmIdsSearchQuery),
+      //       transitionsBuilder:
+      //           (context, animation, secondaryAnimation, child) {
+      //         return FadeTransition(
+      //           opacity: animation,
+      //           child: child,
+      //         );
+      //       },
+      //       settings: settings);
 
       default:
         return MaterialPageRoute(

@@ -29,6 +29,7 @@ class SubscriptionApiClient
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
+
         return right(SubscriptionV2Response(
           id: data['id'],
           subscriptionTypeName: data['subscription_type_name'],

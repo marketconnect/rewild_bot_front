@@ -47,17 +47,28 @@ class StockDataProvider
       final txn = db.transaction('stocks', idbModeReadWrite);
       final store = txn.objectStore('stocks');
 
-      await store.delete(nmId);
+      final index = store.index('nmId');
+      final cursorStream = index.openCursor(autoAdvance: true);
+
+      await for (final cursor in cursorStream) {
+        final value = cursor.value as Map<String, dynamic>;
+
+        if (value['nmId'] == nmId) {
+          await store.delete(cursor.primaryKey);
+        }
+      }
 
       await txn.completed;
+
       return right(null);
     } catch (e) {
       return left(RewildError(
-          sendToTg: true,
-          'Failed to delete stock: $e',
-          source: "StockDataProvider",
-          name: "delete",
-          args: [nmId]));
+        sendToTg: true,
+        'Failed to delete stock: $e',
+        source: "StockDataProvider",
+        name: "delete",
+        args: [nmId],
+      ));
     }
   }
 

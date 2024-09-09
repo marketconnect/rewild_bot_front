@@ -16,6 +16,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
     required String username,
     required String password,
   }) async {
+    print("registerUser: $username, $password");
     final url = Uri.parse('https://rewild.website/api/register');
     final headers = {
       'Content-Type': 'application/json',
@@ -35,6 +36,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
         final expiredAt = data['expiredAt'] is int
             ? data['expiredAt']
             : int.parse(data['expiredAt']);
+        print("registerUser ok: ${data['token']}");
         return right(UserAuthData(
           token: data['token'],
           expiredAt: expiredAt,
@@ -66,6 +68,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
     required String username,
     required String password,
   }) async {
+    print("loginUser: $username, $password");
     final url = Uri.parse('https://rewild.website/api/login');
     final headers = {
       'Content-Type': 'application/json',
@@ -81,6 +84,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        print("loginUser ok: ${data['token']}");
         return right(UserAuthData(
           token: data['token'],
           expiredAt: int.parse(data['expiredAt']),

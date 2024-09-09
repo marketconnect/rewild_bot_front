@@ -5,23 +5,23 @@ import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
-abstract class MyWebViewScreenViewModelUpdateService {
+abstract class WbWebViewScreenViewModelUpdateService {
   Future<Either<RewildError, int>> insert(
       {required String token,
       required List<CardOfProductModel> cardOfProductsToInsert});
 }
 
-abstract class MyWebViewScreenViewModelAuthService {
+abstract class WbWebViewScreenViewModelAuthService {
   Future<Either<RewildError, String>> getToken();
 }
 
-class MyWebViewScreenViewModel extends ResourceChangeNotifier {
-  MyWebViewScreenViewModel(
+class WbWebViewScreenViewModel extends ResourceChangeNotifier {
+  WbWebViewScreenViewModel(
       {required this.updateService,
       required this.tokenProvider,
       required super.context});
-  final MyWebViewScreenViewModelUpdateService updateService;
-  final MyWebViewScreenViewModelAuthService tokenProvider;
+  final WbWebViewScreenViewModelUpdateService updateService;
+  final WbWebViewScreenViewModelAuthService tokenProvider;
   bool isLoading = false;
 
   String? _errorMessage;

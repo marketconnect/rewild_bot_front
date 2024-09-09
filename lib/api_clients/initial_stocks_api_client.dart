@@ -40,7 +40,13 @@ class InitialStocksApiClient
         final responseData = jsonDecode(response.body);
 
         if (responseData['stocks'] == null || responseData['stocks'] is! List) {
-          throw Exception("Invalid response format: ${response.body}");
+          return left(RewildError(
+            sendToTg: true,
+            "Invalid response format: ${response.body}",
+            source: "InitialStocksApiClient",
+            name: "get",
+            args: [skus, dateFrom, dateTo],
+          ));
         }
 
         final List<dynamic> stocksData = responseData['stocks'];

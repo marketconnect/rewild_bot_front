@@ -21,7 +21,7 @@ import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/
 
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
-import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
 
 // Tariffs Api
 abstract class UpdateServiceTariffApiClient {
@@ -172,7 +172,7 @@ abstract class UpdateServiceKwByAutocompliteDataProvider {
 class UpdateService
     implements
         AllCardsScreenUpdateService,
-        MyWebViewScreenViewModelUpdateService,
+        WbWebViewScreenViewModelUpdateService,
         // PaymentWebViewUpdateService,
         AllCardsSeoUpdateService,
         AddApiKeysUpdateService,
@@ -225,7 +225,12 @@ class UpdateService
       required this.cachedKwByAutocompliteDataProvider,
       required this.cardOfProductApiClient});
 
-  // Time to update?
+  // used to avoid updating uses cards twice in one session
+  bool _wasUserCardsUpdatedInTheSession = false;
+
+  bool get wasUserCardsUpdatedInTheSession => _wasUserCardsUpdatedInTheSession;
+
+  // Time to update? used to avoid updating too often
   DateTime? updatedAt;
   void setUpdatedAt() {
     updatedAt = DateTime.now();
@@ -235,37 +240,27 @@ class UpdateService
       ? true
       : DateTime.now().difference(updatedAt!) > SettingsConstants.updatePeriod;
 
+  @override
   Future<Either<RewildError, void>> fetchAllUserCardsFromServer(
       String token) async {
-    // check db is empty when app starts
-
-    final cardsInDbEither = await cardOfProductDataProvider.getAll();
-    if (cardsInDbEither.isLeft()) {
-      return left(
-          cardsInDbEither.fold((l) => l, (r) => throw UnimplementedError()));
+    final cardsFromServerEither =
+        await cardOfProductApiClient.getAll(token: token);
+    if (cardsFromServerEither.isLeft()) {
+      return left(cardsFromServerEither.fold(
+          (l) => l, (r) => throw UnimplementedError()));
     }
-    final cardsInDB = cardsInDbEither.getOrElse((l) => []);
 
-    // Empty - try to fetch cards from server
-    if (cardsInDB.isEmpty) {
-      final cardsFromServerEither =
-          await cardOfProductApiClient.getAll(token: token);
-      if (cardsFromServerEither.isLeft()) {
-        return left(cardsFromServerEither.fold(
+    final cards = cardsFromServerEither.getOrElse((l) => []);
+    // there are cards on server - save
+    if (cards.isNotEmpty) {
+      final insertOrUpdateEither =
+          await insert(token: token, cardOfProductsToInsert: cards);
+      if (insertOrUpdateEither.isLeft()) {
+        return left(insertOrUpdateEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
-
-      final cards = cardsFromServerEither.getOrElse((l) => []);
-      // there are cards on server - save
-      if (cards.isNotEmpty) {
-        final insertOrUpdateEither =
-            await insert(token: token, cardOfProductsToInsert: cards);
-        if (insertOrUpdateEither.isLeft()) {
-          return left(insertOrUpdateEither.fold(
-              (l) => l, (r) => throw UnimplementedError()));
-        }
-      }
     }
+    _wasUserCardsUpdatedInTheSession = true;
     return right(null);
   }
 
@@ -438,7 +433,7 @@ class UpdateService
     }
 
     // final isUpdated =
-    // isUpdatedEither.fold((l) => throw UnimplementedError(), (r) => r);
+    //     isUpdatedEither.fold((l) => throw UnimplementedError(), (r) => r);
 
     // TODO: Delete me
     bool isUpdated = false;
@@ -447,7 +442,7 @@ class UpdateService
     // Update initial stocks!
     if (!isUpdated) {
       // Delete keywords by autocomplite
-
+      print('update 3');
       final deleteKeywordsByAutocompliteEither =
           await cachedKwByAutocompliteDataProvider.deleteAll();
       if (deleteKeywordsByAutocompliteEither.isLeft()) {
@@ -569,12 +564,13 @@ class UpdateService
       // set that today was updated already
       await lastUpdateDayDataProvider.update();
     } // day first time update
-
+    print('update 3');
     // regular part of update
     // fetch details for all saved cards from WB
 
     final fetchedCardsOfProductsEither = await detailsApiClient.get(
         ids: allSavedCardsOfProducts.map((e) => e.nmId).toList());
+
     if (fetchedCardsOfProductsEither is Left) {
       return left(fetchedCardsOfProductsEither.fold(
           (l) => l, (r) => throw UnimplementedError()));
@@ -603,12 +599,13 @@ class UpdateService
       }
 
       // delete stocks
+      print('delete stocks for ${card.nmId}');
       final deleteEither = await stockDataProvider.delete(card.nmId);
       if (deleteEither.isLeft()) {
         return left(
             deleteEither.fold((l) => l, (r) => throw UnimplementedError()));
       }
-
+      print('deleted stocks for ${card.nmId} = OK!');
       // add stocks
       final addStocksEither = await _addStocks(card.sizes, stocks);
       if (addStocksEither.isLeft()) {

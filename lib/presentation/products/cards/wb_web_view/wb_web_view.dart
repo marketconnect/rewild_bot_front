@@ -4,21 +4,21 @@ import 'dart:html';
 import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/utils/extensions/strings.dart';
-import 'package:rewild_bot_front/presentation/my_web_view/my_web_view_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
 import 'package:web/web.dart' as html;
 
-class MyWebViewScreen extends StatefulWidget {
-  const MyWebViewScreen({super.key, required this.nmIds, this.searchString});
+class WbWebViewScreen extends StatefulWidget {
+  const WbWebViewScreen({super.key, required this.nmIds, this.searchString});
   final List<int> nmIds;
   final String? searchString;
 
   @override
-  State<MyWebViewScreen> createState() => _MyWebViewScreenState();
+  State<WbWebViewScreen> createState() => _WbWebViewScreenState();
 }
 
-class _MyWebViewScreenState extends State<MyWebViewScreen> {
+class _WbWebViewScreenState extends State<WbWebViewScreen> {
   String currentUrl = "";
   String mes = "";
   bool _isLoading = true;
@@ -80,12 +80,10 @@ class _MyWebViewScreenState extends State<MyWebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<MyWebViewScreenViewModel>();
+    final model = context.watch<WbWebViewScreenViewModel>();
     final save = model.saveSiblingCards;
     final errorMessage = model.errorMessage;
 
-    html.window.open('https://www.wildberries.ru/', 'Google',
-        'left=100, top=100, width=500, height=300, popup');
     // html.window.se(
     //   'printOnDart'.toJS,
     //   dartPrint.toJS,

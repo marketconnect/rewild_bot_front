@@ -68,6 +68,7 @@ abstract class AllCardsScreenSupplyService {
 // Update
 abstract class AllCardsScreenUpdateService {
   Future<Either<RewildError, void>> update(String token);
+  Future<Either<RewildError, void>> fetchAllUserCardsFromServer(String token);
   // Future<Either<RewildError, int>> delete(
   //     {required String token, required List<int> nmIds});
   Future<Either<RewildError, int>> deleteLocal({required List<int> nmIds});
@@ -90,6 +91,8 @@ abstract class AllCardsScreenSubscriptionsService {
     required String endDate,
   });
   Future<Either<RewildError, SubscriptionV2Response?>> getSubscriptionLocal();
+  Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
+      {required String token});
   Future<Either<RewildError, List<int>>> getSubscribedCardsIds();
   Future<Either<RewildError, void>> addCardsToSubscription({
     required String token,
@@ -294,8 +297,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     }
     final token = await _getToken();
 
-    // Update
+    await fetch(() => updateService.fetchAllUserCardsFromServer(token));
 
+    // Update
     await fetch(() => updateService.update(token));
 
     // get cards
@@ -386,10 +390,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
     // Subscription ==========================================================
 
-    // Get local subscriptions
-    // Define a date format that matches the Go date format
-    // Get local subscriptions
-    // final token = await _getToken();
     await _handleSubscriptions();
 
     // Total costs
@@ -418,20 +418,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     final localSubscriptionOrNull =
         await fetch(() => subscriptionsService.getSubscriptionLocal());
     if (localSubscriptionOrNull != null) {
-      // Get IDs of cards with active subscriptions
-      // Set<SubscriptionModel> subscribedCards =
-      //     localSubscriptionOrNull.where((sub) {
-      //   DateTime endDate;
-      //   try {
-      //     endDate = dateFormat.parse(sub.endDate);
-      //   } catch (e) {
-      //     return false; // If parsing fails, treat the subscription as inactive
-      //   }
-      //   return endDate
-      //       .isAfter(DateTime.now()); // Only consider active subscriptions
-      // }).toSet();
-
-      // Find missing card IDs
+      // Find subscribed card IDs
       final subscribedCardsIdsOrNull =
           await fetch(() => subscriptionsService.getSubscribedCardsIds());
 
@@ -439,13 +426,17 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
         return;
       }
 
+      // Get missing card IDs
       _missingCardIds = _productCards
           .where((card) => !subscribedCardsIdsOrNull.contains(card.nmId))
           .map((card) => card.nmId)
           .toList();
 
+      // get subscription limit
       final subCardsQtyLimit = getSubscriptionLimit(
           subscriptionTypeName: localSubscriptionOrNull.subscriptionTypeName);
+
+      // Set empty subscriptions qty
       setEmptySubscriptionsQty(
           subCardsQtyLimit - subscribedCardsIdsOrNull.length);
     }

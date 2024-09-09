@@ -71,16 +71,18 @@ class CardOfProductApiClient
       final response = await http.post(url, headers: headers);
 
       if (response.statusCode == 200) {
-        final List<dynamic> responseData = jsonDecode(response.body);
-        final productCards = responseData.map((c) {
-          return CardOfProductModel(
-            nmId: c['nmId'],
+        final responseData = jsonDecode(response.body);
+        List<CardOfProductModel> cards = [];
+        final productCards = responseData['productsCards'] as List<dynamic>;
+        for (final c in productCards) {
+          cards.add(CardOfProductModel(
+            nmId: c['sku'],
             name: c['name'],
-            img: c['img'],
-          );
-        }).toList();
+            img: c['image'],
+          ));
+        }
 
-        return right(productCards);
+        return right(cards);
       } else {
         return left(RewildError(
           sendToTg: true,
