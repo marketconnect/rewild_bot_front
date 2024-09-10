@@ -36,7 +36,7 @@ class _PaymentWebViewState extends State<PaymentWebView> {
     viewID = 'iframe_${DateTime.now().millisecondsSinceEpoch}';
 
     final String urlWithParams =
-        '${ServerConstants.siteUrl}/оплата?amount=${widget.paymentInfo.amount}&description=${Uri.encodeComponent(widget.paymentInfo.description)}';
+        '${ServerConstants.siteUrl}/payment?amount=${widget.paymentInfo.amount}&description=${Uri.encodeComponent(widget.paymentInfo.description)}';
 
     final IFrameElement iframeElement = IFrameElement()
       ..src = urlWithParams

@@ -90,6 +90,12 @@ class SubscriptionService
       required this.subsDataProvider,
       required this.cardsDataProvider,
       required this.cardsNumberStreamController});
+  // Initialization of the service
+  // synchronize subscriptions with local data provider
+  // // synchronize cards with local data provider
+  // Future<void> _asyncInit() async {
+  //   await _syncSubscriptions();
+  // }
 
   @override
 
@@ -131,8 +137,8 @@ class SubscriptionService
   /// Get local subscription
   /// Return either [RewildError] if error occurred or [SubscriptionV2Response]
   /// of local subscription. If there are no subscriptions, return null.
-  Future<Either<RewildError, SubscriptionV2Response?>>
-      getSubscriptionLocal() async {
+  Future<Either<RewildError, SubscriptionV2Response>> getLocalSubscription(
+      {required String token}) async {
     final subscriptions = await subsDataProvider.get();
     if (subscriptions.isLeft()) {
       return left(
@@ -142,16 +148,20 @@ class SubscriptionService
     final subs =
         subscriptions.fold((l) => throw UnimplementedError(), (r) => r);
     if (subs.isEmpty) {
-      return right(null);
+      final subs = await getSubscription(token: token);
+      if (subs.isLeft()) {
+        return left(subs.fold((l) => l, (r) => throw UnimplementedError()));
+      }
+
+      return right(subs.fold((l) => throw UnimplementedError(), (r) => r));
     }
     return right(subs.first);
   }
 
-  @override
-
   /// Get subscription from server and update local subscriptions
   /// Return either [RewildError] if error occurred or [SubscriptionV2Response]
   /// of updated subscription.
+  @override
   Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token}) async {
     // get subscriptions from server

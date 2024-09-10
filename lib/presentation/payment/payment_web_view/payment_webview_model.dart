@@ -31,7 +31,8 @@ abstract class PaymentWebViewTokenService {
 
 // Subscriptions
 abstract class PaymentWebViewSubscriptionsService {
-  Future<Either<RewildError, SubscriptionV2Response?>> getSubscriptionLocal();
+  Future<Either<RewildError, SubscriptionV2Response?>> getSubscription(
+      {required String token});
   Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
     required String token,
     required int subscriptionID,
@@ -74,16 +75,27 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
   late String _token;
 
   Future<void> _asyncInit() async {
-    final values = await Future.wait([
-      fetch(() => tokenService.getToken()),
-      fetch(() => subService.getSubscriptionLocal())
-    ]);
+    final token = await fetch(() => tokenService.getToken());
 
-    final token = values[0] as String?;
-    final subscription = values[1] as SubscriptionV2Response?;
+    if (token == null) {
+      _sendPaymentInfo(
+        'Оплата не прошла! Попробуйте позже. Токен: $token ',
+        PaymentResult.error,
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Оплата не прошла! Попробуйте позже.'),
+          ),
+        );
+        Navigator.of(context).pop(false);
+      }
 
-    if (token == null ||
-        subscription == null ||
+      return;
+    }
+    final subscription =
+        await fetch(() => subService.getSubscription(token: token));
+    if (subscription == null ||
         subscription.id == 0 ||
         subscription.subscriptionTypeName == '') {
       _sendPaymentInfo(
@@ -101,7 +113,6 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
 
       return;
     }
-
     _subscriptionId = subscription.id;
     // _subscriptionType = subscription.subscriptionTypeName;
     _token = token;
@@ -110,8 +121,26 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
   Future<void> errorCallback(int amount) async {
     int subscriptionId = 0;
     String subscriptionType = '';
+    final token = await fetch(() => tokenService.getToken());
+
+    if (token == null) {
+      _sendPaymentInfo(
+        'Оплата не прошла! Попробуйте позже. Токен: $token ',
+        PaymentResult.error,
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Оплата не прошла! Попробуйте позже.'),
+          ),
+        );
+        Navigator.of(context).pop(false);
+      }
+
+      return;
+    }
     final subscriptionOrNull =
-        await fetch(() => subService.getSubscriptionLocal());
+        await fetch(() => subService.getSubscription(token: token));
     if (subscriptionOrNull != null) {
       subscriptionId = subscriptionOrNull.id;
       subscriptionType = subscriptionOrNull.subscriptionTypeName;

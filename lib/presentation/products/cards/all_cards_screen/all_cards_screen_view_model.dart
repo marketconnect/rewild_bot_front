@@ -81,8 +81,8 @@ abstract class AllCardsScreenUpdateService {
 abstract class AllCardsScreenSubscriptionsService {
   Future<Either<RewildError, void>> removeCardsFromSubscription(
       {required String token, required List<int> cardIds});
-  // Future<Either<RewildError, List<SubscriptionModel>>> getLocalSubscriptions(
-  //     {required String token});
+  Future<Either<RewildError, SubscriptionV2Response>> getLocalSubscription(
+      {required String token});
   Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
     required String token,
     required int subscriptionID,
@@ -90,7 +90,7 @@ abstract class AllCardsScreenSubscriptionsService {
     required String startDate,
     required String endDate,
   });
-  Future<Either<RewildError, SubscriptionV2Response?>> getSubscriptionLocal();
+
   Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});
   Future<Either<RewildError, List<int>>> getSubscribedCardsIds();
@@ -106,6 +106,7 @@ abstract class AllCardsScreenNotificationsService {
 }
 
 class AllCardsScreenViewModel extends ResourceChangeNotifier {
+  //
   final AllCardsScreenAuthService tokenService;
   final AllCardsScreenCardOfProductService cardsOfProductsService;
   final AllCardsScreenUpdateService updateService;
@@ -133,34 +134,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       required this.streamNotification,
       required this.cardsOfProductsService}) {
     asyncInit();
-  }
-
-  Future<void> asyncInit() async {
-    // SqfliteService.printTableContent('subs');
-    setLoading(true);
-
-    streamNotification.listen((event) async {
-      if (event.parentType == ParentType.card) {
-        await _update();
-      }
-    });
-    final userNmIdsOrNull =
-        await fetch(() => cardsOfProductsService.getAllUserNmIds());
-    if (userNmIdsOrNull != null) {
-      setUserNmIds(userNmIdsOrNull.map((e) => e.nmId).toList());
-    }
-    _groups.insert(
-        0,
-        GroupModel(
-            name: "Все",
-            bgColor: const Color(0xFF6750A4).value,
-            cardsNmIds: [],
-            fontColor: const Color(0xFFFFFFFF).value));
-
-    await _update(false);
-    setLoading(false);
-
-    // await p();
   }
 
   final dateFormat = DateFormat('yyyy-MM-dd');
@@ -218,6 +191,36 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
   bool _filterIsEmpty = true;
   bool get filterIsEmpty => _filterIsEmpty;
+
+  bool _firstLoad = true;
+
+  Future<void> asyncInit() async {
+    // SqfliteService.printTableContent('subs');
+    setLoading(true);
+
+    streamNotification.listen((event) async {
+      if (event.parentType == ParentType.card) {
+        await _update();
+      }
+    });
+    final userNmIdsOrNull =
+        await fetch(() => cardsOfProductsService.getAllUserNmIds());
+    if (userNmIdsOrNull != null) {
+      setUserNmIds(userNmIdsOrNull.map((e) => e.nmId).toList());
+    }
+    _groups.insert(
+        0,
+        GroupModel(
+            name: "Все",
+            bgColor: const Color(0xFF6750A4).value,
+            cardsNmIds: [],
+            fontColor: const Color(0xFFFFFFFF).value));
+
+    await _update(false);
+    setLoading(false);
+
+    // await p();
+  }
 
   void checkFilter() {
     if (_filter == null) {
@@ -390,7 +393,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
     // Subscription ==========================================================
 
-    await _handleSubscriptions();
+    await _handleSubscriptions(token);
 
     // Total costs
     int averageLogistics = 50;
@@ -413,10 +416,18 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     notify();
   }
 
-  Future<void> _handleSubscriptions() async {
+  Future<void> _handleSubscriptions(String token) async {
     // Get local subscription
-    final localSubscriptionOrNull =
-        await fetch(() => subscriptionsService.getSubscriptionLocal());
+    SubscriptionV2Response? localSubscriptionOrNull;
+    // when the screen is opened get all subsribed cards
+    if (_firstLoad) {
+      localSubscriptionOrNull =
+          await fetch(() => subscriptionsService.getSubscription(token: token));
+      _firstLoad = false;
+    } else {
+      localSubscriptionOrNull = await fetch(
+          () => subscriptionsService.getLocalSubscription(token: token));
+    }
     if (localSubscriptionOrNull != null) {
       // Find subscribed card IDs
       final subscribedCardsIdsOrNull =
@@ -425,7 +436,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       if (subscribedCardsIdsOrNull == null) {
         return;
       }
-
+      for (int id in subscribedCardsIdsOrNull) {
+        print("susbcribed id: $id");
+      }
       // Get missing card IDs
       _missingCardIds = _productCards
           .where((card) => !subscribedCardsIdsOrNull.contains(card.nmId))
@@ -552,7 +565,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     //   return;
     // }
 
-    await _handleSubscriptions();
+    await _handleSubscriptions(token);
   }
 
   void _select(int nmId) {

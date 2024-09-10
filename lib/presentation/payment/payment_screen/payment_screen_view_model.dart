@@ -19,7 +19,8 @@ abstract class PaymentScreenTokenService {
 
 // Subscriptions
 abstract class PaymentScreenSubscriptionsService {
-  Future<Either<RewildError, SubscriptionV2Response?>> getSubscriptionLocal();
+  Future<Either<RewildError, SubscriptionV2Response?>> getSubscription(
+      {required String token});
   Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
     required String token,
     required int subscriptionID,
@@ -57,7 +58,7 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
     }
 
     final savedSubscriptionOrNull =
-        await fetch(() => subService.getSubscriptionLocal());
+        await fetch(() => subService.getSubscription(token: token));
     if (savedSubscriptionOrNull != null) {
       _subscription = savedSubscriptionOrNull;
       final indexOfCurrentSubscription = getSubscriptionIndexByType(

@@ -19,4 +19,6 @@ class ServerConstants {
   static const String siteUrl = 'https://marketconnect.ru/';
 
   static const String xApiKey = '24798bdd-233b-4429-98fd-2590fda01308';
+
+  static const String xPaymentAccess = 'GzAmQfm22rnHKWWByODVI1NM8DibXgcK';
 }
