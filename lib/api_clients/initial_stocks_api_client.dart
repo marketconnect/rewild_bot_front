@@ -37,12 +37,31 @@ class InitialStocksApiClient
       final response = await http.post(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        final responseBody = response.body;
+
+        // Проверяем, что ответ можно корректно декодировать
+        dynamic responseData;
+        try {
+          responseData = jsonDecode(responseBody);
+        } catch (e) {
+          return left(RewildError(
+            sendToTg: true,
+            "Ошибка декодирования ответа: $responseBody",
+            source: "InitialStocksApiClient",
+            name: "get",
+            args: [skus, dateFrom, dateTo],
+          ));
+        }
+
+        // Если ответ пустой, возвращаем пустой список
+        if (responseData.isEmpty) {
+          return right(<InitialStockModel>[]);
+        }
 
         if (responseData['stocks'] == null || responseData['stocks'] is! List) {
           return left(RewildError(
             sendToTg: true,
-            "Invalid response format: ${response.body}",
+            "Неправильный формат ответа: ${response.body}",
             source: "InitialStocksApiClient",
             name: "get",
             args: [skus, dateFrom, dateTo],
@@ -64,7 +83,7 @@ class InitialStocksApiClient
       } else {
         return left(RewildError(
           sendToTg: true,
-          "Ошибка при получении запасов: ${response.statusCode}",
+          "Ошибка при получении запасов: ${response.statusCode}, тело ответа: ${response.body}",
           source: "InitialStocksApiClient",
           name: "get",
           args: [skus, dateFrom, dateTo],

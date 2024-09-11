@@ -150,7 +150,7 @@ class ProductCardWidget extends StatelessWidget {
                                               .onSurface,
                                         ),
                                       )
-                                    : !userNmId
+                                    : isNotPaid && !userNmId
                                         ? Text('Не отслеживается',
                                             style: TextStyle(
                                                 color: Theme.of(context)

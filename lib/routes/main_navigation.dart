@@ -69,7 +69,7 @@ abstract class ScreenFactory {
 
   Widget makeAdvertAnaliticsScreen((int, DateTime, String) campaignInfo);
 
-  Widget makeAddCardOptionScreen();
+  // Widget makeAddCardOptionScreen();
 
   // Widget makeWbWebViewSceen((List<int>, String?) nmIdsSearchString);
 }
@@ -291,10 +291,10 @@ class MainNavigation implements AppNavigation {
           builder: (_) => screenFactory.makeSingleQuestionScreen(question),
         );
 
-      case MainNavigationRouteNames.addCardOptionScreen:
-        return MaterialPageRoute(
-          builder: (_) => screenFactory.makeAddCardOptionScreen(),
-        );
+      // case MainNavigationRouteNames.addCardOptionScreen:
+      //   return MaterialPageRoute(
+      //     builder: (_) => screenFactory.makeAddCardOptionScreen(),
+      //   );
 
       // case MainNavigationRouteNames.wbWebViewScreen:
       //   final arguments = settings.arguments;

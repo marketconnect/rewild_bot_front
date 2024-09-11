@@ -15,6 +15,16 @@ void main() {
         '<script src="https://telegram.org/js/telegram-web-app.js"></script>';
     content = content.replaceFirst('</head>', '$scriptTag\n</head>');
 
+    // const scriptTag2 = '''
+    //      <script>
+    //         function closeTelegramApp() {
+    //           if (window.Telegram && window.Telegram.WebApp) {
+    //             window.Telegram.WebApp.close();
+    //           }
+    //         }
+    //       </script>''';
+    // content = content.replaceFirst('</head>', '$scriptTag2\n</head>');
+
     // Добавляем CSS-стили для обеспечения 100% высоты
     const styleTag = '''
     <style>

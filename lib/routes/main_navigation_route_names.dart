@@ -58,7 +58,7 @@ abstract class MainNavigationRouteNames {
 
   static const String advertAnaliticsScreen = '/advert_analitics_screen';
 
-  static const String addCardOptionScreen = '/add_card_option_screen';
+  // static const String addCardOptionScreen = '/add_card_option_screen';
 
   // static const String wbWebViewScreen = '/wb_web_view';
 }

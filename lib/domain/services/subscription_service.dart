@@ -47,8 +47,13 @@ abstract class SubscriptionServiceSubscriptionDataProvider {
   Future<Either<RewildError, int>> save(SubscriptionV2Response subscription);
   Future<Either<RewildError, List<SubscriptionV2Response>>> get();
   Future<Either<RewildError, bool>> deleteAll();
-  // Future<Either<RewildError, List<SubscriptionModel>>> getAllNotExpired();
-  // Future<Either<RewildError, SubscriptionModel?>> getOne(int nmId);
+}
+
+// Cards Api Client
+abstract class SubsServiceCardsApiClient {
+  Future<Either<RewildError, List<CardOfProductModel>>> getAll({
+    required String token,
+  });
 }
 
 // Cards data Provider
@@ -84,10 +89,11 @@ class SubscriptionService
   final SubscriptionServiceSubscriptionDataProvider subsDataProvider;
   final SubsServiceCardsDataProvider cardsDataProvider;
   final StreamController<(int, int)> cardsNumberStreamController;
-
+  final SubsServiceCardsApiClient cardsApiClient;
   SubscriptionService(
       {required this.apiClient,
       required this.subsDataProvider,
+      required this.cardsApiClient,
       required this.cardsDataProvider,
       required this.cardsNumberStreamController});
   // Initialization of the service
@@ -218,11 +224,18 @@ class SubscriptionService
   /// Get a list of IDs of cards that are subscribed from local db
   ///
   /// Return either [RewildError] if error occurred or [List<int>] of IDs of cards with active subscriptions
-  Future<Either<RewildError, List<int>>> getSubscribedCardsIds() async {
-    final res = await cardsDataProvider.getAllIds();
+  Future<Either<RewildError, List<CardOfProductModel>>> getSubscribedCardsIds(
+      String token) async {
+    final res = await cardsApiClient.getAll(token: token);
     if (res.isLeft()) {
       return res;
     }
+
+    _syncCardsSubscriptions(res.fold((l) => throw UnimplementedError(),
+        (r) => r.map((e) => e.nmId).toList()));
+    // for (final card in res.fold((l) => throw UnimplementedError(), (r) => r)) {
+    //   print("IN SERRVICE ${card.nmId} ${card.name} ${card.img}");
+    // }
     return right(res.fold((l) => throw UnimplementedError(), (r) => r));
   }
 

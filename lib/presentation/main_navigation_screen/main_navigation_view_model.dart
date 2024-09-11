@@ -8,6 +8,7 @@ import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
+import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
@@ -41,7 +42,8 @@ abstract class MainNavigationSubscriptionService {
   Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});
 
-  Future<Either<RewildError, List<int>>> getSubscribedCardsIds();
+  Future<Either<RewildError, List<CardOfProductModel>>> getSubscribedCardsIds(
+      String token);
 }
 
 // advert
@@ -142,7 +144,7 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
 
     // get added cards quantity
     final cardsQtyOrNull =
-        await fetch(() => subscriptionService.getSubscribedCardsIds());
+        await fetch(() => subscriptionService.getSubscribedCardsIds(token));
     if (cardsQtyOrNull == null) {
       return;
     }

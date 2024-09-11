@@ -134,8 +134,7 @@ import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_scr
 
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_screen.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/cards/add_card_option_screen/add_card_option_screen.dart';
-import 'package:rewild_bot_front/presentation/products/cards/add_card_option_screen/add_card_option_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_screen.dart';
@@ -420,6 +419,7 @@ class _DIContainer {
   SubscriptionService _makeSubscriptionService() => SubscriptionService(
         cardsDataProvider: _makeSubscribedCardsDataProvider(),
         apiClient: _makeSubscriptionApiClient(),
+        cardsApiClient: _makeCardOfProductApiClient(),
         cardsNumberStreamController: subscriptionStreamController,
         subsDataProvider: _makeSubscriptionDataProvider(),
       );
@@ -458,7 +458,7 @@ class _DIContainer {
       );
 
   CardOfProductService _makeCardOfProductService() => CardOfProductService(
-      cardOfProductApiClient: _makeCardOfProductApiClient(),
+      // cardOfProductApiClient: _makeCardOfProductApiClient(),
       cardOfProductDataProvider: _makeCardOfProductDataProvider(),
       initStockDataProvider: _makeInitialStockDataProvider(),
       stockDataprovider: _makeStockDataProvider(),
@@ -941,8 +941,8 @@ class _DIContainer {
         advAnaliticsService: _makeAdvertsAnaliticsService(),
       );
 
-  AddCardOptionViewModel _makeAddCardOptionViewModel(BuildContext context) =>
-      AddCardOptionViewModel(context: context);
+  // AddCardOptionViewModel _makeAddCardOptionViewModel(BuildContext context) =>
+  //     AddCardOptionViewModel(context: context);
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -1272,11 +1272,11 @@ class ScreenFactoryDefault implements ScreenFactory {
     );
   }
 
-  @override
-  Widget makeAddCardOptionScreen() {
-    return ChangeNotifierProvider(
-      create: (context) => _diContainer._makeAddCardOptionViewModel(context),
-      child: const AddCardOptionScreen(),
-    );
-  }
+  // @override
+  // Widget makeAddCardOptionScreen() {
+  //   return ChangeNotifierProvider(
+  //     create: (context) => _diContainer._makeAddCardOptionViewModel(context),
+  //     child: const AddCardOptionScreen(),
+  //   );
+  // }
 }

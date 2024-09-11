@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:rewild_bot_front/core/color.dart';
 
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/link_btn.dart';
+import 'package:shimmer/shimmer.dart';
 
 class MainNavigationScreenCardsWidget extends StatefulWidget {
   const MainNavigationScreenCardsWidget(
@@ -115,18 +117,30 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-
+    final isLoading = cardsNum == 0 && subsNum == 0;
     return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
       Padding(
         padding: const EdgeInsets.all(15.0),
         child: SizedBox(
           width: screenWidth * 0.4,
-          child: Text('$cardsNum из $subsNum',
-              maxLines: 2,
-              style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
-                  fontSize: screenWidth * 0.08,
-                  fontWeight: FontWeight.bold)),
+          child: isLoading
+              ? Shimmer(
+                  gradient: shimmerGradient,
+                  child: Container(
+                    width: screenWidth * 0.4,
+                    height: screenHeight * 0.08,
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                  ),
+                )
+              : Text('$cardsNum из $subsNum',
+                  maxLines: 2,
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurface,
+                      fontSize: screenWidth * 0.08,
+                      fontWeight: FontWeight.bold)),
         ),
       ),
       TextButton(

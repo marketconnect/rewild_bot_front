@@ -69,12 +69,8 @@ abstract class AllCardsScreenSupplyService {
 abstract class AllCardsScreenUpdateService {
   Future<Either<RewildError, void>> update(String token);
   Future<Either<RewildError, void>> fetchAllUserCardsFromServer(String token);
-  // Future<Either<RewildError, int>> delete(
-  //     {required String token, required List<int> nmIds});
+
   Future<Either<RewildError, int>> deleteLocal({required List<int> nmIds});
-  // Future<Either<RewildError, void>> putOnServerNewCards(
-  //     {required String token,
-  //     required List<CardOfProductModel> cardOfProductsToPutOnServer});
 }
 
 // Subscriptions
@@ -93,7 +89,8 @@ abstract class AllCardsScreenSubscriptionsService {
 
   Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});
-  Future<Either<RewildError, List<int>>> getSubscribedCardsIds();
+  Future<Either<RewildError, List<CardOfProductModel>>> getSubscribedCardsIds(
+      String token);
   Future<Either<RewildError, void>> addCardsToSubscription({
     required String token,
     required List<CardOfProductModel> cardModels,
@@ -431,20 +428,28 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     if (localSubscriptionOrNull != null) {
       // Find subscribed card IDs
       final subscribedCardsIdsOrNull =
-          await fetch(() => subscriptionsService.getSubscribedCardsIds());
+          await fetch(() => subscriptionsService.getSubscribedCardsIds(token));
 
       if (subscribedCardsIdsOrNull == null) {
         return;
       }
-      for (int id in subscribedCardsIdsOrNull) {
-        print("susbcribed id: $id");
-      }
+      // for (int id in subscribedCardsIdsOrNull) {
+      //   print("susbcribed id: $id");
+      // }
+      final subscribedCardsIds =
+          subscribedCardsIdsOrNull.map((el) => el.nmId).toList();
       // Get missing card IDs
       _missingCardIds = _productCards
-          .where((card) => !subscribedCardsIdsOrNull.contains(card.nmId))
+          .where((card) => !subscribedCardsIds.contains(card.nmId))
           .map((card) => card.nmId)
           .toList();
+      for (int id in _missingCardIds) {
+        print("missing id: $id");
+      }
 
+      for (int id in subscribedCardsIds) {
+        print("subscribed id: $id");
+      }
       // get subscription limit
       final subCardsQtyLimit = getSubscriptionLimit(
           subscriptionTypeName: localSubscriptionOrNull.subscriptionTypeName);
@@ -487,10 +492,10 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteUnsubscribedCards() async {
-    // delete cards
-    await fetch(() => updateService.deleteLocal(nmIds: _missingCardIds));
-  }
+  // Future<void> deleteUnsubscribedCards() async {
+  //   // delete cards
+  //   await fetch(() => updateService.deleteLocal(nmIds: _missingCardIds));
+  // }
 
   Future<void> deleteCards() async {
     List<int> idsForDelete = [];
@@ -514,7 +519,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     // delete subscriptions
     await fetch(() => subscriptionsService.removeCardsFromSubscription(
         token: token, cardIds: idsForDelete));
-
+    await fetch(() => updateService.deleteLocal(nmIds: idsForDelete));
     _update();
   }
 

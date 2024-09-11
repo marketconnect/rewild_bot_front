@@ -44,10 +44,10 @@ abstract class CardOfProductServiceWarehouseApiCient {
 }
 
 // Card
-abstract class CardOfProductServiceCardOfProductApiClient {
-  // Future<Either<RewildError, void>> delete(
-  //     {required String token, required int id});
-}
+// abstract class CardOfProductServiceCardOfProductApiClient {
+//   // Future<Either<RewildError, void>> delete(
+//   //     {required String token, required int id});
+// }
 
 // Data providers
 // warehouse
@@ -111,7 +111,7 @@ class CardOfProductService
   final CardOfProductServiceWarehouseDataProvider warehouseDataprovider;
   final CardOfProductServiceStockDataProvider stockDataprovider;
   final CardOfProductServiceWarehouseApiCient warehouseApiClient;
-  final CardOfProductServiceCardOfProductApiClient cardOfProductApiClient;
+  // final CardOfProductServiceCardOfProductApiClient cardOfProductApiClient;
   final CardOfProductServiceCardOfProductDataProvider cardOfProductDataProvider;
   final CardOfProductServiceInitStockDataProvider initStockDataProvider;
   final CardOfProductServiceSupplyDataProvider supplyDataProvider;
@@ -119,7 +119,7 @@ class CardOfProductService
   CardOfProductService({
     required this.warehouseDataprovider,
     required this.warehouseApiClient,
-    required this.cardOfProductApiClient,
+    // required this.cardOfProductApiClient,
     required this.cardOfProductDataProvider,
     required this.nmIdDataProvider,
     required this.stockDataprovider,

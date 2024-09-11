@@ -12,9 +12,15 @@ import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/wi
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/widgets/product_card_widget.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
+import 'package:web/web.dart' as html;
 
+import 'package:js/js.dart';
 //
 import 'package:shimmer/shimmer.dart';
+
+// Определите внешнюю JS функцию для закрытия приложения
+@JS('closeTelegramApp')
+external void closeTelegramApp();
 
 class AllCardsScreen extends StatefulWidget {
   const AllCardsScreen({super.key});
@@ -183,6 +189,16 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
 class _AppBar extends StatelessWidget {
   const _AppBar();
 
+  void openBrowserAndCloseApp() {
+    // Сначала откройте браузерное окно
+    html.window.open('https://www.wildberries.ru/', 'wb');
+
+    // Подождите некоторое время, чтобы убедиться, что браузер открылся, затем закройте мини-приложение
+    Future.delayed(const Duration(seconds: 1), () {
+      closeTelegramApp(); // Вызвать JavaScript функцию для закрытия Telegram Mini App
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final model = context.watch<AllCardsScreenViewModel>();
@@ -196,17 +212,22 @@ class _AppBar extends StatelessWidget {
       actions: [
         if (!isLoading)
           IconButton(
-              onPressed: () => Navigator.of(context).pushNamed(
-                    MainNavigationRouteNames.addCardOptionScreen,
-                  )
+            onPressed: () {
+              openBrowserAndCloseApp;
+            },
+            // onPressed: () => Navigator.of(context).pushNamed(
+            //       MainNavigationRouteNames.addCardOptionScreen,
+            //     )
 
-              // Navigator.of(context).pushNamed(
-              //     MainNavigationRouteNames.myWebViewScreen,
-              //     arguments: (nmIds, null)
-              //     )
-              ,
-              icon: Icon(Icons.add_circle_outline,
-                  size: 30, color: Theme.of(context).colorScheme.primary)),
+            // Navigator.of(context).pushNamed(
+            //     MainNavigationRouteNames.myWebViewScreen,
+            //     arguments: (nmIds, null)
+            //     )
+
+            icon: Image.asset("assets/images/wb.png"),
+            // Icon(Icons.add_circle_outline,
+            //     size: 30, color: Theme.of(context).colorScheme.primary)
+          ),
         IconButton(
             onPressed: () => Navigator.of(context).pushNamed(
                   "MainNavigationRouteNames.allCardsFilterScreen",
