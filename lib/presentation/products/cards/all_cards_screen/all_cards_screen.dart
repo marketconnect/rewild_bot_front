@@ -195,7 +195,7 @@ class _AppBar extends StatelessWidget {
 
     // Подождите некоторое время, чтобы убедиться, что браузер открылся, затем закройте мини-приложение
     Future.delayed(const Duration(seconds: 1), () {
-      closeTelegramApp(); // Вызвать JavaScript функцию для закрытия Telegram Mini App
+      closeTelegramApp();
     });
   }
 
@@ -213,7 +213,7 @@ class _AppBar extends StatelessWidget {
         if (!isLoading)
           IconButton(
             onPressed: () {
-              openBrowserAndCloseApp;
+              openBrowserAndCloseApp();
             },
             // onPressed: () => Navigator.of(context).pushNamed(
             //       MainNavigationRouteNames.addCardOptionScreen,
