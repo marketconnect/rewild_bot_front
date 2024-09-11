@@ -190,11 +190,11 @@ class _AppBar extends StatelessWidget {
   const _AppBar();
 
   void openBrowserAndCloseApp() {
-    // Сначала откройте браузерное окно
+    // first open browser
     html.window.open('https://www.wildberries.ru/', 'wb');
 
-    // Подождите некоторое время, чтобы убедиться, что браузер открылся, затем закройте мини-приложение
-    Future.delayed(const Duration(seconds: 1), () {
+    // Wait for 5 seconds before closing the app to be sure that the browser window is closed
+    Future.delayed(const Duration(seconds: 5), () {
       closeTelegramApp();
     });
   }
@@ -215,18 +215,7 @@ class _AppBar extends StatelessWidget {
             onPressed: () {
               openBrowserAndCloseApp();
             },
-            // onPressed: () => Navigator.of(context).pushNamed(
-            //       MainNavigationRouteNames.addCardOptionScreen,
-            //     )
-
-            // Navigator.of(context).pushNamed(
-            //     MainNavigationRouteNames.myWebViewScreen,
-            //     arguments: (nmIds, null)
-            //     )
-
             icon: Image.asset("assets/images/wb.png"),
-            // Icon(Icons.add_circle_outline,
-            //     size: 30, color: Theme.of(context).colorScheme.primary)
           ),
         IconButton(
             onPressed: () => Navigator.of(context).pushNamed(
