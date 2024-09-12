@@ -18,7 +18,7 @@ import 'package:js/js.dart';
 //
 import 'package:shimmer/shimmer.dart';
 
-// Определите внешнюю JS функцию для закрытия приложения
+// external function from index.html
 @JS('closeTelegramApp')
 external void closeTelegramApp();
 
