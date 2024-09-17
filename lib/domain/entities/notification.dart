@@ -1,9 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
+import 'package:rewild_bot_front/core/constants/notification_constants.dart';
+import 'package:rewild_bot_front/domain/entities/product_watch_subscription_response.dart';
+
 class ReWildNotificationModel {
   int parentId;
-  int condition;
+  String condition;
   String value;
   int? sizeId;
   int? wh;
@@ -19,7 +22,7 @@ class ReWildNotificationModel {
 
   ReWildNotificationModel copyWith({
     int? parentId,
-    int? condition,
+    String? condition,
     String? value,
     int? sizeId,
     int? wh,
@@ -46,7 +49,7 @@ class ReWildNotificationModel {
   factory ReWildNotificationModel.fromMap(Map<String, dynamic> map) {
     return ReWildNotificationModel(
       parentId: map['parentId'] as int,
-      condition: map['condition'] as int,
+      condition: map['condition'] as String,
       value: map['value'] as String,
       sizeId: map['sizeId'] != null ? map['sizeId'] as int : null,
       wh: map['wh'] != null ? map['wh'] as int : null,
@@ -58,6 +61,34 @@ class ReWildNotificationModel {
   factory ReWildNotificationModel.fromJson(String source) =>
       ReWildNotificationModel.fromMap(
           json.decode(source) as Map<String, dynamic>);
+
+  factory ReWildNotificationModel.fromServerSubscription(
+      ProductSubscriptionServiceSubscription subscription) {
+    return ReWildNotificationModel(
+      parentId: subscription.productID,
+      condition: subscription.eventType,
+      value: subscription.condition != null
+          ? subscription.condition!.threshold.toString()
+          : "",
+      sizeId: null,
+      wh: subscription.condition?.warehouseID,
+      reusable: false,
+    );
+  }
+
+  ProductSubscriptionServiceSubscription toServerSubscription() {
+    return ProductSubscriptionServiceSubscription(
+      userID: parentId,
+      productID: parentId,
+      eventType: condition,
+      condition: ProductSubscriptionServiceCondition(
+        warehouseID: wh ?? 0,
+        threshold: int.tryParse(value) ?? 0,
+        lessThan: condition == NotificationConditionConstants.stocksLessThan ||
+            condition == NotificationConditionConstants.totalStocksLessThan,
+      ),
+    );
+  }
 
   @override
   String toString() {

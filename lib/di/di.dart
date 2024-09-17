@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
 import 'package:rewild_bot_front/api_clients/filter_api_client.dart';
+import 'package:rewild_bot_front/api_clients/product_watch_subscription_api_client.dart';
 import 'package:rewild_bot_front/api_clients/reviews_api_client.dart';
 import 'package:rewild_bot_front/api_clients/search_api_client.dart';
 import 'package:rewild_bot_front/api_clients/search_query_api_client.dart';
@@ -158,12 +159,8 @@ import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo
 import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo_search_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_screen.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
-
-// import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view.dart';
-// import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_screen.dart';
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
-
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_web_view.dart';
@@ -280,6 +277,9 @@ class _DIContainer {
 
   AutoCampaignApiClient _makeAutoCampaignApiClient() =>
       const AutoCampaignApiClient();
+
+  ProductWatchSubscriptionApiClient _makeProductWatchSubscriptionApiClient() =>
+      const ProductWatchSubscriptionApiClient();
 
   // Data Providers ============================================================
   // secure storage
@@ -445,6 +445,8 @@ class _DIContainer {
 
   NotificationService _makeNotificationService() => NotificationService(
       notificationDataProvider: _makeNotificationDataProvider(),
+      productWatchSubscriptionApiClient:
+          _makeProductWatchSubscriptionApiClient(),
       updatedNotificationStreamController: updatedNotificationStreamController);
 
   TotalCostService _makeTotalCostService() => TotalCostService(
@@ -654,7 +656,9 @@ class _DIContainer {
   CardNotificationViewModel _makeCardNotificationSettingsViewModel(
           BuildContext context, NotificationCardState state) =>
       CardNotificationViewModel(state,
-          notificationService: _makeNotificationService(), context: context);
+          tokenService: _makeAuthService(),
+          notificationService: _makeNotificationService(),
+          context: context);
 
   SingleCardScreenViewModel _makeSingleCardViewModel(
           BuildContext context, int id) =>
@@ -895,6 +899,7 @@ class _DIContainer {
   ) =>
       NotificationFeedbackViewModel(
         notificationService: _makeNotificationService(),
+        tokenService: _makeAuthService(),
         context: context,
       );
 
@@ -902,6 +907,7 @@ class _DIContainer {
           BuildContext context, int campaignId) =>
       CampaignManagementViewModel(
         campaignId: campaignId,
+        authService: _makeAuthService(),
         advertService: _makeAdvertService(),
         notificationService: _makeNotificationService(),
         context: context,

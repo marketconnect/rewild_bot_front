@@ -2,9 +2,12 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
 import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_view_model.dart';
+import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
@@ -60,11 +63,14 @@ class AuthService
         SeoToolCategoryTitleGeneratorTokenService,
         SingleCardScreenAuthService,
         PaymentScreenTokenService,
+        NotificationFeedbackTokenService,
+        CampaignManagementTokenService,
         CompetitorKeywordExpansionTokenService,
         AutocompliteKeywordExpansionTokenService,
         PaymentWebViewTokenService,
         AllCardsSeoAuthService,
         AllCardsScreenAuthService,
+        NotificationCardTokenService,
         WbWebViewScreenViewModelAuthService {
   final AuthServiceSecureDataProvider secureDataProvider;
   final AuthServiceAuthApiClient authApiClient;
@@ -126,6 +132,7 @@ class AuthService
       return left(
           userNameEither.fold((l) => l, (r) => throw UnimplementedError()));
     }
+
     final userName = userNameEither.fold((l) => null, (r) => r);
     if (userName == null) {
       return left(RewildError(

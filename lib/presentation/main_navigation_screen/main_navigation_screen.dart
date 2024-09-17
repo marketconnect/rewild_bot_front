@@ -52,7 +52,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     final userName = model.userName;
     final isLoading = model.isLoading;
     final goToSubscriptionsScreen = model.goToSubscriptionsScreeen;
-
+    print("feedbackApiKeyExists $feedbackApiKeyExists");
+    print("advertApiKeyExists $advertApiKeyExists");
     List<Widget> widgets = [
       MainNavigationScreenHomeWidget(
         userName: userName,

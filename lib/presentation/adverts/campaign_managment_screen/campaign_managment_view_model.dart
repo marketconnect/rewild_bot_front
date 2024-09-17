@@ -14,9 +14,14 @@ import 'package:rewild_bot_front/domain/entities/notification.dart';
 import 'package:rewild_bot_front/widgets/my_dialog_textfield_radio.dart';
 import 'package:rewild_bot_front/widgets/my_dialog_textfield_radio_checkbox.dart';
 
+abstract class CampaignManagementTokenService {
+  Future<Either<RewildError, String>> getToken();
+}
+
 abstract class CampaignManagementNotificationService {
   Future<Either<RewildError, void>> addForParent(
-      {required List<ReWildNotificationModel> notifications,
+      {required String token,
+      required List<ReWildNotificationModel> notifications,
       required int parentId,
       required bool wasEmpty});
   Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
@@ -54,8 +59,10 @@ class CampaignManagementViewModel extends ResourceChangeNotifier {
   final int campaignId;
   final CampaignManagementAdvertService advertService;
   final CampaignManagementNotificationService notificationService;
+  final CampaignManagementTokenService authService;
   CampaignManagementViewModel({
     required this.campaignId,
+    required this.authService,
     required this.advertService,
     required this.notificationService,
     required super.context,
@@ -225,12 +232,17 @@ class CampaignManagementViewModel extends ResourceChangeNotifier {
   int? get minBudgetLimit => _minBudgetLimit;
 
   Future<void> saveNotification() async {
+    final tokenOrNull = await fetch(() => authService.getToken());
+    if (tokenOrNull == null) {
+      return;
+    }
     final notificationsToSave = ReWildNotificationModel(
         parentId: campaignId,
         condition: NotificationConditionConstants.budgetLessThan,
         value: _minBudgetLimit.toString());
 
     await notificationService.addForParent(
+        token: tokenOrNull,
         notifications: _minBudgetLimit == null ? [] : [notificationsToSave],
         parentId: campaignId,
         wasEmpty: _wasEmpty);

@@ -117,14 +117,14 @@ class NotificationCardSettingsScreen extends StatelessWidget {
               MutableNotificationCard(
                 // since there can be many warehouses,
                 //and to add all of them we need to make condition different (100 + wh)
-                condition: NotificationConditionConstants.stocksInWhLessThan +
-                    warehouse.key.id,
+                condition: NotificationConditionConstants.stocksLessThan +
+                    warehouse.key.id.toString(),
                 currentValue: warehouse.value,
                 text: '${warehouse.key.name} менее',
                 suffix: 'шт.',
                 isActive: isActive(
-                    NotificationConditionConstants.stocksInWhLessThan +
-                        warehouse.key.id,
+                    NotificationConditionConstants.stocksLessThan +
+                        warehouse.key.id.toString(),
                     wh: warehouse.key.id),
                 addNotification: (condition, value) =>
                     add(condition, value, wh: warehouse.key.id),

@@ -246,23 +246,23 @@ class CardOfProductModel {
     return allStocksSum;
   }
 
-  int _calculateAllStocksForWhAndSize(int wh, [int? sizeId]) {
-    int stocksSum = 0;
-    for (final size in sizes) {
-      // if (sizeId == null && sizeId != size.optionId) {
-      //   continue;
-      // }
-      for (final stock in size.stocks) {
-        final stockWh = stock.wh;
-        if (wh != stockWh) {
-          continue;
-        }
-        final stockQty = stock.qty;
-        stocksSum += stockQty;
-      }
-    }
-    return stocksSum;
-  }
+  // int _calculateAllStocksForWhAndSize(int wh, [int? sizeId]) {
+  //   int stocksSum = 0;
+  //   for (final size in sizes) {
+  //     // if (sizeId == null && sizeId != size.optionId) {
+  //     //   continue;
+  //     // }
+  //     for (final stock in size.stocks) {
+  //       final stockWh = stock.wh;
+  //       if (wh != stockWh) {
+  //         continue;
+  //       }
+  //       final stockQty = stock.qty;
+  //       stocksSum += stockQty;
+  //     }
+  //   }
+  //   return stocksSum;
+  // }
 
   bool tracked = false;
   void setTracked() {
@@ -402,23 +402,23 @@ class CardOfProductModel {
           _checkStocksLessThanCondition(notification, result);
           break;
 
-        case NotificationConditionConstants.sizeStocksLessThan:
-          _checkSizeStocksLessCondition(notification, result);
-          break;
+        // case NotificationConditionConstants.sizeStocksLessThan:
+        //   _checkSizeStocksLessCondition(notification, result);
+        //   break;
 
-        case NotificationConditionConstants.sizeStocksInWhLessThan:
-          _checkSizeInWhStocksLessThanCondition(notification, result);
-          break;
-        case NotificationConditionConstants.stocksMoreThan:
-          _checkStocksMoreThanCondition(notification, result);
-          break;
+        // case NotificationConditionConstants.sizeStocksInWhLessThan:
+        //   _checkSizeInWhStocksLessThanCondition(notification, result);
+        //   break;
+        // case NotificationConditionConstants.stocksMoreThan:
+        //   _checkStocksMoreThanCondition(notification, result);
+        // break;
         default:
           break;
       }
       // since there can be many warehouses, and to add all of them we need to make condition different (100 + wh)
-      if (notification.condition > 100) {
-        _checkStocksInWhLessThanCondition(notification, result);
-      }
+      // if (notification.condition > 100) {
+      //   _checkStocksInWhLessThanCondition(notification, result);
+      // }
     }
     return result;
   }
@@ -508,72 +508,72 @@ class CardOfProductModel {
     }
   }
 
-  void _checkStocksMoreThanCondition(ReWildNotificationModel notification,
-      List<ReWildNotificationContent> result) {
-    final stocksQty = _calculateAllStocks();
-    final nStocks = int.tryParse(notification.value) ?? 0;
-    final stocksDif = nStocks - stocksQty;
-    if (stocksDif < 0) {
-      result.add(ReWildNotificationContent(
-        id: nmId,
-        // title: "Изменено кол-во остатков на складах $nmId",
-        // body: "Новое кол-во на всех складах: $stocksQty больше, чем $nStocks",
-        condition: NotificationConditionConstants.stocksMoreThan,
-        newValue: stocksQty.toString(),
-      ));
-    }
-  }
+  // void _checkStocksMoreThanCondition(ReWildNotificationModel notification,
+  //     List<ReWildNotificationContent> result) {
+  //   final stocksQty = _calculateAllStocks();
+  //   final nStocks = int.tryParse(notification.value) ?? 0;
+  //   final stocksDif = nStocks - stocksQty;
+  //   if (stocksDif < 0) {
+  //     result.add(ReWildNotificationContent(
+  //       id: nmId,
+  //       // title: "Изменено кол-во остатков на складах $nmId",
+  //       // body: "Новое кол-во на всех складах: $stocksQty больше, чем $nStocks",
+  //       condition: NotificationConditionConstants.stocksMoreThan,
+  //       newValue: stocksQty.toString(),
+  //     ));
+  //   }
+  // }
 
-  void _checkStocksInWhLessThanCondition(ReWildNotificationModel notification,
-      List<ReWildNotificationContent> result) {
-    final wh = notification.wh ?? 0;
-    final nStocks = int.tryParse(notification.value) ?? 0;
-    final stocksSum = _calculateAllStocksForWhAndSize(wh);
-    final stocksDif = stocksSum - nStocks;
+  // void _checkStocksInWhLessThanCondition(ReWildNotificationModel notification,
+  //     List<ReWildNotificationContent> result) {
+  //   final wh = notification.wh ?? 0;
+  //   final nStocks = int.tryParse(notification.value) ?? 0;
+  //   final stocksSum = _calculateAllStocksForWhAndSize(wh);
+  //   final stocksDif = stocksSum - nStocks;
 
-    if (stocksDif < 0) {
-      result.add(ReWildNotificationContent(
-        id: nmId,
-        wh: wh,
-        condition: NotificationConditionConstants.stocksInWhLessThan + wh,
-        newValue: stocksSum.toString(),
-      ));
-    }
-  }
+  //   if (stocksDif < 0) {
+  //     result.add(ReWildNotificationContent(
+  //       id: nmId,
+  //       wh: wh,
+  //       condition: NotificationConditionConstants.stocksInWhLessThan + wh,
+  //       newValue: stocksSum.toString(),
+  //     ));
+  //   }
+  // }
 
-  void _checkSizeStocksLessCondition(ReWildNotificationModel notification,
-      List<ReWildNotificationContent> result) {
-    final nSize = notification.sizeId ?? 0;
-    final nStocks = int.tryParse(notification.value) ?? 0;
-    final stocksSum = _calculateAllStocks(nSize);
-    final stocksDif = stocksSum - nStocks;
-    if (stocksDif < 0) {
-      result.add(ReWildNotificationContent(
-        id: nmId,
-        // title: "Изменено кол-во остатков на складе $nmId  для размера $nSize",
-        // body: "Новое кол-во на складе: $stocksSum меньше, чем $nStocks",
-        condition: NotificationConditionConstants.sizeStocksLessThan,
-        newValue: stocksSum.toString(),
-      ));
-    }
-  }
+  // void _checkSizeStocksLessCondition(ReWildNotificationModel notification,
+  //     List<ReWildNotificationContent> result) {
+  //   final nSize = notification.sizeId ?? 0;
+  //   final nStocks = int.tryParse(notification.value) ?? 0;
+  //   final stocksSum = _calculateAllStocks(nSize);
+  //   final stocksDif = stocksSum - nStocks;
+  //   if (stocksDif < 0) {
+  //     result.add(ReWildNotificationContent(
+  //       id: nmId,
+  //       // title: "Изменено кол-во остатков на складе $nmId  для размера $nSize",
+  //       // body: "Новое кол-во на складе: $stocksSum меньше, чем $nStocks",
+  //       condition: NotificationConditionConstants.sizeStocksLessThan,
+  //       newValue: stocksSum.toString(),
+  //     ));
+  //   }
+  // }
 
-  void _checkSizeInWhStocksLessThanCondition(
-      ReWildNotificationModel notification,
-      List<ReWildNotificationContent> result) {
-    final nSize = notification.sizeId ?? 0;
-    final nStocks = int.tryParse(notification.value) ?? 0;
-    final wh = notification.wh ?? 0;
-    final stocksSumForWh = _calculateAllStocksForWhAndSize(wh, nSize);
-    final stocksDif = stocksSumForWh - nStocks;
-    if (stocksDif < 0) {
-      result.add(ReWildNotificationContent(
-        id: nmId,
-        // title: "Изменено кол-во остатков на складе $nmId  для размера $nSize",
-        // body: "Новое кол-во на складе: $stocksSum меньше, чем $nStocks",
-        condition: NotificationConditionConstants.sizeStocksInWhLessThan,
-        newValue: stocksSum.toString(),
-      ));
-    }
-  }
+  // void _checkSizeInWhStocksLessThanCondition(
+  //     ReWildNotificationModel notification,
+  //     List<ReWildNotificationContent> result) {
+  //   final nSize = notification.sizeId ?? 0;
+  //   final nStocks = int.tryParse(notification.value) ?? 0;
+  //   final wh = notification.wh ?? 0;
+  //   final stocksSumForWh = _calculateAllStocksForWhAndSize(wh, nSize);
+  //   final stocksDif = stocksSumForWh - nStocks;
+  //   if (stocksDif < 0) {
+  //     result.add(ReWildNotificationContent(
+  //       id: nmId,
+  //       // title: "Изменено кол-во остатков на складе $nmId  для размера $nSize",
+  //       // body: "Новое кол-во на складе: $stocksSum меньше, чем $nStocks",
+  //       condition: NotificationConditionConstants.sizeStocksInWhLessThan,
+  //       newValue: stocksSum.toString(),
+  //     ));
+  //   }
+  // }
 }

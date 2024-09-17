@@ -105,6 +105,7 @@ class AdvertApiClient
       required int campaignId,
       required List<String> excludedKw}) async {
     try {
+     
       final params = {'id': campaignId.toString()};
       final body = {
         'excluded': excludedKw,
@@ -146,6 +147,7 @@ class AdvertApiClient
       required int param,
       int? instrument}) async {
     try {
+      
       final body = {
         'advertId': campaignId,
         'type': type,
@@ -193,6 +195,7 @@ class AdvertApiClient
     required DateTime to,
   }) async {
     try {
+    
       final wbApi = WbAdvertApiHelper.getExpensesHistory;
       final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
       final String formattedFrom = dateFormat.format(from);
@@ -240,6 +243,7 @@ class AdvertApiClient
   Future<Either<RewildError, bool>> pauseAdvert(
       {required String token, required int campaignId}) async {
     try {
+    
       final params = {'id': campaignId.toString()};
 
       // final uri = Uri.https('advert-api.wb.ru', "/adv/v0/pause", params);
@@ -278,6 +282,7 @@ class AdvertApiClient
   Future<Either<RewildError, bool>> startAdvert(
       {required String token, required int campaignId}) async {
     try {
+   
       final params = {'id': campaignId.toString()};
 
       // final uri = Uri.https('advert-api.wb.ru', "/adv/v0/start", params);
@@ -316,6 +321,7 @@ class AdvertApiClient
   Future<Either<RewildError, int>> getCompanyBudget(
       {required String token, required int campaignId}) async {
     try {
+     
       final params = {'id': campaignId.toString()};
 
       final wbApi = WbAdvertApiHelper.getCompanyBudget;
@@ -357,6 +363,7 @@ class AdvertApiClient
   Future<Either<RewildError, Map<(int aType, int aStatus), List<int>>>>
       typeStatusIDs({required String token}) async {
     try {
+    
       final wbApi = WbAdvertApiHelper.getCampaigns;
 
       final response = await wbApi.get(
@@ -425,6 +432,7 @@ class AdvertApiClient
   @override
   Future<Either<RewildError, int>> balance({required String token}) async {
     try {
+      
       if (token.isEmpty) {
         return left(RewildError(
           sendToTg: false,
@@ -469,6 +477,7 @@ class AdvertApiClient
   Future<Either<RewildError, AutoCampaignStatWord>> autoStatWords(
       {required String token, required int campaignId}) async {
     try {
+     
       final params = {'id': campaignId.toString()};
 
       final wbApi = WbAdvertApiHelper.autoGetStatsWords;
@@ -512,6 +521,7 @@ class AdvertApiClient
       int? status,
       int? type}) async {
     try {
+    
       final body = ids;
       Map<String, String> params = {};
       if (status != null) {
@@ -592,6 +602,7 @@ class AdvertApiClient
     // required int type = 1,
     bool returnResponse = true,
   }) async {
+   
     final apiHelper = WbAdvertApiHelper.depositBudget;
 
     final params = {
@@ -633,6 +644,7 @@ class AdvertApiClient
     required String token,
   }) async {
     try {
+  
       final params = [
         {
           "id": campaignId,

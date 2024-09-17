@@ -1,51 +1,55 @@
 import 'dart:convert';
-
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/domain/entities/get_all_subscriptions_for_user_response.dart';
+
 import 'package:rewild_bot_front/domain/entities/product_watch_delete_subscription_response.dart';
 import 'package:rewild_bot_front/domain/entities/product_watch_subscription_response.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:rewild_bot_front/domain/services/notification_service.dart';
 
-class ProductWatchSubscriptionApiClient {
+class ProductWatchSubscriptionApiClient
+    implements NotificationServiceProductWatchSubscriptionApiClient {
   const ProductWatchSubscriptionApiClient();
 
+  @override
   Future<Either<RewildError, ProductWatchSubscriptionResponse>>
       addProductWatchSubscription({
-    required int productId,
-    required String eventType,
-    required int warehouseId,
-    required int threshold,
-    required bool lessThan,
+    required String token,
+    required List<Map<String, dynamic>> subscriptions,
   }) async {
-    final url = Uri.parse("https://yourapi.com/addProductWatchSubscription");
+    final url =
+        Uri.parse("https://rewild.website/api/addProductWatchSubscription");
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
         body: jsonEncode({
-          'product_id': productId,
-          'event_type': eventType,
-          'warehouse_id': warehouseId,
-          'threshold': threshold,
-          'less_than': lessThan,
+          'subscriptions': subscriptions,
         }),
       );
-
+      // TODO remove
+      print("addProductWatchSubscription");
+      for (var sub in subscriptions) {
+        print(sub);
+      }
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
         return right(ProductWatchSubscriptionResponse(
-          subscriptionId: data['subscription_id'],
-          message: data['message'],
+          qty: data['qty'],
         ));
       } else {
         return left(RewildError(
           sendToTg: true,
-          "Ошибка при добавлении подписки: ${response.statusCode}",
+          "Ошибка при добавлении подписок: ${response.statusCode}",
           source: "ProductWatchSubscriptionApiClient",
           name: "addProductWatchSubscription",
-          args: [productId, eventType, warehouseId, threshold, lessThan],
+          args: [subscriptions],
         ));
       }
     } catch (e) {
@@ -54,26 +58,36 @@ class ProductWatchSubscriptionApiClient {
         "Неизвестная ошибка: $e",
         source: "ProductWatchSubscriptionApiClient",
         name: "addProductWatchSubscription",
-        args: [productId, eventType, warehouseId, threshold, lessThan],
+        args: [subscriptions],
       ));
     }
   }
 
+  @override
   Future<Either<RewildError, ProductWatchDeleteSubscriptionResponse>>
       deleteProductWatchSubscription({
-    required int productId,
-    required String eventType,
+    required String token,
+    required List<Map<String, dynamic>> subscriptions,
   }) async {
-    final url = Uri.parse("https://yourapi.com/deleteProductWatchSubscription");
+    final url =
+        Uri.parse("https://rewild.website/api/deleteProductWatchSubscription");
     try {
       final response = await http.post(
         url,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
         body: jsonEncode({
-          'product_id': productId,
-          'event_type': eventType,
+          'subscriptions': subscriptions,
         }),
       );
+
+      // TODO remove
+      print("deleteProductWatchSubscription");
+      for (var sub in subscriptions) {
+        print(sub);
+      }
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -83,10 +97,10 @@ class ProductWatchSubscriptionApiClient {
       } else {
         return left(RewildError(
           sendToTg: true,
-          "Ошибка при удалении подписки: ${response.statusCode}",
+          "Ошибка при удалении подписок: ${response.statusCode}",
           source: "ProductWatchSubscriptionApiClient",
           name: "deleteProductWatchSubscription",
-          args: [productId, eventType],
+          args: [subscriptions],
         ));
       }
     } catch (e) {
@@ -95,7 +109,62 @@ class ProductWatchSubscriptionApiClient {
         "Неизвестная ошибка: $e",
         source: "ProductWatchSubscriptionApiClient",
         name: "deleteProductWatchSubscription",
-        args: [productId, eventType],
+        args: [subscriptions],
+      ));
+    }
+  }
+
+  @override
+  Future<Either<RewildError, GetAllSubscriptionsForUserAndProductResponse>>
+      getAllSubscriptionsForUserAndProduct({
+    required String token,
+    required int productId,
+  }) async {
+    final url = Uri.parse(
+        "https://rewild.website/api/getAllSubscriptionsForUserAndProduct");
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'product_id': productId,
+        }),
+      );
+
+      // TODO remove
+      print("getAllSubscriptionsForUserAndProduct");
+      print(productId);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+
+        // Проверка на пустой ответ
+        if (data.isEmpty) {
+          return right(
+              GetAllSubscriptionsForUserAndProductResponse(subscriptions: []));
+        }
+
+        return right(
+            GetAllSubscriptionsForUserAndProductResponse.fromJson(data));
+      } else {
+        return left(RewildError(
+          sendToTg: true,
+          "Ошибка при получении всех подписок: ${response.statusCode}",
+          source: "ProductWatchSubscriptionApiClient",
+          name: "getAllSubscriptionsForUserAndProduct",
+          args: [token, productId],
+        ));
+      }
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        "Неизвестная ошибка: $e",
+        source: "ProductWatchSubscriptionApiClient",
+        name: "getAllSubscriptionsForUserAndProduct",
+        args: [token, productId],
       ));
     }
   }

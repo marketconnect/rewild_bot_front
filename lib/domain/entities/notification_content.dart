@@ -3,7 +3,7 @@ class ReWildNotificationContent {
   final int id;
   // final String title;
   // final String body;
-  final int? condition;
+  final String? condition;
   final String? newValue;
   final int? wh;
 

@@ -479,6 +479,7 @@ class UpdateService
         return left(deleteOldOrdersEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
+
       final deleteCardKeywordsEither =
           await cardKeywordsDataProvider.deleteKeywordsOlderThanOneDay();
       if (deleteCardKeywordsEither.isLeft()) {
@@ -539,6 +540,7 @@ class UpdateService
         return left(todayInitialStockModelsFromServerEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
+
       final todayInitialStockModelsFromServer =
           todayInitialStockModelsFromServerEither.fold(
               (l) => throw UnimplementedError(), (r) => r);
@@ -614,6 +616,7 @@ class UpdateService
       }
     }
     setUpdatedAt();
+
     return right(null);
   }
 

@@ -6,9 +6,14 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
 
+abstract class NotificationCardTokenService {
+  Future<Either<RewildError, String>> getToken();
+}
+
 abstract class NotificationCardNotificationService {
   Future<Either<RewildError, void>> addForParent(
-      {required List<ReWildNotificationModel> notifications,
+      {required String token,
+      required List<ReWildNotificationModel> notifications,
       required int parentId,
       required bool wasEmpty});
   Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
@@ -68,6 +73,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   CardNotificationViewModel(
     this.state, {
     required this.notificationService,
+    required this.tokenService,
     required super.context,
   }) {
     _asyncInit();
@@ -76,6 +82,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   // constructor params
   final NotificationCardNotificationService notificationService;
   final NotificationCardState state;
+  final NotificationCardTokenService tokenService;
 
   // // Fields
   bool _isLoading = false;
@@ -97,15 +104,15 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   int get stocks => _stocks ?? 0;
 
   // notifications
-  final Map<int, ReWildNotificationModel> _notifications = {};
-  void setNotifications(Map<int, ReWildNotificationModel> notifications) {
+  final Map<String, ReWildNotificationModel> _notifications = {};
+  void setNotifications(Map<String, ReWildNotificationModel> notifications) {
     _notifications.clear();
     _notifications.addAll(notifications);
 
     notify();
   }
 
-  Map<int, ReWildNotificationModel> get notifications => _notifications;
+  Map<String, ReWildNotificationModel> get notifications => _notifications;
 
   Map<Warehouse, int> get warehouses => state.warehouses;
 
@@ -125,7 +132,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
       setIsLoading(false);
     }
 
-    Map<int, ReWildNotificationModel> notifications = {};
+    Map<String, ReWildNotificationModel> notifications = {};
 
     for (var element in savedNotifications) {
       notifications[element.condition] = element;
@@ -140,15 +147,22 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   }
 
   Future<void> save() async {
+    final tokenOrNull = await fetch(() => tokenService.getToken());
+    if (tokenOrNull == null) {
+      return;
+    }
     final listToAdd = _notifications.values.toList();
 
     await notificationService.addForParent(
-        notifications: listToAdd, parentId: state.nmId, wasEmpty: _wasEmpty);
+        token: tokenOrNull,
+        notifications: listToAdd,
+        parentId: state.nmId,
+        wasEmpty: _wasEmpty);
 
     if (context.mounted) Navigator.of(context).pop();
   }
 
-  bool isInNotifications(int condition, {int? wh}) {
+  bool isInNotifications(String condition, {int? wh}) {
     final notification = _notifications[condition];
 
     if (notification == null) {
@@ -162,7 +176,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     return true;
   }
 
-  void dropNotification(int condition, {int? wh}) {
+  void dropNotification(String condition, {int? wh}) {
     if (wh != null) {
       _notifications
           .removeWhere((key, value) => key == condition && value.wh == wh);
@@ -173,7 +187,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   }
 
   void addNotification(
-    int condition,
+    String condition,
     num? value, {
     int? wh,
   }) {
@@ -231,14 +245,14 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
         break;
     }
     // since there can be many warehouses, and to add all of them we need to make condition different (100 + wh)
-    if (condition > 100) {
-      _notifications[condition] = ReWildNotificationModel(
-          condition: condition,
-          reusable: true,
-          value: value.toString(),
-          parentId: state.nmId,
-          wh: wh);
-    }
+    // if (condition > 100) {
+    //   _notifications[condition] = ReWildNotificationModel(
+    //       condition: condition,
+    //       reusable: true,
+    //       value: value.toString(),
+    //       parentId: state.nmId,
+    //       wh: wh);
+    // }
     notify();
   }
 }

@@ -78,7 +78,7 @@ class NotificationDataProvider
 
   @override
   Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
-      List<int> conditions) async {
+      List<String> conditions) async {
     try {
       final db = await _db;
       final txn = db.transaction('notifications', idbModeReadOnly);

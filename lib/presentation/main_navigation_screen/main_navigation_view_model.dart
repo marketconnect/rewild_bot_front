@@ -97,8 +97,10 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
 
   void _asyncInit() async {
     final token = await _getToken();
+
     await updateService.update(token);
     // Update in MainNavigationCardsWidget cards number
+
     cardsNumberStream.listen((event) {
       setSubscriptionsNum(event.$1);
       setTrackedCardsNumber(event.$2);
@@ -139,6 +141,7 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     if (subscriptions == null) {
       return;
     }
+
     setSubscriptionsNum(getSubscriptionLimit(
         subscriptionTypeName: subscriptions.subscriptionTypeName));
 
@@ -148,12 +151,14 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     if (cardsQtyOrNull == null) {
       return;
     }
+
     setTrackedCardsNumber(cardsQtyOrNull.length);
 
     // setTrackedCardsNumber(subscriptions.where((element) => element.cardId != 0).toList().length);
 
     // Api keys exist
     // Advert
+
     final advertApiKey = await fetch(() => advertService.getApiKey());
     if (advertApiKey == null) {
       return;
@@ -166,10 +171,12 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
       return;
     }
     // Question
+
     final questionApiKey = await fetch(() => questionService.getApiKey());
     if (questionApiKey == null) {
       return;
     }
+
     setFeedbackApiKey(questionApiKey);
 
     notify();

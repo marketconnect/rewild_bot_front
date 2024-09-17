@@ -5,13 +5,18 @@ import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
 
+abstract class NotificationFeedbackTokenService {
+  Future<Either<RewildError, String>> getToken();
+}
+
 abstract class NotificationFeedbackNotificationService {
   Future<Either<RewildError, void>> addForParent(
-      {required List<ReWildNotificationModel> notifications,
+      {required String token,
+      required List<ReWildNotificationModel> notifications,
       required int parentId,
       required bool wasEmpty});
   Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
-      List<int> conditions);
+      List<String> conditions);
 }
 
 class NotificationFeedbackState {
@@ -40,9 +45,11 @@ class NotificationFeedbackState {
 
 class NotificationFeedbackViewModel extends ResourceChangeNotifier {
   final NotificationFeedbackNotificationService notificationService;
+  final NotificationFeedbackTokenService tokenService;
   // final NotificationFeedbackState state;
   NotificationFeedbackViewModel({
     required this.notificationService,
+    required this.tokenService,
     required super.context,
   }) {
     _asyncInit();
@@ -64,7 +71,7 @@ class NotificationFeedbackViewModel extends ResourceChangeNotifier {
     if (savedNotifications.isNotEmpty) {
       setWasNotEmpty();
     }
-    final notifMap = <int, ReWildNotificationModel>{};
+    final notifMap = <String, ReWildNotificationModel>{};
     for (var element in savedNotifications) {
       notifMap[element.condition] = element;
     }
@@ -78,24 +85,33 @@ class NotificationFeedbackViewModel extends ResourceChangeNotifier {
     _wasEmpty = false;
   }
 
-  Map<int, ReWildNotificationModel> _notifications = {};
-  void setNotifications(Map<int, ReWildNotificationModel> notifications) {
+  Map<String, ReWildNotificationModel> _notifications = {};
+  void setNotifications(Map<String, ReWildNotificationModel> notifications) {
     _notifications = notifications;
     notify();
   }
 
-  Map<int, ReWildNotificationModel> get notifications => _notifications;
+  Map<String, ReWildNotificationModel> get notifications => _notifications;
 
   Future<void> save() async {
+    final tokenOrNull = await fetch(() => tokenService.getToken());
+
+    if (tokenOrNull == null) {
+      return;
+    }
+
     final notificationsToSave = _notifications.values.toList();
 
     await notificationService.addForParent(
-        notifications: notificationsToSave, parentId: 0, wasEmpty: _wasEmpty);
+        token: tokenOrNull,
+        notifications: notificationsToSave,
+        parentId: 0,
+        wasEmpty: _wasEmpty);
 
     if (context.mounted) Navigator.of(context).pop();
   }
 
-  bool isInNotifications(int condition) {
+  bool isInNotifications(String condition) {
     final notification = _notifications[condition];
 
     if (notification == null) {
@@ -104,12 +120,12 @@ class NotificationFeedbackViewModel extends ResourceChangeNotifier {
     return true;
   }
 
-  void dropNotification(int condition) {
+  void dropNotification(String condition) {
     _notifications.remove(condition);
     notifyListeners();
   }
 
-  void addNotification(int condition, int? value, [bool? reusable]) {
+  void addNotification(String condition, int? value, [bool? reusable]) {
     switch (condition) {
       case NotificationConditionConstants.review:
         _notifications[condition] = ReWildNotificationModel(

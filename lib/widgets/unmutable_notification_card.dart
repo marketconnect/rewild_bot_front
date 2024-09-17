@@ -13,14 +13,14 @@ class UnmutableNotificationCard extends StatelessWidget {
     required this.addNotification,
   });
 
-  final int condition;
+  final String condition;
   final bool isActive;
   final bool topBorder;
   final String? currentValue;
   final String? suffix;
   final String text;
-  final Function(int condition) dropNotification;
-  final Function(int condition, int? value) addNotification;
+  final Function(String condition) dropNotification;
+  final Function(String condition, int? value) addNotification;
 
   @override
   Widget build(BuildContext context) {

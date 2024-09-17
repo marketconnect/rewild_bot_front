@@ -92,24 +92,36 @@ class OrderDataProvider
   Future<Either<RewildError, void>> deleteOldOrders() async {
     try {
       final db = await _db;
+
       final txn = db.transaction('orders', idbModeReadWrite);
       final store = txn.objectStore('orders');
+
       final oneDayAgoStr = DateFormat('yyyy-MM-dd')
           .format(DateTime.now().subtract(const Duration(days: 1)));
 
-      // Assuming 'updatedAt' is indexed
       final index = store.index('updatedAt');
-
-      // Opening a cursor within the specified range
       final keyRange = KeyRange.upperBound(oneDayAgoStr, true);
 
-      final cursorStream = index.openCursor(range: keyRange);
+      final cursorRequest = index.openCursor(range: keyRange);
 
-      await for (final cursor in cursorStream) {
-        await cursor.delete();
-      }
+      // Обработка курсора
+      cursorRequest.listen((cursor) async {
+        await cursor.delete(); // Удаление текущей записи
 
-      await txn.completed;
+        // Переход к следующей записи
+        cursor.next();
+      }, onDone: () async {
+        await txn.completed; // Завершение транзакции
+      }, onError: (e) {
+        return left(RewildError(
+          "Failed to delete old orders: ${e.toString()}",
+          source: "OrderDataProvider",
+          name: "deleteOldOrders",
+          args: [],
+          sendToTg: true,
+        ));
+      });
+
       return right(null);
     } catch (e) {
       return left(RewildError(

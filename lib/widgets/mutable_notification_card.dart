@@ -15,15 +15,15 @@ class MutableNotificationCard extends StatefulWidget {
     required this.addNotification,
   });
 
-  final int condition;
+  final String condition;
   final bool isActive;
   final bool topBorder;
   final num? currentValue;
   final String? suffix;
   final bool asDouble;
   final String text;
-  final Function(int condition) dropNotification;
-  final Function(int condition, num? value) addNotification;
+  final Function(String condition) dropNotification;
+  final Function(String condition, num? value) addNotification;
 
   @override
   State<MutableNotificationCard> createState() =>

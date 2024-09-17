@@ -443,13 +443,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
           .where((card) => !subscribedCardsIds.contains(card.nmId))
           .map((card) => card.nmId)
           .toList();
-      for (int id in _missingCardIds) {
-        print("missing id: $id");
-      }
 
-      for (int id in subscribedCardsIds) {
-        print("subscribed id: $id");
-      }
       // get subscription limit
       final subCardsQtyLimit = getSubscriptionLimit(
           subscriptionTypeName: localSubscriptionOrNull.subscriptionTypeName);
