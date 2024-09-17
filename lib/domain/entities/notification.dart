@@ -76,9 +76,9 @@ class ReWildNotificationModel {
     );
   }
 
-  ProductSubscriptionServiceSubscription toServerSubscription() {
+  ProductSubscriptionServiceSubscription toServerSubscription(int userId) {
     return ProductSubscriptionServiceSubscription(
-      userID: parentId,
+      userID: userId,
       productID: parentId,
       eventType: condition,
       condition: ProductSubscriptionServiceCondition(

@@ -13,6 +13,7 @@ import 'package:rewild_bot_front/domain/services/auth_service.dart';
 import 'package:rewild_bot_front/domain/services/balance_service.dart';
 import 'package:rewild_bot_front/domain/services/content_service.dart';
 import 'package:rewild_bot_front/domain/services/keywords_service.dart';
+import 'package:rewild_bot_front/domain/services/notification_service.dart';
 import 'package:rewild_bot_front/domain/services/question_service.dart';
 import 'package:rewild_bot_front/domain/services/realization_report_service.dart';
 import 'package:rewild_bot_front/domain/services/review_service.dart';
@@ -22,6 +23,7 @@ class SecureStorageProvider
         ApiKeysServiceApiKeysDataProvider,
         KeywordsServiceApiKeyDataProvider,
         AdvertsAnaliticsServiceApiKeyDataProvider,
+        NotificationServiceSecureDataProvider,
         ReviewServiceApiKeyDataProvider,
         ContentServiceApiKeyDataProvider,
         RealizationReportServiceApiKeyDataProvider,

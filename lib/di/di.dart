@@ -445,6 +445,7 @@ class _DIContainer {
 
   NotificationService _makeNotificationService() => NotificationService(
       notificationDataProvider: _makeNotificationDataProvider(),
+      secureDataProvider: _makeSecureDataProvider(),
       productWatchSubscriptionApiClient:
           _makeProductWatchSubscriptionApiClient(),
       updatedNotificationStreamController: updatedNotificationStreamController);

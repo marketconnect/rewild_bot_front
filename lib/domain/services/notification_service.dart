@@ -30,6 +30,10 @@ abstract class NotificationServiceNotificationDataProvider {
       List<String> conditions);
 }
 
+abstract class NotificationServiceSecureDataProvider {
+  Future<Either<RewildError, String?>> getUsername();
+}
+
 abstract class NotificationServiceProductWatchSubscriptionApiClient {
   Future<Either<RewildError, ProductWatchSubscriptionResponse>>
       addProductWatchSubscription({
@@ -56,12 +60,15 @@ class NotificationService
         SingleCardScreenNotificationService,
         NotificationCardNotificationService {
   final NotificationServiceNotificationDataProvider notificationDataProvider;
+  final NotificationServiceSecureDataProvider secureDataProvider;
+
   final NotificationServiceProductWatchSubscriptionApiClient
       productWatchSubscriptionApiClient;
   final StreamController<StreamNotificationEvent>
       updatedNotificationStreamController;
   NotificationService(
       {required this.notificationDataProvider,
+      required this.secureDataProvider,
       required this.productWatchSubscriptionApiClient,
       required this.updatedNotificationStreamController});
 
@@ -112,8 +119,16 @@ class NotificationService
         (r) => r.subscriptions);
 
     // convert notifications to server subscriptions
+    final chatIdEither = await secureDataProvider.getUsername();
+    if (chatIdEither.isLeft()) {
+      return chatIdEither;
+    }
+
+    final chatId = chatIdEither.fold((l) => "", (r) => r ?? "");
+
     final notificationsToAdd = notifications
-        .map((notification) => notification.toServerSubscription())
+        .map((notification) =>
+            notification.toServerSubscription(int.parse(chatId)))
         .toList();
 
     // delete subscriptions on the server
