@@ -18,6 +18,7 @@ class ProductWatchSubscriptionApiClient
   Future<Either<RewildError, ProductWatchSubscriptionResponse>>
       addProductWatchSubscription({
     required String token,
+    required int chatId,
     required List<Map<String, dynamic>> subscriptions,
   }) async {
     final url =
@@ -30,11 +31,12 @@ class ProductWatchSubscriptionApiClient
           'Content-Type': 'application/json'
         },
         body: jsonEncode({
+          'chat_id': chatId,
           'subscriptions': subscriptions,
         }),
       );
       // TODO remove
-      print("addProductWatchSubscription");
+      print("addProductWatchSubscription chat_id: $chatId");
       for (var sub in subscriptions) {
         print(sub);
       }

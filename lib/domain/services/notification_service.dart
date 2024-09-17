@@ -38,6 +38,7 @@ abstract class NotificationServiceProductWatchSubscriptionApiClient {
   Future<Either<RewildError, ProductWatchSubscriptionResponse>>
       addProductWatchSubscription({
     required String token,
+    required int chatId,
     required List<Map<String, dynamic>> subscriptions,
   });
   Future<Either<RewildError, ProductWatchDeleteSubscriptionResponse>>
@@ -127,8 +128,7 @@ class NotificationService
     final chatId = chatIdEither.fold((l) => "", (r) => r ?? "");
 
     final notificationsToAdd = notifications
-        .map((notification) =>
-            notification.toServerSubscription(int.parse(chatId)))
+        .map((notification) => notification.toServerSubscription())
         .toList();
 
     // delete subscriptions on the server
@@ -146,6 +146,7 @@ class NotificationService
       final addResponse =
           await productWatchSubscriptionApiClient.addProductWatchSubscription(
               token: token,
+              chatId: int.parse(chatId),
               subscriptions:
                   notificationsToAdd.map((s) => s.toJson()).toList());
       if (addResponse.isLeft()) {
