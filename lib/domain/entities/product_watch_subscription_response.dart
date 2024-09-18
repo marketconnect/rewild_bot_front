@@ -32,9 +32,9 @@ class ProductSubscriptionServiceCondition {
   factory ProductSubscriptionServiceCondition.fromJson(
       Map<String, dynamic> json) {
     return ProductSubscriptionServiceCondition(
-      warehouseID: json['warehouse_id'] as int,
-      threshold: json['threshold'] as int,
-      lessThan: json['less_than'] as bool,
+      warehouseID: json['warehouse_id'] ?? 0,
+      threshold: json['threshold'] ?? 0,
+      lessThan: json['less_than'] ?? false,
     );
   }
 
@@ -49,12 +49,14 @@ class ProductSubscriptionServiceCondition {
 
 class ProductSubscriptionServiceSubscription {
   final int userID;
+  final int chatID;
   final int productID;
   final String eventType;
   final ProductSubscriptionServiceCondition? condition;
 
   ProductSubscriptionServiceSubscription({
     required this.userID,
+    required this.chatID,
     required this.productID,
     required this.eventType,
     this.condition,
@@ -67,6 +69,7 @@ class ProductSubscriptionServiceSubscription {
 
     return ProductSubscriptionServiceSubscription(
       userID: json['user_id'] as int,
+      chatID: json['chat_id'] ?? 0,
       productID: json['product_id'] as int,
       eventType: json['event_type'] as String,
       condition: (conditionJson != null && conditionJson.isNotEmpty)
@@ -77,6 +80,7 @@ class ProductSubscriptionServiceSubscription {
   Map<String, dynamic> toJson() {
     return {
       'user_id': userID,
+      'chat_id': chatID,
       'product_id': productID,
       'event_type': eventType,
       if (condition != null) 'warehouse_id': condition!.warehouseID,

@@ -38,7 +38,6 @@ abstract class NotificationServiceProductWatchSubscriptionApiClient {
   Future<Either<RewildError, ProductWatchSubscriptionResponse>>
       addProductWatchSubscription({
     required String token,
-    required int chatId,
     required List<Map<String, dynamic>> subscriptions,
   });
   Future<Either<RewildError, ProductWatchDeleteSubscriptionResponse>>
@@ -111,6 +110,7 @@ class NotificationService
         .getAllSubscriptionsForUserAndProduct(
             token: token, productId: parentId);
     if (subscriptionsEither.isLeft()) {
+      print("subscriptionsEither: isLeft()");
       return subscriptionsEither;
     }
 
@@ -118,6 +118,7 @@ class NotificationService
     final subscriptions = subscriptionsEither.fold(
         (l) => <ProductSubscriptionServiceSubscription>[],
         (r) => r.subscriptions);
+    print("subscriptions: ${subscriptions.length}");
 
     // convert notifications to server subscriptions
     final chatIdEither = await secureDataProvider.getUsername();
@@ -128,7 +129,8 @@ class NotificationService
     final chatId = chatIdEither.fold((l) => "", (r) => r ?? "");
 
     final notificationsToAdd = notifications
-        .map((notification) => notification.toServerSubscription())
+        .map((notification) =>
+            notification.toServerSubscription(int.parse(chatId)))
         .toList();
 
     // delete subscriptions on the server
@@ -146,7 +148,6 @@ class NotificationService
       final addResponse =
           await productWatchSubscriptionApiClient.addProductWatchSubscription(
               token: token,
-              chatId: int.parse(chatId),
               subscriptions:
                   notificationsToAdd.map((s) => s.toJson()).toList());
       if (addResponse.isLeft()) {

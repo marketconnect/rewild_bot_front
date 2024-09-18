@@ -81,6 +81,32 @@ class MainNavigation implements AppNavigation {
 
   @override
   Route<Object> onGenerateRoute(RouteSettings settings) {
+    print(
+        "onGenerateRoute: ${settings.arguments} ${settings.name} ${settings}");
+    final uri = Uri.tryParse(settings.name ?? '') ?? Uri(); // Извлечение URI
+    print("uri: $uri");
+    print("uri.fragment: ${uri.fragment}");
+
+    // В данном случае мы не используем fragment, так как это чистый URL
+    if (uri.path == MainNavigationRouteNames.singleCardScreen) {
+      // Получаем cardId из queryParameters
+      final cardIdParam = uri.queryParameters['cardId'];
+      final cardId = cardIdParam != null ? int.tryParse(cardIdParam) ?? 0 : 0;
+
+      print("cardId: $cardId");
+
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            screenFactory.makeSingleCardScreen(cardId),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        settings: settings,
+      );
+    }
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(

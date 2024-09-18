@@ -23,14 +23,7 @@ class NotificationDataProvider
       final txn = db.transaction('notifications', idbModeReadWrite);
       final store = txn.objectStore('notifications');
 
-      await store.put({
-        'parentId': notification.parentId,
-        'condition': notification.condition,
-        'value': notification.value,
-        'sizeId': notification.sizeId,
-        'wh': notification.wh,
-        'reusable': notification.reusable,
-      });
+      await store.put(notification.toMap());
 
       await txn.completed;
       return right(true);

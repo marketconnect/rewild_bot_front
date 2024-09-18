@@ -34,7 +34,7 @@ void main() async {
     final dbHelper = DatabaseHelper();
 
     await dbHelper.database;
-
+    // await dbHelper.clearTable('notifications');
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {
     await sendMessageToTelegramBot(

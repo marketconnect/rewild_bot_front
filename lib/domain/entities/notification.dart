@@ -6,6 +6,7 @@ import 'package:rewild_bot_front/domain/entities/product_watch_subscription_resp
 
 class ReWildNotificationModel {
   int parentId;
+
   String condition;
   String value;
   int? sizeId;
@@ -19,7 +20,7 @@ class ReWildNotificationModel {
     this.sizeId,
     this.wh,
   });
-
+  String get parentIdCondition => '${parentId}_$condition';
   ReWildNotificationModel copyWith({
     int? parentId,
     String? condition,
@@ -39,6 +40,7 @@ class ReWildNotificationModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'parentId': parentId,
+      'parentIdCondition': parentIdCondition,
       'condition': condition,
       'value': value,
       'sizeId': sizeId,
@@ -76,9 +78,10 @@ class ReWildNotificationModel {
     );
   }
 
-  ProductSubscriptionServiceSubscription toServerSubscription() {
+  ProductSubscriptionServiceSubscription toServerSubscription(int chatID) {
     return ProductSubscriptionServiceSubscription(
       userID: parentId,
+      chatID: chatID,
       productID: parentId,
       eventType: condition,
       condition: ProductSubscriptionServiceCondition(

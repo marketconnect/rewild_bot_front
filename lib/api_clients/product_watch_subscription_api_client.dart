@@ -18,7 +18,6 @@ class ProductWatchSubscriptionApiClient
   Future<Either<RewildError, ProductWatchSubscriptionResponse>>
       addProductWatchSubscription({
     required String token,
-    required int chatId,
     required List<Map<String, dynamic>> subscriptions,
   }) async {
     final url =
@@ -31,15 +30,12 @@ class ProductWatchSubscriptionApiClient
           'Content-Type': 'application/json'
         },
         body: jsonEncode({
-          'chat_id': chatId,
           'subscriptions': subscriptions,
         }),
       );
-      // TODO remove
-      print("addProductWatchSubscription chat_id: $chatId");
-      for (var sub in subscriptions) {
-        print(sub);
-      }
+
+      print("addProductWatchSubscription: ${subscriptions} ${response.body}");
+
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
         return right(ProductWatchSubscriptionResponse(
@@ -84,12 +80,6 @@ class ProductWatchSubscriptionApiClient
           'subscriptions': subscriptions,
         }),
       );
-
-      // TODO remove
-      print("deleteProductWatchSubscription");
-      for (var sub in subscriptions) {
-        print(sub);
-      }
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
@@ -139,10 +129,10 @@ class ProductWatchSubscriptionApiClient
       // TODO remove
       print("getAllSubscriptionsForUserAndProduct");
       print(productId);
-
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
 
+        print(data);
         // Проверка на пустой ответ
         if (data.isEmpty) {
           return right(

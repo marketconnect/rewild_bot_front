@@ -234,7 +234,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
         break;
       case NotificationConditionConstants.stocksLessThan:
         _notifications[condition] = ReWildNotificationModel(
-            condition: NotificationConditionConstants.stocksLessThan,
+            condition: NotificationConditionConstants.totalStocksLessThan,
             reusable: true,
             value: value.toString(),
             parentId: state.nmId);
