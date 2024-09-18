@@ -179,6 +179,8 @@ import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_categ
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen.dart';
+import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen_view_model.dart';
 
 import 'package:rewild_bot_front/routes/main_navigation.dart';
 
@@ -948,6 +950,14 @@ class _DIContainer {
         advAnaliticsService: _makeAdvertsAnaliticsService(),
       );
 
+  RootAdvertsScreenViewModel _makeRootAdvertsScreenViewModel(
+          BuildContext context) =>
+      RootAdvertsScreenViewModel(
+          context: context,
+          advertService: _makeAdvertService(),
+          apiKeyExistsStream: apiKeyExistsStream,
+          updatedAdvertStream: updatedAdvertStream);
+
   // AddCardOptionViewModel _makeAddCardOptionViewModel(BuildContext context) =>
   //     AddCardOptionViewModel(context: context);
 }
@@ -1276,6 +1286,15 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (context) =>
           _diContainer._makeAdvertAnaliticsViewModel(context, campaignInfo),
       child: const AdvertAnaliticsScreen(),
+    );
+  }
+
+  @override
+  Widget makeRootAdvertsScreen() {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeRootAdvertsScreenViewModel(context),
+      child: const RootAdvertsScreen(),
     );
   }
 

@@ -110,7 +110,6 @@ class NotificationService
         .getAllSubscriptionsForUserAndProduct(
             token: token, productId: parentId);
     if (subscriptionsEither.isLeft()) {
-      print("subscriptionsEither: isLeft()");
       return subscriptionsEither;
     }
 
@@ -118,7 +117,6 @@ class NotificationService
     final subscriptions = subscriptionsEither.fold(
         (l) => <ProductSubscriptionServiceSubscription>[],
         (r) => r.subscriptions);
-    print("subscriptions: ${subscriptions.length}");
 
     // convert notifications to server subscriptions
     final chatIdEither = await secureDataProvider.getUsername();

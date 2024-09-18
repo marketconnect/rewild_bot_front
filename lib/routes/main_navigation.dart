@@ -69,7 +69,7 @@ abstract class ScreenFactory {
 
   Widget makeAdvertAnaliticsScreen((int, DateTime, String) campaignInfo);
 
-  // Widget makeAddCardOptionScreen();
+  Widget makeRootAdvertsScreen();
 
   // Widget makeWbWebViewSceen((List<int>, String?) nmIdsSearchString);
 }
@@ -81,19 +81,18 @@ class MainNavigation implements AppNavigation {
 
   @override
   Route<Object> onGenerateRoute(RouteSettings settings) {
-    print(
-        "onGenerateRoute: ${settings.arguments} ${settings.name} ${settings}");
-    final uri = Uri.tryParse(settings.name ?? '') ?? Uri(); // Извлечение URI
-    print("uri: $uri");
-    print("uri.fragment: ${uri.fragment}");
+    final uri = Uri.tryParse(settings.name ?? '') ?? Uri();
 
-    // В данном случае мы не используем fragment, так как это чистый URL
     if (uri.path == MainNavigationRouteNames.singleCardScreen) {
-      // Получаем cardId из queryParameters
+      // from url
       final cardIdParam = uri.queryParameters['cardId'];
-      final cardId = cardIdParam != null ? int.tryParse(cardIdParam) ?? 0 : 0;
+      int cardId = cardIdParam != null ? int.tryParse(cardIdParam) ?? 0 : 0;
 
-      print("cardId: $cardId");
+      // from arguments
+      if (cardId == 0) {
+        final arguments = settings.arguments;
+        cardId = arguments is int ? arguments : 0;
+      }
 
       return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
@@ -140,21 +139,6 @@ class MainNavigation implements AppNavigation {
           builder: (_) => screenFactory.makePaymentWebView(args),
         );
 
-      case MainNavigationRouteNames.singleCardScreen:
-        final arguments = settings.arguments;
-        final cardId = arguments is int ? arguments : 0;
-        return PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                screenFactory.makeSingleCardScreen(cardId),
-            // transitionDuration: const Duration(seconds: 2),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              return FadeTransition(
-                opacity: animation,
-                child: child,
-              );
-            },
-            settings: settings);
       case MainNavigationRouteNames.cardNotificationsSettingsScreen:
         final arguments = settings.arguments;
         final state = arguments is NotificationCardState
@@ -315,6 +299,11 @@ class MainNavigation implements AppNavigation {
             arguments is QuestionModel ? arguments : QuestionModel.empty();
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeSingleQuestionScreen(question),
+        );
+
+      case MainNavigationRouteNames.rootAdvertsScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeRootAdvertsScreen(),
         );
 
       // case MainNavigationRouteNames.addCardOptionScreen:

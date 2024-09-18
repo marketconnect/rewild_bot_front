@@ -432,11 +432,8 @@ class UpdateService
           isUpdatedEither.fold((l) => l, (r) => throw UnimplementedError()));
     }
 
-    // final isUpdated =
-    //     isUpdatedEither.fold((l) => throw UnimplementedError(), (r) => r);
-
-    // TODO: Delete me
-    bool isUpdated = false;
+    final isUpdated =
+        isUpdatedEither.fold((l) => throw UnimplementedError(), (r) => r);
 
     // were not updated - update
     // Update initial stocks!

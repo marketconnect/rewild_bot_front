@@ -17,6 +17,7 @@ import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/
 import 'package:rewild_bot_front/presentation/adverts/single_auto_words_screen/single_auto_words_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
+import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen_view_model.dart';
 
 // API
 abstract class AdvertServiceAdvertApiClient {
@@ -70,6 +71,7 @@ class AdvertService
     implements
         MainNavigationAdvertService,
         SingleAutoWordsAdvertService,
+        RootAdvertsAdvertService,
         AllAdvertsStatScreenAdvertService,
         ReportAdvertService,
         AllAdvertsWordsAdvertService,

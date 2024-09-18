@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/icon_constant.dart';
 
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
-import 'package:rewild_bot_front/presentation/main_navigation_screen/widgets/main_navigation_screen_advert_widget.dart';
+import 'package:rewild_bot_front/widgets/main_navigation_screen_advert_widget.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/widgets/main_navigation_screen_cards_widget.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/widgets/main_navigation_screen_feedback_widget.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/widgets/main_navigation_screen_home_widget.dart';
@@ -52,8 +52,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen>
     final userName = model.userName;
     final isLoading = model.isLoading;
     final goToSubscriptionsScreen = model.goToSubscriptionsScreeen;
-    print("feedbackApiKeyExists $feedbackApiKeyExists");
-    print("advertApiKeyExists $advertApiKeyExists");
+
     List<Widget> widgets = [
       MainNavigationScreenHomeWidget(
         userName: userName,

@@ -34,8 +34,6 @@ class ProductWatchSubscriptionApiClient
         }),
       );
 
-      print("addProductWatchSubscription: ${subscriptions} ${response.body}");
-
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
         return right(ProductWatchSubscriptionResponse(
@@ -126,13 +124,9 @@ class ProductWatchSubscriptionApiClient
         }),
       );
 
-      // TODO remove
-      print("getAllSubscriptionsForUserAndProduct");
-      print(productId);
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
 
-        print(data);
         // Проверка на пустой ответ
         if (data.isEmpty) {
           return right(
