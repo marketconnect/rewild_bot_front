@@ -286,12 +286,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
   Map<int, double> get grossProfit => _totalCostsGrossProfit;
 
   Future<void> _update([bool toNotify = true]) async {
-    // filter
-    _filter = await fetch(() => filterService.getCurrentFilter());
-    if (_filter == null) {
-      return;
-    }
-    checkFilter();
     if (!context.mounted) {
       return;
     }
@@ -302,9 +296,24 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     // Update
     await fetch(() => updateService.update(token));
 
+    final values = await Future.wait([
+      fetch(() => filterService.getCurrentFilter()), // 0
+      fetch(() => cardsOfProductsService.getAll()), // 1
+      fetch(() => notificationsService.getAll()), // 2
+      fetch(() => groupsProvider.getAll()), // 3
+      fetch(() => averageLogisticsService.getCurrentAverageLogistics(
+          token: token)), // 4
+      _handleSubscriptions(token),
+    ]);
+    // filter
+    _filter = values[0] as FilterModel?;
+    if (_filter == null) {
+      return;
+    }
+    checkFilter();
+
     // get cards
-    final fetchedCardsOfProducts =
-        await fetch(() => cardsOfProductsService.getAll());
+    final fetchedCardsOfProducts = values[1] as List<CardOfProductModel>?;
 
     if (fetchedCardsOfProducts == null) {
       return;
@@ -319,7 +328,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
     // tracked ids
     List<int> trackedIds = [];
-    final notifications = await fetch(() => notificationsService.getAll());
+    final notifications = values[2] as List<ReWildNotificationModel>?;
     if (notifications != null) {
       for (final n in notifications) {
         if (n.condition != NotificationConditionConstants.budgetLessThan) {
@@ -353,7 +362,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     // sort by orders sum
     _productCards.sort((a, b) => b.weekOrdersSum.compareTo(a.weekOrdersSum));
 
-    final fetchedGroups = await fetch(() => groupsProvider.getAll());
+    final fetchedGroups = values[3] as List<GroupModel>?;
     final cardsNmIds = _productCards.map((card) => card.nmId).toList();
     // append groups
     if (fetchedGroups != null) {
@@ -390,12 +399,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
     // Subscription ==========================================================
 
-    await _handleSubscriptions(token);
-
     // Total costs
     int averageLogistics = 50;
-    final averageLogisticsFromApiOrNull = await fetch(
-        () => averageLogisticsService.getCurrentAverageLogistics(token: token));
+    final averageLogisticsFromApiOrNull = values[4] as int?;
     if (averageLogisticsFromApiOrNull != null) {
       averageLogistics = averageLogisticsFromApiOrNull;
     }
@@ -433,9 +439,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       if (subscribedCardsIdsOrNull == null) {
         return;
       }
-      // for (int id in subscribedCardsIdsOrNull) {
-      //   print("susbcribed id: $id");
-      // }
+
       final subscribedCardsIds =
           subscribedCardsIdsOrNull.map((el) => el.nmId).toList();
       // Get missing card IDs
@@ -453,18 +457,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
           subCardsQtyLimit - subscribedCardsIdsOrNull.length);
     }
   }
-
-  // Future<void> p() async {
-  //   const timeDuration = TimeConstants.updatePeriod;
-
-  //   Timer.periodic(timeDuration, (Timer t) async {
-  //     if (!context.mounted) {
-  //       return;
-  //     }
-
-  //     await _update();
-  //   });
-  // }
 
   void onCardTap(int nmId) {
     // If there are no selected cards and the card is paid or user`s, open single card screen
