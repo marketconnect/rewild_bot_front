@@ -38,7 +38,7 @@ class ProductKeywordsApiClient implements CardKeywordsServiceApiClient {
       final response = await http.post(url, headers: headers, body: body);
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        final responseData = jsonDecode((utf8.decode(response.bodyBytes)));
         if (responseData['keywords'] == null ||
             responseData['keywords'] is! List) {
           throw Exception("Invalid response format: ${response.body}");

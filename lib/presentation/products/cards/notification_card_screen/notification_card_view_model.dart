@@ -163,27 +163,24 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   }
 
   bool isInNotifications(String condition, {int? wh}) {
-    final notification = _notifications[condition];
+    String notificationKey = wh != null ? '$condition-$wh' : condition;
+    final notification = _notifications[notificationKey];
 
     if (notification == null) {
       return false;
     }
 
-    if (wh != null && notification.wh != wh) {
-      return false;
-    }
+    // if (wh != null && notification.wh != wh) {
+    //   return false;
+    // }
 
     return true;
   }
 
   void dropNotification(String condition, {int? wh}) {
-    if (wh != null) {
-      _notifications
-          .removeWhere((key, value) => key == condition && value.wh == wh);
-    } else {
-      _notifications.remove(condition);
-    }
-    notifyListeners();
+    String notificationKey = wh != null ? '$condition-$wh' : condition;
+    _notifications.remove(notificationKey);
+    notify();
   }
 
   void addNotification(
@@ -192,9 +189,12 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     int? wh,
     String? whName,
   }) {
+    print(
+        "pressed add notification for $condition with value $value and wh $wh and whName $whName");
+    String notificationKey = wh != null ? '$condition-$wh' : condition;
     switch (condition) {
       case NotificationConditionConstants.nameChanged:
-        _notifications[condition] = ReWildNotificationModel(
+        _notifications[notificationKey] = ReWildNotificationModel(
             condition: NotificationConditionConstants.nameChanged,
             value: state.name,
             reusable: true,
@@ -202,7 +202,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
         break;
       case NotificationConditionConstants.picsChanged:
-        _notifications[condition] = ReWildNotificationModel(
+        _notifications[notificationKey] = ReWildNotificationModel(
             condition: NotificationConditionConstants.picsChanged,
             value: state.pics.toString(),
             reusable: true,
@@ -210,7 +210,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
         break;
       case NotificationConditionConstants.priceChanged:
-        _notifications[condition] = ReWildNotificationModel(
+        _notifications[notificationKey] = ReWildNotificationModel(
             condition: NotificationConditionConstants.priceChanged,
             value: state.price.toString(),
             reusable: true,
@@ -218,7 +218,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
         break;
       case NotificationConditionConstants.promoChanged:
-        _notifications[condition] = ReWildNotificationModel(
+        _notifications[notificationKey] = ReWildNotificationModel(
             condition: NotificationConditionConstants.promoChanged,
             value: state.promo,
             reusable: true,
@@ -226,7 +226,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
         break;
       case NotificationConditionConstants.reviewRatingChanged:
-        _notifications[condition] = ReWildNotificationModel(
+        _notifications[notificationKey] = ReWildNotificationModel(
             condition: NotificationConditionConstants.reviewRatingChanged,
             value: state.reviewRating.toString(),
             reusable: true,
@@ -234,7 +234,8 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
         break;
       case NotificationConditionConstants.totalStocksLessThan:
-        _notifications[condition] = ReWildNotificationModel(
+        print('totalStocksLessThan $condition $value $wh $whName');
+        _notifications[notificationKey] = ReWildNotificationModel(
             condition: NotificationConditionConstants.totalStocksLessThan,
             reusable: true,
             value: value.toString(),
@@ -243,12 +244,14 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
         break;
 
       case NotificationConditionConstants.stocksLessThan:
-        _notifications[condition] = ReWildNotificationModel(
+        print('stocksLessThan $condition $value $wh $whName');
+        _notifications[notificationKey] = ReWildNotificationModel(
             condition: condition,
             reusable: true,
             value: value.toString(),
             parentId: state.nmId,
-            wh: wh);
+            wh: wh,
+            whName: whName);
 
         break;
       default:

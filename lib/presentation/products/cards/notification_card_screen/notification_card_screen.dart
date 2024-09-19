@@ -102,7 +102,7 @@ class NotificationCardSettingsScreen extends StatelessWidget {
           ),
           if (!model.isLoading)
             MutableNotificationCard(
-              condition: NotificationConditionConstants.stocksLessThan,
+              condition: NotificationConditionConstants.totalStocksLessThan,
               currentValue: notifStocks == null
                   ? stocks
                   : int.tryParse(notifStocks.value),
@@ -113,19 +113,18 @@ class NotificationCardSettingsScreen extends StatelessWidget {
               addNotification: add,
               dropNotification: drop,
             ),
-          if (!model.isLoading)
+          if (!model.isLoading &&
+              isActive(NotificationConditionConstants.totalStocksLessThan))
             for (var warehouse in warehouses.entries)
               MutableNotificationCard(
                 // since there can be many warehouses,
                 //and to add all of them we need to make condition different (100 + wh)
-                condition: NotificationConditionConstants.stocksLessThan +
-                    warehouse.key.id.toString(),
+                condition: NotificationConditionConstants.stocksLessThan,
                 currentValue: warehouse.value,
                 text: '${warehouse.key.name} менее',
                 suffix: 'шт.',
                 isActive: isActive(
-                    NotificationConditionConstants.stocksLessThan +
-                        warehouse.key.id.toString(),
+                    NotificationConditionConstants.stocksLessThan,
                     wh: warehouse.key.id),
                 addNotification: (condition, value) => add(condition, value,
                     wh: warehouse.key.id, whName: warehouse.key.name),

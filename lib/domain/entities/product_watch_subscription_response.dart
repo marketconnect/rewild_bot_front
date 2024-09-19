@@ -20,11 +20,13 @@ class ProductWatchSubscriptionResponse {
 
 class ProductSubscriptionServiceCondition {
   final int warehouseID;
+  final String warehouseName;
   final int threshold;
   final bool lessThan;
 
   ProductSubscriptionServiceCondition({
     required this.warehouseID,
+    required this.warehouseName,
     required this.threshold,
     required this.lessThan,
   });
@@ -33,6 +35,7 @@ class ProductSubscriptionServiceCondition {
       Map<String, dynamic> json) {
     return ProductSubscriptionServiceCondition(
       warehouseID: json['warehouse_id'] ?? 0,
+      warehouseName: json['warehouse_name'] ?? '',
       threshold: json['threshold'] ?? 0,
       lessThan: json['less_than'] ?? false,
     );
@@ -84,6 +87,7 @@ class ProductSubscriptionServiceSubscription {
       'product_id': productID,
       'event_type': eventType,
       if (condition != null) 'warehouse_id': condition!.warehouseID,
+      if (condition != null) 'warehouse_name': condition!.warehouseName,
       if (condition != null) 'threshold': condition!.threshold,
       if (condition != null) 'less_than': condition!.lessThan,
     };

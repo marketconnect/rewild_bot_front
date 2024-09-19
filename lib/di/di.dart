@@ -664,15 +664,17 @@ class _DIContainer {
           context: context);
 
   SingleCardScreenViewModel _makeSingleCardViewModel(
-          BuildContext context, int id) =>
+          BuildContext context, int id, bool fromBot) =>
       SingleCardScreenViewModel(
           context: context,
           stockService: _makeStockService(),
           id: id,
+          fromBot: fromBot,
           ordersHistoryService: _makeOrdersHistoryService(),
           weekOrdersService: _makeWeekOrdersService(),
           tariffService: _makeTariffService(),
           // subscriptionsService: _makeSubscriptionService(),
+          updateService: _makeUpdateService(),
           tokenProvider: _makeAuthService(),
           commissionService: _makeCommissionService(),
           sellerService: _makeSellerService(),
@@ -1135,9 +1137,10 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeSingleCardScreen(int id) {
+  Widget makeSingleCardScreen(int id, bool fromBot) {
     return ChangeNotifierProvider(
-      create: (context) => _diContainer._makeSingleCardViewModel(context, id),
+      create: (context) =>
+          _diContainer._makeSingleCardViewModel(context, id, fromBot),
       child: const SingleCardScreen(),
     );
   }

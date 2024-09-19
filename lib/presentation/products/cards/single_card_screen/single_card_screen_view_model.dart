@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+
 import 'package:fpdart/fpdart.dart';
 
 // import 'package:rewild_bot_front/.env.dart';
@@ -97,9 +97,15 @@ abstract class SingleCardScreenPriceService {
   Future<Either<RewildError, Prices>> getPrice(String token);
 }
 
+// Week orders
 abstract class SingleCardScreenWeekOrdersService {
   Future<Either<RewildError, List<OrderModel>>> getOrdersFromTo(
       {required String token, required List<int> skus});
+}
+
+// Update
+abstract class SingleCardScreenUpdateService {
+  Future<Either<RewildError, void>> update(String token);
 }
 
 class SingleCardScreenViewModel extends ResourceChangeNotifier {
@@ -107,8 +113,10 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       {required super.context,
       required this.tokenProvider,
       required this.id,
+      required this.fromBot,
       required this.initialStocksService,
       // required this.subscriptionsService,
+      required this.updateService,
       required this.notificationService,
       required this.stockService,
       required this.sellerService,
@@ -139,9 +147,11 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   final SingleCardScreenPriceService priceService;
   // final SingleCardScreenSubscriptionsService subscriptionsService;
   final SingleCardScreenWeekOrdersService weekOrdersService;
+  final SingleCardScreenUpdateService updateService;
 
   Stream<StreamNotificationEvent> streamNotification;
   final int id;
+  final bool fromBot;
 
   // Fields ====================================================================
   bool _isLoading = false;
@@ -369,13 +379,38 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
         }
       }
     });
+    // Token
+    final token = await fetch(() => tokenProvider.getToken());
+    if (token == null) {
+      setIsLoading(false);
+      return;
+    }
 
-    // Set Uri
-    // websiteUri =
-    //     Uri.parse('https://www.wildberries.ru/catalog/$id/detail.aspx');
+    // if from telegram bot then update
+    if (fromBot) {
+      await fetch(() => updateService.update(token));
+    }
+
+    // multiple futures
+    final values = await Future.wait([
+      fetch(() => cardOfProductService.getOne(id)), // 0
+
+      fetch(() => stockService.get(nmId: id)), // 1
+      fetch(() => supplyService.getForOne(
+          nmId: id,
+          dateFrom: yesterdayEndOfTheDay(),
+          dateTo: DateTime.now())), // 2
+      fetch(() => initialStocksService.get(nmId: id)), // 3
+      fetch(() => ordersHistoryService.get(nmId: id)), // 4
+      fetch(() => notificationService.checkForParent(campaignId: id)), // 5
+      fetch(() => priceService.getPrice(token)), // 6
+      fetch(() =>
+          weekOrdersService.getOrdersFromTo(token: token, skus: [id])), // 7
+      // Clipboard.setData(ClipboardData(text: "$id")), // 8
+    ]);
 
     // Get card
-    final cardOfProduct = await fetch(() => cardOfProductService.getOne(id));
+    final cardOfProduct = values[0] as CardOfProductModel?;
     if (cardOfProduct == null) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -385,7 +420,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
           ),
         );
       }
-      await Clipboard.setData(ClipboardData(text: "$id"));
+
       if (context.mounted) {
         Navigator.pop(context);
       }
@@ -426,13 +461,6 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       }
     }
 
-    // Token
-    final token = await fetch(() => tokenProvider.getToken());
-    if (token == null) {
-      setIsLoading(false);
-      return;
-    }
-
     // Commission, category, subject
     if (_subjectId == 0) {
       _subjectId = cardOfProduct.subjectId ?? 0;
@@ -453,7 +481,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     // brand
     _brand = cardOfProduct.brand ?? '-';
     // get stocks
-    final stocks = await fetch(() => stockService.get(nmId: id));
+    final stocks = values[1] as List<StocksModel>?;
 
     if (stocks == null) {
       setIsLoading(false);
@@ -493,14 +521,10 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     }
 
     // get supplies
-    final supplies = await fetch(() => supplyService.getForOne(
-            nmId: id,
-            dateFrom: yesterdayEndOfTheDay(),
-            dateTo: DateTime.now())) ??
-        [];
+    final supplies = values[2] as List<SupplyModel>? ?? [];
 
     // get initial stocks
-    final initialStocks = await fetch(() => initialStocksService.get(nmId: id));
+    final initialStocks = values[3] as List<InitialStockModel>?;
     if (initialStocks == null) {
       setIsLoading(false);
       return;
@@ -540,7 +564,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     _supplySum = _supplies.values.isNotEmpty
         ? _supplies.values.reduce((value, element) => value + element)
         : 0;
-    final ordersHistory = await fetch(() => ordersHistoryService.get(nmId: id));
+    final ordersHistory = values[4] as OrdersHistoryModel?;
     if (ordersHistory == null) {
       setIsLoading(false);
       return;
@@ -551,24 +575,21 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     _isHighBuyout = ordersHistory.highBuyout;
 
     // Notification
-    final notificationsExists =
-        await fetch(() => notificationService.checkForParent(campaignId: id));
+    final notificationsExists = values[5] as bool?;
     if (notificationsExists != null && notificationsExists) {
       setTracked();
     }
 
     // logistics coef
 
-    final logisticsCoefResource =
-        await fetch(() => priceService.getPrice(token));
+    final logisticsCoefResource = values[6] as Prices?;
     if (logisticsCoefResource == null) {
       setIsLoading(false);
       return;
     }
     setLogisticsCoef(logisticsCoefResource.logisticsCoef);
 
-    final ordersOrNull = await fetch(
-        () => weekOrdersService.getOrdersFromTo(token: token, skus: [id]));
+    final ordersOrNull = values[7] as List<OrderModel>?;
     if (ordersOrNull != null) {
       for (final order in ordersOrNull) {
         final wh = order.warehouse;

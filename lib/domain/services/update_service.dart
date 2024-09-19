@@ -17,6 +17,7 @@ import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
@@ -173,7 +174,7 @@ class UpdateService
     implements
         AllCardsScreenUpdateService,
         WbWebViewScreenViewModelUpdateService,
-        // PaymentWebViewUpdateService,
+        SingleCardScreenUpdateService,
         AllCardsSeoUpdateService,
         AddApiKeysUpdateService,
         MainNavigationUpdateService {

@@ -18,7 +18,7 @@ abstract class ScreenFactory {
 
   Widget makePaymentScreen();
   Widget makePaymentWebView(PaymentInfo paymentInfo);
-  Widget makeSingleCardScreen(int id);
+  Widget makeSingleCardScreen(int id, bool fromBot);
   Widget makeCardNotificationsSettingsScreen(NotificationCardState state);
 
   Widget makeAllCardsSeoScreen();
@@ -87,16 +87,18 @@ class MainNavigation implements AppNavigation {
       // from url
       final cardIdParam = uri.queryParameters['cardId'];
       int cardId = cardIdParam != null ? int.tryParse(cardIdParam) ?? 0 : 0;
-
+      // if called from bot
+      bool fromBot = true;
       // from arguments
       if (cardId == 0) {
+        fromBot = false;
         final arguments = settings.arguments;
         cardId = arguments is int ? arguments : 0;
       }
 
       return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            screenFactory.makeSingleCardScreen(cardId),
+            screenFactory.makeSingleCardScreen(cardId, fromBot),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return FadeTransition(
             opacity: animation,

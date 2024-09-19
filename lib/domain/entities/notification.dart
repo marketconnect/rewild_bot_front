@@ -11,6 +11,7 @@ class ReWildNotificationModel {
   String value;
   int? sizeId;
   int? wh;
+  String? whName;
   bool reusable;
   ReWildNotificationModel({
     required this.parentId,
@@ -19,6 +20,7 @@ class ReWildNotificationModel {
     this.reusable = false,
     this.sizeId,
     this.wh,
+    this.whName,
   });
   String get parentIdCondition => '${parentId}_$condition';
   ReWildNotificationModel copyWith({
@@ -27,6 +29,7 @@ class ReWildNotificationModel {
     String? value,
     int? sizeId,
     int? wh,
+    String? whName,
   }) {
     return ReWildNotificationModel(
       parentId: parentId ?? this.parentId,
@@ -34,6 +37,7 @@ class ReWildNotificationModel {
       value: value ?? this.value,
       sizeId: sizeId ?? this.sizeId,
       wh: wh ?? this.wh,
+      whName: whName ?? this.whName,
     );
   }
 
@@ -45,6 +49,7 @@ class ReWildNotificationModel {
       'value': value,
       'sizeId': sizeId,
       'wh': wh,
+      'whName': whName,
     };
   }
 
@@ -55,6 +60,7 @@ class ReWildNotificationModel {
       value: map['value'] as String,
       sizeId: map['sizeId'] != null ? map['sizeId'] as int : null,
       wh: map['wh'] != null ? map['wh'] as int : null,
+      whName: map['whName'] != null ? map['whName'] as String : null,
     );
   }
 
@@ -74,6 +80,7 @@ class ReWildNotificationModel {
           : "",
       sizeId: null,
       wh: subscription.condition?.warehouseID,
+      whName: subscription.condition?.warehouseName,
       reusable: false,
     );
   }
@@ -86,6 +93,7 @@ class ReWildNotificationModel {
       eventType: condition,
       condition: ProductSubscriptionServiceCondition(
         warehouseID: wh ?? 0,
+        warehouseName: whName ?? "",
         threshold: int.tryParse(value) ?? 0,
         lessThan: condition == NotificationConditionConstants.stocksLessThan ||
             condition == NotificationConditionConstants.totalStocksLessThan,
@@ -95,7 +103,7 @@ class ReWildNotificationModel {
 
   @override
   String toString() {
-    return 'ReWildNotificationModel(parentId: $parentId, condition: $condition, value: $value, sizeId: $sizeId, wh: $wh, reusable: $reusable)';
+    return 'ReWildNotificationModel(parentId: $parentId, condition: $condition, value: $value, sizeId: $sizeId, wh: $wh, whName: $whName, reusable: $reusable)';
   }
 
   @override
