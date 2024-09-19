@@ -33,7 +33,7 @@ class ProductWatchSubscriptionApiClient
           'subscriptions': subscriptions,
         }),
       );
-
+      print("addProductWatchSubscription: $subscriptions");
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
         return right(ProductWatchSubscriptionResponse(

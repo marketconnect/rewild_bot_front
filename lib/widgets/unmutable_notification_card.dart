@@ -20,7 +20,7 @@ class UnmutableNotificationCard extends StatelessWidget {
   final String? suffix;
   final String text;
   final Function(String condition) dropNotification;
-  final Function(String condition, int? value) addNotification;
+  final Function(String condition, num? value) addNotification;
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,10 @@ class UnmutableNotificationCard extends StatelessWidget {
                 if (!isActive) {
                   currentValue == null
                       ? addNotification(condition, null)
-                      : addNotification(condition, int.tryParse(currentValue!));
+                      : addNotification(
+                          condition,
+                          int.tryParse(currentValue!) ??
+                              double.tryParse(currentValue!));
                   return;
                 }
                 dropNotification(condition);

@@ -125,7 +125,7 @@ class NotificationFeedbackViewModel extends ResourceChangeNotifier {
     notifyListeners();
   }
 
-  void addNotification(String condition, int? value, [bool? reusable]) {
+  void addNotification(String condition, num? value, [bool? reusable]) {
     switch (condition) {
       case NotificationConditionConstants.review:
         _notifications[condition] = ReWildNotificationModel(

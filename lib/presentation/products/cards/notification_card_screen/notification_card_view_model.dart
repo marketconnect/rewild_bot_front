@@ -152,7 +152,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
       return;
     }
     final listToAdd = _notifications.values.toList();
-
+    print("Save list: $listToAdd");
     await notificationService.addForParent(
         token: tokenOrNull,
         notifications: listToAdd,
