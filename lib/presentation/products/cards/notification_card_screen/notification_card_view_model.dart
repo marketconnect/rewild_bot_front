@@ -190,6 +190,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     String condition,
     num? value, {
     int? wh,
+    String? whName,
   }) {
     switch (condition) {
       case NotificationConditionConstants.nameChanged:
@@ -232,7 +233,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
             parentId: state.nmId);
 
         break;
-      case NotificationConditionConstants.stocksLessThan:
+      case NotificationConditionConstants.totalStocksLessThan:
         _notifications[condition] = ReWildNotificationModel(
             condition: NotificationConditionConstants.totalStocksLessThan,
             reusable: true,
@@ -241,6 +242,15 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
         break;
 
+      case NotificationConditionConstants.stocksLessThan:
+        _notifications[condition] = ReWildNotificationModel(
+            condition: condition,
+            reusable: true,
+            value: value.toString(),
+            parentId: state.nmId,
+            wh: wh);
+
+        break;
       default:
         break;
     }

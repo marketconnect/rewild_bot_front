@@ -20,7 +20,8 @@ class AutoCampaignApiHelper {
   // Adding new API for daily keywords statistics
   static ApiHelper getDailyWords = ApiHelper(
     host: host,
-    url: '/adv/v2/auto/daily-words',
+    // url: '/adv/v2/auto/daily-words',
+    url: '/adv/v0/stats/keywords',
     requestLimitPerMinute:
         240, // 4 requests per second translates to 240 requests per minute
     statusCodeDescriptions: {

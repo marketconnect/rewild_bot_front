@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/api_helpers/auto_campaign_api_helper.dart';
+import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword.dart';
 import 'package:rewild_bot_front/domain/services/keywords_service.dart';
@@ -66,16 +67,25 @@ class AutoCampaignApiClient implements KeywordsServiceAutoAdvertApiClient {
   @override
   Future<Either<RewildError, List<Keyword>>> fetchAutoCampaignDailyWordsStats(
       {required String token, required int campaignId}) async {
+    final now = DateTime.now();
+    final from = DateTime(now.year, now.month, now.day);
+    final to = DateTime(now.year, now.month, now.day + 1);
+    final Map<String, String> params = {
+      "advert_id": campaignId.toString(),
+      'from': formatDateForAutoCampaignDailyWordsStats(from),
+      'to': formatDateForAutoCampaignDailyWordsStats(to),
+    };
+
     final apiHelper = AutoCampaignApiHelper.getDailyWords;
-    final response = await apiHelper.get(token, {"id": campaignId.toString()});
+    final response = await apiHelper.get(token, params);
 
     try {
       if (response.statusCode == 200) {
         final data = json.decode(utf8.decode(response.bodyBytes));
         List<Keyword> dailyKeywords = [];
 
-        for (var dateData in data) {
-          for (var entry in dateData['stat']) {
+        for (var dateData in data['keywords']) {
+          for (var entry in dateData['stats']) {
             final keyword = Keyword.fromDailyWordsStatsJson(entry, campaignId);
             dailyKeywords.add(keyword);
           }

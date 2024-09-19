@@ -108,7 +108,8 @@ class NotificationCardSettingsScreen extends StatelessWidget {
                   : int.tryParse(notifStocks.value),
               text: 'Остатки ${stocks > 50000 ? '<' : ' менее'}',
               suffix: 'шт.',
-              isActive: isActive(NotificationConditionConstants.stocksLessThan),
+              isActive:
+                  isActive(NotificationConditionConstants.totalStocksLessThan),
               addNotification: add,
               dropNotification: drop,
             ),
@@ -126,8 +127,8 @@ class NotificationCardSettingsScreen extends StatelessWidget {
                     NotificationConditionConstants.stocksLessThan +
                         warehouse.key.id.toString(),
                     wh: warehouse.key.id),
-                addNotification: (condition, value) =>
-                    add(condition, value, wh: warehouse.key.id),
+                addNotification: (condition, value) => add(condition, value,
+                    wh: warehouse.key.id, whName: warehouse.key.name),
                 dropNotification: (condition) =>
                     drop(condition, wh: warehouse.key.id),
               ),

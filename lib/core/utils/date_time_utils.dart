@@ -50,6 +50,11 @@ String formatDateForAnaliticsDetail(DateTime dateTime) {
   return formatter.format(dateTime);
 }
 
+String formatDateForAutoCampaignDailyWordsStats(DateTime dateTime) {
+  final formatter = DateFormat('yyyy-MM-dd');
+  return formatter.format(dateTime);
+}
+
 String formatDate(String dateString) {
   // Parse the input date string into a DateTime object
   DateTime dateTime = DateTime.parse(dateString);
