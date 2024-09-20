@@ -22,7 +22,7 @@ class ReWildNotificationModel {
     this.wh,
     this.whName,
   });
-  String get parentIdCondition => '${parentId}_$condition';
+  String get parentIdConditionWh => '${parentId}_${condition}_${wh ?? 0}';
   ReWildNotificationModel copyWith({
     int? parentId,
     String? condition,
@@ -44,7 +44,7 @@ class ReWildNotificationModel {
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'parentId': parentId,
-      'parentIdCondition': parentIdCondition,
+      'parentIdConditionWh': parentIdConditionWh,
       'condition': condition,
       'value': value,
       'sizeId': sizeId,
@@ -94,7 +94,7 @@ class ReWildNotificationModel {
       condition: ProductSubscriptionServiceCondition(
         warehouseID: wh ?? 0,
         warehouseName: whName ?? "",
-        threshold: int.tryParse(value) ?? 0,
+        threshold: double.tryParse(value) ?? 0.0,
         lessThan: condition == NotificationConditionConstants.stocksLessThan ||
             condition == NotificationConditionConstants.totalStocksLessThan,
       ),

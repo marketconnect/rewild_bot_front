@@ -4,6 +4,7 @@ import 'package:rewild_bot_front/core/constants/notification_constants.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
 
 abstract class NotificationCardTokenService {
@@ -13,11 +14,18 @@ abstract class NotificationCardTokenService {
 abstract class NotificationCardNotificationService {
   Future<Either<RewildError, void>> addForParent(
       {required String token,
+      required String endDate,
       required List<ReWildNotificationModel> notifications,
       required int parentId,
       required bool wasEmpty});
   Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
       {required int parentId});
+}
+
+// subscription
+abstract class NotificationCardSubscriptionService {
+  Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
+      {required String token});
 }
 
 class NotificationCardState {
@@ -74,6 +82,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     this.state, {
     required this.notificationService,
     required this.tokenService,
+    required this.subscriptionsService,
     required super.context,
   }) {
     _asyncInit();
@@ -83,6 +92,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   final NotificationCardNotificationService notificationService;
   final NotificationCardState state;
   final NotificationCardTokenService tokenService;
+  final NotificationCardSubscriptionService subscriptionsService;
 
   // // Fields
   bool _isLoading = false;
@@ -116,12 +126,35 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
   Map<Warehouse, int> get warehouses => state.warehouses;
 
+  // end date
+  late String? endDate;
+
   // Methods ===================================================================
 
   Future<void> _asyncInit() async {
     setIsLoading(true);
-    final savedNotifications = await fetch(
-        () => notificationService.getForParent(parentId: state.nmId));
+    final token = await fetch(() => tokenService.getToken());
+    if (token == null) {
+      setIsLoading(false);
+      return;
+    }
+    final values = await Future.wait([
+      fetch(() => subscriptionsService.getSubscription(
+            token: token,
+          )),
+      fetch(() => notificationService.getForParent(parentId: state.nmId)),
+    ]);
+    final subscription = values[0] as SubscriptionV2Response?;
+    if (subscription == null) {
+      setIsLoading(false);
+      return;
+    }
+
+    endDate = subscription.endDate;
+
+    final savedNotifications = values[1] as List<ReWildNotificationModel>?;
+    // final savedNotifications = await fetch(
+    //     () => notificationService.getForParent(parentId: state.nmId));
     if (savedNotifications == null) {
       setIsLoading(false);
       return;
@@ -135,7 +168,12 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     Map<String, ReWildNotificationModel> notifications = {};
 
     for (var element in savedNotifications) {
-      notifications[element.condition] = element;
+      print(
+          "element: ${element.condition} and ${element.wh} and ${element.value}");
+      String notificationKey = element.wh != null
+          ? '${element.condition}-${element.wh}'
+          : element.condition;
+      notifications[notificationKey] = element;
     }
 
     _stocks = state.warehouses.entries
@@ -152,9 +190,12 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
       return;
     }
     final listToAdd = _notifications.values.toList();
-    print("Save list: $listToAdd");
+    if (endDate == null) {
+      return;
+    }
     await notificationService.addForParent(
         token: tokenOrNull,
+        endDate: endDate!,
         notifications: listToAdd,
         parentId: state.nmId,
         wasEmpty: _wasEmpty);
@@ -163,16 +204,13 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   }
 
   bool isInNotifications(String condition, {int? wh}) {
+    print("condition: $condition and wh: $wh");
     String notificationKey = wh != null ? '$condition-$wh' : condition;
     final notification = _notifications[notificationKey];
-
+    print("notification: $notification");
     if (notification == null) {
       return false;
     }
-
-    // if (wh != null && notification.wh != wh) {
-    //   return false;
-    // }
 
     return true;
   }

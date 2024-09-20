@@ -136,8 +136,14 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
       notify();
     });
 
-    final subscriptions =
-        await fetch(() => subscriptionService.getSubscription(token: token));
+    // multiple
+    final value = await Future.wait([
+      fetch(() => subscriptionService.getSubscription(token: token)),
+      fetch(() => subscriptionService.getSubscribedCardsIds(token)),
+      fetch(() => advertService.getApiKey()),
+      fetch(() => questionService.getApiKey()),
+    ]);
+    final subscriptions = value[0] as SubscriptionV2Response?;
     if (subscriptions == null) {
       return;
     }
@@ -146,8 +152,7 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
         subscriptionTypeName: subscriptions.subscriptionTypeName));
 
     // get added cards quantity
-    final cardsQtyOrNull =
-        await fetch(() => subscriptionService.getSubscribedCardsIds(token));
+    final cardsQtyOrNull = value[1] as List<CardOfProductModel>?;
     if (cardsQtyOrNull == null) {
       return;
     }
@@ -159,12 +164,13 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     // Api keys exist
     // Advert
 
-    final advertApiKey = await fetch(() => advertService.getApiKey());
+    final advertApiKey = value[2] as String?;
     if (advertApiKey == null) {
       return;
     }
     setAdvertApiKey(advertApiKey);
 
+    // depends on advertApiKey
     final newAdverts =
         await fetch(() => advertService.getAllAdverts(token: _advertApiKey!));
     if (newAdverts == null) {
@@ -172,7 +178,7 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     }
     // Question
 
-    final questionApiKey = await fetch(() => questionService.getApiKey());
+    final questionApiKey = value[3] as String?;
     if (questionApiKey == null) {
       return;
     }

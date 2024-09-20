@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/al
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
 
 // Api
 abstract class SubscriptionServiceSubscriptionApiClient {
@@ -82,6 +83,7 @@ class SubscriptionService
     implements
         PaymentScreenSubscriptionsService,
         // SingleCardScreenSubscriptionsService,
+        NotificationCardSubscriptionService,
         PaymentWebViewSubscriptionsService,
         MainNavigationSubscriptionService,
         AllCardsScreenSubscriptionsService {
@@ -233,9 +235,7 @@ class SubscriptionService
 
     _syncCardsSubscriptions(res.fold((l) => throw UnimplementedError(),
         (r) => r.map((e) => e.nmId).toList()));
-    // for (final card in res.fold((l) => throw UnimplementedError(), (r) => r)) {
-    //   print("IN SERRVICE ${card.nmId} ${card.name} ${card.img}");
-    // }
+
     return right(res.fold((l) => throw UnimplementedError(), (r) => r));
   }
 

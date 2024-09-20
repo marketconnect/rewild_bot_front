@@ -32,7 +32,7 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      'b_rewild_b_11.db',
+      '1_b_rewild_b_11.db',
       version: 2,
       onUpgradeNeeded: _onUpgrade,
     );
@@ -204,7 +204,7 @@ class DatabaseHelper {
 
     createStoreIfNotExists('notifications', () {
       final store = db.createObjectStore('notifications',
-          keyPath: 'parentIdCondition', autoIncrement: false);
+          keyPath: 'parentIdConditionWh', autoIncrement: false);
 
       store.createIndex('parentId', 'parentId');
       store.createIndex('condition', 'condition');

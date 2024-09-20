@@ -21,7 +21,7 @@ class ProductWatchSubscriptionResponse {
 class ProductSubscriptionServiceCondition {
   final int warehouseID;
   final String warehouseName;
-  final int threshold;
+  final double threshold;
   final bool lessThan;
 
   ProductSubscriptionServiceCondition({

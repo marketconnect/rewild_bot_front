@@ -21,6 +21,7 @@ abstract class CampaignManagementTokenService {
 abstract class CampaignManagementNotificationService {
   Future<Either<RewildError, void>> addForParent(
       {required String token,
+      required String endDate,
       required List<ReWildNotificationModel> notifications,
       required int parentId,
       required bool wasEmpty});
@@ -243,6 +244,7 @@ class CampaignManagementViewModel extends ResourceChangeNotifier {
 
     await notificationService.addForParent(
         token: tokenOrNull,
+        endDate: DateTime.now().toIso8601String(),
         notifications: _minBudgetLimit == null ? [] : [notificationsToSave],
         parentId: campaignId,
         wasEmpty: _wasEmpty);

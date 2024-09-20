@@ -12,6 +12,7 @@ abstract class NotificationFeedbackTokenService {
 abstract class NotificationFeedbackNotificationService {
   Future<Either<RewildError, void>> addForParent(
       {required String token,
+      required String endDate,
       required List<ReWildNotificationModel> notifications,
       required int parentId,
       required bool wasEmpty});
@@ -104,6 +105,7 @@ class NotificationFeedbackViewModel extends ResourceChangeNotifier {
 
     await notificationService.addForParent(
         token: tokenOrNull,
+        endDate: DateTime.now().toIso8601String(),
         notifications: notificationsToSave,
         parentId: 0,
         wasEmpty: _wasEmpty);

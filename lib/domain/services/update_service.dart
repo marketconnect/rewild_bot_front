@@ -251,7 +251,8 @@ class UpdateService
           (l) => l, (r) => throw UnimplementedError()));
     }
 
-    final cards = cardsFromServerEither.getOrElse((l) => []);
+    final cards =
+        cardsFromServerEither.fold((l) => throw UnimplementedError(), (r) => r);
     // there are cards on server - save
     if (cards.isNotEmpty) {
       final insertOrUpdateEither =
@@ -386,22 +387,6 @@ class UpdateService
     return right(newCards.length);
   }
 
-  // @override
-  // Future<Either<RewildError, void>> putOnServerNewCards(
-  //     {required String token,
-  //     required List<CardOfProductModel> cardOfProductsToPutOnServer}) async {
-  //   // get rid of duplicates
-  //   final uniqueNewCards = cardOfProductsToPutOnServer.toSet().toList();
-  //   final saveOnServerEither = await cardOfProductApiClient.save(
-  //       token: token, productCards: uniqueNewCards);
-
-  //   if (saveOnServerEither.isLeft()) {
-  //     return left(
-  //         saveOnServerEither.fold((l) => l, (r) => throw UnimplementedError()));
-  //   }
-  //   return right(null);
-  // }
-
   // update cards ==============================================================
   @override
   Future<Either<RewildError, void>> update(String token) async {
@@ -410,8 +395,14 @@ class UpdateService
       return right(null);
     }
 
+    final values = await Future.wait([
+      cardOfProductDataProvider.getAll(),
+      lastUpdateDayDataProvider.todayUpdated()
+    ]);
+
     // get cards from the local storage
-    final cardsOfProductsEither = await cardOfProductDataProvider.getAll();
+    final cardsOfProductsEither =
+        values[0] as Either<RewildError, List<CardOfProductModel>>;
     if (cardsOfProductsEither is Left) {
       return left(cardsOfProductsEither.fold(
           (l) => l, (r) => throw UnimplementedError()));
@@ -427,7 +418,7 @@ class UpdateService
 
     // if it is Today`s first time update - update initial stocks
     // were today updated?
-    final isUpdatedEither = await lastUpdateDayDataProvider.todayUpdated();
+    final isUpdatedEither = values[1] as Either<RewildError, bool>;
     if (isUpdatedEither.isLeft()) {
       return left(
           isUpdatedEither.fold((l) => l, (r) => throw UnimplementedError()));
@@ -441,45 +432,60 @@ class UpdateService
     if (!isUpdated) {
       // Delete keywords by autocomplite
 
-      final deleteKeywordsByAutocompliteEither =
-          await cachedKwByAutocompliteDataProvider.deleteAll();
+      final values = await Future.wait([
+        cachedKwByAutocompliteDataProvider.deleteAll(), // 0
+        cachedKwByLemmaByWordDataProvider.deleteAll(), // 1
+        cachedKwByLemmaDataProvider.deleteAll(), // 2
+        lemmaDataProvider.deleteAll(), // 3
+        weekOrdersDataProvider.deleteOldOrders(), // 4
+        cardKeywordsDataProvider.deleteKeywordsOlderThanOneDay(), // 5
+        averageLogisticsApiClient.getCurrentPrice(token: token), // 6
+        supplyDataProvider.deleteAll(), // 7
+        initialStockModelDataProvider.deleteAll(), // 8
+        trackingResultDataProvider.deleteOldTrackingResults(), // 9
+        tariffApiClient.getTarrifs(token: token), // 10
+        _fetchTodayInitialStockModelsFromServer(
+            token, allSavedCardsOfProducts.map((e) => e.nmId).toList()), // 11
+      ]);
+
+      final deleteKeywordsByAutocompliteEither = values[0];
+
       if (deleteKeywordsByAutocompliteEither.isLeft()) {
         return left(deleteKeywordsByAutocompliteEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 
       // Delete keywords by word
-      final deleteKeywordsByWordEither =
-          await cachedKwByLemmaByWordDataProvider.deleteAll();
+      final deleteKeywordsByWordEither = values[1];
       if (deleteKeywordsByWordEither.isLeft()) {
         return left(deleteKeywordsByWordEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 
       // Delete keywords by lemmas
-      final deleteKeywordsEither =
-          await cachedKwByLemmaDataProvider.deleteAll();
+      final deleteKeywordsEither = values[2];
+
       if (deleteKeywordsEither.isLeft()) {
         return left(deleteKeywordsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
       // Delete lemmas
 
-      final deleteLemmasEither = await lemmaDataProvider.deleteAll();
+      final deleteLemmasEither = values[3];
       if (deleteLemmasEither.isLeft()) {
         return left(deleteLemmasEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 
-      final deleteOldOrdersEither =
-          await weekOrdersDataProvider.deleteOldOrders();
+      final deleteOldOrdersEither = values[4];
+
       if (deleteOldOrdersEither.isLeft()) {
         return left(deleteOldOrdersEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 
-      final deleteCardKeywordsEither =
-          await cardKeywordsDataProvider.deleteKeywordsOlderThanOneDay();
+      final deleteCardKeywordsEither = values[5];
+
       if (deleteCardKeywordsEither.isLeft()) {
         return left(deleteCardKeywordsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
@@ -487,8 +493,8 @@ class UpdateService
 
       // update old orders
       // update averageLogistic
-      final pricesEither =
-          await averageLogisticsApiClient.getCurrentPrice(token: token);
+      final pricesEither = values[6] as Either<RewildError, Prices>;
+
       if (pricesEither.isRight()) {
         final prices =
             pricesEither.fold((l) => throw UnimplementedError(), (r) => r);
@@ -496,25 +502,30 @@ class UpdateService
       }
 
       // since there is today first time update - delete supplies and initial stocks
-      final deleteSuppliesEither = await supplyDataProvider.deleteAll();
+      final deleteSuppliesEither = values[7];
       if (deleteSuppliesEither.isLeft()) {
         return left(deleteSuppliesEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 
-      final deleteInitialStockModelsEither =
-          await initialStockModelDataProvider.deleteAll();
+      final deleteInitialStockModelsEither = values[8];
       if (deleteInitialStockModelsEither.isLeft()) {
         return left(deleteInitialStockModelsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 
       // delete old tracking results since it stores only last 30 days
-      await trackingResultDataProvider.deleteOldTrackingResults();
+      final deleteOldTrackingResultsEither = values[9];
+
+      if (deleteOldTrackingResultsEither.isLeft()) {
+        return left(deleteOldTrackingResultsEither.fold(
+            (l) => l, (r) => throw UnimplementedError()));
+      }
 
       // update tariffs
       final fetchedTariffsEither =
-          await tariffApiClient.getTarrifs(token: token);
+          values[10] as Either<RewildError, List<TariffModel>>;
+
       if (fetchedTariffsEither.isLeft()) {
         return left(fetchedTariffsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
@@ -532,8 +543,8 @@ class UpdateService
 
       // try to fetch today`s initial stocks from server
       final todayInitialStockModelsFromServerEither =
-          await _fetchTodayInitialStockModelsFromServer(
-              token, allSavedCardsOfProducts.map((e) => e.nmId).toList());
+          values[11] as Either<RewildError, List<InitialStockModel>>;
+
       if (todayInitialStockModelsFromServerEither is Left) {
         return left(todayInitialStockModelsFromServerEither.fold(
             (l) => l, (r) => throw UnimplementedError()));

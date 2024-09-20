@@ -38,6 +38,7 @@ abstract class NotificationServiceProductWatchSubscriptionApiClient {
   Future<Either<RewildError, ProductWatchSubscriptionResponse>>
       addProductWatchSubscription({
     required String token,
+    required String endDate,
     required List<Map<String, dynamic>> subscriptions,
   });
   Future<Either<RewildError, ProductWatchDeleteSubscriptionResponse>>
@@ -102,6 +103,7 @@ class NotificationService
   @override
   Future<Either<RewildError, void>> addForParent(
       {required String token,
+      required String endDate,
       required List<ReWildNotificationModel> notifications,
       required int parentId,
       required bool wasEmpty}) async {
@@ -146,6 +148,7 @@ class NotificationService
       final addResponse =
           await productWatchSubscriptionApiClient.addProductWatchSubscription(
               token: token,
+              endDate: endDate,
               subscriptions:
                   notificationsToAdd.map((s) => s.toJson()).toList());
       if (addResponse.isLeft()) {

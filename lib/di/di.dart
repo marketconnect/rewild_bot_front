@@ -660,6 +660,7 @@ class _DIContainer {
           BuildContext context, NotificationCardState state) =>
       CardNotificationViewModel(state,
           tokenService: _makeAuthService(),
+          subscriptionsService: _makeSubscriptionService(),
           notificationService: _makeNotificationService(),
           context: context);
 
@@ -674,6 +675,7 @@ class _DIContainer {
           weekOrdersService: _makeWeekOrdersService(),
           tariffService: _makeTariffService(),
           // subscriptionsService: _makeSubscriptionService(),
+
           updateService: _makeUpdateService(),
           tokenProvider: _makeAuthService(),
           commissionService: _makeCommissionService(),

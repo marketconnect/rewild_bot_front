@@ -113,12 +113,9 @@ class NotificationCardSettingsScreen extends StatelessWidget {
               addNotification: add,
               dropNotification: drop,
             ),
-          if (!model.isLoading &&
-              isActive(NotificationConditionConstants.totalStocksLessThan))
+          if (!model.isLoading)
             for (var warehouse in warehouses.entries)
               MutableNotificationCard(
-                // since there can be many warehouses,
-                //and to add all of them we need to make condition different (100 + wh)
                 condition: NotificationConditionConstants.stocksLessThan,
                 currentValue: warehouse.value,
                 text: '${warehouse.key.name} менее',
