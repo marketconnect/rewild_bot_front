@@ -200,6 +200,7 @@ class _SingleFeedbackBodyState extends State<_SingleFeedbackBody> {
     final isAnswered = model.isAnswered;
     final userName = review.userName;
     final photos = review.photoLinks;
+    final generateResponse = model.generatedResponse;
 
     // final balance = model.balance;
 
@@ -367,6 +368,15 @@ class _SingleFeedbackBodyState extends State<_SingleFeedbackBody> {
                         ),
                       ),
                     ),
+                  if (!isAnswered)
+                    SizedBox(
+                      width: screenWidth * 0.7,
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.smart_toy),
+                        label: const Text('Сгенерировать ответ'),
+                        onPressed: generateResponse,
+                      ),
+                    ),
                   SizedBox(height: screenWidth * 0.15),
                 ],
               ),
@@ -376,20 +386,6 @@ class _SingleFeedbackBodyState extends State<_SingleFeedbackBody> {
       ),
     );
   }
-
-  // void _showAIBottomSheet(
-  //   BuildContext context,
-  //   BuildContext rootContext,
-  // ) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return _AIBottomSheetContainer(
-  //         rootContext: rootContext,
-  //       );
-  //     },
-  //   );
-  // }
 
   void _showTemplatesBottomSheet(
       BuildContext context, int itemCount, List<String> listOfTemplates) {
@@ -414,114 +410,3 @@ class _SingleFeedbackBodyState extends State<_SingleFeedbackBody> {
     );
   }
 }
-
-// class _AIBottomSheetContainer extends StatelessWidget {
-//   const _AIBottomSheetContainer({
-//     required this.rootContext,
-//     // this.controller,
-//   });
-
-//   final BuildContext rootContext;
-
-//   // final TextEditingController? controller;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // final model = rootContext.read<SingleReviewViewModel>();
-
-//     // final balance = model.balance ?? 0;
-//     // final updateBalance = model.updateBalance;
-
-//     return Container(
-//       padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
-//       child: Column(
-//         mainAxisSize: MainAxisSize.min,
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 8.0),
-//             child: Container(
-//               height: 4,
-//               width: 60,
-//               decoration: BoxDecoration(
-//                 color: Colors.grey[300],
-//                 borderRadius: BorderRadius.circular(100),
-//               ),
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.only(top: 8.0, bottom: 16.0),
-//             child: Text(
-//               "Выберите AI модель для ответа на комментарий",
-//               style: Theme.of(context).textTheme.titleLarge,
-//               textAlign: TextAlign.center,
-//             ),
-//           ),
-//           //     Expanded(
-//           //       child: ListView.builder(
-//           //         itemCount: aiEntries.length,
-//           //         itemBuilder: (BuildContext context, int index) {
-//           //           return ListTile(
-//           //             title: Text(
-//           //               aiEntries[index].key,
-//           //               style: const TextStyle(fontSize: 16),
-//           //             ),
-//           //             subtitle: Text(
-//           //               "Стоимость: ${aiEntries[index].value.toStringAsFixed(2)}₽, Баланс: ${balance.toStringAsFixed(2)}₽",
-//           //               style: TextStyle(
-//           //                   fontSize: 14,
-//           //                   color: aiEntries[index].value > balance
-//           //                       ? Theme.of(context).colorScheme.error
-//           //                       : Colors.grey[600]),
-//           //             ),
-//           //             onTap: () async {
-//           //               if (aiEntries[index].value > balance) {
-//           //                 final result = await Navigator.of(context).pushNamed(
-//           //                     MainNavigationRouteNames.balanceRechargeScreen);
-
-//           //                 if (result != null && result == true) {
-//           //                   await updateBalance();
-
-//           //                   if (context.mounted) {
-//           //                     Navigator.of(context).pop(true);
-//           //                   }
-//           //                 }
-//           //                 return;
-//           //               }
-//           //               final _ = await askGigachat(aiEntries[index].key,
-//           //                   aiEntries[index].value, role, prompt);
-//           //               // if (controller != null) {
-//           //               //   controller!.text = generatedText;
-//           //               // }
-//           //               if (context.mounted) Navigator.pop(context);
-//           //             },
-//           //             trailing: aiEntries[index].value > balance
-//           //                 ? null
-//           //                 : const Icon(Icons.chevron_right),
-//           //           );
-//           //         },
-//           //       ),
-//           //     ),
-//           //     ElevatedButton.icon(
-//           //       onPressed: () async {
-//           //         final result = await Navigator.of(context).popAndPushNamed(
-//           //           MainNavigationRouteNames.editPromptScreen,
-//           //           arguments: PromptDetails(prompt: prompt, role: role),
-//           //         );
-
-//           //         if (result != null && result is PromptDetails) {
-//           //           if (prompt != result.prompt) {
-//           //             changePrompt(result.prompt);
-//           //           }
-//           //           if (role != result.role) {
-//           //             changeRole(result.role);
-//           //           }
-//           //         }
-//           //       },
-//           //       icon: const Icon(Icons.settings),
-//           //       label: const Text("Настройки"),
-//           //     ),
-//         ],
-//       ),
-//     );
-//   }
-// }

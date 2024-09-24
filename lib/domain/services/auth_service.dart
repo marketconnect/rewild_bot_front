@@ -5,6 +5,7 @@ import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/ad
 import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
+import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
@@ -19,9 +20,8 @@ import 'package:rewild_bot_front/presentation/main_navigation_screen/main_naviga
 import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
@@ -49,17 +49,16 @@ class AuthService
         MainNavigationAuthService,
         AdvertAnaliticsAuthService,
         SingleReviewViewModelTokenService,
+        GptScreenTokenService,
         AddApiKeysAuthService,
         SubjectKeywordExpansionTokenService,
         WordsKeywordExpansionTokenService,
         SeoToolTokenService,
         SeoToolCategoryTokenService,
-        SeoToolDescriptionGeneratorTokenService,
         SeoToolCategoryDescriptionGeneratorTokenService,
         SeoToolKwResearchTokenService,
         ExpenseManagerScreenTokenService,
         SeoToolCategoryKwResearchTokenService,
-        SeoToolTitleGeneratorTokenService,
         SeoToolCategoryTitleGeneratorTokenService,
         SingleCardScreenAuthService,
         PaymentScreenTokenService,

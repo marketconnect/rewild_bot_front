@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/domain/entities/prices.dart';
+
 import 'package:rewild_bot_front/domain/entities/review_model.dart';
+import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // Card of product
 abstract class SingleReviewCardOfProductService {
@@ -39,34 +41,19 @@ abstract class SingleReviewViewModelTokenService {
   Future<Either<RewildError, String>> getToken();
 }
 
-// price
-abstract class SingleReviewViewModelPriceService {
-  Future<Either<RewildError, Prices>> getPrice(String token);
-}
-
-// balance
-abstract class SingleReviewViewModelBalanceService {
-  Future<Either<RewildError, double>> getUserBalance();
-  Future<Either<RewildError, bool>> subtractBalance(double amountToSubtract);
-}
-
 class SingleReviewViewModel extends ResourceChangeNotifier {
   final SingleReviewCardOfProductService singleReviewCardOfProductService;
   final SingleReviewViewReviewService reviewService;
 
   final SingleReviewViewModelAnswerService answerService;
   final SingleReviewViewModelTokenService tokenService;
-  final SingleReviewViewModelPriceService priceService;
-  final SingleReviewViewModelBalanceService balanceService;
 
   final ReviewModel? review;
   SingleReviewViewModel(this.review,
       {required super.context,
       required this.reviewService,
       required this.tokenService,
-      required this.priceService,
       required this.answerService,
-      required this.balanceService,
       required this.singleReviewCardOfProductService}) {
     _asyncInit();
   }
@@ -87,38 +74,13 @@ class SingleReviewViewModel extends ResourceChangeNotifier {
       return;
     }
     setStoredAnswers(answers);
-    final price = await fetch(() => priceService.getPrice(apiKey));
-    if (price == null) {
-      notify();
-      return;
-    }
 
-    // balance
-    final balanceOrNull = await fetch(() => balanceService.getUserBalance());
-    if (balanceOrNull != null) {
-      setBalance(balanceOrNull);
-    }
     notify();
   }
 
   String? _cardImage;
 
   String? get cardImage => _cardImage;
-
-  // balance
-  double? _balance;
-  double? get balance => _balance;
-  void setBalance(double balance) {
-    _balance = balance;
-    notify();
-  }
-
-  Future<void> updateBalance() async {
-    final balanceOrNull = await fetch(() => balanceService.getUserBalance());
-    if (balanceOrNull != null) {
-      setBalance(balanceOrNull);
-    }
-  }
 
 // Api key
   String? _apiKey;
@@ -134,8 +96,6 @@ class SingleReviewViewModel extends ResourceChangeNotifier {
     notify();
   }
 
-  // Spell checker
-
   // Saved answers
   List<String>? _storedAnswers;
   void setStoredAnswers(List<String> answers) {
@@ -149,6 +109,14 @@ class SingleReviewViewModel extends ResourceChangeNotifier {
   void setIsAnswered() {
     _isAnswered = true;
     notify();
+  }
+
+  void generatedResponse() async {
+    if (_apiKey == null || review == null) {}
+    String inputText = 'Отзыв клиента: "${review!.text}"\n';
+    inputText += 'Пожалуйста, сгенерируй вежливый и профессиональный ответ.';
+    Navigator.of(context).pushNamed(MainNavigationRouteNames.chatGptScreen,
+        arguments: inputText);
   }
 
   Future<void> publish() async {

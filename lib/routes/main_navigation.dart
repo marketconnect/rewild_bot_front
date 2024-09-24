@@ -71,6 +71,8 @@ abstract class ScreenFactory {
 
   Widget makeRootAdvertsScreen();
 
+  Widget makeChatGptScreen(String questionText);
+
   // Widget makeWbWebViewSceen((List<int>, String?) nmIdsSearchString);
 }
 
@@ -306,6 +308,13 @@ class MainNavigation implements AppNavigation {
       case MainNavigationRouteNames.rootAdvertsScreen:
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeRootAdvertsScreen(),
+        );
+
+      case MainNavigationRouteNames.chatGptScreen:
+        final arguments = settings.arguments;
+        final question = arguments is String ? arguments : "";
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeChatGptScreen(question),
         );
 
       // case MainNavigationRouteNames.addCardOptionScreen:

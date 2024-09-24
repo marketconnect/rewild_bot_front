@@ -82,7 +82,6 @@ abstract class SubscriptionServiceUserNameSecureStorage {
 class SubscriptionService
     implements
         PaymentScreenSubscriptionsService,
-        // SingleCardScreenSubscriptionsService,
         NotificationCardSubscriptionService,
         PaymentWebViewSubscriptionsService,
         MainNavigationSubscriptionService,

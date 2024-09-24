@@ -60,6 +60,8 @@ abstract class MainNavigationRouteNames {
 
   static const String rootAdvertsScreen = '/root_adverts_screen';
 
+  static const String chatGptScreen = '/chat_gpt_screen';
+
   // static const String addCardOptionScreen = '/add_card_option_screen';
 
   // static const String wbWebViewScreen = '/wb_web_view';

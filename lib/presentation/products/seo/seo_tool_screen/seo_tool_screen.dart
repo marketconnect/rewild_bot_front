@@ -7,9 +7,9 @@ import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
 import 'package:rewild_bot_front/core/constants/llms.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
@@ -67,12 +67,14 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
     final goToCompetitorsKwExpansionScreen =
         kwResearchModel.goToCompetitorsKwExpansionScreen;
     final isLoading = kwResearchModel.isLoading;
+    final model = context.read<SeoToolViewModel>();
+    final titleGenerator = model.titleGenerator;
+    final descriptionGenerator = model.descriptionGenerator;
 
     if (!isLoading && justLoaded) {
       justLoaded = false;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        final model = context.read<SeoToolViewModel>();
         final title = model.title;
         final description = model.description;
         if (title != null) {
@@ -216,7 +218,11 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
               surfaceTintColor: Colors.transparent,
             ),
             body: _sections.elementAt(_selectedIndex),
-            floatingActionButton: buildSpeedDial(context),
+            floatingActionButton: _selectedIndex == 0
+                ? buildSpeedDial(context)
+                : _selectedIndex == 1
+                    ? buildFloatingActionButton(context, titleGenerator)
+                    : buildFloatingActionButton(context, descriptionGenerator),
             bottomNavigationBar: BottomNavigationBar(
               items: [
                 buildBottomNavigationBarItem(
@@ -243,6 +249,25 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  FloatingActionButton buildFloatingActionButton(
+    BuildContext context,
+    void Function() onPressed,
+  ) {
+    return FloatingActionButton(
+      onPressed: () {
+        onPressed();
+      },
+      backgroundColor: Theme.of(context).primaryColor,
+      foregroundColor: Colors.white,
+      elevation: 8.0,
+      shape: const CircleBorder(),
+      child: const Icon(
+        Icons.smart_toy,
+        size: 32,
       ),
     );
   }
@@ -371,9 +396,9 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
     final setTitle = seoToolModel.setCardItem;
 
     //
-    final model = context.watch<SeoToolTitleGeneratorViewModel>();
-    final wasGenerated = model.wasGenerated;
-    final selectedKeywords = model.selectedKeywords;
+    final model = context.watch<SeoToolViewModel>();
+    // final wasGenerated = model.wasGenerated;
+    final selectedKeywords = model.selectedTitleKeywords;
     final kwResearchModel = context.watch<SeoToolKwResearchViewModel>();
     final kwResearchModelKeywords = kwResearchModel.corePhrases;
     final keywords = kwResearchModelKeywords
@@ -381,12 +406,6 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
             .any((selectedKw) => selectedKw.keyword == kw.keyword))
         .toList();
     keywords.sort((a, b) => b.freq.compareTo(a.freq));
-    final llmsCost = model.llmsCost;
-    final prompt = model.savedPrompt;
-    promptController.text = prompt?.prompt ?? '';
-    roleController.text = prompt?.role ?? '';
-    // final savePrompt = model.savePrompt;
-    final generateTitle = model.generateTitle;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -455,34 +474,10 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                 const SizedBox(height: 16),
                 Column(
                   children: [
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (llmsCost != null &&
-                            llmsCost.isNotEmpty &&
-                            prompt != null &&
-                            selectedKeywords.isNotEmpty)
-                          ElevatedButton(
-                            onPressed: () async {
-                              final generatedTitle = await generateTitle();
-                              titleController.text = generatedTitle;
-                            },
-                            child: Text(wasGenerated
-                                ? 'Перегенерировать'
-                                : 'Генерировать'),
-                          ),
-                        const SizedBox(width: 8),
-                        if (llmsCost != null &&
-                            llmsCost.isNotEmpty &&
-                            prompt != null &&
-                            selectedKeywords.isNotEmpty)
-                          ElevatedButton(
-                            onPressed: () {
-                              _showPromptDialog(context, model);
-                            },
-                            child: Icon(Icons.settings,
-                                color: Theme.of(context).colorScheme.primary),
-                          ),
+                        SizedBox(width: 8),
                       ],
                     ),
                     if (titleController.text.isNotEmpty)
@@ -616,268 +611,12 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
       ),
     );
   }
-
-  Future<String?> _showPromptDialog(
-    BuildContext context,
-    SeoGeneratorViewModel model,
-  ) async {
-    return showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return PromptSettingsDialog(
-          model: model,
-          promptController: promptController,
-          roleController: roleController,
-          initialSelectedModel:
-              model.selectedModel, // Pass the initial selected model
-        );
-      },
-    );
-  }
-} // TitleGenerator end
-
-// class PromptSettingsDialog extends StatefulWidget {
-//   final SeoGeneratorViewModel model;
-//   final TextEditingController promptController;
-//   final TextEditingController roleController;
-
-//   const PromptSettingsDialog({
-//     super.key,
-//     required this.model,
-//     required this.promptController,
-//     required this.roleController,
-//   });
-
-//   @override
-//   // ignore: library_private_types_in_public_api
-//   _PromptSettingsDialogState createState() => _PromptSettingsDialogState();
-// }
-
-// class _PromptSettingsDialogState extends State<PromptSettingsDialog> {
-//   @override
-//   Widget build(BuildContext context) {
-//     String keywordsText =
-//         widget.model.selectedKeywords.map((kw) => kw.keyword).join(', ');
-
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Настройка промпта'),
-//         actions: [
-//           TextButton(
-//             onPressed: () {
-//               Navigator.of(context).pop();
-//             },
-//             child: Text(
-//               'Отмена',
-//               style: TextStyle(color: Theme.of(context).colorScheme.primary),
-//             ),
-//           ),
-//           ElevatedButton(
-//             onPressed: () {
-//               widget.model.savePrompt(
-//                   widget.promptController.text, widget.roleController.text);
-//               Navigator.of(context).pop();
-//             },
-//             child: const Text('Сохранить'),
-//           ),
-//         ],
-//       ),
-//       body: SingleChildScrollView(
-//         padding: const EdgeInsets.all(16.0),
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             TextField(
-//               controller: widget.promptController,
-//               decoration: const InputDecoration(
-//                 labelText: 'Промпт',
-//                 border: OutlineInputBorder(),
-//               ),
-//               maxLines: null,
-//             ),
-//             const SizedBox(height: 16),
-//             Text(
-//               'Используй ключевые фразы: $keywordsText',
-//               style: Theme.of(context).textTheme.bodyLarge,
-//             ),
-//             const SizedBox(height: 16),
-//             TextField(
-//               controller: widget.roleController,
-//               decoration: const InputDecoration(
-//                 labelText: 'Роль',
-//                 border: OutlineInputBorder(),
-//               ),
-//               maxLines: null,
-//             ),
-//             const SizedBox(height: 16),
-//             Text(
-//               'Выберите модель:',
-//               style: Theme.of(context).textTheme.bodyLarge,
-//             ),
-//             ...widget.model.llmsCost!.entries.map((entry) {
-//               return RadioListTile<String>(
-//                 title: Text(
-//                     '${entry.key} (${entry.value.toStringAsFixed(2)} рублей за запрос)'),
-//                 value: entry.key,
-//                 groupValue: widget.model.selectedModel,
-//                 onChanged: (value) {
-//                   widget.model.selectModel(value!);
-//                   // setState(() {
-//                   //   selectedModel = value!;
-//                   // });
-//                 },
-//               );
-//             }),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// } // End of PromptSettingsDialog
-
-class PromptSettingsDialog extends StatefulWidget {
-  final SeoGeneratorViewModel model;
-  final TextEditingController promptController;
-  final TextEditingController roleController;
-  final String initialSelectedModel;
-
-  const PromptSettingsDialog({
-    super.key,
-    required this.model,
-    required this.promptController,
-    required this.roleController,
-    required this.initialSelectedModel,
-  });
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _PromptSettingsDialogState createState() => _PromptSettingsDialogState();
 }
-
-class _PromptSettingsDialogState extends State<PromptSettingsDialog> {
-  late String selectedModel;
-  bool useKeywords = true;
-  bool useExistingDescription = true;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedModel = widget.initialSelectedModel;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Настройка промпта'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Text(
-              'Отмена',
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              widget.model.savePrompt(
-                  widget.promptController.text, widget.roleController.text);
-              Navigator.of(context).pop();
-            },
-            child: const Text('Сохранить'),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: widget.promptController,
-              decoration: const InputDecoration(
-                labelText: 'Промпт',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: null,
-            ),
-            const SizedBox(height: 16),
-            // ListTile(
-            //   contentPadding: EdgeInsets.zero,
-            //   title: Text(useKeywords
-            //       ? 'Использовать ключевые фразы:'
-            //       : 'Не использовать ключевые фразы'),
-            //   trailing: Checkbox(
-            //     value: useKeywords,
-            //     onChanged: (bool? value) {
-            //       setState(() {
-            //         useKeywords = value ?? true;
-            //       });
-            //     },
-            //   ),
-            // ),
-            // if (useKeywords)
-            //   Text(
-            //     keywordsText,
-            //     style: Theme.of(context).textTheme.bodyLarge,
-            //   ),
-            // const SizedBox(height: 16),
-            // ListTile(
-            //   contentPadding: EdgeInsets.zero,
-            //   title: Text(useExistingDescription
-            //       ? 'Использовать существующее описание'
-            //       : 'Не использовать существующее описание'),
-            //   trailing: Checkbox(
-            //     value: useExistingDescription,
-            //     onChanged: (bool? value) {
-            //       setState(() {
-            //         useExistingDescription = value ?? true;
-            //       });
-            //     },
-            //   ),
-            // ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: widget.roleController,
-              decoration: const InputDecoration(
-                labelText: 'Роль',
-                border: OutlineInputBorder(),
-              ),
-              maxLines: null,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Выберите модель (баланс ${widget.model.balance!.toStringAsFixed(2)} рублей):',
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-            ...widget.model.llmsCost!.entries.map((entry) {
-              return RadioListTile<String>(
-                title: Text(
-                    '${entry.key} (${entry.value.toStringAsFixed(2)} рублей за запрос)'),
-                value: entry.key,
-                groupValue: selectedModel,
-                onChanged: (value) {
-                  setState(() {
-                    selectedModel = value!;
-                  });
-                  widget.model.selectModel(value!);
-                },
-              );
-            }),
-          ],
-        ),
-      ),
-    );
-  }
-} // End of PromptSettingsDialog
 
 class DescriptionGeneratorScreen extends StatefulWidget {
   const DescriptionGeneratorScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _DescriptionGeneratorScreenState createState() =>
       _DescriptionGeneratorScreenState();
 }
@@ -885,35 +624,27 @@ class DescriptionGeneratorScreen extends StatefulWidget {
 class _DescriptionGeneratorScreenState
     extends State<DescriptionGeneratorScreen> {
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController promptController = TextEditingController();
-  final TextEditingController roleController = TextEditingController();
-  String selectedModel = 'Gigachat';
   bool isDescriptionTextFieldEmpty = true;
 
   @override
   Widget build(BuildContext context) {
-    // we need a single instance of the CardItem (for the title and description management),
-    // so we need to access it from the SeoToolViewModel
+    // Access SeoToolViewModel
     final seoToolModel = context.watch<SeoToolViewModel>();
     final description = seoToolModel.description;
     final setDescription = seoToolModel.setCardItem;
 
-    final model = context.watch<SeoToolDescriptionGeneratorViewModel>();
+    // Use selectedDescriptionKeywords from SeoToolViewModel
+    final selectedKeywords = seoToolModel.selectedDescriptionKeywords;
 
-    final selectedKeywords = model.selectedKeywords;
     final kwResearchModel = context.watch<SeoToolKwResearchViewModel>();
     final kwResearchModelKeywords = kwResearchModel.corePhrases;
+
+    // Filter out selected keywords from the list of all keywords
     final keywords = kwResearchModelKeywords
         .where((kw) => !selectedKeywords
             .any((selectedKw) => selectedKw.keyword == kw.keyword))
         .toList();
     keywords.sort((a, b) => b.freq.compareTo(a.freq));
-    final llmsCost = model.llmsCost;
-    final prompt = model.savedPrompt;
-    promptController.text = prompt?.prompt ?? '';
-    roleController.text = prompt?.role ?? '';
-    // final savePrompt = model.savePrompt;
-    final generateDescription = model.generateDescription;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -950,23 +681,15 @@ class _DescriptionGeneratorScreenState
                 TextField(
                   controller: descriptionController,
                   onChanged: (value) {
-                    if (value.isNotEmpty && isDescriptionTextFieldEmpty) {
-                      setState(() {
-                        isDescriptionTextFieldEmpty = false;
-                      });
-                      return;
-                    }
-                    if (value.isEmpty && !isDescriptionTextFieldEmpty) {
-                      setState(() {
-                        isDescriptionTextFieldEmpty = true;
-                      });
-                    }
+                    setState(() {
+                      isDescriptionTextFieldEmpty = value.isEmpty;
+                    });
                   },
                   maxLines: null,
                   decoration: InputDecoration(
                     labelText: 'Описание',
                     border: const OutlineInputBorder(),
-                    suffixIcon: descriptionController.text.isEmpty
+                    suffixIcon: isDescriptionTextFieldEmpty
                         ? null
                         : IconButton(
                             icon: const Icon(Icons.clear),
@@ -980,66 +703,33 @@ class _DescriptionGeneratorScreenState
                   ),
                 ),
                 const SizedBox(height: 16),
-                Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        if (llmsCost != null &&
-                            llmsCost.isNotEmpty &&
-                            prompt != null &&
-                            selectedKeywords.isNotEmpty)
-                          ElevatedButton(
-                            onPressed: () async {
-                              final generatedDescription =
-                                  await generateDescription();
-                              descriptionController.text = generatedDescription;
-                            },
-                            child: Text(model.wasGenerated
-                                ? 'Перегенерировать'
-                                : 'Генерировать'),
-                          ),
-                        const SizedBox(width: 8),
-                        if (llmsCost != null &&
-                            llmsCost.isNotEmpty &&
-                            prompt != null &&
-                            selectedKeywords.isNotEmpty)
-                          ElevatedButton(
-                            onPressed: () {
-                              _showPromptDialog(
-                                context,
-                                model,
-                              );
-                            },
-                            child: Icon(Icons.settings,
-                                color: Theme.of(context).colorScheme.primary),
-                          ),
-                      ],
-                    ),
-                    if (descriptionController.text.isNotEmpty &&
-                        descriptionController.text != description)
-                      CustomElevatedButton(
-                        onTap: () async {
-                          await setDescription(
-                              description: descriptionController.text);
-                          kwResearchModel.countKeyPhraseOccurrences(
-                              text: descriptionController.text, isTitle: false);
-                        },
-                        buttonStyle: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                                Theme.of(context).colorScheme.primary),
-                            foregroundColor: WidgetStateProperty.all(
-                                Theme.of(context).colorScheme.onPrimary)),
-                        height: 50,
-                        margin: EdgeInsets.fromLTRB(
-                            0,
-                            model.screenHeight * 0.05,
-                            0,
-                            model.screenHeight * 0.05),
-                        text: 'Заменить',
+                if (descriptionController.text.isNotEmpty)
+                  CustomElevatedButton(
+                    onTap: () async {
+                      await setDescription(
+                          description: descriptionController.text);
+                      kwResearchModel.countKeyPhraseOccurrences(
+                        text: descriptionController.text,
+                        isTitle: false,
+                      );
+                    },
+                    buttonStyle: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.primary,
                       ),
-                  ],
-                ),
+                      foregroundColor: MaterialStateProperty.all(
+                        Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    ),
+                    height: 50,
+                    margin: EdgeInsets.fromLTRB(
+                      0,
+                      seoToolModel.screenHeight * 0.05,
+                      0,
+                      seoToolModel.screenHeight * 0.05,
+                    ),
+                    text: 'Заменить',
+                  ),
                 const SizedBox(height: 16),
                 Text(
                   'Выбранные ключевые слова:',
@@ -1147,117 +837,7 @@ class _DescriptionGeneratorScreenState
       ),
     );
   }
-
-  Future<String?> _showPromptDialog(
-    BuildContext context,
-    SeoGeneratorViewModel model,
-  ) async {
-    return showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return PromptSettingsDialog(
-          model: model,
-          promptController: promptController,
-          roleController: roleController,
-          initialSelectedModel:
-              model.selectedModel, // Pass the initial selected model
-        );
-      },
-    );
-  }
 }
-
-// class CompetitorAnalysisScreen extends StatelessWidget {
-//   const CompetitorAnalysisScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Sample competitor data
-//     final competitors = {
-//       'Конкурент 1': 'Сильные стороны: ... \nСлабые стороны: ...',
-//       'Конкурент 2': 'Сильные стороны: ... \nСлабые стороны: ...',
-//     };
-
-//     return Padding(
-//       padding: const EdgeInsets.all(8.0),
-//       child: Card(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Padding(
-//               padding: const EdgeInsets.all(16.0),
-//               child: Text(
-//                 'Анализ конкурентов',
-//                 style: Theme.of(context).textTheme.titleLarge,
-//               ),
-//             ),
-//             ListView.builder(
-//               shrinkWrap: true,
-//               physics: const NeverScrollableScrollPhysics(),
-//               itemCount: competitors.length,
-//               itemBuilder: (context, index) {
-//                 String competitor = competitors.keys.elementAt(index);
-//                 String details = competitors[competitor]!;
-
-//                 return ListTile(
-//                   title: Text(competitor),
-//                   subtitle: Text(details),
-//                   trailing: const Icon(Icons.chevron_right),
-//                 );
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class ReportsAndRecommendationsScreen extends StatelessWidget {
-//   const ReportsAndRecommendationsScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Sample report data
-//     final reports = {
-//       'Отчёт за неделю': 'Продажи: 1000 шт. \nКонверсия: 5%',
-//       'Отчёт за месяц': 'Продажи: 4000 шт. \nКонверсия: 4.5%',
-//     };
-
-//     return Padding(
-//       padding: const EdgeInsets.all(8.0),
-//       child: Card(
-//         child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Padding(
-//               padding: const EdgeInsets.all(16.0),
-//               child: Text(
-//                 'Отчёты и рекомендации',
-//                 style: Theme.of(context).textTheme.titleLarge,
-//               ),
-//             ),
-//             ListView.builder(
-//               shrinkWrap: true,
-//               physics: const NeverScrollableScrollPhysics(),
-//               itemCount: reports.length,
-//               itemBuilder: (context, index) {
-//                 String report = reports.keys.elementAt(index);
-//                 String details = reports[report]!;
-
-//                 return ListTile(
-//                   title: Text(report),
-//                   subtitle: Text(details),
-//                   trailing: const Icon(Icons.chevron_right),
-//                 );
-//               },
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 class KeywordManager extends StatefulWidget {
   const KeywordManager({super.key});

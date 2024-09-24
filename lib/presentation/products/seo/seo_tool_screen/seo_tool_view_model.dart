@@ -3,6 +3,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
+import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
+import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 
 // token
 abstract class SeoToolTokenService {
@@ -110,6 +112,42 @@ class SeoToolViewModel extends ResourceChangeNotifier {
         );
         return;
       }
+    }
+  }
+
+  List<KwByLemma> _selectedTitleKeywords = [];
+
+  List<KwByLemma> get selectedTitleKeywords => _selectedTitleKeywords;
+
+  void titleGenerator() async {
+    String text =
+        'Ключевые слова: ${_selectedTitleKeywords.map((e) => e.keyword).join(', ')}';
+    if (title != null) {
+      text += '\nНазвание: $title';
+    }
+    final res = await Navigator.of(context)
+        .pushNamed(MainNavigationRouteNames.chatGptScreen, arguments: text);
+
+    if (res != null) {
+      setTitle(res as String);
+    }
+  }
+
+  List<KwByLemma> _selectedDescriptionKeywords = [];
+
+  List<KwByLemma> get selectedDescriptionKeywords =>
+      _selectedDescriptionKeywords;
+  void descriptionGenerator() async {
+    String text =
+        'Ключевые слова: ${_selectedDescriptionKeywords.map((e) => e.keyword).join(', ')}';
+    if (description != null) {
+      text += '\nОписание: $description';
+    }
+    final res = await Navigator.of(context)
+        .pushNamed(MainNavigationRouteNames.chatGptScreen, arguments: text);
+
+    if (res != null) {
+      setDescription(res as String);
     }
   }
 }

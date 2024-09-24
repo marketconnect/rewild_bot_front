@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
 import 'package:rewild_bot_front/api_clients/filter_api_client.dart';
+import 'package:rewild_bot_front/api_clients/gpt_api_client.dart';
 import 'package:rewild_bot_front/api_clients/product_watch_subscription_api_client.dart';
 import 'package:rewild_bot_front/api_clients/reviews_api_client.dart';
 import 'package:rewild_bot_front/api_clients/search_api_client.dart';
@@ -87,6 +88,7 @@ import 'package:rewild_bot_front/domain/services/commission_service.dart';
 import 'package:rewild_bot_front/domain/services/content_service.dart';
 import 'package:rewild_bot_front/domain/services/filter_values_service.dart';
 import 'package:rewild_bot_front/domain/services/geo_search_service.dart';
+import 'package:rewild_bot_front/domain/services/gpt_service.dart';
 
 import 'package:rewild_bot_front/domain/services/group_service.dart';
 import 'package:rewild_bot_front/domain/services/init_stock_service.dart';
@@ -132,6 +134,7 @@ import 'package:rewild_bot_front/presentation/feedback/reviews/all_reviews_scree
 import 'package:rewild_bot_front/presentation/feedback/reviews/all_reviews_screen/all_reviews_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_screen.dart';
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
+import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_screen.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
@@ -167,10 +170,11 @@ import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_w
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
 import 'package:rewild_bot_front/presentation/home/report_screen/report_screen.dart';
 import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_desc_generator_view_model.dart';
+import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen.dart';
+
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_screen.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_title_generator_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
@@ -283,6 +287,7 @@ class _DIContainer {
   ProductWatchSubscriptionApiClient _makeProductWatchSubscriptionApiClient() =>
       const ProductWatchSubscriptionApiClient();
 
+  GptApiClient _makeGptApiClient() => const GptApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -584,6 +589,8 @@ class _DIContainer {
         apiClient: _makeAdvertApiClient(),
         apiKeyDataProvider: _makeSecureDataProvider(),
       );
+
+  GptService _makeGptService() => GptService(gptApiClient: _makeGptApiClient());
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
           BuildContext context) =>
@@ -759,32 +766,29 @@ class _DIContainer {
         seoService: _makeSeoService());
   }
 
-  SeoToolTitleGeneratorViewModel _makeSeoToolTitleGeneratorViewModel(
-    BuildContext context,
-  ) {
-    return SeoToolTitleGeneratorViewModel(
-      context: context,
-      balanceService: _makeBalanceService(),
-      priceService: _makePriceService(),
-      tokenService: _makeAuthService(),
-      contentService: _makeContentService(),
-    );
-  }
+  // SeoToolTitleGeneratorViewModel _makeSeoToolTitleGeneratorViewModel(
+  //   BuildContext context,
+  // ) {
+  //   return SeoToolTitleGeneratorViewModel(
+  //     context: context,
+  //     tokenService: _makeAuthService(),
+  //     contentService: _makeContentService(),
+  //   );
+  // }
 
-  SeoToolDescriptionGeneratorViewModel
-      _makeSeoToolDescriptionGeneratorViewModel(
-    BuildContext context,
-  ) {
-    return SeoToolDescriptionGeneratorViewModel(
-      context: context,
-      balanceService: _makeBalanceService(),
-      priceService: _makePriceService(),
-      tokenService: _makeAuthService(),
-      contentService: _makeContentService(),
-      // promptService: _makePromptService(),
-      // gigachatService: _makeGigachatService(),
-    );
-  }
+  // SeoToolDescriptionGeneratorViewModel
+  //     _makeSeoToolDescriptionGeneratorViewModel(
+  //   BuildContext context,
+  // ) {
+  //   return SeoToolDescriptionGeneratorViewModel(
+  //     context: context,
+
+  //     tokenService: _makeAuthService(),
+  //     contentService: _makeContentService(),
+  //     // promptService: _makePromptService(),
+  //     // gigachatService: _makeGigachatService(),
+  //   );
+  // }
 
   SeoToolCategoryViewModel _makeSeoToolCategoryViewModel(
     BuildContext context,
@@ -869,8 +873,6 @@ class _DIContainer {
         answerService: _makeAnswerService(),
         questionService: _makeQuestionService(),
         cardOfProductService: _makeCardOfProductService(),
-        balanceService: _makeBalanceService(),
-        priceService: _makePriceService(),
       );
 
   AllProductsReviewsViewModel _makeAllProductsReviewsViewModel(
@@ -894,10 +896,8 @@ class _DIContainer {
         review,
         context: context,
         answerService: _makeAnswerService(),
-        priceService: _makePriceService(),
         tokenService: _makeAuthService(),
         singleReviewCardOfProductService: _makeCardOfProductService(),
-        balanceService: _makeBalanceService(),
         reviewService: _makeReviewService(),
       );
 
@@ -962,8 +962,14 @@ class _DIContainer {
           apiKeyExistsStream: apiKeyExistsStream,
           updatedAdvertStream: updatedAdvertStream);
 
-  // AddCardOptionViewModel _makeAddCardOptionViewModel(BuildContext context) =>
-  //     AddCardOptionViewModel(context: context);
+  GptScreenViewModel _makeGptScreenViewModel(
+          BuildContext context, String questionText) =>
+      GptScreenViewModel(
+        context: context,
+        questionText: questionText,
+        gptService: _makeGptService(),
+        tokenService: _makeAuthService(),
+      );
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -995,16 +1001,16 @@ class ScreenFactoryDefault implements ScreenFactory {
                   nmId,
                   subjectId!,
                 )),
-        ChangeNotifierProvider<SeoToolTitleGeneratorViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolTitleGeneratorViewModel(
-                  context,
-                )),
-        ChangeNotifierProvider<SeoToolDescriptionGeneratorViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolDescriptionGeneratorViewModel(
-                  context,
-                )),
+        // ChangeNotifierProvider<SeoToolTitleGeneratorViewModel>(
+        //     create: (context) =>
+        //         _diContainer._makeSeoToolTitleGeneratorViewModel(
+        //           context,
+        //         )),
+        // ChangeNotifierProvider<SeoToolDescriptionGeneratorViewModel>(
+        //     create: (context) =>
+        //         _diContainer._makeSeoToolDescriptionGeneratorViewModel(
+        //           context,
+        //         )),
       ],
       // create: (context) =>
       //     _diContainer._makeSeoToolViewModel(context, productId),
@@ -1300,6 +1306,15 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (context) =>
           _diContainer._makeRootAdvertsScreenViewModel(context),
       child: const RootAdvertsScreen(),
+    );
+  }
+
+  @override
+  Widget makeChatGptScreen(String questionText) {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeGptScreenViewModel(context, questionText),
+      child: ChatGptScreen(),
     );
   }
 
