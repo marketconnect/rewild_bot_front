@@ -27,7 +27,7 @@ class GptScreenViewModel extends ResourceChangeNotifier {
   String get questionText => _questionText;
 
   //
-  List<Map<String, String>> _messages = [];
+  final List<Map<String, String>> _messages = [];
   void addMessage(String value) {
     _messages.add({'role': 'user', 'content': value});
   }

@@ -115,7 +115,7 @@ class SeoToolViewModel extends ResourceChangeNotifier {
     }
   }
 
-  List<KwByLemma> _selectedTitleKeywords = [];
+  final List<KwByLemma> _selectedTitleKeywords = [];
 
   List<KwByLemma> get selectedTitleKeywords => _selectedTitleKeywords;
 
@@ -133,7 +133,7 @@ class SeoToolViewModel extends ResourceChangeNotifier {
     }
   }
 
-  List<KwByLemma> _selectedDescriptionKeywords = [];
+  final List<KwByLemma> _selectedDescriptionKeywords = [];
 
   List<KwByLemma> get selectedDescriptionKeywords =>
       _selectedDescriptionKeywords;

@@ -32,7 +32,7 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      '1_b_rewild_b_11.db',
+      '2141_b_rewild_b_11.db',
       version: 2,
       onUpgradeNeeded: _onUpgrade,
     );
@@ -177,13 +177,6 @@ class DatabaseHelper {
       store.createIndex('lemma', 'lemma'); // Добавляем индекс на поле 'lemma'
     });
 
-    createStoreIfNotExists('filters', () {
-      final store =
-          db.createObjectStore('filters', keyPath: 'id', autoIncrement: true);
-      store.createIndex('sectionName_itemId', ['sectionName', 'itemId'],
-          unique: true);
-    });
-
     createStoreIfNotExists('tracking_results', () {
       final store = db.createObjectStore('tracking_results',
           keyPath: 'id', autoIncrement: true);
@@ -230,9 +223,11 @@ class DatabaseHelper {
     });
 
     createStoreIfNotExists('groups', () {
-      final store =
-          db.createObjectStore('groups', keyPath: 'id', autoIncrement: true);
-      store.createIndex('nmId_name', ['nmId', 'name'], unique: true);
+      final store = db.createObjectStore('groups',
+          keyPath: 'nmId_name', autoIncrement: false);
+
+      store.createIndex('nmId', 'nmId', unique: false);
+      store.createIndex('name', 'name', unique: false);
     });
 
     createStoreIfNotExists('nm_ids', () {

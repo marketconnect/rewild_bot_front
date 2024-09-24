@@ -714,10 +714,10 @@ class _DescriptionGeneratorScreenState
                       );
                     },
                     buttonStyle: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
+                      backgroundColor: WidgetStateProperty.all(
                         Theme.of(context).colorScheme.primary,
                       ),
-                      foregroundColor: MaterialStateProperty.all(
+                      foregroundColor: WidgetStateProperty.all(
                         Theme.of(context).colorScheme.onPrimary,
                       ),
                     ),

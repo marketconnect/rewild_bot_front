@@ -13,7 +13,7 @@ import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
-import 'package:rewild_bot_front/domain/entities/filter_model.dart';
+
 import 'package:rewild_bot_front/domain/entities/group_model.dart';
 import 'package:rewild_bot_front/domain/entities/nm_id.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
@@ -46,15 +46,11 @@ abstract class AllCardsScreenCardOfProductService {
   Future<Either<RewildError, List<NmId>>> getAllUserNmIds();
 }
 
-// Filter
-abstract class AllCardsScreenFilterService {
-  Future<Either<RewildError, FilterModel>> getCurrentFilter();
-  Future<Either<RewildError, void>> deleteFilter();
-}
-
 // Groups
 abstract class AllCardsScreenGroupsService {
   Future<Either<RewildError, List<GroupModel>?>> getAll([List<int>? nmIds]);
+  Future<Either<RewildError, void>> delete(
+      {required String groupName, required int nmId});
 }
 
 // Supply
@@ -108,7 +104,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
   final AllCardsScreenCardOfProductService cardsOfProductsService;
   final AllCardsScreenUpdateService updateService;
   final AllCardsScreenGroupsService groupsProvider;
-  final AllCardsScreenFilterService filterService;
+  // final AllCardsScreenFilterService filterService;
   final AllCardsScreenTotalCostService totalCostService;
   final AllCardsScreenSupplyService supplyService;
   final AllCardsScreenNotificationsService notificationsService;
@@ -122,7 +118,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       required this.tokenService,
       required this.updateService,
       required this.groupsProvider,
-      required this.filterService,
+      // required this.filterService,
       required this.supplyService,
       required this.averageLogisticsService,
       required this.notificationsService,
@@ -182,17 +178,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
   bool get isLoading => _loading;
 
-  // filter
-  FilterModel? _filter;
-  FilterModel? get filter => _filter;
-
-  bool _filterIsEmpty = true;
-  bool get filterIsEmpty => _filterIsEmpty;
-
   bool _firstLoad = true;
 
   Future<void> asyncInit() async {
-    // SqfliteService.printTableContent('subs');
     setLoading(true);
 
     streamNotification.listen((event) async {
@@ -217,30 +205,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     setLoading(false);
 
     // await p();
-  }
-
-  void checkFilter() {
-    if (_filter == null) {
-      _filterIsEmpty = true;
-      return;
-    }
-
-    if (_filter!.subjects != null && _filter!.subjects!.isNotEmpty ||
-        _filter!.brands != null && _filter!.brands!.isNotEmpty ||
-        _filter!.suppliers != null && _filter!.suppliers!.isNotEmpty ||
-        _filter!.promos != null && _filter!.promos!.isNotEmpty ||
-        _filter!.withSales != null ||
-        _filter!.withStocks != null) {
-      _filterIsEmpty = false;
-
-      return;
-    }
-    _filterIsEmpty = true;
-  }
-
-  Future<void> resetFilter() async {
-    await fetch(() => filterService.deleteFilter());
-    await _update();
   }
 
   List<CardOfProductModel> _productCards = [];
@@ -297,23 +261,17 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     await fetch(() => updateService.update(token));
 
     final values = await Future.wait([
-      fetch(() => filterService.getCurrentFilter()), // 0
-      fetch(() => cardsOfProductsService.getAll()), // 1
-      fetch(() => notificationsService.getAll()), // 2
-      fetch(() => groupsProvider.getAll()), // 3
+      // fetch(() => filterService.getCurrentFilter()), // 0
+      fetch(() => cardsOfProductsService.getAll()), // 0
+      fetch(() => notificationsService.getAll()), // 1
+      fetch(() => groupsProvider.getAll()), // 2
       fetch(() => averageLogisticsService.getCurrentAverageLogistics(
-          token: token)), // 4
+          token: token)), // 3
       _handleSubscriptions(token),
     ]);
-    // filter
-    _filter = values[0] as FilterModel?;
-    if (_filter == null) {
-      return;
-    }
-    checkFilter();
 
     // get cards
-    final fetchedCardsOfProducts = values[1] as List<CardOfProductModel>?;
+    final fetchedCardsOfProducts = values[0] as List<CardOfProductModel>?;
 
     if (fetchedCardsOfProducts == null) {
       return;
@@ -328,7 +286,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
     // tracked ids
     List<int> trackedIds = [];
-    final notifications = values[2] as List<ReWildNotificationModel>?;
+    final notifications = values[1] as List<ReWildNotificationModel>?;
     if (notifications != null) {
       for (final n in notifications) {
         if (n.condition != NotificationConditionConstants.budgetLessThan) {
@@ -362,7 +320,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     // sort by orders sum
     _productCards.sort((a, b) => b.weekOrdersSum.compareTo(a.weekOrdersSum));
 
-    final fetchedGroups = values[3] as List<GroupModel>?;
+    final fetchedGroups = values[2] as List<GroupModel>?;
     final cardsNmIds = _productCards.map((card) => card.nmId).toList();
     // append groups
     if (fetchedGroups != null) {
@@ -378,10 +336,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
         }
       }
     }
-    // Filter cards
-    _productCards = _productCards.where((card) {
-      return filterCard(card);
-    }).toList();
+
     // Filter groups
     _groups = _groups.where((group) {
       if (group.name == "Все") {
@@ -478,11 +433,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     notifyListeners();
   }
 
-  // Future<void> deleteUnsubscribedCards() async {
-  //   // delete cards
-  //   await fetch(() => updateService.deleteLocal(nmIds: _missingCardIds));
-  // }
-
   Future<void> deleteCards() async {
     List<int> idsForDelete = [];
     for (final nmId in _selectedNmIds) {
@@ -500,9 +450,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
     final token = await _getToken();
 
-    // delete cards
-    // await fetch(() => updateService.delete(token: token, nmIds: idsForDelete));
-    // delete subscriptions
     await fetch(() => subscriptionsService.removeCardsFromSubscription(
         token: token, cardIds: idsForDelete));
     await fetch(() => updateService.deleteLocal(nmIds: idsForDelete));
@@ -513,14 +460,14 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     resetIsSelectingForPayment();
     _selectedNmIds.clear();
     _selectionInProcess = false;
-    notifyListeners();
+    notify();
   }
 
   void combine() {
-    // Navigator.of(context).pushReplacementNamed(
-    //   MainNavigationRouteNames.addGroupsScreen,
-    //   arguments: _selectedNmIds,
-    // );
+    Navigator.of(context).pushReplacementNamed(
+      MainNavigationRouteNames.addGroupsScreen,
+      arguments: _selectedNmIds,
+    );
   }
 
   Future<void> track() async {
@@ -546,15 +493,6 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     if (result.isLeft()) {
       return;
     }
-
-    // putOnServerNewCards returns void so fetch is not used here
-    // final cardsResult = await updateService.putOnServerNewCards(
-    //   token: token,
-    //   cardOfProductsToPutOnServer: selectedCardModels.toList(),
-    // );
-    // if (cardsResult is Left) {
-    //   return;
-    // }
 
     await _handleSubscriptions(token);
   }
@@ -590,54 +528,24 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     notifyListeners();
   }
 
-  bool filterCard(CardOfProductModel card) {
-    if (_filter == null) {
-      return true;
+  Future<void> combineOrDeleteFromGroup() async {
+    final selectedGroupOrNull = _selectedGroup;
+
+    if (selectedGroupOrNull == null) {
+      combine();
+      return;
     }
 
-    // check subject
-    if (_filter!.subjects != null && _filter!.subjects!.isNotEmpty) {
-      final found = _filter!.subjects!.keys.contains(card.subjectId);
-
-      if (!found) {
-        return false;
-      }
+    final selectedGroupName = selectedGroupOrNull.name;
+    for (final nmId in _selectedNmIds) {
+      // delete from local storage
+      await groupsProvider.delete(groupName: selectedGroupName, nmId: nmId);
+      // delete nmId from group
+      selectedGroupOrNull.cardsNmIds.remove(nmId);
+      // // delete card from group
+      // selectedGroupOrNull.cards.removeWhere((element) => element.nmId == nmId);
     }
-    // check supplier
-    if (_filter!.suppliers != null && _filter!.suppliers!.isNotEmpty) {
-      final found = _filter!.suppliers!.keys.contains(card.supplierId);
-      if (!found) {
-        return false;
-      }
-    }
-    // check brand
-    if (_filter!.brands != null && _filter!.brands!.isNotEmpty) {
-      final found = _filter!.brands!.values.contains(card.brand);
-      if (!found) {
-        return false;
-      }
-    }
-    // check promo
-    if (_filter!.promos != null && _filter!.promos!.isNotEmpty) {
-      final found = _filter!.promos!.values.contains(card.promoTextCard);
-      if (!found) {
-        return false;
-      }
-    }
-    // check with sales
-    if (_filter!.withSales != null) {
-      final found = card.weekOrdersSum > 0;
-      if (!found) {
-        return false;
-      }
-    }
-    // check with stocks
-    if (_filter!.withStocks != null) {
-      final found = card.stocksSum > 0;
-      if (!found) {
-        return false;
-      }
-    }
-    return true;
+    onClearSelected();
+    refresh();
   }
 }

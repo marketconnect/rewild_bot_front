@@ -1,3 +1,4 @@
+import 'package:rewild_bot_front/presentation/products/cards/add_group_screen/add_group_screen_view_model.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/group_model.dart';
@@ -12,7 +13,8 @@ abstract class GroupServiceGroupDataProvider {
       {required String groupName, required String newGroupName});
 }
 
-class GroupService implements AllCardsScreenGroupsService {
+class GroupService
+    implements AllCardsScreenGroupsService, AddGroupScreenGroupsService {
   final GroupServiceGroupDataProvider groupDataProvider;
 
   int _groupsCount = 0;

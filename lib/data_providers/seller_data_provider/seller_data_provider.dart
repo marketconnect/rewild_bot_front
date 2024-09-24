@@ -4,12 +4,12 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/seller_model.dart';
 
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
-import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
+// import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
 import 'package:rewild_bot_front/domain/services/seller_service.dart';
 
 class SellerDataProvider
     implements
-        AllCardsFilterServiceSellerDataProvider,
+        // AllCardsFilterServiceSellerDataProvider,
         SellerServiceSellerDataProvider {
   const SellerDataProvider();
 

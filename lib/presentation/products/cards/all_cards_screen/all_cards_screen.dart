@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/color.dart';
-import 'package:rewild_bot_front/core/constants/icon_constant.dart';
+
 import 'package:rewild_bot_front/core/utils/extensions/strings.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/group_model.dart';
@@ -33,8 +33,7 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<AllCardsScreenViewModel>();
-    final resetFilter = model.resetFilter;
-    final filterIsEmpty = model.filterIsEmpty;
+
     final refresh = model.refresh;
     List<CardOfProductModel> productCards = model.productCards;
     final selectedGroup = model.selectedGroup;
@@ -77,8 +76,8 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
 
     return SafeArea(
       child: Scaffold(
-        floatingActionButton: filterIsEmpty || selectionInProcess
-            ? (isSelectingForPayment != null && isSelectingForPayment)
+        floatingActionButton:
+            (isSelectingForPayment != null && isSelectingForPayment)
                 ? TextButton(
                     onPressed: () {
                       if (emptySubscriptionsQty - len < 0) {
@@ -103,24 +102,26 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
                     ),
                   )
                 : null
-            : FloatingActionButton(
-                backgroundColor:
-                    Theme.of(context).colorScheme.surfaceContainerHighest,
-                onPressed: () async {
-                  await resetFilter();
-                },
-                child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: const BoxDecoration(
-                    color: Colors.transparent,
-                  ),
-                  child: Image.asset(
-                    IconConstant.iconFilterDismiss,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
+        // :
+        // FloatingActionButton(
+        //     backgroundColor:
+        //         Theme.of(context).colorScheme.surfaceContainerHighest,
+        //     onPressed: () async {
+        //       await resetFilter();
+        //     },
+        //     child: Container(
+        //       width: 30,
+        //       height: 30,
+        //       decoration: const BoxDecoration(
+        //         color: Colors.transparent,
+        //       ),
+        //       child: Image.asset(
+        //         IconConstant.iconFilterDismiss,
+        //         color: Theme.of(context).colorScheme.onSurfaceVariant,
+        //       ),
+        //     ),
+        //   )
+        ,
         body: DefaultTabController(
           length: selectionInProcess ? 1 : groups.length,
           child: NestedScrollView(
@@ -144,7 +145,7 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
                               (index > (productCards.length - 1))) {
                             return Container();
                           }
-                          if ((!filterIsEmpty || selectionInProcess) &&
+                          if ((selectionInProcess) &&
                               index == productCards.length - 1) {
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 50.0),
@@ -217,12 +218,6 @@ class _AppBar extends StatelessWidget {
             },
             icon: Image.asset("assets/images/wb.png"),
           ),
-        IconButton(
-            onPressed: () => Navigator.of(context).pushNamed(
-                  "MainNavigationRouteNames.allCardsFilterScreen",
-                ),
-            icon: Icon(Icons.filter_list,
-                size: 30, color: Theme.of(context).colorScheme.primary)),
       ],
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsets.fromLTRB(0, 15, 35, 15),
@@ -255,7 +250,8 @@ class _BottomMergeBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<AllCardsScreenViewModel>();
-    final combine = model.combine;
+    final combineOrDeleteFromGroup = model.combineOrDeleteFromGroup;
+    final selectedGroup = model.selectedGroup;
     return Align(
       // Bottom merge btn ============================================================== Bottom merge btn
       alignment: Alignment.bottomRight,
@@ -271,11 +267,15 @@ class _BottomMergeBtn extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextButton(
-              onPressed: () => combine(),
+              onPressed: () {
+                combineOrDeleteFromGroup();
+              },
               child: Row(
                 children: [
                   Icon(
-                    Icons.group_add_outlined,
+                    selectedGroup == null
+                        ? Icons.group_add_outlined
+                        : Icons.group_off_outlined,
                     size: model.screenWidth * 0.06,
                     color: Theme.of(context).colorScheme.onPrimary,
                   ),
@@ -287,7 +287,7 @@ class _BottomMergeBtn extends StatelessWidget {
                           left: model.screenWidth * 0.02,
                         ),
                         child: Text(
-                          'В группу',
+                          selectedGroup == null ? 'В группу' : 'Из группы',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: model.screenWidth * 0.04,

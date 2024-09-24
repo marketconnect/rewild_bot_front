@@ -73,6 +73,8 @@ abstract class ScreenFactory {
 
   Widget makeChatGptScreen(String questionText);
 
+  Widget makeAddGroupsScreen(List<int> cardsIds);
+
   // Widget makeWbWebViewSceen((List<int>, String?) nmIdsSearchString);
 }
 
@@ -315,6 +317,13 @@ class MainNavigation implements AppNavigation {
         final question = arguments is String ? arguments : "";
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeChatGptScreen(question),
+        );
+
+      case MainNavigationRouteNames.addGroupsScreen:
+        final arguments = settings.arguments;
+        final productsCardsIds = arguments is List<int> ? arguments : <int>[];
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAddGroupsScreen(productsCardsIds),
         );
 
       // case MainNavigationRouteNames.addCardOptionScreen:

@@ -23,6 +23,7 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
           'bgColor': group.bgColor,
           'fontColor': group.fontColor,
           'nmId': nmId,
+          "nmId_name": [nmId, group.name]
         });
       }
 
@@ -82,12 +83,14 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
       final store = txn.objectStore('groups');
 
       if (nmId != null) {
-        final cursorStream = store.index('name_nmId').openCursor(
-              range: KeyRange.only([name, nmId]),
-            );
+        final index = store.index('nmId');
+        final cursorStream = index.openCursor(range: KeyRange.only(nmId));
 
         await for (final cursor in cursorStream) {
-          await cursor.delete();
+          final value = cursor.value as Map<String, dynamic>;
+          if (value['name'] == name) {
+            await cursor.delete();
+          }
         }
       } else {
         final cursorStream = store.index('name').openCursor(

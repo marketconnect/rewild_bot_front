@@ -1,3 +1,7 @@
+import 'package:rewild_bot_front/presentation/products/cards/add_group_screen/add_group_screen.dart';
+
+import 'package:rewild_bot_front/presentation/products/cards/add_group_screen/add_group_screen_view_model.dart';
+
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
@@ -6,20 +10,20 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/api_clients/advert_api_client.dart';
 import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
+import 'package:rewild_bot_front/api_clients/card_of_product_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
 import 'package:rewild_bot_front/api_clients/filter_api_client.dart';
 import 'package:rewild_bot_front/api_clients/gpt_api_client.dart';
-import 'package:rewild_bot_front/api_clients/product_watch_subscription_api_client.dart';
-import 'package:rewild_bot_front/api_clients/reviews_api_client.dart';
-import 'package:rewild_bot_front/api_clients/search_api_client.dart';
-import 'package:rewild_bot_front/api_clients/search_query_api_client.dart';
 import 'package:rewild_bot_front/api_clients/initial_stocks_api_client.dart';
 import 'package:rewild_bot_front/api_clients/orders_history_api_client.dart';
 import 'package:rewild_bot_front/api_clients/price_api_client.dart';
-import 'package:rewild_bot_front/api_clients/card_of_product_api_client.dart';
 import 'package:rewild_bot_front/api_clients/product_keywords_api_client.dart';
+import 'package:rewild_bot_front/api_clients/product_watch_subscription_api_client.dart';
 import 'package:rewild_bot_front/api_clients/questions_api_client.dart';
+import 'package:rewild_bot_front/api_clients/reviews_api_client.dart';
+import 'package:rewild_bot_front/api_clients/search_api_client.dart';
+import 'package:rewild_bot_front/api_clients/search_query_api_client.dart';
 import 'package:rewild_bot_front/api_clients/seller_api_client.dart';
 import 'package:rewild_bot_front/api_clients/statistics_api_client.dart';
 import 'package:rewild_bot_front/api_clients/subscription_api_client.dart';
@@ -35,13 +39,11 @@ import 'package:rewild_bot_front/data_providers/cached_kw_by_lemma_by_word_data_
 import 'package:rewild_bot_front/data_providers/cached_lemma_data_provider/cached_lemma_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cahced_kw_by_autocomplite_data_provider/cahced_kw_by_autocomplite_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cahced_kw_by_lemma_data_provider/cahced_kw_by_lemma_data_provider.dart';
-
 import 'package:rewild_bot_front/data_providers/card_keywords_data_provider/card_keywords_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/card_of_product_data_provider/card_of_product_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/commission_data_provider/commission_data_provider.dart';
-import 'package:rewild_bot_front/data_providers/filter_data_provider/filter_data_provider.dart';
+// import 'package:rewild_bot_front/data_providers/filter_data_provider/filter_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/filter_values_data_provider/filter_values_data_provider.dart';
-
 import 'package:rewild_bot_front/data_providers/group_data_provider/group_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/initial_stocks_data_provider/initial_stocks_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/keyword_data_provider/keyword_data_provider.dart';
@@ -66,30 +68,25 @@ import 'package:rewild_bot_front/data_providers/warehouse_data_provider/warehous
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
-
 import 'package:rewild_bot_front/domain/entities/payment_info.dart';
 import 'package:rewild_bot_front/domain/entities/question_model.dart';
 import 'package:rewild_bot_front/domain/entities/review_model.dart';
-
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
 import 'package:rewild_bot_front/domain/entities/stream_notification_event.dart';
 import 'package:rewild_bot_front/domain/services/advert_service.dart';
 import 'package:rewild_bot_front/domain/services/adverts_analitics_service.dart';
-import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
+// import 'package:rewild_bot_front/domain/services/all_cards_filter_service.dart';
 import 'package:rewild_bot_front/domain/services/answer_service.dart';
-
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
 import 'package:rewild_bot_front/domain/services/balance_service.dart';
 import 'package:rewild_bot_front/domain/services/card_keywords_service.dart';
-
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/commission_service.dart';
 import 'package:rewild_bot_front/domain/services/content_service.dart';
 import 'package:rewild_bot_front/domain/services/filter_values_service.dart';
 import 'package:rewild_bot_front/domain/services/geo_search_service.dart';
 import 'package:rewild_bot_front/domain/services/gpt_service.dart';
-
 import 'package:rewild_bot_front/domain/services/group_service.dart';
 import 'package:rewild_bot_front/domain/services/init_stock_service.dart';
 import 'package:rewild_bot_front/domain/services/keywords_service.dart';
@@ -113,7 +110,6 @@ import 'package:rewild_bot_front/domain/services/warehouse_service.dart';
 import 'package:rewild_bot_front/domain/services/wb_search_suggestion_service.dart';
 import 'package:rewild_bot_front/domain/services/week_orders_service.dart';
 import 'package:rewild_bot_front/main.dart';
-
 import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_screen.dart';
 import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_view_model.dart';
 import 'package:rewild_bot_front/presentation/adverts/all_adverts_stat_screen/all_adverts_stat_screen.dart';
@@ -124,8 +120,13 @@ import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/
 import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_view_model.dart';
 import 'package:rewild_bot_front/presentation/adverts/single_auto_words_screen/single_auto_words_screen.dart';
 import 'package:rewild_bot_front/presentation/adverts/single_auto_words_screen/single_auto_words_view_model.dart';
+import 'package:rewild_bot_front/presentation/app/app.dart';
 import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_screen.dart';
 import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/all_products_questions_screen/all_products_questions_screen.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/all_products_questions_screen/all_products_questions_view_model.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/all_questions_screen/all_questions_screen.dart';
+import 'package:rewild_bot_front/presentation/feedback/questions/all_questions_screen/all_questions_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/questions/single_question_screen/single_question_screen.dart';
 import 'package:rewild_bot_front/presentation/feedback/questions/single_question_screen/single_question_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/reviews/all_products_reviews_screen/all_products_reviews_screen.dart';
@@ -134,20 +135,28 @@ import 'package:rewild_bot_front/presentation/feedback/reviews/all_reviews_scree
 import 'package:rewild_bot_front/presentation/feedback/reviews/all_reviews_screen/all_reviews_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_screen.dart';
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
+import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen.dart';
 import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen_view_model.dart';
-
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_screen.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
-
+import 'package:rewild_bot_front/presentation/home/report_screen/report_screen.dart';
+import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
+import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_screen.dart';
+import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_web_view.dart';
+import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_screen.dart';
+import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_screen.dart';
+import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen.dart';
+import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_screen.dart';
 import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
-import 'package:rewild_bot_front/presentation/feedback/questions/all_products_questions_screen/all_products_questions_screen.dart';
-import 'package:rewild_bot_front/presentation/feedback/questions/all_products_questions_screen/all_products_questions_view_model.dart';
-import 'package:rewild_bot_front/presentation/feedback/questions/all_questions_screen/all_questions_screen.dart';
-import 'package:rewild_bot_front/presentation/feedback/questions/all_questions_screen/all_questions_view_model.dart';
-import 'package:rewild_bot_front/presentation/app/app.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_screen.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_autocomplite_keyword_screen/autocomplite_keyword_expansion_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
@@ -156,36 +165,18 @@ import 'package:rewild_bot_front/presentation/products/seo/expansion_subject_key
 import 'package:rewild_bot_front/presentation/products/seo/expansion_subject_keyword_screen/subject_keyword_expansion_screen.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_words_keyword_screen/words_keyword_expansion_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_words_keyword_screen/words_keyword_expansion_screen.dart';
-import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_screen.dart';
-import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo_search_screen.dart';
 import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo_search_view_model.dart';
-import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_screen.dart';
-import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_screen.dart';
-import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_web_view.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
-import 'package:rewild_bot_front/presentation/home/report_screen/report_screen.dart';
-import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
-import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen.dart';
-
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_screen.dart';
-
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_screen.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen.dart';
-import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen_view_model.dart';
-
 import 'package:rewild_bot_front/routes/main_navigation.dart';
 
 AppFactory makeAppFactory() => _AppFactoryDefault();
@@ -326,7 +317,7 @@ class _DIContainer {
   LastUpdateDayDataProvider _makeLastUpdateDayDataProvider() =>
       const LastUpdateDayDataProvider();
 
-  FilterDataProvider _makeFilterDataProvider() => const FilterDataProvider();
+  // FilterDataProvider _makeFilterDataProvider() => const FilterDataProvider();
 
   FilterValuesDataProvider _makeFilterValuesDataProvider() =>
       const FilterValuesDataProvider();
@@ -431,11 +422,11 @@ class _DIContainer {
         subsDataProvider: _makeSubscriptionDataProvider(),
       );
 
-  AllCardsFilterService _makeAllCardsFilterService() => AllCardsFilterService(
-        cardsOfProductsDataProvider: _makeCardOfProductDataProvider(),
-        filterDataProvider: _makeFilterDataProvider(),
-        sellerDataProvider: _makeSellerDataProvider(),
-      );
+  // AllCardsFilterService _makeAllCardsFilterService() => AllCardsFilterService(
+  //       cardsOfProductsDataProvider: _makeCardOfProductDataProvider(),
+  //       filterDataProvider: _makeFilterDataProvider(),
+  //       sellerDataProvider: _makeSellerDataProvider(),
+  // );
 
   SupplyService _makeSupplyService() => SupplyService(
         supplyDataProvider: _makeSupplyDataProvider(),
@@ -622,7 +613,7 @@ class _DIContainer {
           supplyService: _makeSupplyService(),
           streamNotification: updatedNotificationStream,
           groupsProvider: _makeAllGroupsService(),
-          filterService: _makeAllCardsFilterService(),
+          // filterService: _makeAllCardsFilterService(),
           notificationsService: _makeNotificationService(),
           totalCostService: _makeTotalCostService(),
           averageLogisticsService: _makeTariffService(),
@@ -970,6 +961,13 @@ class _DIContainer {
         gptService: _makeGptService(),
         tokenService: _makeAuthService(),
       );
+
+  AddGroupScreenViewModel _makeAddGroupScreenViewModel(
+          BuildContext context, List<int> productsCardsIds) =>
+      AddGroupScreenViewModel(
+          context: context,
+          groupsProvider: _makeAllGroupsService(),
+          productsCardsIds: productsCardsIds);
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -1315,6 +1313,15 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (context) =>
           _diContainer._makeGptScreenViewModel(context, questionText),
       child: ChatGptScreen(),
+    );
+  }
+
+  @override
+  Widget makeAddGroupsScreen(List<int> productsCardsIds) {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeAddGroupScreenViewModel(context, productsCardsIds),
+      child: const AddGroupScreen(),
     );
   }
 

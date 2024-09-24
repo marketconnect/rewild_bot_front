@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen_view_model.dart';
 
 class ChatGptScreen extends StatefulWidget {
+  const ChatGptScreen({super.key});
+
   @override
   _ChatGptScreenState createState() => _ChatGptScreenState();
 }
@@ -64,7 +66,7 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
           children: [
             // Message bubble
             Container(
-              padding: EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
                 color: message.isUser ? Colors.blueAccent : Colors.grey[300],
                 borderRadius: BorderRadius.circular(12.0),
@@ -89,7 +91,8 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
                     // Copy bot message to clipboard
                     Clipboard.setData(ClipboardData(text: message.text));
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Message copied to clipboard')),
+                      const SnackBar(
+                          content: Text('Message copied to clipboard')),
                     );
                     print('Copied message: ${message.text}');
                   },
@@ -104,7 +107,7 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
   Widget _buildMessageList() {
     return ListView.builder(
       reverse: true,
-      padding: EdgeInsets.all(10.0),
+      padding: const EdgeInsets.all(10.0),
       itemCount: _messages.length,
       itemBuilder: (context, index) {
         final message = _messages[_messages.length - index - 1];
@@ -116,8 +119,8 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
   Widget _buildInputArea() {
     return SafeArea(
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 8.0),
-        decoration: BoxDecoration(color: Colors.white, boxShadow: [
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: const BoxDecoration(color: Colors.white, boxShadow: [
           BoxShadow(
               color: Colors.black12, offset: Offset(0, -1), blurRadius: 4.0),
         ]),
@@ -128,7 +131,7 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
                 controller: _messageController,
                 minLines: 1,
                 maxLines: 5,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Type your message...',
                   border: InputBorder.none,
                 ),
@@ -136,7 +139,7 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.send, color: Colors.blueAccent),
+              icon: const Icon(Icons.send, color: Colors.blueAccent),
               onPressed: _sendMessage,
             ),
           ],
@@ -149,7 +152,7 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ChatGPT'),
+        title: const Text('ChatGPT'),
         centerTitle: true,
       ),
       body: Column(
