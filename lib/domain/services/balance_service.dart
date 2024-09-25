@@ -3,24 +3,16 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
 
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
-
 abstract class BalanceServiceBalanceDataProvider {
   Future<Either<RewildError, double>> getUserBalance();
   Future<Either<RewildError, void>> addBalance(double amountToAdd);
   Future<Either<RewildError, void>> subtractBalance(double amountToSubtract);
 }
 
-class BalanceService
-    implements
-        PaymentWebViewViewModelBalanceService,
-        SeoToolCategoryDescriptionGeneratorBalanceService,
-        SeoToolCategoryTitleGeneratorBalanceService {
+class BalanceService implements PaymentWebViewViewModelBalanceService {
   final BalanceServiceBalanceDataProvider balanceDataProvider;
   const BalanceService({required this.balanceDataProvider});
 
-  @override
   Future<Either<RewildError, double>> getUserBalance() async {
     return balanceDataProvider.getUserBalance();
   }
@@ -30,7 +22,6 @@ class BalanceService
     return balanceDataProvider.addBalance(amountToAdd);
   }
 
-  @override
   Future<Either<RewildError, bool>> subtractBalance(
       double amountToSubtract) async {
     final balanceEither = await balanceDataProvider.getUserBalance();

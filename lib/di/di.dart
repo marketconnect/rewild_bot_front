@@ -170,11 +170,11 @@ import 'package:rewild_bot_front/presentation/products/seo/geo_search_screen/geo
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_screen.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_screen.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_view_model.dart';
+
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_screen.dart';
+
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_view_model.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation.dart';
@@ -781,47 +781,48 @@ class _DIContainer {
   //   );
   // }
 
-  SeoToolCategoryViewModel _makeSeoToolCategoryViewModel(
+  SeoToolEmptyProductViewModel _makeSeoToolCategoryViewModel(
     BuildContext context,
   ) {
-    return SeoToolCategoryViewModel(
+    return SeoToolEmptyProductViewModel(
       context: context,
       tokenService: _makeAuthService(),
     );
   }
 
-  SeoToolCategoryKwResearchViewModel _makeSeoToolCategoryKwResearchViewModel(
-      BuildContext context, int subjectId) {
-    return SeoToolCategoryKwResearchViewModel(
+  SeoToolEmptyProductKwResearchViewModel
+      _makeSeoToolCategoryKwResearchViewModel(
+          BuildContext context, int subjectId) {
+    return SeoToolEmptyProductKwResearchViewModel(
         context: context,
         subjectId: subjectId,
         tokenService: _makeAuthService(),
         seoService: _makeSeoService());
   }
 
-  SeoToolCategoryTitleGeneratorViewModel
-      _makeSeoToolCategoryTitleGeneratorViewModel(
-    BuildContext context,
-  ) {
-    return SeoToolCategoryTitleGeneratorViewModel(
-      context: context,
-      balanceService: _makeBalanceService(),
-      priceService: _makePriceService(),
-      tokenService: _makeAuthService(),
-    );
-  }
+  // SeoToolCategoryTitleGeneratorViewModel
+  //     _makeSeoToolCategoryTitleGeneratorViewModel(
+  //   BuildContext context,
+  // ) {
+  //   return SeoToolCategoryTitleGeneratorViewModel(
+  //     context: context,
+  //     balanceService: _makeBalanceService(),
+  //     priceService: _makePriceService(),
+  //     tokenService: _makeAuthService(),
+  //   );
+  // }
 
-  SeoToolCategoryDescriptionGeneratorViewModel
-      _makeSeoToolCategoryDescriptionGeneratorViewModel(
-    BuildContext context,
-  ) {
-    return SeoToolCategoryDescriptionGeneratorViewModel(
-      context: context,
-      balanceService: _makeBalanceService(),
-      priceService: _makePriceService(),
-      tokenService: _makeAuthService(),
-    );
-  }
+  // SeoToolCategoryDescriptionGeneratorViewModel
+  //     _makeSeoToolCategoryDescriptionGeneratorViewModel(
+  //   BuildContext context,
+  // ) {
+  //   return SeoToolCategoryDescriptionGeneratorViewModel(
+  //     context: context,
+  //     balanceService: _makeBalanceService(),
+  //     priceService: _makePriceService(),
+  //     tokenService: _makeAuthService(),
+  //   );
+  // }
 
   ExpenseManagerViewModel _makeExpenseManagerViewModel(
           BuildContext context, (int, int, double) nmIdPlusAverageLogistics) =>
@@ -1020,31 +1021,31 @@ class ScreenFactoryDefault implements ScreenFactory {
   Widget makeSeoToolCategoryScreen({required int subjectId}) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<SeoToolCategoryViewModel>(
+        ChangeNotifierProvider<SeoToolEmptyProductViewModel>(
           create: (context) => _diContainer._makeSeoToolCategoryViewModel(
             context,
           ),
         ),
-        ChangeNotifierProvider<SeoToolCategoryKwResearchViewModel>(
+        ChangeNotifierProvider<SeoToolEmptyProductKwResearchViewModel>(
             create: (context) =>
                 _diContainer._makeSeoToolCategoryKwResearchViewModel(
                   context,
                   subjectId,
                 )),
-        ChangeNotifierProvider<SeoToolCategoryTitleGeneratorViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolCategoryTitleGeneratorViewModel(
-                  context,
-                )),
-        ChangeNotifierProvider<SeoToolCategoryDescriptionGeneratorViewModel>(
-            create: (context) =>
-                _diContainer._makeSeoToolCategoryDescriptionGeneratorViewModel(
-                  context,
-                )),
+        // ChangeNotifierProvider<SeoToolCategoryTitleGeneratorViewModel>(
+        //     create: (context) =>
+        //         _diContainer._makeSeoToolCategoryTitleGeneratorViewModel(
+        //           context,
+        //         )),
+        // ChangeNotifierProvider<SeoToolCategoryDescriptionGeneratorViewModel>(
+        //     create: (context) =>
+        //         _diContainer._makeSeoToolCategoryDescriptionGeneratorViewModel(
+        //           context,
+        //         )),
       ],
       // create: (context) =>
       //     _diContainer._makeSeoToolViewModel(context, productId),
-      child: const SeoToolCategoryScreen(),
+      child: const SeoToolEmptyProductScreen(),
     );
   }
 

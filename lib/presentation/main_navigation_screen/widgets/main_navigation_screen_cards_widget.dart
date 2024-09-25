@@ -65,7 +65,7 @@ class _MainNavigationScreenCardsWidgetState
               ),
 
               LinkBtn(
-                text: 'СЕО',
+                text: 'SEO',
                 color: Colors.greenAccent,
                 route: MainNavigationRouteNames.allCardsSeoScreen,
                 // route: '',

@@ -6,12 +6,12 @@ import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // server token
-abstract class SeoToolCategoryKwResearchTokenService {
+abstract class SeoToolEmptyProductKwResearchTokenService {
   Future<Either<RewildError, String>> getToken();
 }
 
 // Seo
-abstract class SeoToolCategorySeoService {
+abstract class SeoToolEmptyProductSeoService {
   // Future<Either<RewildError, void>> addAllLemmas(int nmId, List<String> lemmas);
   // Future<Either<RewildError, List<String>>> getAllLemmasForNmID(int nmId);
   Future<Either<RewildError, List<KwByLemma>>> getPhrasesForNmId(int nmId);
@@ -19,13 +19,13 @@ abstract class SeoToolCategorySeoService {
       int nmId, List<KwByLemma> kw);
 }
 
-class SeoToolCategoryKwResearchViewModel extends ResourceChangeNotifier {
-  final SeoToolCategorySeoService seoService;
-  final SeoToolCategoryKwResearchTokenService tokenService;
+class SeoToolEmptyProductKwResearchViewModel extends ResourceChangeNotifier {
+  final SeoToolEmptyProductSeoService seoService;
+  final SeoToolEmptyProductKwResearchTokenService tokenService;
 
   final int subjectId;
 
-  SeoToolCategoryKwResearchViewModel({
+  SeoToolEmptyProductKwResearchViewModel({
     required super.context,
     required this.subjectId,
     required this.seoService,

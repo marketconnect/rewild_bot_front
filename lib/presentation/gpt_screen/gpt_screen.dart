@@ -92,9 +92,9 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
                     Clipboard.setData(ClipboardData(text: message.text));
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text('Message copied to clipboard')),
+                          content:
+                              Text('Сообщение скопировано в буфер обмена.')),
                     );
-                    print('Copied message: ${message.text}');
                   },
                 ),
               ),
@@ -132,7 +132,7 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
                 minLines: 1,
                 maxLines: 5,
                 decoration: const InputDecoration(
-                  hintText: 'Type your message...',
+                  hintText: 'Введите ваше сообщение...',
                   border: InputBorder.none,
                 ),
                 onSubmitted: (value) => _sendMessage(),

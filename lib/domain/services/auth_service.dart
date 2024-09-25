@@ -23,10 +23,10 @@ import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_w
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_desc_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_title_generator_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_view_model.dart';
+
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_kw_research_view_model.dart';
+
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class AuthServiceSecureDataProvider {
@@ -54,12 +54,12 @@ class AuthService
         SubjectKeywordExpansionTokenService,
         WordsKeywordExpansionTokenService,
         SeoToolTokenService,
-        SeoToolCategoryTokenService,
-        SeoToolCategoryDescriptionGeneratorTokenService,
+        SeoToolEmptyProductTokenService,
+        // SeoToolCategoryDescriptionGeneratorTokenService,
         SeoToolKwResearchTokenService,
         ExpenseManagerScreenTokenService,
-        SeoToolCategoryKwResearchTokenService,
-        SeoToolCategoryTitleGeneratorTokenService,
+        SeoToolEmptyProductKwResearchTokenService,
+        // SeoToolCategoryTitleGeneratorTokenService,
         SingleCardScreenAuthService,
         PaymentScreenTokenService,
         NotificationFeedbackTokenService,

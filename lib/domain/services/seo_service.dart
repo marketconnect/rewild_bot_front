@@ -2,7 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen_category/seo_tool_category_kw_research_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_kw_research_view_model.dart';
 
 abstract class SeoServiceSeoKwByLemmaDataProvider {
   Future<Either<RewildError, void>> insertAll(int nmId, List<KwByLemma> lemmas);
@@ -10,7 +10,7 @@ abstract class SeoServiceSeoKwByLemmaDataProvider {
   Future<Either<RewildError, void>> deleteForNmID(int nmId);
 }
 
-class SeoService implements SeoToolSeoService, SeoToolCategorySeoService {
+class SeoService implements SeoToolSeoService, SeoToolEmptyProductSeoService {
   // final SeoServiceLemmaDataProvider seoServiceDataProvider;
   final SeoServiceSeoKwByLemmaDataProvider seoServiceSeoKwByLemmaDataProvider;
   const SeoService(

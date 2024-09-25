@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
@@ -25,12 +26,10 @@ class AllCardsSeoScreen extends StatelessWidget {
       appIcon: Image.asset(ImageConstant.imgLogoForLoading),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Ваши товары'),
-          scrolledUnderElevation: 2,
-          shadowColor: Colors.black,
-          surfaceTintColor: Colors.transparent,
-          backgroundColor: Theme.of(context).primaryColor,
-        ),
+            title: const Text('Ваши товары'),
+            scrolledUnderElevation: 2,
+            shadowColor: Colors.black,
+            surfaceTintColor: Colors.transparent),
         body: apikeyExists || isLoading
             ? ListView.builder(
                 padding: const EdgeInsets.all(8.0),
@@ -43,7 +42,9 @@ class AllCardsSeoScreen extends StatelessWidget {
                       if (cardContent == null) return;
                       goToSeoToolScreen(product: product, card: cardContent);
                     },
-                    child: ProductCard(productCard: product),
+                    child: ProductCard(
+                      productCard: product,
+                    ),
                   );
                 },
               )
@@ -51,14 +52,21 @@ class AllCardsSeoScreen extends StatelessWidget {
                 onAddApiKeyPressed: () => model.onAddApiKeyPressed(),
                 onSeoByCategoryPressed: () => model.onSeoByCategoryPressed(),
               ),
-        floatingActionButton: apikeyExists
-            ? FloatingActionButton(
-                onPressed: () {
-                  model.onSeoByCategoryPressed();
-                },
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-                child: const Icon(Icons.category),
+        bottomNavigationBar: apikeyExists
+            ? Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 20.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    model.onSeoByCategoryPressed();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                  child: const Text('Без товара'),
+                ),
               )
             : null,
       ),
@@ -78,12 +86,11 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
       ),
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      elevation: 3,
       child: Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.all(8.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -105,28 +112,7 @@ class ProductCard extends StatelessWidget {
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Категория: ${productCard.name}",
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
                   const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.amber, size: 20),
-                      const SizedBox(width: 4),
-                      Text(
-                        productCard.rating.toString(),
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).colorScheme.onSurface,
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -166,32 +152,32 @@ class ApiKeyMissingWidget extends StatelessWidget {
           Text(
             'API ключ не добавлен',
             textAlign: TextAlign.center,
-            // style: Theme.of(context).textTheme.titleLarge.copyWith(
-            //       color: Theme.of(context).primaryColor,
-            //       fontWeight: FontWeight.bold,
-            //     ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Theme.of(context).primaryColor,
+                ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Для подключения к API портала продавца, добавьте API токен или воспользуйтесь генерацией SEO без API.',
+            'Для подключения к API портала продавца, вы можете добавить API токен.',
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: onAddApiKeyPressed,
-            icon: const Icon(Icons.vpn_key),
             label: const Text('Добавить API токен'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
+            icon: const Icon(Icons.vpn_key),
           ),
           const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: onSeoByCategoryPressed,
+            label: const Text('SEO без товара'),
             icon: const Icon(Icons.category),
-            label: const Text('SEO по категориям'),
             style: OutlinedButton.styleFrom(
               side: BorderSide(color: Theme.of(context).primaryColor),
               padding: const EdgeInsets.symmetric(vertical: 16),

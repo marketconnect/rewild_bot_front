@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/strings_utils.dart';
 
 abstract class GptScreenTokenService {
   Future<Either<RewildError, String>> getToken();
@@ -39,12 +40,14 @@ class GptScreenViewModel extends ResourceChangeNotifier {
     }
 
     addMessage(question);
-    print(_messages);
+
     final answerOrNull =
         await fetch(() => gptService.getAnswer(tokenOrNull, _messages));
     if (answerOrNull == null) {
       return "";
     }
-    return answerOrNull;
+    // drop quotes
+
+    return removeEdgeQuotes(answerOrNull);
   }
 }
