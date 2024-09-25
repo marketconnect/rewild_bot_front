@@ -129,6 +129,8 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   // end date
   late String? endDate;
 
+  Map<String, ReWildNotificationModel> _originalNotifications = {};
+
   // Methods ===================================================================
 
   Future<void> _asyncInit() async {
@@ -168,8 +170,6 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     Map<String, ReWildNotificationModel> notifications = {};
 
     for (var element in savedNotifications) {
-      print(
-          "element: ${element.condition} and ${element.wh} and ${element.value}");
       String notificationKey = element.wh != null
           ? '${element.condition}-${element.wh}'
           : element.condition;
@@ -180,7 +180,7 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
         .fold(0, (previousValue, element) => previousValue! + element.value);
 
     setNotifications(notifications);
-
+    _originalNotifications = Map.from(notifications);
     setIsLoading(false);
   }
 
@@ -204,10 +204,9 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
   }
 
   bool isInNotifications(String condition, {int? wh}) {
-    print("condition: $condition and wh: $wh");
     String notificationKey = wh != null ? '$condition-$wh' : condition;
     final notification = _notifications[notificationKey];
-    print("notification: $notification");
+
     if (notification == null) {
       return false;
     }
@@ -227,8 +226,6 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     int? wh,
     String? whName,
   }) {
-    print(
-        "pressed add notification for $condition with value $value and wh $wh and whName $whName");
     String notificationKey = wh != null ? '$condition-$wh' : condition;
     switch (condition) {
       case NotificationConditionConstants.nameChanged:
@@ -305,5 +302,23 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
     //       wh: wh);
     // }
     notify();
+  }
+
+  // Method to check if there are any changes
+  bool hasChanges() {
+    return !_areNotificationsEqual(_notifications, _originalNotifications);
+  }
+
+  // Helper method to compare notifications
+  bool _areNotificationsEqual(Map<String, ReWildNotificationModel> current,
+      Map<String, ReWildNotificationModel> original) {
+    if (current.length != original.length) return false;
+
+    for (var key in current.keys) {
+      if (!original.containsKey(key) || original[key] != current[key]) {
+        return false;
+      }
+    }
+    return true;
   }
 }

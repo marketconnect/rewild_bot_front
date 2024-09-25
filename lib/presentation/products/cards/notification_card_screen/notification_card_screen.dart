@@ -38,18 +38,34 @@ class NotificationCardSettingsScreen extends StatelessWidget {
             .surfaceContainerHighest
             .withOpacity(0.2),
       ),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.all(3),
-        width: model.screenWidth,
-        child: FloatingActionButton(
-          onPressed: () async {
-            await save();
-          },
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child: Text("Сохранить",
-              style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
-        ),
-      ),
+      // floatingActionButton: Container(
+      //   margin: const EdgeInsets.all(3),
+      //   width: model.screenWidth,
+      //   child: FloatingActionButton(
+      //     onPressed: () async {
+      //       await save();
+      //     },
+      //     backgroundColor: Theme.of(context).colorScheme.primary,
+      //     child: Text("Сохранить",
+      //         style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+      //   ),
+      // ),
+      floatingActionButton: model.hasChanges()
+          ? Container(
+              margin: const EdgeInsets.all(3),
+              width: model.screenWidth,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  await save();
+                },
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                child: Text("Сохранить",
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary)),
+              ),
+            )
+          : null,
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: SingleChildScrollView(
         padding:
