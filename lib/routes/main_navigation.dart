@@ -57,7 +57,7 @@ abstract class ScreenFactory {
 
   Widget makeSingleReviewScreen(ReviewModel? review);
 
-  Widget makeFeedbackNotificationSettingsScreen();
+  // Widget makeFeedbackNotificationSettingsScreen();
 
   Widget makeCampaignManagementScreen(int campaignId);
 
@@ -285,11 +285,11 @@ class MainNavigation implements AppNavigation {
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeAllQuestionsScreen(nmId),
         );
-      case MainNavigationRouteNames.feedbackNotificationScreen:
-        return MaterialPageRoute(
-          builder: (_) =>
-              screenFactory.makeFeedbackNotificationSettingsScreen(),
-        );
+      // case MainNavigationRouteNames.feedbackNotificationScreen:
+      //   return MaterialPageRoute(
+      //     builder: (_) =>
+      //         screenFactory.makeFeedbackNotificationSettingsScreen(),
+      //   );
       case MainNavigationRouteNames.advertAnaliticsScreen:
         final arguments = settings.arguments;
         final campaignInfo = arguments is (int, DateTime, String)

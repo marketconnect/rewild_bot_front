@@ -38,10 +38,10 @@ class _CompetitorKeywordExpansionScreenState
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                goBack();
+                Navigator.of(context).pop();
               },
             ),
-            title: const Text('Карточки других продавцов'),
+            title: const Text('Карточки'),
             actions: [
               if (selectedCards.isNotEmpty)
                 IconButton(
@@ -52,6 +52,20 @@ class _CompetitorKeywordExpansionScreenState
             scrolledUnderElevation: 2,
             shadowColor: Colors.black,
             surfaceTintColor: Colors.transparent),
+        floatingActionButton: selectedCards.isNotEmpty
+            ? FloatingActionButton.extended(
+                onPressed: () {
+                  goBack();
+                },
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                label: Text('Добавить (${selectedCards.length})',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onPrimary)),
+                icon: Icon(Icons.check,
+                    color: Theme.of(context).colorScheme.onPrimary),
+              )
+            : null,
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         body: cards.isEmpty
             ? const Center(
                 child: Text('Вы не отслеживаете ни одного конкурента.'))
@@ -63,8 +77,10 @@ class _CompetitorKeywordExpansionScreenState
                   return GestureDetector(
                     onTap: () => onCardTap(card),
                     child: Container(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 4.0, horizontal: 8.0),
+                      margin: cards.length == index + 1
+                          ? const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 60.0)
+                          : const EdgeInsets.symmetric(
+                              vertical: 4.0, horizontal: 8.0),
                       padding: const EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         color: isSelected

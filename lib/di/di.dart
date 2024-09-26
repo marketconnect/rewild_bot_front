@@ -121,8 +121,8 @@ import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/
 import 'package:rewild_bot_front/presentation/adverts/single_auto_words_screen/single_auto_words_screen.dart';
 import 'package:rewild_bot_front/presentation/adverts/single_auto_words_screen/single_auto_words_view_model.dart';
 import 'package:rewild_bot_front/presentation/app/app.dart';
-import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_screen.dart';
-import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
+// import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_screen.dart';
+// import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/questions/all_products_questions_screen/all_products_questions_screen.dart';
 import 'package:rewild_bot_front/presentation/feedback/questions/all_products_questions_screen/all_products_questions_view_model.dart';
 import 'package:rewild_bot_front/presentation/feedback/questions/all_questions_screen/all_questions_screen.dart';
@@ -893,14 +893,14 @@ class _DIContainer {
         reviewService: _makeReviewService(),
       );
 
-  NotificationFeedbackViewModel _makeFeedbackNotificationViewModel(
-    BuildContext context,
-  ) =>
-      NotificationFeedbackViewModel(
-        notificationService: _makeNotificationService(),
-        tokenService: _makeAuthService(),
-        context: context,
-      );
+  // NotificationFeedbackViewModel _makeFeedbackNotificationViewModel(
+  //   BuildContext context,
+  // ) =>
+  //     NotificationFeedbackViewModel(
+  //       notificationService: _makeNotificationService(),
+  //       tokenService: _makeAuthService(),
+  //       context: context,
+  //     );
 
   CampaignManagementViewModel _makeCampaignManagementViewModel(
           BuildContext context, int campaignId) =>
@@ -908,7 +908,7 @@ class _DIContainer {
         campaignId: campaignId,
         authService: _makeAuthService(),
         advertService: _makeAdvertService(),
-        notificationService: _makeNotificationService(),
+        // notificationService: _makeNotificationService(),
         context: context,
       );
   AllAdvertsWordsViewModel _makeAdvertsToolsViewModel(BuildContext context) =>
@@ -1255,14 +1255,14 @@ class ScreenFactoryDefault implements ScreenFactory {
     );
   }
 
-  @override
-  Widget makeFeedbackNotificationSettingsScreen() {
-    return ChangeNotifierProvider(
-      create: (context) =>
-          _diContainer._makeFeedbackNotificationViewModel(context),
-      child: const NotificationFeedbackSettingsScreen(),
-    );
-  }
+  // @override
+  // Widget makeFeedbackNotificationSettingsScreen() {
+  //   return ChangeNotifierProvider(
+  //     create: (context) =>
+  //         _diContainer._makeFeedbackNotificationViewModel(context),
+  //     child: const NotificationFeedbackSettingsScreen(),
+  //   );
+  // }
 
   @override
   Widget makeCampaignManagementScreen(int campaignId) {

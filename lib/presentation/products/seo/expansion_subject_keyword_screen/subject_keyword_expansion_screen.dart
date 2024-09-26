@@ -2,19 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:provider/provider.dart';
-
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/domain/entities/lemma_by_filter.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_subject_keyword_screen/subject_keyword_expansion_model.dart';
-import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
 
 class SubjectKeywordExpansionScreen extends StatefulWidget {
   const SubjectKeywordExpansionScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _SubjectKeywordExpansionScreenState createState() =>
       _SubjectKeywordExpansionScreenState();
 }
@@ -26,13 +23,18 @@ class _SubjectKeywordExpansionScreenState
   bool _isSearchVisible = false;
   final ScrollController _wordsScrollController = ScrollController();
   final ScrollController _phrasesScrollController = ScrollController();
-  // final ScrollController _selectedPhrasesScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController!.addListener(_handleTabSelection);
+
+    // Автоматически загружаем слова при инициализации экрана
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final model = context.read<SubjectKeywordExpansionViewModel>();
+      model.updateLemmas();
+    });
   }
 
   @override
@@ -41,7 +43,6 @@ class _SubjectKeywordExpansionScreenState
     _tabController!.dispose();
     _wordsScrollController.dispose();
     _phrasesScrollController.dispose();
-
     super.dispose();
   }
 
@@ -49,19 +50,21 @@ class _SubjectKeywordExpansionScreenState
     if (mounted) {
       setState(() {});
     }
+    // При переключении на вкладку "Фразы" загружаем фразы автоматически
+    if (_tabController!.index == 1) {
+      final model = context.read<SubjectKeywordExpansionViewModel>();
+      if (model.allKws.isEmpty && model.selectedCount > 0) {
+        model.updatePhrases();
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final model = context.watch<SubjectKeywordExpansionViewModel>();
     final isSaving = model.isSaving;
-    final goBack = model.goBack;
+
     final isLoading = model.isLoading;
-    final selectedPhrases = model.selectedPhrases;
-    Map<String, int> freqMap = {};
-    for (var entry in selectedPhrases) {
-      freqMap[entry.keyword] = entry.freq;
-    }
 
     return Stack(
       children: [
@@ -70,7 +73,7 @@ class _SubjectKeywordExpansionScreenState
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                goBack();
+                Navigator.of(context).pop();
               },
             ),
             title: const Text('SEO карточки'),
@@ -79,7 +82,6 @@ class _SubjectKeywordExpansionScreenState
               tabs: const [
                 Tab(text: 'Слова'),
                 Tab(text: 'Фразы'),
-                // Tab(text: 'Семантика'),
               ],
             ),
             actions: [
@@ -110,11 +112,11 @@ class _SubjectKeywordExpansionScreenState
               ],
             ),
           ),
-          floatingActionButton: model.selectedCount == 0 ||
-                  _tabController!.index == 2 ||
-                  _tabController!.index == 1
-              ? null
-              : _buildFloatingActionButton(model),
+          floatingActionButton: (_tabController!.index == 0 &&
+                      model.selectedCount > 0) ||
+                  (_tabController!.index == 1 && model.selectedPhrasesCount > 0)
+              ? _buildFloatingActionButton(model)
+              : null,
         ),
         if (isSaving)
           const Opacity(
@@ -130,13 +132,32 @@ class _SubjectKeywordExpansionScreenState
   }
 
   Widget _buildFloatingActionButton(SubjectKeywordExpansionViewModel model) {
-    if (model.selectedCount == 0) {
+    if (_tabController!.index == 0) {
+      // Вкладка "Слова"
+      return FloatingActionButton.extended(
+        onPressed: () async {
+          _tabController!.animateTo(1);
+          await model.updatePhrases();
+        },
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        label: Text('Перейти к фразам',
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+        icon: Icon(Icons.check, color: Theme.of(context).colorScheme.onPrimary),
+      );
+    } else if (_tabController!.index == 1) {
+      // Вкладка "Фразы"
+      return FloatingActionButton.extended(
+        onPressed: () {
+          model.goBack();
+        },
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        label: Text('Добавить (${model.selectedPhrasesCount})',
+            style: TextStyle(color: Theme.of(context).colorScheme.onPrimary)),
+        icon: Icon(Icons.check, color: Theme.of(context).colorScheme.onPrimary),
+      );
+    } else {
       return Container();
     }
-    return FloatingActionButton(
-      onPressed: model.clearSelection,
-      child: const Icon(Icons.clear),
-    );
   }
 
   Widget _buildWordsTab(SubjectKeywordExpansionViewModel model) {
@@ -169,28 +190,14 @@ class _SubjectKeywordExpansionScreenState
         ),
         Expanded(
           child: filteredQueries.isEmpty
-              ? Center(
-                  child: CustomElevatedButton(
-                    onTap: () async {
-                      await model.updateLemmas();
-                    },
-                    text: "Загрузить",
-                    buttonStyle: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(
-                          Theme.of(context).colorScheme.primary,
-                        ),
-                        foregroundColor: WidgetStateProperty.all(
-                            Theme.of(context).colorScheme.onPrimary)),
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                  ),
+              ? const Center(
+                  child: Text('Нет слов для отображения'),
                 )
               : Scrollbar(
                   controller: _wordsScrollController,
-
                   interactive: true,
                   thickness: 6.0,
-                  radius: const Radius.circular(10), // Радиус закругления
+                  radius: const Radius.circular(10),
                   child: ListView.builder(
                     controller: _wordsScrollController,
                     itemCount: filteredQueries.length,
@@ -200,6 +207,17 @@ class _SubjectKeywordExpansionScreenState
                   ),
                 ),
         ),
+        // Добавляем кнопку для перехода к фразам
+        // if (model.selectedCount > 0)
+        //   Padding(
+        //     padding: const EdgeInsets.all(8.0),
+        //     child: ElevatedButton(
+        //       onPressed: () {
+        //         _tabController!.animateTo(1);
+        //       },
+        //       child: const Text('Перейти к фразам'),
+        //     ),
+        //   ),
       ],
     );
   }
@@ -213,27 +231,18 @@ class _SubjectKeywordExpansionScreenState
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text('Всего: ${model.allKws.length}'),
-              Text('Сохранено: ${model.selectedPhrases.length}'),
+              Text('Выбрано: ${model.selectedPhrasesCount}'),
             ],
           ),
         ),
         Expanded(
           child: model.allKws.isEmpty
               ? Center(
-                  child: CustomElevatedButton(
-                    onTap: () async {
-                      await model.updatePhrases();
-                    },
-                    text: "Загрузить",
-                    buttonStyle: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(
-                          Theme.of(context).colorScheme.primary,
-                        ),
-                        foregroundColor: WidgetStateProperty.all(
-                            Theme.of(context).colorScheme.onPrimary)),
-                    height: MediaQuery.of(context).size.height * 0.1,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                  ),
+                  child: model.isLoading
+                      ? const SizedBox()
+                      : model.selectedCount == 0
+                          ? const Text('Выберите слова на предыдущей вкладке')
+                          : const Text('Сервер не вернул никаких данных'),
                 )
               : Scrollbar(
                   controller: _phrasesScrollController,
@@ -312,10 +321,10 @@ class _KwTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final model =
         Provider.of<SubjectKeywordExpansionViewModel>(context, listen: false);
-    final wordIsSelected = model.wordIsSelected(kw.lemma);
+    final isSelected = model.isPhraseSelected(kw);
 
     return Container(
-      color: Colors.white,
+      color: isSelected ? Colors.grey[200] : Colors.white,
       child: ListTile(
         title: Text(
           kw.keyword,
@@ -335,7 +344,6 @@ class _KwTile extends StatelessWidget {
             Text(
               kw.lemma,
               style: TextStyle(
-                decoration: wordIsSelected ? TextDecoration.lineThrough : null,
                 color: Colors.black.withOpacity(0.6),
               ),
             ),
@@ -343,13 +351,26 @@ class _KwTile extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: Icon(
-            Icons.library_add,
-            color: Theme.of(context).colorScheme.primary,
+            isSelected ? Icons.check_circle : Icons.add_circle_outline,
+            color: isSelected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.grey,
           ),
           onPressed: () {
-            model.selectPhrase(kw);
+            if (isSelected) {
+              model.deselectPhrase(kw);
+            } else {
+              model.selectPhrase(kw);
+            }
           },
         ),
+        onTap: () {
+          if (isSelected) {
+            model.deselectPhrase(kw);
+          } else {
+            model.selectPhrase(kw);
+          }
+        },
       ),
     );
   }

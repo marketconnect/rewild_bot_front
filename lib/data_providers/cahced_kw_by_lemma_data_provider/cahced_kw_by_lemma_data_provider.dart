@@ -28,6 +28,7 @@ class CachedKwByLemmaDataProvider
           'lemma': lemma.lemma,
           'keyword': lemma.keyword,
           'freq': lemma.freq,
+          'lemmaID_keyword': '${lemma.lemmaID}_${lemma.keyword}',
         });
       }
 

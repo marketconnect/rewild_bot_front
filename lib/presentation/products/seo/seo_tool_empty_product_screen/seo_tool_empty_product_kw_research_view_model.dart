@@ -90,25 +90,6 @@ class SeoToolEmptyProductKwResearchViewModel extends ResourceChangeNotifier {
     notify();
   }
 
-  Future<void> goToSubjectKwExpansionScreen() async {
-    List<KwByLemma> corePhrasesCopy = [..._corePhrases];
-
-    final result = await Navigator.of(context).pushNamed(
-      MainNavigationRouteNames.subjectKeywordExpansionScreen,
-      arguments: (corePhrasesCopy, subjectId),
-    );
-
-    if (result != null &&
-        result is List<KwByLemma> &&
-        result.length > corePhrases.length) {
-      corePhrases.clear();
-
-      corePhrases.addAll(result);
-      setHasChange(true);
-      notify();
-    }
-  }
-
   Future<void> goToWordsKwExpansionScreen() async {
     List<KwByLemma> corePhrasesCopy = [..._corePhrases];
 

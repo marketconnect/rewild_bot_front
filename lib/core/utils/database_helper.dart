@@ -32,8 +32,8 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      '2141_b_rewild_b_11.db',
-      version: 2,
+      'w.db',
+      version: 1,
       onUpgradeNeeded: _onUpgrade,
     );
 
@@ -164,9 +164,8 @@ class DatabaseHelper {
 
     createStoreIfNotExists('cached_kw_by_lemma', () {
       final store = db.createObjectStore('cached_kw_by_lemma',
-          keyPath: 'id', autoIncrement: true);
-      store.createIndex('lemmaID_keyword', ['lemmaID', 'keyword'],
-          unique: true);
+          keyPath: 'lemmaID_keyword', autoIncrement: false);
+      store.createIndex('lemmaID', 'lemmaID');
     });
 
     createStoreIfNotExists('cached_kw_by_word', () {

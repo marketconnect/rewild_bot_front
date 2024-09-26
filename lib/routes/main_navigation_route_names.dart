@@ -45,8 +45,8 @@ abstract class MainNavigationRouteNames {
 
   static const String singleReviewScreen = '/single_review_screen';
 
-  static const String feedbackNotificationScreen =
-      'feedback_notification_screen';
+  // static const String feedbackNotificationScreen =
+  //     'feedback_notification_screen';
 
   static const String campaignManagementScreen = '/campaign_management_screen';
 

@@ -58,8 +58,7 @@ class _SeoToolEmptyProductScreenState extends State<SeoToolEmptyProductScreen> {
         context.watch<SeoToolEmptyProductKwResearchViewModel>();
     final isSaving = kwResearchModel.isSaving;
     final hasChange = kwResearchModel.hasChange;
-    final goToSubjectKwExpansionScreen =
-        kwResearchModel.goToSubjectKwExpansionScreen;
+
     final goToAutocompliteKwExpansionScreen =
         kwResearchModel.goToAutocompliteKwExpansionScreen;
     final goToWordsKwExpansionScreen =
@@ -164,15 +163,6 @@ class _SeoToolEmptyProductScreenState extends State<SeoToolEmptyProductScreen> {
                                         onTap: () async {
                                           Navigator.pop(context);
                                           await goToWordsKwExpansionScreen();
-                                        },
-                                      ),
-                                      const Divider(),
-                                      ListTile(
-                                        leading: const Icon(Icons.category),
-                                        title: const Text('По категории'),
-                                        onTap: () async {
-                                          Navigator.pop(context);
-                                          await goToSubjectKwExpansionScreen();
                                         },
                                       ),
                                       const Divider(),
@@ -310,15 +300,6 @@ class _SeoToolEmptyProductScreenState extends State<SeoToolEmptyProductScreen> {
           labelStyle: const TextStyle(fontSize: 18.0),
           onTap: () async {
             await kwResearchModel.goToWordsKwExpansionScreen();
-          },
-        ),
-        SpeedDialChild(
-          child: const Icon(Icons.category),
-          backgroundColor: Colors.orange,
-          label: 'По категории',
-          labelStyle: const TextStyle(fontSize: 18.0),
-          onTap: () async {
-            await kwResearchModel.goToSubjectKwExpansionScreen();
           },
         ),
         SpeedDialChild(

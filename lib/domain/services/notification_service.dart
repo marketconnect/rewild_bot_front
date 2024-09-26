@@ -56,8 +56,8 @@ abstract class NotificationServiceProductWatchSubscriptionApiClient {
 class NotificationService
     implements
         AllCardsScreenNotificationsService,
-        CampaignManagementNotificationService,
-        NotificationFeedbackNotificationService,
+        // CampaignManagementNotificationService,
+        // NotificationFeedbackNotificationService,
         SingleCardScreenNotificationService,
         NotificationCardNotificationService {
   final NotificationServiceNotificationDataProvider notificationDataProvider;

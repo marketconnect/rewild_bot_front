@@ -59,10 +59,10 @@ class SeoToolEmptyProductViewModel extends ResourceChangeNotifier {
 
   void titleGenerator() async {
     String text =
-        'Ключевые слова: ${_selectedTitleKeywords.map((e) => e.keyword).join(', ')}';
-    if (title != null) {
-      text += '\nНазвание: $title';
-    }
+        'Создай текст названия. Ключевые слова: ${_selectedTitleKeywords.map((e) => e.keyword).join(', ')}';
+    // if (title != null) {
+    //   text += '\nНазвание: $title';
+    // }
     final res = await Navigator.of(context)
         .pushNamed(MainNavigationRouteNames.chatGptScreen, arguments: text);
 
@@ -77,10 +77,10 @@ class SeoToolEmptyProductViewModel extends ResourceChangeNotifier {
       _selectedDescriptionKeywords;
   void descriptionGenerator() async {
     String text =
-        'Ключевые слова: ${_selectedDescriptionKeywords.map((e) => e.keyword).join(', ')}';
-    if (description != null) {
-      text += '\nОписание: $description';
-    }
+        'Создай текст описания товара. Ключевые слова: ${_selectedDescriptionKeywords.map((e) => e.keyword).join(', ')}';
+    // if (description != null) {
+    //   text += '\nОписание: $description';
+    // }
     final res = await Navigator.of(context)
         .pushNamed(MainNavigationRouteNames.chatGptScreen, arguments: text);
 

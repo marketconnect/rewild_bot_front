@@ -61,13 +61,13 @@ class MainNavigationScreenFeedBackWidget extends StatelessWidget {
                       imageSrc: IconConstant.iconRatingStars,
                       route: MainNavigationRouteNames.allProductsReviewsScreen,
                     ),
-                    _Link(
-                      text: 'Настройка уведомлений',
-                      route:
-                          MainNavigationRouteNames.feedbackNotificationScreen,
-                      color: const Color(0xFF4aa6db),
-                      imageSrc: IconConstant.iconNotificationSettings,
-                    ),
+                    // _Link(
+                    //   text: 'Настройка уведомлений',
+                    //   route:
+                    //       MainNavigationRouteNames.feedbackNotificationScreen,
+                    //   color: const Color(0xFF4aa6db),
+                    //   imageSrc: IconConstant.iconNotificationSettings,
+                    // ),
                   ],
                 ),
               ),

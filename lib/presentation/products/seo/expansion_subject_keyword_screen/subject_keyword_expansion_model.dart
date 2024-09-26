@@ -5,19 +5,6 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/domain/entities/lemma_by_filter.dart';
 
-// tracking queries data provider
-// abstract class SubjectKeywordExpansionTrackingService {
-//   Future<Either<RewildError, void>> addAllForNmId(
-//       {required int nmId, required List<String> queries, String? geoNum});
-//   Future<Either<RewildError, void>> deleteAllQueryForNmId(int nmId);
-// }
-
-// abstract class SubjectKeywordExpansionSeoService {
-//   // Future<Either<RewildError, List<String>>> getAllLemmasForNmID(int nmId);
-//   Future<Either<RewildError, void>> savePhrasesForNmId(
-//       int nmId, List<KwByLemma> kw);
-// }
-
 // server token
 abstract class SubjectKeywordExpansionTokenService {
   Future<Either<RewildError, String>> getToken();
@@ -80,6 +67,7 @@ class SubjectKeywordExpansionViewModel extends ResourceChangeNotifier {
     if (addedPhrases.isNotEmpty) {
       _isNotEmpty = true;
     }
+    await updateLemmas();
     setIsLoading(false);
   }
 
@@ -157,25 +145,50 @@ class SubjectKeywordExpansionViewModel extends ResourceChangeNotifier {
     _selectedPhrases = selectedPhrases;
   }
 
+  // void selectPhrase(KwByLemma phrase) {
+  //   if (!_selectedPhrases.any((item) => item.keyword == phrase.keyword)) {
+  //     _selectedPhrases.add(phrase);
+  //     _allKws.removeWhere((item) => item.keyword == phrase.keyword);
+  //     _selectedPhrasesChanged = true;
+  //     notify();
+  //   }
+  // }
   void selectPhrase(KwByLemma phrase) {
     if (!_selectedPhrases.any((item) => item.keyword == phrase.keyword)) {
       _selectedPhrases.add(phrase);
-      _allKws.removeWhere((item) => item.keyword == phrase.keyword);
       _selectedPhrasesChanged = true;
       notify();
     }
   }
 
+// void deselectPhrase(KwByLemma phrase) {
+//   _selectedPhrases.removeWhere((item) => item.keyword == phrase.keyword);
+//   _selectedPhrasesChanged = true;
+//   notify();
+// }
+
+  void deselectPhrase(KwByLemma phrase) {
+    _selectedPhrases.removeWhere((item) => item.keyword == phrase.keyword);
+    _selectedPhrasesChanged = true;
+    notify();
+  }
+
+  bool isPhraseSelected(KwByLemma phrase) {
+    return _selectedPhrases.any((item) => item.keyword == phrase.keyword);
+  }
+
+  int get selectedPhrasesCount => _selectedPhrases.length;
+
   bool wordIsSelected(String lemma) {
     return _selectedPhrases.any((element) => element.lemma == lemma);
   }
 
-  void deselectPhrase(KwByLemma phrase) {
-    _selectedPhrases.remove(phrase);
-    _allKws.add(phrase);
-    _selectedPhrasesChanged = true;
-    notify();
-  }
+  // void deselectPhrase(KwByLemma phrase) {
+  //   _selectedPhrases.remove(phrase);
+  //   _allKws.add(phrase);
+  //   _selectedPhrasesChanged = true;
+  //   notify();
+  // }
 
   List<KwByLemma> get selectedPhrases => _selectedPhrases;
 
@@ -341,6 +354,7 @@ class SubjectKeywordExpansionViewModel extends ResourceChangeNotifier {
       setIsLoading(false);
       return;
     }
+
     setAllKws(keywordsOrNull);
     setIsLoading(false);
   }
@@ -348,6 +362,10 @@ class SubjectKeywordExpansionViewModel extends ResourceChangeNotifier {
   void goBack() {
     Navigator.of(context).pop(selectedPhrases);
   }
+
+  // bool isPhraseSelected(KwByLemma phrase) {
+  //   return _selectedPhrases.any((item) => item.keyword == phrase.keyword);
+  // }
 
   // Future<void> save() async {
   //   setIsSaving(true);

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 
 import 'package:rewild_bot_front/core/constants/advertising_constants.dart';
-import 'package:rewild_bot_front/core/constants/notification_constants.dart';
+
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
@@ -10,7 +10,7 @@ import 'package:rewild_bot_front/core/utils/text_filed_validator.dart';
 import 'package:rewild_bot_front/domain/entities/advert_auto_model.dart';
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/domain/entities/advert_search_plus_catalogue_model.dart';
-import 'package:rewild_bot_front/domain/entities/notification.dart';
+
 import 'package:rewild_bot_front/widgets/my_dialog_textfield_radio.dart';
 import 'package:rewild_bot_front/widgets/my_dialog_textfield_radio_checkbox.dart';
 
@@ -18,16 +18,16 @@ abstract class CampaignManagementTokenService {
   Future<Either<RewildError, String>> getToken();
 }
 
-abstract class CampaignManagementNotificationService {
-  Future<Either<RewildError, void>> addForParent(
-      {required String token,
-      required String endDate,
-      required List<ReWildNotificationModel> notifications,
-      required int parentId,
-      required bool wasEmpty});
-  Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
-      {required int parentId});
-}
+// abstract class CampaignManagementNotificationService {
+//   Future<Either<RewildError, void>> addForParent(
+//       {required String token,
+//       required String endDate,
+//       required List<ReWildNotificationModel> notifications,
+//       required int parentId,
+//       required bool wasEmpty});
+//   Future<Either<RewildError, List<ReWildNotificationModel>>> getForParent(
+//       {required int parentId});
+// }
 
 abstract class CampaignManagementAdvertService {
   Future<Either<RewildError, int>> depositCampaignBudget({
@@ -59,13 +59,13 @@ enum CampaignStatus { active, paused }
 class CampaignManagementViewModel extends ResourceChangeNotifier {
   final int campaignId;
   final CampaignManagementAdvertService advertService;
-  final CampaignManagementNotificationService notificationService;
+  // final CampaignManagementNotificationService notificationService;
   final CampaignManagementTokenService authService;
   CampaignManagementViewModel({
     required this.campaignId,
     required this.authService,
     required this.advertService,
-    required this.notificationService,
+    // required this.notificationService,
     required super.context,
   }) {
     _asyncInit();
@@ -111,22 +111,22 @@ class CampaignManagementViewModel extends ResourceChangeNotifier {
     }
 
     // set notifications
-    final savedNotifications = await fetch(
-        () => notificationService.getForParent(parentId: campaignId));
-    if (savedNotifications == null) {
-      return;
-    }
+    // final savedNotifications = await fetch(
+    //     () => notificationService.getForParent(parentId: campaignId));
+    // if (savedNotifications == null) {
+    //   return;
+    // }
 
-    if (savedNotifications.isNotEmpty) {
-      setWasNotEmpty();
-      final notMinBudg = int.tryParse(savedNotifications.first.value);
+    // if (savedNotifications.isNotEmpty) {
+    //   setWasNotEmpty();
+    //   final notMinBudg = int.tryParse(savedNotifications.first.value);
 
-      _minBudgetLimit = notMinBudg ?? _minBudgetLimit;
-      if (_minBudgetLimit != null && _minBudgetLimit! >= 0) {
-        setNotifyAboutMinimumBudget(true);
-      }
-      notify();
-    }
+    //   _minBudgetLimit = notMinBudg ?? _minBudgetLimit;
+    //   if (_minBudgetLimit != null && _minBudgetLimit! >= 0) {
+    //     setNotifyAboutMinimumBudget(true);
+    //   }
+    // }
+    notify();
   }
 
   // loading
@@ -207,48 +207,48 @@ class CampaignManagementViewModel extends ResourceChangeNotifier {
 
   int? get budget => _budget;
 
-  // budget notification
-  bool _wasEmpty = true;
-  void setWasNotEmpty() {
-    _wasEmpty = false;
-  }
+  // // budget notification
+  // bool _wasEmpty = true;
+  // void setWasNotEmpty() {
+  //   _wasEmpty = false;
+  // }
 
-  bool _notifyAboutMinimumBudget = false;
-  void setNotifyAboutMinimumBudget(bool value) {
-    if (!value) {
-      _minBudgetLimit = null;
-    }
-    _notifyAboutMinimumBudget = value;
-    notify();
-  }
+  // bool _notifyAboutMinimumBudget = false;
+  // void setNotifyAboutMinimumBudget(bool value) {
+  //   if (!value) {
+  //     _minBudgetLimit = null;
+  //   }
+  //   _notifyAboutMinimumBudget = value;
+  //   notify();
+  // }
 
-  bool get notifyAboutMinimumBudget => _notifyAboutMinimumBudget;
+  // bool get notifyAboutMinimumBudget => _notifyAboutMinimumBudget;
 
-  int? _minBudgetLimit;
-  void setMinBudgetLimit(int? value) {
-    _minBudgetLimit = value;
-    notify();
-  }
+  // int? _minBudgetLimit;
+  // void setMinBudgetLimit(int? value) {
+  //   _minBudgetLimit = value;
+  //   notify();
+  // }
 
-  int? get minBudgetLimit => _minBudgetLimit;
+  // int? get minBudgetLimit => _minBudgetLimit;
 
-  Future<void> saveNotification() async {
-    final tokenOrNull = await fetch(() => authService.getToken());
-    if (tokenOrNull == null) {
-      return;
-    }
-    final notificationsToSave = ReWildNotificationModel(
-        parentId: campaignId,
-        condition: NotificationConditionConstants.budgetLessThan,
-        value: _minBudgetLimit.toString());
+  // Future<void> saveNotification() async {
+  //   final tokenOrNull = await fetch(() => authService.getToken());
+  //   if (tokenOrNull == null) {
+  //     return;
+  //   }
+  //   final notificationsToSave = ReWildNotificationModel(
+  //       parentId: campaignId,
+  //       condition: NotificationConditionConstants.budgetLessThan,
+  //       value: _minBudgetLimit.toString());
 
-    await notificationService.addForParent(
-        token: tokenOrNull,
-        endDate: DateTime.now().toIso8601String(),
-        notifications: _minBudgetLimit == null ? [] : [notificationsToSave],
-        parentId: campaignId,
-        wasEmpty: _wasEmpty);
-  }
+  //   await notificationService.addForParent(
+  //       token: tokenOrNull,
+  //       endDate: DateTime.now().toIso8601String(),
+  //       notifications: _minBudgetLimit == null ? [] : [notificationsToSave],
+  //       parentId: campaignId,
+  //       wasEmpty: _wasEmpty);
+  // }
 
   // Cpm
   int? _searchCpm;

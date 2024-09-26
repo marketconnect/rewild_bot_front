@@ -3,7 +3,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
 import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_view_model.dart';
 import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_view_model.dart';
-import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
 import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
@@ -62,7 +62,7 @@ class AuthService
         // SeoToolCategoryTitleGeneratorTokenService,
         SingleCardScreenAuthService,
         PaymentScreenTokenService,
-        NotificationFeedbackTokenService,
+        // NotificationFeedbackTokenService,
         CampaignManagementTokenService,
         CompetitorKeywordExpansionTokenService,
         AutocompliteKeywordExpansionTokenService,

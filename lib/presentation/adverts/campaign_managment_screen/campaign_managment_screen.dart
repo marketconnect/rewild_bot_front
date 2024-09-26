@@ -40,7 +40,7 @@ class _CampaignManagementScreenState extends State<CampaignManagementScreen> {
     final isLoading = model.isLoading;
 
     final wasCpmOrBudgetChanged = model.wasStatusOrBudgetChanged;
-    final saveNotification = model.saveNotification;
+    // final saveNotification = model.saveNotification;
     final budget = model.budget;
     final setBudget = model.setBudget;
 
@@ -53,7 +53,7 @@ class _CampaignManagementScreenState extends State<CampaignManagementScreen> {
         appBar: AppBar(
           leading: IconButton(
             onPressed: () async {
-              await saveNotification();
+              // await saveNotification();
 
               if (context.mounted) {
                 Navigator.of(context).pop(wasCpmOrBudgetChanged);
@@ -93,7 +93,7 @@ class _CampaignManagementScreenState extends State<CampaignManagementScreen> {
                   },
                   title: 'Пополнить на сумму'),
               const SizedBox(height: 20),
-              _buildNotifyAboutMinimumBudgetCheckbox(),
+              // _buildNotifyAboutMinimumBudgetCheckbox(),
             ],
           ),
         ),
@@ -197,63 +197,63 @@ class _CampaignManagementScreenState extends State<CampaignManagementScreen> {
     );
   }
 
-  Widget _buildNotifyAboutMinimumBudgetCheckbox() {
-    final model = context.watch<CampaignManagementViewModel>();
-    final notifyAboutMinimumBudget = model.notifyAboutMinimumBudget;
-    final setNotifyAboutMinimumBudget = model.setNotifyAboutMinimumBudget;
-    final minBudgetLimit = model.minBudgetLimit;
-    return CheckboxListTile(
-      title: Text(
-          "Уведомить, если бюджет менее${minBudgetLimit != null ? ' $minBudgetLimit ₽' : '?'} ",
-          style: TextStyle(
-            fontSize: MediaQuery.of(context).size.height * 0.02,
-          )),
-      value: notifyAboutMinimumBudget,
-      onChanged: (bool? value) {
-        setNotifyAboutMinimumBudget(value!);
+  // Widget _buildNotifyAboutMinimumBudgetCheckbox() {
+  //   final model = context.watch<CampaignManagementViewModel>();
+  //   final notifyAboutMinimumBudget = model.notifyAboutMinimumBudget;
+  //   final setNotifyAboutMinimumBudget = model.setNotifyAboutMinimumBudget;
+  //   final minBudgetLimit = model.minBudgetLimit;
+  //   return CheckboxListTile(
+  //     title: Text(
+  //         "Уведомить, если бюджет менее${minBudgetLimit != null ? ' $minBudgetLimit ₽' : '?'} ",
+  //         style: TextStyle(
+  //           fontSize: MediaQuery.of(context).size.height * 0.02,
+  //         )),
+  //     value: notifyAboutMinimumBudget,
+  //     onChanged: (bool? value) {
+  //       setNotifyAboutMinimumBudget(value!);
 
-        if (value) {
-          _showMinimumBudgetEditDialog();
-        }
-      },
-      controlAffinity: ListTileControlAffinity.leading,
-    );
-  }
+  //       if (value) {
+  //         _showMinimumBudgetEditDialog();
+  //       }
+  //     },
+  //     controlAffinity: ListTileControlAffinity.leading,
+  //   );
+  // }
 
-  void _showMinimumBudgetEditDialog() {
-    final model = context.read<CampaignManagementViewModel>();
-    final setMinBudgetLimit = model.setMinBudgetLimit;
-    final setNotifyAboutMinimumBudget = model.setNotifyAboutMinimumBudget;
-    TextEditingController textFieldController = TextEditingController();
+  // void _showMinimumBudgetEditDialog() {
+  //   final model = context.read<CampaignManagementViewModel>();
+  //   final setMinBudgetLimit = model.setMinBudgetLimit;
+  //   final setNotifyAboutMinimumBudget = model.setNotifyAboutMinimumBudget;
+  //   TextEditingController textFieldController = TextEditingController();
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Введите минимальный бюджет'),
-          content: TextField(
-            controller: textFieldController,
-            decoration: const InputDecoration(hintText: "Минимальный бюджет"),
-            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Отмена'),
-              onPressed: () {
-                setNotifyAboutMinimumBudget(false);
-                Navigator.pop(context);
-              },
-            ),
-            TextButton(
-              child: const Text('Сохранить'),
-              onPressed: () {
-                setMinBudgetLimit(int.parse(textFieldController.text));
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Введите минимальный бюджет'),
+  //         content: TextField(
+  //           controller: textFieldController,
+  //           decoration: const InputDecoration(hintText: "Минимальный бюджет"),
+  //           keyboardType: const TextInputType.numberWithOptions(decimal: true),
+  //         ),
+  //         actions: <Widget>[
+  //           TextButton(
+  //             child: const Text('Отмена'),
+  //             onPressed: () {
+  //               setNotifyAboutMinimumBudget(false);
+  //               Navigator.pop(context);
+  //             },
+  //           ),
+  //           TextButton(
+  //             child: const Text('Сохранить'),
+  //             onPressed: () {
+  //               setMinBudgetLimit(int.parse(textFieldController.text));
+  //               Navigator.pop(context);
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 }

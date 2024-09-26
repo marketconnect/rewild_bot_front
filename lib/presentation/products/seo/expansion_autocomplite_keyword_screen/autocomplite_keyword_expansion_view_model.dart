@@ -58,12 +58,13 @@ class AutocompliteKeywordExpansionViewModel extends ResourceChangeNotifier {
     if (frequenciesOrNull != null) {
       for (final f in frequenciesOrNull) {
         if (!alreadyAddedPhrases.any((element) => element.keyword == f.$1)) {
-          kwLemmasToAdd
-              .add(KwByLemma(keyword: f.$1, freq: f.$2, lemma: "", lemmaID: 0));
+          kwLemmasToAdd.add(
+            KwByLemma(keyword: f.$1, freq: f.$2, lemma: "", lemmaID: 0),
+          );
         }
       }
     }
-    // _keywords.clear();
+    _allFetchedKeywords.clear();
     _allFetchedKeywords.addAll(kwLemmasToAdd);
     _allFetchedKeywords.sort((a, b) => b.freq - a.freq);
     notify();
@@ -86,16 +87,23 @@ class AutocompliteKeywordExpansionViewModel extends ResourceChangeNotifier {
     notify();
   }
 
-  // void removeKeyword(String keyword) {
-  //   _addedKeywords.removeWhere((element) => element.keyword == keyword);
-  //   notify();
-  // }
+  void clearAddedKeywords() {
+    _addedKeywords.clear();
+    notify();
+  }
+
+  void acceptKeywords() {
+    if (!context.mounted) {
+      return;
+    }
+    alreadyAddedPhrases.addAll(_addedKeywords.toList());
+    Navigator.of(context).pop(alreadyAddedPhrases);
+  }
 
   void goBack() {
     if (!context.mounted) {
       return;
     }
-    alreadyAddedPhrases.addAll(_addedKeywords.toList());
     Navigator.of(context).pop(alreadyAddedPhrases);
   }
 }
