@@ -79,7 +79,7 @@ import 'package:rewild_bot_front/domain/services/adverts_analitics_service.dart'
 import 'package:rewild_bot_front/domain/services/answer_service.dart';
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
-import 'package:rewild_bot_front/domain/services/balance_service.dart';
+// import 'package:rewild_bot_front/domain/services/balance_service.dart';
 import 'package:rewild_bot_front/domain/services/card_keywords_service.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/commission_service.dart';
@@ -472,8 +472,8 @@ class _DIContainer {
         apiClient: _makePriceApiClient(),
       );
 
-  BalanceService _makeBalanceService() =>
-      BalanceService(balanceDataProvider: _makeSecureDataProvider());
+  // BalanceService _makeBalanceService() =>
+  //     BalanceService(balanceDataProvider: _makeSecureDataProvider());
 
   ContentService _makeContentService() => ContentService(
       activeSellerDataProvider: _makeUserSellersDataProvider(),
@@ -638,7 +638,7 @@ class _DIContainer {
         subService: _makeSubscriptionService(),
         tokenService: _makeAuthService(),
         // updateService: _makeUpdateService(),
-        balanceService: _makeBalanceService(),
+        // balanceService: _makeBalanceService(),
       );
   // WbWebViewScreenViewModel _makeWbWebViewScreenViewModel(context) =>
   //     WbWebViewScreenViewModel(
@@ -1313,7 +1313,7 @@ class ScreenFactoryDefault implements ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) =>
           _diContainer._makeGptScreenViewModel(context, questionText),
-      child: ChatGptScreen(),
+      child: const ChatGptScreen(),
     );
   }
 

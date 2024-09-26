@@ -7,6 +7,7 @@ class AutocompliteKwExpansionScreen extends StatefulWidget {
   const AutocompliteKwExpansionScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _AutocompliteKwExpansionScreenState createState() =>
       _AutocompliteKwExpansionScreenState();
 }

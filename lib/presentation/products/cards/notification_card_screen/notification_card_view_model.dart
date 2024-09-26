@@ -269,7 +269,6 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
         break;
       case NotificationConditionConstants.totalStocksLessThan:
-        print('totalStocksLessThan $condition $value $wh $whName');
         _notifications[notificationKey] = ReWildNotificationModel(
             condition: NotificationConditionConstants.totalStocksLessThan,
             reusable: true,
@@ -279,7 +278,6 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
         break;
 
       case NotificationConditionConstants.stocksLessThan:
-        print('stocksLessThan $condition $value $wh $whName');
         _notifications[notificationKey] = ReWildNotificationModel(
             condition: condition,
             reusable: true,

@@ -12,6 +12,7 @@ class SubjectKeywordExpansionScreen extends StatefulWidget {
   const SubjectKeywordExpansionScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SubjectKeywordExpansionScreenState createState() =>
       _SubjectKeywordExpansionScreenState();
 }
@@ -207,17 +208,6 @@ class _SubjectKeywordExpansionScreenState
                   ),
                 ),
         ),
-        // Добавляем кнопку для перехода к фразам
-        // if (model.selectedCount > 0)
-        //   Padding(
-        //     padding: const EdgeInsets.all(8.0),
-        //     child: ElevatedButton(
-        //       onPressed: () {
-        //         _tabController!.animateTo(1);
-        //       },
-        //       child: const Text('Перейти к фразам'),
-        //     ),
-        //   ),
       ],
     );
   }

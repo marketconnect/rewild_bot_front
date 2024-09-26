@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
+// import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
@@ -49,16 +49,16 @@ abstract class PaymentWebViewSubscriptionsService {
 //       required List<CardOfProductModel> cardOfProductsToPutOnServer});
 // }
 
-abstract class PaymentWebViewViewModelBalanceService {
-  Future<Either<RewildError, void>> addBalance(double amountToAdd);
-}
+// abstract class PaymentWebViewViewModelBalanceService {
+//   Future<Either<RewildError, void>> addBalance(double amountToAdd);
+// }
 
 class PaymentWebViewModel extends ResourceChangeNotifier {
   PaymentWebViewModel({
     required super.context,
     required this.tokenService,
     required this.subService,
-    required this.balanceService,
+    // required this.balanceService,
     // required this.updateService,
   }) {
     _asyncInit();
@@ -68,7 +68,7 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
   final PaymentWebViewTokenService tokenService;
   final PaymentWebViewSubscriptionsService subService;
   // final PaymentWebViewUpdateService updateService;
-  final PaymentWebViewViewModelBalanceService balanceService;
+  // final PaymentWebViewViewModelBalanceService balanceService;
 
   late int _subscriptionId;
   // late String _subscriptionType;
@@ -165,11 +165,11 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
   }
 
   Future<void> balanceSuccess({required double amount}) async {
-    await fetch(() => balanceService.addBalance(amount));
-    _sendPaymentInfo(
-      'Пополнение баланса: $amount руб. ',
-      PaymentResult.cardsIdsIsEmpty,
-    );
+    // await fetch(() => balanceService.addBalance(amount));
+    // _sendPaymentInfo(
+    //   'Пополнение баланса: $amount руб. ',
+    //   PaymentResult.cardsIdsIsEmpty,
+    // );
 
     if (context.mounted) {
       Navigator.of(context).pop(true);
@@ -212,9 +212,9 @@ class PaymentWebViewModel extends ResourceChangeNotifier {
     );
 
     // balance
-    double sumToAdd =
-        getSubscriptionBalance(subscriptionTypeName: subscriptionType);
-    await fetch(() => balanceService.addBalance(sumToAdd));
+    // double sumToAdd =
+    //     getSubscriptionBalance(subscriptionTypeName: subscriptionType);
+    // await fetch(() => balanceService.addBalance(sumToAdd));
 
     if (context.mounted) {
       Navigator.of(context).pop(true);

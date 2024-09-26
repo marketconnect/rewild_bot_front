@@ -10,7 +10,7 @@ import 'package:rewild_bot_front/domain/services/adverts_analitics_service.dart'
 
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
-import 'package:rewild_bot_front/domain/services/balance_service.dart';
+// import 'package:rewild_bot_front/domain/services/balance_service.dart';
 import 'package:rewild_bot_front/domain/services/content_service.dart';
 import 'package:rewild_bot_front/domain/services/keywords_service.dart';
 import 'package:rewild_bot_front/domain/services/notification_service.dart';
@@ -28,7 +28,7 @@ class SecureStorageProvider
         ContentServiceApiKeyDataProvider,
         RealizationReportServiceApiKeyDataProvider,
         QuestionServiceApiKeyDataProvider,
-        BalanceServiceBalanceDataProvider,
+        // BalanceServiceBalanceDataProvider,
         AdvertServiceApiKeyDataProvider,
         AuthServiceSecureDataProvider {
   static const _secureStorage = FlutterSecureStorage(
@@ -239,53 +239,53 @@ class SecureStorageProvider
   }
 
   // Retrieve the balance
-  @override
-  Future<Either<RewildError, double>> getUserBalance() async {
-    try {
-      String? value = await _secureStorage.read(
-        key: 'user_balance',
-        aOptions: const AndroidOptions(encryptedSharedPreferences: true),
-      );
-      if (value != null) {
-        return right(double.parse(value));
-      }
-      return right(0);
-    } catch (e) {
-      return left(RewildError(
-        sendToTg: true,
-        e.toString(),
-        source: "SecureStorageProvider",
-        name: 'getUserBalance',
-      ));
-    }
-  }
+  // @override
+  // Future<Either<RewildError, double>> getUserBalance() async {
+  //   try {
+  //     String? value = await _secureStorage.read(
+  //       key: 'user_balance',
+  //       aOptions: const AndroidOptions(encryptedSharedPreferences: true),
+  //     );
+  //     if (value != null) {
+  //       return right(double.parse(value));
+  //     }
+  //     return right(0);
+  //   } catch (e) {
+  //     return left(RewildError(
+  //       sendToTg: true,
+  //       e.toString(),
+  //       source: "SecureStorageProvider",
+  //       name: 'getUserBalance',
+  //     ));
+  //   }
+  // }
 
-  // Add the balance
-  @override
-  Future<Either<RewildError, void>> addBalance(double amountToAdd) async {
-    Either<RewildError, double> currentBalanceResult = await getUserBalance();
-    return currentBalanceResult.match(
-      (error) => left(error),
-      (currentBalance) {
-        double updatedBalance = currentBalance + amountToAdd;
-        return storeUserBalance(updatedBalance);
-      },
-    );
-  }
+  // // Add the balance
+  // @override
+  // Future<Either<RewildError, void>> addBalance(double amountToAdd) async {
+  //   Either<RewildError, double> currentBalanceResult = await getUserBalance();
+  //   return currentBalanceResult.match(
+  //     (error) => left(error),
+  //     (currentBalance) {
+  //       double updatedBalance = currentBalance + amountToAdd;
+  //       return storeUserBalance(updatedBalance);
+  //     },
+  //   );
+  // }
 
-  // Subtract the balance
-  @override
-  Future<Either<RewildError, void>> subtractBalance(
-      double amountToSubtract) async {
-    Either<RewildError, double> currentBalanceResult = await getUserBalance();
-    return currentBalanceResult.match(
-      (error) => left(error),
-      (currentBalance) {
-        double updatedBalance = currentBalance - amountToSubtract;
-        return storeUserBalance(updatedBalance);
-      },
-    );
-  }
+  // // Subtract the balance
+  // @override
+  // Future<Either<RewildError, void>> subtractBalance(
+  //     double amountToSubtract) async {
+  //   Either<RewildError, double> currentBalanceResult = await getUserBalance();
+  //   return currentBalanceResult.match(
+  //     (error) => left(error),
+  //     (currentBalance) {
+  //       double updatedBalance = currentBalance - amountToSubtract;
+  //       return storeUserBalance(updatedBalance);
+  //     },
+  //   );
+  // }
 
   // Function to write data to secure storage ==================================
   Future<Either<RewildError, void>> _write(

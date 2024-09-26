@@ -58,7 +58,6 @@ class GptApiClient implements GptServiceGptApiClient {
       final uri = Uri.parse('https://rewild.website/api/chat');
 
       // Print the messages for debugging
-      print('MESSAGES: $messages');
 
       final response = await http.post(
         uri,

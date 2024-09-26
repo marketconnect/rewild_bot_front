@@ -25,6 +25,8 @@ class GroupService
   int groupsCount() => _groupsCount;
 
   GroupService({required this.groupDataProvider});
+
+  @override
   Future<Either<RewildError, void>> add(
       {required List<GroupModel> groups,
       required List<int> productsCardsNmIds}) async {
@@ -62,6 +64,7 @@ class GroupService
     return await groupDataProvider.get(name: name);
   }
 
+  @override
   Future<Either<RewildError, void>> delete(
       {required String groupName, required int nmId}) {
     return groupDataProvider.delete(name: groupName, nmId: nmId);

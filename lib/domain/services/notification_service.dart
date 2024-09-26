@@ -1,15 +1,14 @@
 import 'dart:async';
 
 import 'package:fpdart/fpdart.dart';
-import 'package:rewild_bot_front/core/constants/notification_constants.dart';
+// import 'package:rewild_bot_front/core/constants/notification_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/get_all_subscriptions_for_user_response.dart';
 import 'package:rewild_bot_front/domain/entities/notification.dart';
 import 'package:rewild_bot_front/domain/entities/product_watch_delete_subscription_response.dart';
 import 'package:rewild_bot_front/domain/entities/product_watch_subscription_response.dart';
 import 'package:rewild_bot_front/domain/entities/stream_notification_event.dart';
-import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/campaign_managment_view_model.dart';
-import 'package:rewild_bot_front/presentation/feedback/notification_feedback_screen/notification_feedback_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
@@ -73,23 +72,23 @@ class NotificationService
       required this.productWatchSubscriptionApiClient,
       required this.updatedNotificationStreamController});
 
-  Future<Either<RewildError, bool>> delete(
-      {required int id, required int condition, bool? isEmpty}) async {
-    final either = await notificationDataProvider.delete(
-        parentId: id, condition: condition);
-    return either.fold((l) => left(l), (r) {
-      if (isEmpty != null && isEmpty) {
-        updatedNotificationStreamController.add(StreamNotificationEvent(
-            parentId: id,
-            parentType:
-                condition == NotificationConditionConstants.budgetLessThan
-                    ? ParentType.advert
-                    : ParentType.card,
-            exists: false));
-      }
-      return either;
-    });
-  }
+  // Future<Either<RewildError, bool>> delete(
+  //     {required int id, required int condition, bool? isEmpty}) async {
+  //   final either = await notificationDataProvider.delete(
+  //       parentId: id, condition: condition);
+  //   return either.fold((l) => left(l), (r) {
+  //     if (isEmpty != null && isEmpty) {
+  //       updatedNotificationStreamController.add(StreamNotificationEvent(
+  //           parentId: id,
+  //           parentType:
+  //               condition == NotificationConditionConstants.budgetLessThan
+  //                   ? ParentType.advert
+  //                   : ParentType.card,
+  //           exists: false));
+  //     }
+  //     return either;
+  //   });
+  // }
 
   @override
   Future<Either<RewildError, bool>> checkForParent(
@@ -206,15 +205,15 @@ class NotificationService
     });
   }
 
-  @override
-  Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
-      List<String> conditions) async {
-    final either = await notificationDataProvider.getByCondition(conditions);
-    return either.fold((l) => left(l), (notifications) {
-      if (notifications == null || notifications.isEmpty) {
-        return right(null);
-      }
-      return right(notifications);
-    });
-  }
+  // @override
+  // Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
+  //     List<String> conditions) async {
+  //   final either = await notificationDataProvider.getByCondition(conditions);
+  //   return either.fold((l) => left(l), (notifications) {
+  //     if (notifications == null || notifications.isEmpty) {
+  //       return right(null);
+  //     }
+  //     return right(notifications);
+  //   });
+  // }
 }

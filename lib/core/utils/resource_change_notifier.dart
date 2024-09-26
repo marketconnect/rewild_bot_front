@@ -44,7 +44,7 @@ class ResourceChangeNotifier extends ChangeNotifier {
       // sendMessageToTelegramBot(
       //     TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
       // if (l.sendToTg) {
-      // TODO
+
       sendMessageToTelegramBot(
           TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
       // }

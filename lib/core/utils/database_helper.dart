@@ -291,7 +291,6 @@ class DatabaseHelper {
     try {
       await store.clear();
       await txn.completed;
-      print("cleared store $storeName");
     } catch (e) {
       sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
           "Failed to clear store $storeName: $e");
