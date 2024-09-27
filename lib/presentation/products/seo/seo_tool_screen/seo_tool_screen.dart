@@ -57,15 +57,6 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
     final kwResearchModel = context.watch<SeoToolKwResearchViewModel>();
     final isSaving = kwResearchModel.isSaving;
     final hasChange = kwResearchModel.hasChange;
-    // final goToSubjectKwExpansionScreen =
-    //     kwResearchModel.goToSubjectKwExpansionScreen;
-    // final goToAutocompliteKwExpansionScreen =
-    //     kwResearchModel.goToAutocompliteKwExpansionScreen;
-    // final goToWordsKwExpansionScreen =
-    //     kwResearchModel.goToWordsKwExpansionScreen;
-
-    // final goToCompetitorsKwExpansionScreen =
-    //     kwResearchModel.goToCompetitorsKwExpansionScreen;
     final isLoading = kwResearchModel.isLoading;
     final model = context.read<SeoToolViewModel>();
     final titleGenerator = model.titleGenerator;

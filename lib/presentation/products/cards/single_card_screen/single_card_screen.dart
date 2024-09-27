@@ -15,6 +15,7 @@ import 'package:rewild_bot_front/widgets/network_image.dart';
 import 'package:rewild_bot_front/widgets/progress_indicator.dart';
 
 import 'package:shimmer/shimmer.dart';
+import 'package:web/web.dart' as html;
 
 class SingleCardScreen extends StatelessWidget {
   const SingleCardScreen({super.key});
@@ -863,6 +864,36 @@ class _Feedback extends StatelessWidget {
                   fontSize: model.screenWidth * 0.04,
                   color: Theme.of(context).colorScheme.primary),
             ),
+            GestureDetector(
+              onTap: () async {
+                html.window.open('https://www.wildberries.ru/', 'wb');
+              },
+              child: Row(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(bottom: model.screenWidth * 0.01),
+                    child: Text(
+                      'Перейти',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: model.screenWidth * 0.035,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.5)),
+                    ),
+                  ),
+                  Icon(
+                    Icons.chevron_right,
+                    size: model.screenWidth * 0.07,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.5),
+                  )
+                ],
+              ),
+            )
           ],
         ),
       ],
