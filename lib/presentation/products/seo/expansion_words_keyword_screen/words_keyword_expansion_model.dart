@@ -32,15 +32,15 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
 
   void _asyncInit() async {
     // SqfliteService.printTableContent('seo_lemmas');
-    setLoadingText('Проверяю токен');
+    setIsLoading(true);
     final tokenEither = await seoCoreTokenService.getToken();
     if (tokenEither.isLeft()) {
-      setLoadingText(null);
+      setIsLoading(false);
       return;
     }
     _token = tokenEither.fold((l) => throw UnimplementedError(), (r) => r);
     if (_token == null) {
-      setLoadingText(null);
+      setIsLoading(false);
       return;
     }
 
@@ -48,7 +48,7 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
     if (addedPhrases.isNotEmpty) {
       _isNotEmpty = true;
     }
-    setLoadingText(null);
+    setIsLoading(false);
   }
 
   // token
@@ -66,21 +66,27 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
   }
 
   void selectPhrase(String kw) {
-    if (!_selectedPhrases.any((item) => item.keyword == kw)) {
-      final phrase = _suggestedKeywords.where((item) => item.keyword == kw);
-      if (phrase.isEmpty) {
-        return;
-      }
-      _selectedPhrases.add(phrase.first);
-      // _allKws.removeWhere((item) => item.keyword == phrase.keyword);
-      _selectedPhrasesChanged = true;
+    final index = _selectedPhrases.indexWhere((item) => item.keyword == kw);
+    if (index == -1) {
+      final phrase =
+          _suggestedKeywords.firstWhere((item) => item.keyword == kw);
+      _selectedPhrases.add(phrase);
+      _selectedCount++;
     } else {
-      _selectedPhrases.removeWhere((item) => item.keyword == kw);
+      _selectedPhrases.removeAt(index);
+      _selectedCount--;
     }
     notify();
   }
 
-  int get selectedCount => _selectedPhrases.length;
+  void resetSelectedPhrases() {
+    _selectedPhrases = [];
+    notify();
+  }
+
+  int _selectedCount = 0;
+
+  int get selectedCount => _selectedCount;
 
   List<KwByLemma> get selectedPhrases => _selectedPhrases;
 
@@ -89,40 +95,34 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
   bool get hasChanges => _selectedPhrasesChanged;
 
   // is loading
-  String? _loadingText;
-  String? get loadingText => _loadingText;
-  setLoadingText(String? loadingText) {
-    _loadingText = loadingText;
+  bool _isLoading = false;
+
+  setIsLoading(bool value) {
+    _isLoading = value;
     notify();
   }
 
-  // final List<String> _keywords = [];
+  bool get isLoading => _isLoading;
 
-  // List<String> get keywords => _keywords;
-
-  // void addKeyword(String kw) {
-  //   final keyword = kw.trim().toLowerCase();
-  //   if (keyword.isNotEmpty) {
-  //     _keywords.add(keyword);
-  //     notify();
-  //   }
-  // }
-
-  // void removeKeyword(String kw) {
-  //   _keywords.remove(kw);
-  //   notify();
-  // }
-
+  // kw
   final List<String> _keywords = [];
 
   List<String> get keywords => _keywords;
 
-  void addKeyword(String kw) {
-    final keyword = kw.trim().toLowerCase();
-    if (keyword.isNotEmpty && !_keywords.contains(keyword)) {
-      _keywords.add(keyword);
-      notify();
+  void addKeywords(List<String> kws) {
+    for (var kw in kws) {
+      if (kw.isNotEmpty) {
+        final keyword = kw.trim().toLowerCase();
+        if (keyword.isNotEmpty && !_keywords.contains(keyword)) {
+          _keywords.add(keyword);
+          notify();
+        }
+      }
     }
+  }
+
+  int userAddedPhrasesLength() {
+    return _selectedPhrases.length - addedPhrases.length;
   }
 
   void removeKeyword(String kw) {
@@ -135,7 +135,7 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
   List<KwByLemma> get suggestedKeywords => _suggestedKeywords;
 
   void fetchKeywords(List<String> phrases) async {
-    setLoadingText('Получаю ключевые фразы для выбранных слов...');
+    setIsLoading(true);
     final fixedPhrases = phrases.map((item) => item.toLowerCase().trim());
     final keywordsOrNull =
         await fetch(() => filterValuesService.getKeywordsByWords(
@@ -143,7 +143,7 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
               words: fixedPhrases.toList(),
             ));
     if (keywordsOrNull == null) {
-      setLoadingText(null);
+      setIsLoading(false);
       return;
     }
 
@@ -159,7 +159,11 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
     }
 
     _suggestedKeywords.addAll(keywordsToAdd);
-    setLoadingText(null);
+    setIsLoading(false);
+  }
+
+  bool isPhraseSelected(KwByLemma kw) {
+    return _selectedPhrases.any((item) => item.keyword == kw.keyword);
   }
 
   void goBack() {

@@ -849,29 +849,40 @@ class KeywordManager extends StatefulWidget {
 }
 
 class _KeywordManagerState extends State<KeywordManager> {
-  // ignore: unused_element
-  void _searchKeywords(String keyword) async {}
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            _buildSemanticCoreSection(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSemanticCoreSection() {
     final model = context.watch<SeoToolKwResearchViewModel>();
     final corePhrases = List<KwByLemma>.from(model.corePhrases)
       ..sort((a, b) => b.freq.compareTo(a.freq));
 
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          if (corePhrases.isEmpty)
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Пока не добавлено ни одного ключевого слова',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          else
+            Expanded(
+              child: SingleChildScrollView(
+                child: _buildSemanticCoreSection(corePhrases),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSemanticCoreSection(List<KwByLemma> corePhrases) {
+    final model = context.watch<SeoToolKwResearchViewModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -898,7 +909,6 @@ class _KeywordManagerState extends State<KeywordManager> {
                       'Частотность: ${keyword.freq}',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
-                    // Дополнительная информация может быть добавлена здесь
                   ],
                 ),
                 trailing: PopupMenuButton<String>(
@@ -932,168 +942,9 @@ class _KeywordManagerState extends State<KeywordManager> {
                 ),
               ),
             );
-            // ListTile(
-            //   title: Text(keyword.keyword),
-            //   subtitle: Column(
-            //     crossAxisAlignment: CrossAxisAlignment.start,
-            //     children: [
-            //       Text('Вхождения в наименование: ${keyword.lemma}'),
-            //       Text('Вхождения в описание: ${keyword.lemma}'),
-            //       Text('Частотность: ${keyword.freq}'),
-            //     ],
-            //   ),
-            //   trailing: Row(
-            //     mainAxisSize: MainAxisSize.min,
-            //     children: [
-            //       IconButton(
-            //         icon: const Icon(Icons.attach_money),
-            //         onPressed: () {
-            //           Navigator.of(context).pushNamed(
-            //               MainNavigationRouteNames.geoSearchScreen,
-            //               arguments: keyword.keyword);
-            //         },
-            //       ),
-            //       IconButton(
-            //         icon: const Icon(Icons.delete),
-            //         onPressed: () =>
-            //             model.removeKeywordFromCore(keyword.keyword),
-            //       ),
-            //     ],
-            //   ),
-            // );
           },
         ),
       ],
     );
   }
 }
-
-// class KeywordManager extends StatefulWidget {
-//   const KeywordManager({Key? key}) : super(key: key);
-
-//   @override
-//   _KeywordManagerState createState() => _KeywordManagerState();
-// }
-
-// class _KeywordManagerState extends State<KeywordManager> {
-//   TextEditingController _searchController = TextEditingController();
-//   String _searchQuery = '';
-
-//   @override
-//   void dispose() {
-//     _searchController.dispose();
-//     super.dispose();
-//   }
-
-//   void _onSearchChanged() {
-//     setState(() {
-//       _searchQuery = _searchController.text.toLowerCase();
-//     });
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final model = context.watch<SeoToolKwResearchViewModel>();
-//     final corePhrases = List<KwByLemma>.from(model.corePhrases)
-//       ..sort((a, b) => b.freq.compareTo(a.freq));
-
-//     // Применяем фильтр поиска
-//     final filteredPhrases = corePhrases.where((kw) {
-//       return kw.keyword.toLowerCase().contains(_searchQuery);
-//     }).toList();
-
-//     return Padding(
-//       padding: const EdgeInsets.all(16.0),
-//       child: Column(
-//         children: [
-//           // Поисковая строка
-//           TextField(
-//             controller: _searchController,
-//             onChanged: (value) => _onSearchChanged(),
-//             decoration: InputDecoration(
-//               labelText: 'Поиск ключевых слов',
-//               prefixIcon: const Icon(Icons.search),
-//               border: const OutlineInputBorder(),
-//             ),
-//           ),
-//           const SizedBox(height: 16),
-//           // Список ключевых слов
-//           Expanded(
-//             child: filteredPhrases.isNotEmpty
-//                 ? ListView.builder(
-//                     itemCount: filteredPhrases.length,
-//                     itemBuilder: (context, index) {
-//                       final keyword = filteredPhrases[index];
-//                       return Card(
-//                         margin: const EdgeInsets.symmetric(vertical: 8.0),
-//                         child: ListTile(
-//                           leading: CircleAvatar(
-//                             backgroundColor:
-//                                 Theme.of(context).colorScheme.primary,
-//                             child: Text(
-//                               '${keyword.freq}',
-//                               style: const TextStyle(color: Colors.white),
-//                             ),
-//                           ),
-//                           title: Text(
-//                             keyword.keyword,
-//                             style: const TextStyle(
-//                               fontWeight: FontWeight.bold,
-//                             ),
-//                           ),
-//                           subtitle: Column(
-//                             crossAxisAlignment: CrossAxisAlignment.start,
-//                             children: [
-//                               const SizedBox(height: 4),
-//                               Text(
-//                                 'Лемма: ${keyword.lemma}',
-//                                 style: TextStyle(color: Colors.grey[600]),
-//                               ),
-//                               // Дополнительная информация может быть добавлена здесь
-//                             ],
-//                           ),
-//                           trailing: PopupMenuButton<String>(
-//                             onSelected: (value) {
-//                               if (value == 'geoSearch') {
-//                                 Navigator.of(context).pushNamed(
-//                                   MainNavigationRouteNames.geoSearchScreen,
-//                                   arguments: keyword.keyword,
-//                                 );
-//                               } else if (value == 'delete') {
-//                                 model.removeKeywordFromCore(keyword.keyword);
-//                               }
-//                             },
-//                             itemBuilder: (BuildContext context) =>
-//                                 <PopupMenuEntry<String>>[
-//                               const PopupMenuItem<String>(
-//                                 value: 'geoSearch',
-//                                 child: ListTile(
-//                                   leading: Icon(Icons.map),
-//                                   title: Text('Поиск по гео'),
-//                                 ),
-//                               ),
-//                               const PopupMenuItem<String>(
-//                                 value: 'delete',
-//                                 child: ListTile(
-//                                   leading: Icon(Icons.delete),
-//                                   title: Text('Удалить'),
-//                                 ),
-//                               ),
-//                             ],
-//                           ),
-//                         ),
-//                       );
-//                     },
-//                   )
-//                 : Center(
-//                     child: Text(
-//                       'Ключевые слова не найдены',
-//                       style: Theme.of(context).textTheme.titleLarge,
-//                     ),
-//                   ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

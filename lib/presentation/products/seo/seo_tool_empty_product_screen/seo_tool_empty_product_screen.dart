@@ -766,29 +766,40 @@ class KeywordManager extends StatefulWidget {
 }
 
 class _KeywordManagerState extends State<KeywordManager> {
-  // ignore: unused_element
-  void _searchKeywords(String keyword) async {}
-
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            _buildSemanticCoreSection(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSemanticCoreSection() {
     final model = context.watch<SeoToolEmptyProductKwResearchViewModel>();
     final corePhrases = List<KwByLemma>.from(model.corePhrases)
       ..sort((a, b) => b.freq.compareTo(a.freq));
 
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
+      child: Column(
+        children: [
+          const SizedBox(height: 20),
+          if (corePhrases.isEmpty)
+            Expanded(
+              child: Center(
+                child: Text(
+                  'Пока не добавлено ни одного ключевого слова',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            )
+          else
+            Expanded(
+              child: SingleChildScrollView(
+                child: _buildSemanticCoreSection(corePhrases),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSemanticCoreSection(List<KwByLemma> corePhrases) {
+    final model = context.watch<SeoToolEmptyProductKwResearchViewModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -815,7 +826,6 @@ class _KeywordManagerState extends State<KeywordManager> {
                       'Частотность: ${keyword.freq}',
                       style: TextStyle(color: Colors.grey[600]),
                     ),
-                    // Дополнительная информация может быть добавлена здесь
                   ],
                 ),
                 trailing: PopupMenuButton<String>(

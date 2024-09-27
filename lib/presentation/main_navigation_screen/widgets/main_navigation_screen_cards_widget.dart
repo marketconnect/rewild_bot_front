@@ -58,18 +58,20 @@ class _MainNavigationScreenCardsWidgetState
             children: [
               LinkBtn(
                 text: 'Карточки',
-                color: Colors.blueAccent,
+                // color: Colors.blueAccent,
+                color: Color(0xFF43A047),
                 route: MainNavigationRouteNames.allCardsScreen,
                 // route: '',
-                iconData: Icons.analytics,
+                iconData: Icons.inventory,
               ),
 
               LinkBtn(
                 text: 'SEO',
-                color: Colors.greenAccent,
+                // color: Colors.greenAccent,
+                color: Color(0xFF4A90E2),
                 route: MainNavigationRouteNames.allCardsSeoScreen,
                 // route: '',
-                iconData: Icons.currency_ruble,
+                iconData: Icons.insights,
               ),
               // LinkBtn(
               //   text: 'Анализ спроса',

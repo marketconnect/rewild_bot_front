@@ -79,7 +79,7 @@ import 'package:rewild_bot_front/domain/services/adverts_analitics_service.dart'
 import 'package:rewild_bot_front/domain/services/answer_service.dart';
 import 'package:rewild_bot_front/domain/services/api_keys_service.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
-// import 'package:rewild_bot_front/domain/services/balance_service.dart';
+
 import 'package:rewild_bot_front/domain/services/card_keywords_service.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/commission_service.dart';

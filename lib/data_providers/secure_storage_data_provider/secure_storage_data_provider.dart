@@ -87,11 +87,12 @@ class SecureStorageProvider
           return right(false);
         }
         final now = DateTime.now();
+        final nowPlus1Hour = now.add(const Duration(minutes: 60));
         final timestamp = int.parse(r);
         final expiredAtDT =
             DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
         return right(
-          expiredAtDT.isAfter(now),
+          expiredAtDT.isAfter(nowPlus1Hour),
         );
       },
     );
