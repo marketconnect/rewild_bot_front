@@ -1,6 +1,6 @@
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_kw_research_view_model.dart';
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -775,6 +775,7 @@ class _KeywordManagerState extends State<KeywordManager> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
           if (corePhrases.isEmpty)
@@ -789,8 +790,42 @@ class _KeywordManagerState extends State<KeywordManager> {
             )
           else
             Expanded(
-              child: SingleChildScrollView(
-                child: _buildSemanticCoreSection(corePhrases),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Добавляем кнопку копирования
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Ключевые слова',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.copy),
+                        tooltip: 'Скопировать все фразы',
+                        onPressed: () {
+                          final allPhrases = corePhrases
+                              .map((kw) => '${kw.keyword},${kw.freq}')
+                              .join('\n');
+                          Clipboard.setData(ClipboardData(text: allPhrases));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'Ключевые слова скопированы в буфер обмена'),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: _buildSemanticCoreSection(corePhrases),
+                    ),
+                  ),
+                ],
               ),
             ),
         ],
