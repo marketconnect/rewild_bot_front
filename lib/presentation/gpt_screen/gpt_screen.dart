@@ -132,7 +132,7 @@ class _ChatGptScreenState extends State<ChatGptScreen> {
               child: TextField(
                 controller: _messageController,
                 minLines: 1,
-                maxLines: 5,
+                maxLines: 10,
                 decoration: const InputDecoration(
                   hintText: 'Введите ваше сообщение...',
                   border: InputBorder.none,
