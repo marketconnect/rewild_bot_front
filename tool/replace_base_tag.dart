@@ -46,7 +46,7 @@ void main() {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: #fef7ff; /* Set your background color */
+        background-color: #fef7ff;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -57,8 +57,8 @@ void main() {
       .spinner {
         width: 80px;
         height: 80px;
-        border: 10px solid #f3f3f3;
-        border-top: 10px solid #3498db; /* Blue color */
+        border: 10px solid #6650a3;
+        border-top: 10px solid #EADDFF; /* Blue color */
         border-radius: 50%;
         animation: spin 1.5s linear infinite;
       }
