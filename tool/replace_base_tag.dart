@@ -46,7 +46,7 @@ void main() {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: #ffffff; /* Set your background color */
+        background-color: #fef7ff; /* Set your background color */
         display: flex;
         align-items: center;
         justify-content: center;

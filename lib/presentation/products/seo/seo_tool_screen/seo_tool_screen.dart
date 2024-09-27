@@ -57,15 +57,15 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
     final kwResearchModel = context.watch<SeoToolKwResearchViewModel>();
     final isSaving = kwResearchModel.isSaving;
     final hasChange = kwResearchModel.hasChange;
-    final goToSubjectKwExpansionScreen =
-        kwResearchModel.goToSubjectKwExpansionScreen;
-    final goToAutocompliteKwExpansionScreen =
-        kwResearchModel.goToAutocompliteKwExpansionScreen;
-    final goToWordsKwExpansionScreen =
-        kwResearchModel.goToWordsKwExpansionScreen;
+    // final goToSubjectKwExpansionScreen =
+    //     kwResearchModel.goToSubjectKwExpansionScreen;
+    // final goToAutocompliteKwExpansionScreen =
+    //     kwResearchModel.goToAutocompliteKwExpansionScreen;
+    // final goToWordsKwExpansionScreen =
+    //     kwResearchModel.goToWordsKwExpansionScreen;
 
-    final goToCompetitorsKwExpansionScreen =
-        kwResearchModel.goToCompetitorsKwExpansionScreen;
+    // final goToCompetitorsKwExpansionScreen =
+    //     kwResearchModel.goToCompetitorsKwExpansionScreen;
     final isLoading = kwResearchModel.isLoading;
     final model = context.read<SeoToolViewModel>();
     final titleGenerator = model.titleGenerator;
@@ -133,86 +133,86 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
                   title: _selectedIndex == 0
                       ? '${titles[_selectedIndex]} (${kwResearchModel.corePhrases.length})'
                       : titles[_selectedIndex]),
-              actions: [
-                _selectedIndex == 0
-                    ? IconButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return Dialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20.0),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      const Text(
-                                        'Расширение запросов',
-                                        style: TextStyle(
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 20.0),
-                                      ListTile(
-                                        leading: const Icon(Icons.text_fields),
-                                        title: const Text('По словам'),
-                                        onTap: () async {
-                                          Navigator.pop(context);
-                                          await goToWordsKwExpansionScreen();
-                                        },
-                                      ),
-                                      const Divider(),
-                                      ListTile(
-                                        leading: const Icon(Icons.category),
-                                        title: const Text('По категории'),
-                                        onTap: () async {
-                                          Navigator.pop(context);
-                                          await goToSubjectKwExpansionScreen();
-                                        },
-                                      ),
-                                      const Divider(),
-                                      ListTile(
-                                        leading: const Icon(Icons.autorenew),
-                                        title: const Text('Автозаполнение'),
-                                        onTap: () async {
-                                          Navigator.pop(context);
-                                          await goToAutocompliteKwExpansionScreen();
-                                        },
-                                      ),
-                                      const Divider(),
-                                      ListTile(
-                                        leading: const Icon(Icons.business),
-                                        title: const Text('Из других карточек'),
-                                        onTap: () async {
-                                          Navigator.pop(context);
-                                          await goToCompetitorsKwExpansionScreen();
-                                        },
-                                      ),
-                                      const Divider(),
-                                      const SizedBox(height: 10.0),
-                                      Align(
-                                        alignment: Alignment.bottomRight,
-                                        child: TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: const Text('Отмена'),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        },
-                        icon: const Icon(Icons.search))
-                    : Container(),
-              ],
+              // actions: [
+              //   _selectedIndex == 0
+              //       ? IconButton(
+              //           onPressed: () {
+              //             showDialog(
+              //               context: context,
+              //               builder: (BuildContext context) {
+              //                 return Dialog(
+              //                   shape: RoundedRectangleBorder(
+              //                     borderRadius: BorderRadius.circular(20.0),
+              //                   ),
+              //                   child: Padding(
+              //                     padding: const EdgeInsets.all(16.0),
+              //                     child: Column(
+              //                       mainAxisSize: MainAxisSize.min,
+              //                       children: <Widget>[
+              //                         const Text(
+              //                           'Расширение запросов',
+              //                           style: TextStyle(
+              //                             fontSize: 20.0,
+              //                             fontWeight: FontWeight.bold,
+              //                           ),
+              //                         ),
+              //                         const SizedBox(height: 20.0),
+              //                         ListTile(
+              //                           leading: const Icon(Icons.text_fields),
+              //                           title: const Text('По словам'),
+              //                           onTap: () async {
+              //                             Navigator.pop(context);
+              //                             await goToWordsKwExpansionScreen();
+              //                           },
+              //                         ),
+              //                         const Divider(),
+              //                         ListTile(
+              //                           leading: const Icon(Icons.category),
+              //                           title: const Text('По категории'),
+              //                           onTap: () async {
+              //                             Navigator.pop(context);
+              //                             await goToSubjectKwExpansionScreen();
+              //                           },
+              //                         ),
+              //                         const Divider(),
+              //                         ListTile(
+              //                           leading: const Icon(Icons.autorenew),
+              //                           title: const Text('Автозаполнение'),
+              //                           onTap: () async {
+              //                             Navigator.pop(context);
+              //                             await goToAutocompliteKwExpansionScreen();
+              //                           },
+              //                         ),
+              //                         const Divider(),
+              //                         ListTile(
+              //                           leading: const Icon(Icons.business),
+              //                           title: const Text('Из других карточек'),
+              //                           onTap: () async {
+              //                             Navigator.pop(context);
+              //                             await goToCompetitorsKwExpansionScreen();
+              //                           },
+              //                         ),
+              //                         const Divider(),
+              //                         const SizedBox(height: 10.0),
+              //                         Align(
+              //                           alignment: Alignment.bottomRight,
+              //                           child: TextButton(
+              //                             onPressed: () {
+              //                               Navigator.pop(context);
+              //                             },
+              //                             child: const Text('Отмена'),
+              //                           ),
+              //                         ),
+              //                       ],
+              //                     ),
+              //                   ),
+              //                 );
+              //               },
+              //             );
+              //           },
+              //           icon: const Icon(Icons.search))
+              //       : Container(),
+              // ],
               scrolledUnderElevation: 2,
               shadowColor: Colors.black,
               surfaceTintColor: Colors.transparent,
@@ -844,6 +844,7 @@ class KeywordManager extends StatefulWidget {
   const KeywordManager({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _KeywordManagerState createState() => _KeywordManagerState();
 }
 
@@ -887,8 +888,9 @@ class _KeywordManagerState extends State<KeywordManager> {
                         icon: const Icon(Icons.copy),
                         tooltip: 'Скопировать все фразы',
                         onPressed: () {
-                          final allPhrases =
-                              corePhrases.map((kw) => kw.keyword).join('\n');
+                          final allPhrases = corePhrases
+                              .map((kw) => '${kw.keyword},${kw.freq}')
+                              .join('\n');
                           Clipboard.setData(ClipboardData(text: allPhrases));
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
