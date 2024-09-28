@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_web_libraries_in_flutter
+import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ void main() async {
 
     await dbHelper.database;
     await dbHelper.clearTable('card_keywords');
+    TelegramWebApp.setTelegramHeaderColor("#fef7ff");
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {
     await sendMessageToTelegramBot(

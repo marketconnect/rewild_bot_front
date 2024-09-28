@@ -125,9 +125,14 @@ class FilterApiClient implements FilterServiceFilterApiClient {
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
 
-        final List<dynamic> keywordList = responseData['keywords'];
+        if (responseData.containsKey('keywords') &&
+            responseData['keywords'] != null) {
+          final List<dynamic> keywordList = responseData['keywords'];
 
-        return right(keywordList.map((e) => KwByLemma.fromMap(e)).toList());
+          return right(keywordList.map((e) => KwByLemma.fromMap(e)).toList());
+        } else {
+          return right([]);
+        }
       } else {
         return left(RewildError(
           sendToTg: true,

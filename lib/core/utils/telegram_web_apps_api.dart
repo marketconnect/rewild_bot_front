@@ -29,4 +29,24 @@ class TelegramWebApp {
       return 'Unknown chatId';
     }
   }
+
+  static void expandTelegramWebApp() {
+    final telegram = js.context['Telegram'];
+    if (telegram != null) {
+      final webApp = telegram['WebApp'];
+      if (webApp != null) {
+        webApp.callMethod('expand');
+      }
+    }
+  }
+
+  static void setTelegramHeaderColor(String color) {
+    final telegram = js.context['Telegram'];
+    if (telegram != null) {
+      final webApp = telegram['WebApp'];
+      if (webApp != null) {
+        webApp.callMethod('setHeaderColor', [color]);
+      }
+    }
+  }
 }
