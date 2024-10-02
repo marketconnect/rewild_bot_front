@@ -32,9 +32,12 @@ class TelegramWebApp {
 
   static void expandTelegramWebApp() {
     final telegram = js.context['Telegram'];
+    print('expandTelegramWebApp: $telegram');
     if (telegram != null) {
+      print('expandTelegramWebApp not null: $telegram');
       final webApp = telegram['WebApp'];
       if (webApp != null) {
+        print('expandTelegramWebApp webApp not null: $webApp');
         webApp.callMethod('expand');
       }
     }

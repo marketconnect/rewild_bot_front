@@ -37,6 +37,7 @@ void main() async {
     await dbHelper.database;
     await dbHelper.clearTable('card_keywords');
     TelegramWebApp.setTelegramHeaderColor("#fef7ff");
+    TelegramWebApp.expandTelegramWebApp();
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {
     await sendMessageToTelegramBot(

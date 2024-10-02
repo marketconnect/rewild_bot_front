@@ -9,41 +9,6 @@ import 'package:rewild_bot_front/domain/services/gpt_service.dart';
 class GptApiClient implements GptServiceGptApiClient {
   const GptApiClient();
 
-  // Estimate tokens for given messages
-  // Future<Either<RewildError, int>> estimateTokens({
-  //   required List<Map<String, String>> messages,
-  // }) async {
-  //   try {
-  //     final uri = Uri.parse('https://rewild.website/api/estimate');
-  //     final response = await http.post(
-  //       uri,
-  //       headers: {'Content-Type': 'application/json'},
-  //       body: jsonEncode({'messages': messages}),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> data = jsonDecode(response.body);
-  //       return right(data['token_count'] as int);
-  //     } else {
-  //       return left(RewildError(
-  //         sendToTg: true,
-  //         "Ошибка HTTP: ${response.statusCode}",
-  //         source: "GptApiClient",
-  //         name: "estimateTokens",
-  //         args: [],
-  //       ));
-  //     }
-  //   } catch (e) {
-  //     return left(RewildError(
-  //       sendToTg: true,
-  //       "Неизвестная ошибка: ${e.toString()}",
-  //       source: "GptApiClient",
-  //       name: "estimateTokens",
-  //       args: [],
-  //     ));
-  //   }
-  // }
-
   // Chat completion request
   @override
   Future<Either<RewildError, String>> chatCompletion({
@@ -56,8 +21,6 @@ class GptApiClient implements GptServiceGptApiClient {
   }) async {
     try {
       final uri = Uri.parse('https://rewild.website/api/chat');
-
-      // Print the messages for debugging
 
       final response = await http.post(
         uri,
@@ -73,6 +36,9 @@ class GptApiClient implements GptServiceGptApiClient {
           'n': n,
         }),
       );
+      if (response.statusCode != 402) {
+        return right("У вас закончилась подписка. Пожалуйста, обновите её.");
+      }
 
       // Check if the server responded with success
       if (response.statusCode == 200) {

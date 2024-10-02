@@ -57,8 +57,8 @@ void main() {
       .spinner {
         width: 80px;
         height: 80px;
-        border: 10px solid #6650a3;
-        border-top: 10px solid #EADDFF; /* Blue color */
+        border: 10px solid #EADDFF;
+        border-top: 10px solid #6650a3; 
         border-radius: 50%;
         animation: spin 1.5s linear infinite;
       }
