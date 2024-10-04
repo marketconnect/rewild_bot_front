@@ -17,6 +17,7 @@ import 'package:rewild_bot_front/domain/services/notification_service.dart';
 import 'package:rewild_bot_front/domain/services/question_service.dart';
 import 'package:rewild_bot_front/domain/services/realization_report_service.dart';
 import 'package:rewild_bot_front/domain/services/review_service.dart';
+import 'package:rewild_bot_front/domain/services/subscription_service.dart';
 
 class SecureStorageProvider
     implements
@@ -24,6 +25,7 @@ class SecureStorageProvider
         KeywordsServiceApiKeyDataProvider,
         AdvertsAnaliticsServiceApiKeyDataProvider,
         NotificationServiceSecureDataProvider,
+        SubscriptionServiceSecureDataProvider,
         ReviewServiceApiKeyDataProvider,
         ContentServiceApiKeyDataProvider,
         RealizationReportServiceApiKeyDataProvider,

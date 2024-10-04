@@ -3,12 +3,16 @@ class SubscriptionV2Response {
   final String subscriptionTypeName;
   final String startDate;
   final String endDate;
+  final String token;
+  final int expiredAt;
 
   SubscriptionV2Response({
     required this.id,
     required this.subscriptionTypeName,
     required this.startDate,
     required this.endDate,
+    required this.token,
+    required this.expiredAt,
   });
 
   factory SubscriptionV2Response.fromJson(Map<String, dynamic> json) {
@@ -17,6 +21,8 @@ class SubscriptionV2Response {
       subscriptionTypeName: json['subscription_type_name'],
       startDate: json['start_date'],
       endDate: json['end_date'],
+      token: json['token'],
+      expiredAt: json['expired_at'],
     );
   }
 
@@ -27,6 +33,8 @@ class SubscriptionV2Response {
       'subscription_type_name': subscriptionTypeName,
       'start_date': startDate,
       'end_date': endDate,
+      'token': token,
+      'expired_at': expiredAt,
     };
   }
 
@@ -37,6 +45,8 @@ class SubscriptionV2Response {
       subscriptionTypeName: map['subscription_type_name'],
       startDate: map['start_date'],
       endDate: map['end_date'],
+      token: map['token'],
+      expiredAt: map['expired_at'],
     );
   }
 }

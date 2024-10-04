@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
+import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
 
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
@@ -76,6 +77,11 @@ abstract class SubscriptionServiceUserNameSecureStorage {
   Future<Either<RewildError, String?>> getServerToken();
 }
 
+abstract class SubscriptionServiceSecureDataProvider {
+  Future<Either<RewildError, void>> updateUserInfo(
+      {String? token, String? expiredAt, bool? freebie});
+}
+
 // When the app starts it fetches subscriptions from the server
 // and saves them in the local database.
 // Then it uses local database to fetch subscriptions (getSubscriptionLocal method).
@@ -91,11 +97,13 @@ class SubscriptionService
   final SubsServiceCardsDataProvider cardsDataProvider;
   final StreamController<(int, int)> cardsNumberStreamController;
   final SubsServiceCardsApiClient cardsApiClient;
+  final SubscriptionServiceSecureDataProvider secureDataProvider;
   SubscriptionService(
       {required this.apiClient,
       required this.subsDataProvider,
       required this.cardsApiClient,
       required this.cardsDataProvider,
+      required this.secureDataProvider,
       required this.cardsNumberStreamController});
   // Initialization of the service
   // synchronize subscriptions with local data provider
@@ -131,6 +139,10 @@ class SubscriptionService
     final subscriptionOnServer =
         subOnServerEither.fold((l) => throw UnimplementedError(), (r) => r);
 
+    await _saveAuthData(UserAuthData(
+        token: subscriptionOnServer.token,
+        freebie: true,
+        expiredAt: subscriptionOnServer.expiredAt));
     final res = await _syncSubscriptions(subscriptionOnServer);
     if (res.isLeft()) {
       return res.fold((l) => left(l), (r) => throw UnimplementedError());
@@ -180,7 +192,10 @@ class SubscriptionService
     }
     final subscriptionsfromServer = subscriptionsfromServerEither.fold(
         (l) => throw UnimplementedError(), (r) => r);
-
+    await _saveAuthData(UserAuthData(
+        token: subscriptionsfromServer.token,
+        freebie: true,
+        expiredAt: subscriptionsfromServer.expiredAt));
     // update local subscriptions
     final voidEither = await _syncSubscriptions(subscriptionsfromServer);
     if (voidEither is Left) {
@@ -301,13 +316,18 @@ class SubscriptionService
     return right(null);
   }
 
-  // void _addSubsToStream(List<SubscriptionV2Response> subs) {
-  //   final now = DateTime.now();
-  //   final activeSubs =
-  //       subs.where((element) => now.isBefore(DateTime.parse(element.endDate)));
-  //   final totalSubsLength = activeSubs.length;
-  //   final takenSubsLength =
-  //       activeSubs.where((element) => element.cardId != 0).length;
-  //   cardsNumberStreamController.add((totalSubsLength, takenSubsLength));
-  // }
+  Future<Either<RewildError, void>> _saveAuthData(UserAuthData authData) async {
+    final token = authData.token;
+    final freebie = authData.freebie;
+    final expiredAt = authData.expiredAt;
+    final saveEither = await secureDataProvider.updateUserInfo(
+      token: token,
+      expiredAt: expiredAt.toString(),
+      freebie: freebie,
+    );
+    if (saveEither.isLeft()) {
+      return left(saveEither.fold((l) => l, (r) => throw UnimplementedError()));
+    }
+    return right(null);
+  }
 }

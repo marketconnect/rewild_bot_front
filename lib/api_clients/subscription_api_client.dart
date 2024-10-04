@@ -38,6 +38,8 @@ class SubscriptionApiClient
           subscriptionTypeName: data['subscription_type_name'],
           startDate: data['start_date'],
           endDate: data['end_date'],
+          token: data['token'],
+          expiredAt: data['expired_at'],
         ));
       } else {
         return left(RewildError(
@@ -90,6 +92,8 @@ class SubscriptionApiClient
           subscriptionTypeName: data['subscription_type_name'],
           startDate: data['start_date'],
           endDate: data['end_date'],
+          token: data['token'],
+          expiredAt: data['expired_at'],
         ));
       } else {
         return left(RewildError(

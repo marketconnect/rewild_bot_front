@@ -420,6 +420,7 @@ class _DIContainer {
         apiClient: _makeSubscriptionApiClient(),
         cardsApiClient: _makeCardOfProductApiClient(),
         cardsNumberStreamController: subscriptionStreamController,
+        secureDataProvider: _makeSecureDataProvider(),
         subsDataProvider: _makeSubscriptionDataProvider(),
       );
 
