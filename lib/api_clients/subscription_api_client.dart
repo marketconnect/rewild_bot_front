@@ -32,14 +32,14 @@ class SubscriptionApiClient
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-
+        print(data);
         return right(SubscriptionV2Response(
           id: data['id'],
           subscriptionTypeName: data['subscription_type_name'],
           startDate: data['start_date'],
           endDate: data['end_date'],
           token: data['token'],
-          expiredAt: data['expired_at'],
+          expiredAt: data['expiredAt'],
         ));
       } else {
         return left(RewildError(

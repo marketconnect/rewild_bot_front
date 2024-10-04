@@ -169,7 +169,6 @@ class AuthService
       } else {
         // If token expired
         // login
-
         final loginEither = await _login(userName);
         if (loginEither is Left) {
           // return left(

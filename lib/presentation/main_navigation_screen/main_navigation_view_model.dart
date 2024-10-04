@@ -97,10 +97,8 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
 
   void _asyncInit() async {
     final token = await _getToken();
-
     await updateService.update(token);
     // Update in MainNavigationCardsWidget cards number
-
     cardsNumberStream.listen((event) {
       setSubscriptionsNum(event.$1);
       setTrackedCardsNumber(event.$2);
@@ -108,7 +106,6 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     });
 
     // Update in MainNavigationAdvertViewModel EmptyWidget or not
-
     apiKeyExistsStream.listen((event) {
       if (event[ApiKeyType.promo] != null) {
         setAdvertApiKey(

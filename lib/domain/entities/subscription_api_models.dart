@@ -22,7 +22,7 @@ class SubscriptionV2Response {
       startDate: json['start_date'],
       endDate: json['end_date'],
       token: json['token'],
-      expiredAt: json['expired_at'],
+      expiredAt: json['expiredAt'],
     );
   }
 
@@ -34,7 +34,7 @@ class SubscriptionV2Response {
       'start_date': startDate,
       'end_date': endDate,
       'token': token,
-      'expired_at': expiredAt,
+      'expiredAt': expiredAt,
     };
   }
 
@@ -46,7 +46,7 @@ class SubscriptionV2Response {
       startDate: map['start_date'],
       endDate: map['end_date'],
       token: map['token'],
-      expiredAt: map['expired_at'],
+      expiredAt: map['expiredAt'],
     );
   }
 }

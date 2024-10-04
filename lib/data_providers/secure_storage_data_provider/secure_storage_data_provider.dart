@@ -81,22 +81,27 @@ class SecureStorageProvider
   // Function to check if token is expired
   @override
   Future<Either<RewildError, bool>> tokenNotExpired() async {
-    final result = await _read(key: 'token_expired_at');
-    return result.fold(
-      (l) => left(l),
-      (r) {
-        if (r == null) {
-          return right(false);
-        }
-        final now = DateTime.now();
-        final nowPlus1Hour = now.add(const Duration(minutes: 60));
-        final timestamp = int.parse(r);
-        final expiredAtDT =
-            DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-        return right(
-          expiredAtDT.isAfter(nowPlus1Hour),
-        );
-      },
+    final resultEither = await _read(key: 'token_expired_at');
+    if (resultEither.isLeft()) {
+      return left(
+          resultEither.fold((l) => l, (r) => throw UnimplementedError()));
+    }
+
+    final result =
+        resultEither.fold((l) => throw UnimplementedError(), (r) => r);
+    if (result == null) {
+      return right(false);
+    }
+
+    final now = DateTime.now();
+    final nowPlus1Hour = now.add(const Duration(minutes: 60));
+    final timestamp = int.tryParse(result);
+    if (timestamp == null) {
+      return right(false);
+    }
+    final expiredAtDT = DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
+    return right(
+      expiredAtDT.isAfter(nowPlus1Hour),
     );
   }
 
