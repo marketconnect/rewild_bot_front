@@ -40,7 +40,7 @@ class OrdersHistoryApiClient
           statusCode: response.statusCode,
         );
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "OrdersHistoryApiClient",
           name: "get",
@@ -49,7 +49,7 @@ class OrdersHistoryApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при получении списка отзывов: $e",
         source: "OrdersHistoryApiClient",
         name: "get",

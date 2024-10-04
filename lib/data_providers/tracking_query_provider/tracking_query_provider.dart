@@ -34,7 +34,7 @@ class TrackingQueryDataProvider implements TrackingServiceQueryDataProvider {
         source: "TrackingQueryDataProvider",
         name: "addQuery",
         args: [query.query, query.geo],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -64,7 +64,7 @@ class TrackingQueryDataProvider implements TrackingServiceQueryDataProvider {
         source: "TrackingQueryDataProvider",
         name: "getAllQueries",
         args: [],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -93,7 +93,7 @@ class TrackingQueryDataProvider implements TrackingServiceQueryDataProvider {
         source: "TrackingQueryDataProvider",
         name: "deleteAllQueryForNmId",
         args: [nmId],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -119,7 +119,7 @@ class TrackingQueryDataProvider implements TrackingServiceQueryDataProvider {
         source: "TrackingQueryDataProvider",
         name: "getAllQueriesInBg",
         args: [],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }

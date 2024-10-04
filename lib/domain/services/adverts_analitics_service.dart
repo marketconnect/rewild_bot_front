@@ -85,7 +85,7 @@ class AdvertsAnaliticsService
     final tokenEither = apiKey.fold((l) => null, (r) => r);
     if (tokenEither == null) {
       return left(RewildError('',
-          sendToTg: false,
+          sendToTg: true,
           source: 'AdvertsAnaliticsService',
           name: 'getCampaignDataByInterval',
           args: [campaignId, interval]));

@@ -309,7 +309,7 @@ class KeywordsService implements SingleAutoWordsKeywordService
     }
     if (advInfo == null) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "No ad found",
         name: "fetchAdvInfoForKw",
         source: "KeywordsService",

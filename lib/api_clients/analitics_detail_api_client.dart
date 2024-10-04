@@ -64,7 +64,7 @@ class AnaliticsApiClient {
             "Unknown error";
         return Left(RewildError(
           errorDescription,
-          sendToTg: false,
+          sendToTg: true,
           error: errorDescription,
           source: "AnaliticsDetailApiClient",
           name: "fetchDetail",
@@ -73,7 +73,7 @@ class AnaliticsApiClient {
     } catch (e) {
       return Left(RewildError(
         "Exception during fetch: $e",
-        sendToTg: false,
+        sendToTg: true,
         error: e.toString(),
         source: "AnaliticsDetailApiClient",
         name: "fetchDetail",
@@ -127,7 +127,7 @@ class AnaliticsApiClient {
             apiHelper.statusCodeDescriptions[response.statusCode] ??
                 "Unknown error";
         return Left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errorDescription,
           source: "AnaliticApiClient",
           name: "fetchExciseReport",
@@ -136,7 +136,7 @@ class AnaliticsApiClient {
       }
     } catch (e) {
       return Left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Exception during fetch: $e",
         source: "AnaliticApiClient",
         name: "fetchExciseReport",

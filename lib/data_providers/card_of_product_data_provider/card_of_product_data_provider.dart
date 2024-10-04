@@ -157,12 +157,6 @@ class CardOfProductDataProvider
       final db = await _db;
       List<Map<String, dynamic>> cards = [];
 
-      // Check if the 'cards' object store exists
-      if (!db.objectStoreNames.contains('cards')) {
-        return right(
-            []); // Return an empty list if the object store is not found
-      }
-
       final txn = db.transaction('cards', idbModeReadOnly);
       final store = txn.objectStore('cards');
       if (nmIds != null) {

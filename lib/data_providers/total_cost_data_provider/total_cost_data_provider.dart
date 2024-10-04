@@ -38,7 +38,7 @@ class TotalCostCalculatorDataProvider
         source: "TotalCostCalculatorDataProvider",
         name: "addOrUpdateExpense",
         args: [nmId, name, value],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -77,7 +77,7 @@ class TotalCostCalculatorDataProvider
         source: "TotalCostCalculatorDataProvider",
         name: "deleteAll",
         args: [nmId],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -107,7 +107,7 @@ class TotalCostCalculatorDataProvider
         source: "TotalCostCalculatorDataProvider",
         name: "addAll",
         args: [nmId, expenses],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -133,7 +133,7 @@ class TotalCostCalculatorDataProvider
         source: "TotalCostCalculatorDataProvider",
         name: "removeExpense",
         args: [nmId, name],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -154,7 +154,7 @@ class TotalCostCalculatorDataProvider
         "Failed to get nmIds: $e",
         source: "TotalCostCalculatorDataProvider",
         name: "getAllNmIds",
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -190,7 +190,7 @@ class TotalCostCalculatorDataProvider
         source: "TotalCostCalculatorDataProvider",
         name: "getTotalCost",
         args: [nmId],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }

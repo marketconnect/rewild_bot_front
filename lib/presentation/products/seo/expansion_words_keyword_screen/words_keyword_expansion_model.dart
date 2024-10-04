@@ -90,6 +90,7 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
 
   List<KwByLemma> get selectedPhrases => _selectedPhrases;
 
+  // ignore: prefer_final_fields
   bool _selectedPhrasesChanged = false;
 
   bool get hasChanges => _selectedPhrasesChanged;
@@ -137,11 +138,12 @@ class WordsKeywordExpansionViewModel extends ResourceChangeNotifier {
   void fetchKeywords(List<String> phrases) async {
     setIsLoading(true);
     final fixedPhrases = phrases.map((item) => item.toLowerCase().trim());
-    final keywordsOrNull =
-        await fetch(() => filterValuesService.getKeywordsByWords(
+    final keywordsOrNull = await fetch(
+        () => filterValuesService.getKeywordsByWords(
               token: _token!,
               words: fixedPhrases.toList(),
-            ));
+            ),
+        showError: true);
     if (keywordsOrNull == null) {
       setIsLoading(false);
       return;

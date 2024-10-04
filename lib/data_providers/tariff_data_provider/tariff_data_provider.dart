@@ -53,7 +53,7 @@ class TariffDataProvider
         source: "TariffDataProvider",
         name: "getByStoreId",
         args: [storeId],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -77,7 +77,7 @@ class TariffDataProvider
         source: "TariffDataProvider",
         name: "insertAll",
         args: [tariffs],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }

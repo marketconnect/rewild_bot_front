@@ -107,17 +107,13 @@ class CompetitorKeywordExpansionViewModel extends ResourceChangeNotifier {
       return;
     }
 
-    final kwLemmasForSelectedCardsOrNull =
-        await fetch(() => keywordsService.getKeywordsForCards(
+    final kwLemmasForSelectedCardsOrNull = await fetch(
+        () => keywordsService.getKeywordsForCards(
               token: tokenOrNull,
               skus: _selectedCards.map((e) => e.nmId).toList(),
-            ));
+            ),
+        showError: true);
     if (kwLemmasForSelectedCardsOrNull == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Ошибка при обработке данных."),
-        ));
-      }
       setIsLoading(false);
       return;
     }

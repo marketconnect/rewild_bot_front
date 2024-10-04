@@ -63,7 +63,9 @@ class CardKeywordsService
 
     final keywordsFromServerEither = await apiClient.getKeywordsForProducts(
         token: token, skus: skusForRequest);
-
+    if (keywordsFromServerEither.isLeft()) {
+      return keywordsFromServerEither;
+    }
     // save keywords to local storage
     if (keywordsFromServerEither.isRight()) {
       final keywordsFromServer = keywordsFromServerEither.fold(

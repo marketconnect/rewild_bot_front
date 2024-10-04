@@ -98,7 +98,7 @@ class ContentService
     if (token == null) {
       return left(RewildError(
         'Токен отсутствует',
-        sendToTg: false,
+        sendToTg: true,
         source: "ContentService",
         name: "fetchNomenclatures",
         args: [],
@@ -158,7 +158,7 @@ class ContentService
     if (token == null) {
       return left(RewildError(
         'Токен отсутствует',
-        sendToTg: false,
+        sendToTg: true,
         source: "ContentService",
         name: "fetchNomenclatures",
         args: [],
@@ -215,7 +215,7 @@ class ContentService
     if (token == null) {
       return left(RewildError(
         'Токен отсутствует',
-        sendToTg: false,
+        sendToTg: true,
         source: "ContentService",
         name: "fetchNomenclatures",
         args: [],

@@ -47,7 +47,7 @@ class WBSearchSuggestionService
     if (suggestionsEither is Left) {
       return left(RewildError('err in fetchSuggestions',
           name: 'fetchSuggestions',
-          sendToTg: false,
+          sendToTg: true,
           source: "WbSearchSuggestionSevice"));
     }
     final suggestions =
@@ -68,7 +68,7 @@ class WBSearchSuggestionService
     if (localFreqEither is Left) {
       return left(RewildError('err in fetchFrequency',
           name: 'fetchFrequency',
-          sendToTg: false,
+          sendToTg: true,
           source: "WbSearchSuggestionSevice"));
     }
     final localDbFreq =

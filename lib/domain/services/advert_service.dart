@@ -136,7 +136,7 @@ class AdvertService
     if (token == null) {
       return left(RewildError(
         'Токен отсутствует',
-        sendToTg: false,
+        sendToTg: true,
         source: "AdvertService",
         name: "depositCampaignBudget",
         args: [from, to],
@@ -173,7 +173,7 @@ class AdvertService
     if (token == null) {
       return left(RewildError(
         'Токен отсутствует',
-        sendToTg: false,
+        sendToTg: true,
         source: "AdvertService",
         name: "depositCampaignBudget",
         args: [campaignId, sum],
@@ -292,7 +292,7 @@ class AdvertService
     if (token == null) {
       return left(RewildError(
         'Токен отсутствует',
-        sendToTg: false,
+        sendToTg: true,
         source: "AdvertService",
         name: "setCpm",
         args: [campaignId, type, cpm, param, instrument],

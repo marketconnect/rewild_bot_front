@@ -43,7 +43,7 @@ class NmIdDataProvider
     } catch (e) {
       return left(RewildError(
         e.toString(),
-        sendToTg: false,
+        sendToTg: true,
         source: 'NmIdDataProvider',
         name: 'getNmIds',
         args: [],
@@ -66,7 +66,7 @@ class NmIdDataProvider
     } catch (e) {
       return left(RewildError(
         e.toString(),
-        sendToTg: false,
+        sendToTg: true,
         source: 'NmIdDataProvider',
         name: 'insertNmId',
         args: [],

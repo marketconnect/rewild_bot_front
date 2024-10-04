@@ -29,7 +29,7 @@ class QuestionsApiClient
         final errString =
             wbApiHelper.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: 'QuestionServiceQuestionApiClient',
           name: "getCountUnansweredQuestions",
@@ -38,7 +38,7 @@ class QuestionsApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при получении количества неотвеченных вопросов: $e",
         source: 'QuestionServiceQuestionApiClient',
         name: "getCountUnansweredQuestions",
@@ -86,7 +86,7 @@ class QuestionsApiClient
         final errString =
             wbApiHelper.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "QuestionsApiClient",
           name: "getUnansweredQuestions",
@@ -97,7 +97,7 @@ class QuestionsApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при получении списка вопросов: $e",
         source: "QuestionsApiClient",
         name: "getUnansweredQuestions",
@@ -147,7 +147,7 @@ class QuestionsApiClient
         final errString =
             wbApiHelper.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "QuestionsApiClient",
           name: "getAnsweredQuestions",
@@ -158,7 +158,7 @@ class QuestionsApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при получении списка вопросов: $e",
         source: "QuestionsApiClient",
         name: "getAnsweredQuestions",
@@ -190,7 +190,7 @@ class QuestionsApiClient
         final errString =
             wbApiHelper.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "QuestionsApiClient",
           name: "handleQuestion",
@@ -199,7 +199,7 @@ class QuestionsApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при обработке вопроса: $e",
         source: "QuestionsApiClient",
         name: "handleQuestion",
@@ -223,7 +223,7 @@ class QuestionsApiClient
   //     } else {
   //       final errString = wbApi.errResponse(statusCode: response.statusCode);
   //       return left(RewildError(
-  // sendToTg: false,
+  // sendToTg: true,
   //         errString,
   //         source: "QuestionsApiClient",,
   //         name: "hasNewFeedbacksAndQuestions",
@@ -232,7 +232,7 @@ class QuestionsApiClient
   //     }
   //   } catch (e) {
   //     return left(RewildError(
-  // sendToTg: false,
+  // sendToTg: true,
   //       "Ошибка при проверке наличия новых отзывов и вопросов: $e",
   //       source: "QuestionsApiClient",,
   //       name: "hasNewFeedbacksAndQuestions",
@@ -256,7 +256,7 @@ class QuestionsApiClient
   //     } else {
   //       final errString = wbApi.errResponse(statusCode: response.statusCode);
   //       return left(RewildError(
-  // sendToTg: false,
+  // sendToTg: true,
   //         errString,
   //         source: "QuestionsApiClient",,
   //         name: "getFrequentlyAskedProducts",
@@ -265,7 +265,7 @@ class QuestionsApiClient
   //     }
   //   } catch (e) {
   //     return left(RewildError(
-  // sendToTg: false,
+  // sendToTg: true,
   //       "Ошибка при получении часто задаваемых товаров: $e",
   //       source: "QuestionsApiClient",,
   //       name: "getFrequentlyAskedProducts",

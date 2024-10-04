@@ -46,7 +46,7 @@ class AutoCampaignApiClient implements KeywordsServiceAutoAdvertApiClient {
         final errString =
             apiHelper.errResponse(statusCode: response.statusCode);
         return Left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AutoCampaignApiClient",
           name: "fetchAutoCampaignStats",
@@ -55,7 +55,7 @@ class AutoCampaignApiClient implements KeywordsServiceAutoAdvertApiClient {
       }
     } catch (e) {
       return Left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Unknown error: $e",
         source: "AutoCampaignApiClient",
         name: "fetchAutoCampaignStats",
@@ -96,7 +96,7 @@ class AutoCampaignApiClient implements KeywordsServiceAutoAdvertApiClient {
         final errString =
             apiHelper.errResponse(statusCode: response.statusCode);
         return Left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AutoCampaignApiClient",
           name: "fetchAutoCampaignDailyWordsStats",
@@ -105,7 +105,7 @@ class AutoCampaignApiClient implements KeywordsServiceAutoAdvertApiClient {
       }
     } catch (e) {
       return Left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Unknown error: $e",
         source: "AutoCampaignApiClient",
         name: "fetchAutoCampaignDailyWordsStats",

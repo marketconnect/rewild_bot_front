@@ -31,7 +31,7 @@ class SellerApiClient implements SellerServiceSelerApiClient {
           statusCode: response.statusCode,
         );
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "SellerApiClient",
           name: "get",
@@ -40,7 +40,7 @@ class SellerApiClient implements SellerServiceSelerApiClient {
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при обращении к WB: $e",
         source: "SellerApiClient",
         name: "get",

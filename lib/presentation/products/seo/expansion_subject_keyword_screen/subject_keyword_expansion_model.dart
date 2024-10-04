@@ -94,17 +94,18 @@ class SubjectKeywordExpansionViewModel extends ResourceChangeNotifier {
     }
     setIsLoading(true);
 
-    final lemmasFromServerEither = await seoCoreFilterValuesService
-        .getLemmasBySubjectId(token: _token!, subjectId: subjectId);
-    if (lemmasFromServerEither.isLeft()) {
+    final lemmasFromServerOrNull = await fetch(
+        () => seoCoreFilterValuesService.getLemmasBySubjectId(
+            token: _token!, subjectId: subjectId),
+        showError: true);
+    if (lemmasFromServerOrNull == null) {
       setIsLoading(false);
+
       return;
     }
 
-    // get lemmas from server
-    final lemmasFromServer = lemmasFromServerEither.fold(
-        (l) => throw UnimplementedError(), (r) => r);
-    setAllQueries(lemmasFromServer);
+    // get and setlemmas from server
+    setAllQueries(lemmasFromServerOrNull);
 
     // get lemmas from local db
     // final lemmasEither = await seoCoreSeoService.getAllLemmasForNmID(subjectId);

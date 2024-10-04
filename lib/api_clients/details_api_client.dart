@@ -129,7 +129,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
         return right(resultProductCardsList);
       } else {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Ошибка при обращении к WB status code:${response.statusCode}",
           source: "DetailsApiClient",
           name: "get",
@@ -138,7 +138,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при обращении к WB: $e",
         source: "DetailsApiClient",
         name: "get",

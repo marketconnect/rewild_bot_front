@@ -99,8 +99,10 @@ void main() {
     // Write the updated content back to index.html
     file.writeAsStringSync(content);
 
+    // ignore: avoid_print
     print('index.html успешно обновлен.');
   } else {
+    // ignore: avoid_print
     print('index.html не найден.');
   }
 }

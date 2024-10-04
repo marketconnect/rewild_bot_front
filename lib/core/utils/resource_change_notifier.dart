@@ -41,19 +41,18 @@ class ResourceChangeNotifier extends ChangeNotifier {
     final resource = await callBack();
 
     return resource.fold((l) {
-      // sendMessageToTelegramBot(
-      //     TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
-      // if (l.sendToTg) {
-
-      sendMessageToTelegramBot(
-          TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
-      // }
+      if (l.sendToTg) {
+        sendMessageToTelegramBot(
+            TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
+      }
       if (context.mounted && showError) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(message ?? l.message!),
         ));
       }
       return null;
-    }, (r) => r);
+    }, (r) {
+      return r;
+    });
   }
 }

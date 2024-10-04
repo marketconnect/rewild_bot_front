@@ -64,7 +64,8 @@ abstract class AllCardsScreenSupplyService {
 // Update
 abstract class AllCardsScreenUpdateService {
   Future<Either<RewildError, void>> update(String token);
-  Future<Either<RewildError, void>> fetchAllUserCardsFromServer(String token);
+  Future<Either<RewildError, void>> fetchAllUserCardsFromServerAndSync(
+      String token);
 
   Future<Either<RewildError, int>> deleteLocal({required List<int> nmIds});
 }
@@ -255,7 +256,7 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     }
     final token = await _getToken();
 
-    await fetch(() => updateService.fetchAllUserCardsFromServer(token));
+    await fetch(() => updateService.fetchAllUserCardsFromServerAndSync(token));
 
     // Update
     await fetch(() => updateService.update(token));

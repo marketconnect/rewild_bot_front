@@ -43,7 +43,7 @@ class TrackingResultDataProvider
         source: "TrackingResultDataProvider",
         name: "addTrackingResult",
         args: [trackingResult],
-        sendToTg: false,
+        sendToTg: true,
       ));
     }
   }
@@ -76,7 +76,7 @@ class TrackingResultDataProvider
         "Failed to retrieve tracking results: $e",
         source: "TrackingResultDataProvider",
         name: "getAllTrackingResults",
-        sendToTg: false,
+        sendToTg: true,
         args: [],
       ));
     }
@@ -109,7 +109,7 @@ class TrackingResultDataProvider
         "Failed to delete old tracking results: $e",
         source: "TrackingResultDataProvider",
         name: "deleteOldTrackingResults",
-        sendToTg: false,
+        sendToTg: true,
         args: [],
       ));
     }
@@ -152,7 +152,7 @@ class TrackingResultDataProvider
         "Failed to get keywords without today's entries: $e",
         source: "TrackingResultDataProvider",
         name: "getKeywordsWithoutTodayEntries",
-        sendToTg: false,
+        sendToTg: true,
         args: [queries.map((query) => query.query).toList()],
       ));
     }

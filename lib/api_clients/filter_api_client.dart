@@ -1,7 +1,9 @@
 import 'dart:convert';
+
 import 'package:fpdart/fpdart.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:rewild_bot_front/core/constants/messages_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
@@ -12,40 +14,41 @@ import 'package:rewild_bot_front/domain/services/filter_values_service.dart';
 class FilterApiClient implements FilterServiceFilterApiClient {
   const FilterApiClient();
 
-  @override
-  Future<Either<RewildError, List<String>>> getFilterValues({
-    required String token,
-    required String filterName,
-  }) async {
-    try {
-      final uri = Uri.parse(
-          'https://rewild.website/api/getFilterValues?filterName=$filterName');
-      final response = await http.get(uri, headers: {
-        'Authorization': token,
-      });
+  // @override
+  // Future<Either<RewildError, List<String>>> getFilterValues({
+  //   required String token,
+  //   required String filterName,
+  // }) async {
+  //   try {
+  //     final uri = Uri.parse(
+  //         'https://rewild.website/api/getFilterValues?filterName=$filterName');
+  //     final response = await http.get(uri, headers: {
+  //       'Authorization': token,
+  //     });
 
-      if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body);
-        return right(List<String>.from(data));
-      } else {
-        return left(RewildError(
-          sendToTg: true,
-          "Ошибка HTTP: ${response.statusCode}",
-          source: "FilterApiClient",
-          name: "getFilterValues",
-          args: [],
-        ));
-      }
-    } catch (e) {
-      return left(RewildError(
-        sendToTg: true,
-        "Неизвестная ошибка: ${e.toString()}",
-        source: "FilterApiClient",
-        name: "getFilterValues",
-        args: [],
-      ));
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       final List<dynamic> data = jsonDecode(response.body);
+  //       return right(List<String>.from(data));
+  //     }
+  //      else {
+  //       return left(RewildError(
+  //         sendToTg: true,
+  //         "Ошибка HTTP: ${response.statusCode}",
+  //         source: "FilterApiClient",
+  //         name: "getFilterValues",
+  //         args: [],
+  //       ));
+  //     }
+  //   } catch (e) {
+  //     return left(RewildError(
+  //       sendToTg: true,
+  //       "Неизвестная ошибка: ${e.toString()}",
+  //       source: "FilterApiClient",
+  //       name: "getFilterValues",
+  //       args: [],
+  //     ));
+  //   }
+  // }
 
   @override
   Future<Either<RewildError, List<KwByLemma>>> getKeywordsByLemmas({
@@ -84,6 +87,14 @@ class FilterApiClient implements FilterServiceFilterApiClient {
             args: [],
           ));
         }
+      } else if (response.statusCode == 429) {
+        return left(RewildError(
+          sendToTg: false,
+          MessagesConstants.rateLimitExceeded,
+          source: "FilterApiClient",
+          name: "getKeywordsByLemmas",
+          args: [],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,
@@ -133,6 +144,14 @@ class FilterApiClient implements FilterServiceFilterApiClient {
         } else {
           return right([]);
         }
+      } else if (response.statusCode == 429) {
+        return left(RewildError(
+          sendToTg: false,
+          MessagesConstants.rateLimitExceeded,
+          source: "FilterApiClient",
+          name: "getKeywordsByWords",
+          args: [],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,
@@ -192,6 +211,14 @@ class FilterApiClient implements FilterServiceFilterApiClient {
             args: [],
           ));
         }
+      } else if (response.statusCode == 429) {
+        return left(RewildError(
+          sendToTg: false,
+          MessagesConstants.rateLimitExceeded,
+          source: "FilterApiClient",
+          name: "getLemmasByFilterId",
+          args: [],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,

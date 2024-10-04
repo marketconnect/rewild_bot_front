@@ -200,7 +200,7 @@ class WbContentApiClient implements ContentServiceWbContentApiClient {
                 .errResponse(statusCode: response.statusCode);
 
         return Left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "WbContentApiClient",
           name: "updateMediaFiles",
@@ -210,7 +210,7 @@ class WbContentApiClient implements ContentServiceWbContentApiClient {
     } catch (e) {
       // Handle exceptions during the request
       return Left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Exception during media files update: $e",
         source: "WbContentApiClient",
         name: "updateMediaFiles",

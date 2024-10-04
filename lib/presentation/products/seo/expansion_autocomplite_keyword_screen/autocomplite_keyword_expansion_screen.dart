@@ -149,12 +149,14 @@ class _KwTile extends StatelessWidget {
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
           ),
         ),
-        subtitle: Text(
-          'Частота: ${kw.freq}',
-          style: TextStyle(
-            color: isSelected ? primary : Colors.grey,
-          ),
-        ),
+        subtitle: (kw.freq > 0)
+            ? Text(
+                'Частота: ${kw.freq}',
+                style: TextStyle(
+                  color: isSelected ? primary : Colors.grey,
+                ),
+              )
+            : null,
         trailing: IconButton(
           icon: Icon(
             isSelected ? Icons.check_circle : Icons.add_circle_outline,

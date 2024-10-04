@@ -388,6 +388,7 @@ class _DIContainer {
         tariffDataProvider: _makeTariffDataProvider(),
         cardOfProductDataProvider: _makeCardOfProductDataProvider(),
         initialStockModelDataProvider: _makeInitialStockDataProvider(),
+        subscriptionsApiClient: _makeSubscriptionApiClient(),
         stockDataProvider: _makeStockDataProvider(),
         weekOrdersDataProvider: _makeOrderDataProvider(),
         cardKeywordsDataProvider: _makeCardKeywordsDataProvider(),

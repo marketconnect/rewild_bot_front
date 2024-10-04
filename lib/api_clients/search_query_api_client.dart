@@ -2,6 +2,7 @@ import 'dart:convert';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:fpdart/fpdart.dart';
+import 'package:rewild_bot_front/core/constants/messages_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/services/wb_search_suggestion_service.dart';
@@ -33,6 +34,14 @@ class SearchQueryApiClient
           result.add((queries[i], frequencies[i] as int));
         }
         return right(result);
+      } else if (response.statusCode == 429) {
+        return left(RewildError(
+          sendToTg: false,
+          MessagesConstants.rateLimitExceeded,
+          source: "SearchQueryApiClient",
+          name: "getSearchQuery",
+          args: [queries],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,

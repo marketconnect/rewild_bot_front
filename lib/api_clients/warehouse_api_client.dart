@@ -35,7 +35,7 @@ class WarehouseApiClient
         return right(resultWarehousesList);
       } else {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           'Error ${response.statusCode}',
           source: "WarehouseApiClient",
           name: "getAll",
@@ -44,7 +44,7 @@ class WarehouseApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "$e",
         source: "WarehouseApiClient",
         name: "getAll",

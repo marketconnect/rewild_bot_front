@@ -88,7 +88,7 @@ class RealizationReportService implements ReportRealizationReportService {
     if (apiKeyEither.isLeft()) {
       return left(RewildError('Api key not found',
           name: 'fetchReportDetailByPeriod',
-          sendToTg: false,
+          sendToTg: true,
           source: "RealizationReportService",
           args: []));
     }
@@ -98,7 +98,7 @@ class RealizationReportService implements ReportRealizationReportService {
     if (token == null) {
       return left(RewildError('Api key not found',
           name: 'fetchReportDetailByPeriod',
-          sendToTg: false,
+          sendToTg: true,
           source: "RealizationReportService",
           args: []));
     }

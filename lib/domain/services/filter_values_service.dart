@@ -8,8 +8,8 @@ import 'package:rewild_bot_front/presentation/products/seo/expansion_words_keywo
 
 // Api
 abstract class FilterServiceFilterApiClient {
-  Future<Either<RewildError, List<String>>> getFilterValues(
-      {required String token, required String filterName});
+  // Future<Either<RewildError, List<String>>> getFilterValues(
+  //     {required String token, required String filterName});
   Future<Either<RewildError, List<LemmaByFilterId>>> getLemmasByFilterId({
     required String token,
     required int filterID,
@@ -69,42 +69,42 @@ class FilterValuesService
     required this.cachedKwByWordDataProvider,
   });
 
-  Future<Either<RewildError, List<String>>> getFilterValues(
-      {required String token, required String filterName}) async {
-    // get from local db
-    final localDbValuesEither = await filterDataProvider.getAllForFilterName(
-      filterName,
-    );
-    if (localDbValuesEither.isLeft()) {
-      return left(localDbValuesEither.fold(
-          (l) => l, (r) => throw UnimplementedError()));
-    }
-    final localDbValues =
-        localDbValuesEither.fold((l) => throw UnimplementedError(), (r) => r);
-    if (localDbValues.isNotEmpty) {
-      return right(localDbValues);
-    }
+  // Future<Either<RewildError, List<String>>> getFilterValues(
+  //     {required String token, required String filterName}) async {
+  //   // get from local db
+  //   final localDbValuesEither = await filterDataProvider.getAllForFilterName(
+  //     filterName,
+  //   );
+  //   if (localDbValuesEither.isLeft()) {
+  //     return left(localDbValuesEither.fold(
+  //         (l) => l, (r) => throw UnimplementedError()));
+  //   }
+  //   final localDbValues =
+  //       localDbValuesEither.fold((l) => throw UnimplementedError(), (r) => r);
+  //   if (localDbValues.isNotEmpty) {
+  //     return right(localDbValues);
+  //   }
 
-    // get filter values from server
-    final filterValuesEither = await filterApiClient.getFilterValues(
-        token: token, filterName: filterName);
-    if (filterValuesEither.isLeft()) {
-      return left(
-          filterValuesEither.fold((l) => l, (r) => throw UnimplementedError()));
-    }
+  //   // get filter values from server
+  //   final filterValuesEither = await filterApiClient.getFilterValues(
+  //       token: token, filterName: filterName);
+  //   if (filterValuesEither.isLeft()) {
+  //     return left(
+  //         filterValuesEither.fold((l) => l, (r) => throw UnimplementedError()));
+  //   }
 
-    // save filter values
-    final filterValues =
-        filterValuesEither.fold((l) => throw UnimplementedError(), (r) => r);
+  //   // save filter values
+  //   final filterValues =
+  //       filterValuesEither.fold((l) => throw UnimplementedError(), (r) => r);
 
-    final saveFilterValuesEither =
-        await filterDataProvider.insert(filterName, filterValues);
-    if (saveFilterValuesEither.isLeft()) {
-      return left(saveFilterValuesEither.fold(
-          (l) => l, (r) => throw UnimplementedError()));
-    }
-    return right(filterValues);
-  }
+  //   final saveFilterValuesEither =
+  //       await filterDataProvider.insert(filterName, filterValues);
+  //   if (saveFilterValuesEither.isLeft()) {
+  //     return left(saveFilterValuesEither.fold(
+  //         (l) => l, (r) => throw UnimplementedError()));
+  //   }
+  //   return right(filterValues);
+  // }
 
   @override
   Future<Either<RewildError, List<LemmaByFilterId>>> getLemmasBySubjectId({

@@ -30,7 +30,7 @@ class ReviewApiClient
       } else {
         final errString = wbApi.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             errString,
             source: "reviewsApiClint",
             name: "getCountUnansweredQuestions",
@@ -38,7 +38,7 @@ class ReviewApiClient
       }
     } catch (e) {
       return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Error: $e",
           source: "reviewsApiClint",
           name: "getCountUnansweredQuestions",
@@ -61,7 +61,7 @@ class ReviewApiClient
       } else {
         final errString = wbApi.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             errString,
             source: 'getCountUnansweredReviewsInBackground',
             name: "getCountUnansweredReviews",
@@ -69,7 +69,7 @@ class ReviewApiClient
       }
     } catch (e) {
       return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Error: $e",
           source: "getCountUnansweredReviewsInBackground",
           name: "getCountUnansweredReviews",
@@ -115,7 +115,7 @@ class ReviewApiClient
       } else {
         final errString = wbApi.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "reviewsApiClint",
           name: "getUnAnsweredReviews",
@@ -124,7 +124,7 @@ class ReviewApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при получении списка отзывов: $e",
         source: "reviewsApiClint",
         name: "getFeedbacks",
@@ -170,7 +170,7 @@ class ReviewApiClient
       } else {
         final errString = wbApi.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "reviewsApiClint",
           name: "getAnsweredReviews",
@@ -179,7 +179,7 @@ class ReviewApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при получении списка отзывов: $e",
         source: "reviewsApiClint",
         name: "getFeedbacks",
@@ -209,7 +209,7 @@ class ReviewApiClient
       } else {
         final errString = wbApi.errResponse(statusCode: response.statusCode);
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "reviewsApiClint",
           name: "handleReview",
@@ -218,7 +218,7 @@ class ReviewApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Ошибка при обработке отзыва: $e",
         source: "reviewsApiClint",
         name: "handleReview",

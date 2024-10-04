@@ -41,7 +41,7 @@ class WBSearchSuggestionApiClient
         return right([]);
       } else {
         return Left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Error during fetch: ${response.statusCode}",
           source: "WbSearchSuggestionApiClient",
           name: "fetchSuggestions",
@@ -50,7 +50,7 @@ class WBSearchSuggestionApiClient
       }
     } catch (e) {
       return Left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Error during fetch: $e",
         source: "WbSearchSuggestionApiClient",
         name: "fetchSuggestions",

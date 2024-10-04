@@ -8,9 +8,12 @@ import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
+import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class SubscriptionApiClient
-    implements SubscriptionServiceSubscriptionApiClient {
+    implements
+        SubscriptionServiceSubscriptionApiClient,
+        UpdateServiceSubscriptionsApiClient {
   const SubscriptionApiClient();
 
   @override

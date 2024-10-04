@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fpdart/fpdart.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:rewild_bot_front/core/constants/messages_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/domain/services/card_keywords_service.dart';
@@ -41,7 +42,7 @@ class ProductKeywordsApiClient implements CardKeywordsServiceApiClient {
         final responseData = jsonDecode((utf8.decode(response.bodyBytes)));
         if (responseData['keywords'] == null ||
             responseData['keywords'] is! List) {
-          throw Exception("Invalid response format: ${response.body}");
+          return right([]);
         }
 
         final List<dynamic> keywordsData = responseData['keywords'];
@@ -54,6 +55,14 @@ class ProductKeywordsApiClient implements CardKeywordsServiceApiClient {
         }).toList();
 
         return right(keywords);
+      } else if (response.statusCode == 429) {
+        return left(RewildError(
+          sendToTg: false,
+          MessagesConstants.rateLimitExceeded,
+          source: "ProductKeywordsApiClient",
+          name: "getKeywordsForProduct",
+          args: [skus],
+        ));
       } else {
         return left(RewildError(
           sendToTg: true,

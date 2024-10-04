@@ -58,7 +58,7 @@ class GeoSearchApiClient
         List<dynamic> products = data['data']['products'];
         if (products.isEmpty) {
           return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             'По вашему запросу ничего не найдено',
             source: 'GeoApiClient',
             name: 'getProductsNmIdIndexMapWithGeoAndAdv',
@@ -95,7 +95,7 @@ class GeoSearchApiClient
         return right((idToIndexMap, nmIdToPositionMap));
       } else {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           GeoSearchApiHelper.search
               .errResponse(statusCode: response.statusCode),
           source: 'GeoApiClient',
@@ -105,7 +105,7 @@ class GeoSearchApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка: $e",
         source: 'GeoApiClient',
         name: 'getProductsNmIdIndexMapWithGeoAndAdv',
@@ -143,7 +143,7 @@ class GeoSearchApiClient
 
         if (products.isEmpty) {
           return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             'По вашему запросу ничего не найдено',
             source: 'GeoApiClient',
             name: 'getProductsNmIdIndexMapWithGeoAndAdv',
@@ -166,7 +166,7 @@ class GeoSearchApiClient
         return right(nmIdToPositionMap);
       } else {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           GeoSearchApiHelper.search
               .errResponse(statusCode: response.statusCode),
           source: 'GeoApiClient',
@@ -176,7 +176,7 @@ class GeoSearchApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка: $e",
         source: 'GeoApiClient',
         name: 'getProductsNmIdIndexMapWithGeoAndAdv',
@@ -216,7 +216,7 @@ class GeoSearchApiClient
         List<dynamic> products = data['data']['products'];
         if (products.isEmpty || products.length == 1) {
           return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             'По вашему запросу ничего не найдено $secondPage',
             source: 'GeoApiClient',
             name: 'getProductsNmIdIndexMapWithGeo',
@@ -246,7 +246,7 @@ class GeoSearchApiClient
         return right(idToIndexMap);
       } else {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           GeoSearchApiHelper.search
               .errResponse(statusCode: response.statusCode),
           source: 'GeoApiClient',
@@ -256,7 +256,7 @@ class GeoSearchApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка: $e",
         source: 'GeoApiClient',
         name: 'getProductsNmIdIndexMapWithGeo',
@@ -298,7 +298,7 @@ class GeoSearchApiClient
         List<dynamic> products = data['data']['products'];
         if (products.isEmpty || products.length == 1) {
           return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             'По вашему запросу ничего не найдено $secondPage',
             source: 'GeoApiClient',
             name: 'getProductsNmIdIndexMapIn',
@@ -328,7 +328,7 @@ class GeoSearchApiClient
         return right(idToIndexMap);
       } else {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           GeoSearchApiHelper.search
               .errResponse(statusCode: response.statusCode),
           source: 'GeoApiClient',
@@ -338,7 +338,7 @@ class GeoSearchApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка: $e",
         source: 'GeoApiClient',
         name: 'getProductsNmIdIndexMapIn',
@@ -375,7 +375,7 @@ class GeoSearchApiClient
         List<dynamic> products = data['data']['products'];
         if (products.isEmpty || products.length == 1) {
           return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             'По вашему запросу ничего не найдено $secondPage',
             source: 'GeoApiClient',
             name: 'getProductsNmIdIndexMapWithGeoInBg',
@@ -393,7 +393,7 @@ class GeoSearchApiClient
         return right(idToIndexMap);
       } else {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           GeoSearchApiHelper.search
               .errResponse(statusCode: response.statusCode),
           source: 'GeoApiClient',
@@ -403,7 +403,7 @@ class GeoSearchApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка: $e",
         source: 'GeoApiClient',
         name: 'getProductsNmIdIndexMapWithGeoInBg',
@@ -439,7 +439,7 @@ class GeoSearchApiClient
         List<dynamic> products = data['data']['products'];
         if (products.isEmpty || products.length == 1) {
           return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             'По вашему запросу ничего не найдено $secondPage',
             source: 'GeoApiClient',
             name: 'getProductsNmIdIndexMapWithGeoInBg',
@@ -456,7 +456,7 @@ class GeoSearchApiClient
         return right(idToIndexMap);
       } else {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           GeoSearchApiHelper.search
               .errResponse(statusCode: response.statusCode),
           source: 'GeoApiClient',
@@ -466,7 +466,7 @@ class GeoSearchApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка: $e",
         source: 'GeoApiClient',
         name: 'getProducts',

@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:fpdart/fpdart.dart';
 
 import 'package:rewild_bot_front/core/constants/settings.dart';
+
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
@@ -13,8 +15,10 @@ import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/entities/size_model.dart';
 
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
+import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
+import 'package:rewild_bot_front/env.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
@@ -23,6 +27,12 @@ import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
+
+abstract class UpdateServiceSubscriptionsApiClient {
+  Future<Either<RewildError, SubscriptionV2Response>> getSubscriptionV2({
+    required String token,
+  });
+}
 
 // Tariffs Api
 abstract class UpdateServiceTariffApiClient {
@@ -67,12 +77,8 @@ abstract class UpdateServiceCardOfProductDataProvider {
 
 // Card of product api client
 abstract class UpdateServiceCardOfProductApiClient {
-  // Future<Either<RewildError, void>> save(
-  //     {required String token, required List<CardOfProductModel> productCards});
   Future<Either<RewildError, List<CardOfProductModel>>> getAll(
       {required String token});
-  // Future<Either<RewildError, void>> delete(
-  //     {required String token, required int id});
 }
 
 // initial stock api client
@@ -187,6 +193,7 @@ class UpdateService
   final UpdateServiceStockDataProvider stockDataProvider;
   final UpdateServiceLastUpdateDayDataProvider lastUpdateDayDataProvider;
   final UpdateServiceNotificationDataProvider notificationDataProvider;
+  final UpdateServiceSubscriptionsApiClient subscriptionsApiClient;
 
   // final StreamController<int> cardsNumberStreamController;
   final UpdateServiceWeekOrdersDataProvider weekOrdersDataProvider;
@@ -207,6 +214,7 @@ class UpdateService
       {required this.stockDataProvider,
       required this.detailsApiClient,
       required this.weekOrdersDataProvider,
+      required this.subscriptionsApiClient,
       required this.initialStockModelDataProvider,
       required this.tariffApiClient,
       required this.averageLogisticsApiClient,
@@ -242,8 +250,12 @@ class UpdateService
       : DateTime.now().difference(updatedAt!) > SettingsConstants.updatePeriod;
 
   @override
-  Future<Either<RewildError, void>> fetchAllUserCardsFromServer(
+  Future<Either<RewildError, void>> fetchAllUserCardsFromServerAndSync(
       String token) async {
+    if (_wasUserCardsUpdatedInTheSession) {
+      return right(null);
+    }
+    // get all cards from server
     final cardsFromServerEither =
         await cardOfProductApiClient.getAll(token: token);
     if (cardsFromServerEither.isLeft()) {
@@ -253,8 +265,35 @@ class UpdateService
 
     final cards =
         cardsFromServerEither.fold((l) => throw UnimplementedError(), (r) => r);
-    // there are cards on server - save
+
+    // there are cards on server - sync them with local storage
     if (cards.isNotEmpty) {
+      //  get al cards from local db
+      final cardsInDBEither = await cardOfProductDataProvider.getAll();
+      if (cardsInDBEither.isLeft()) {
+        return left(
+            cardsInDBEither.fold((l) => l, (r) => throw UnimplementedError()));
+      }
+      final cardsInDB = cardsInDBEither.fold(
+        (l) => throw UnimplementedError(),
+        (r) => r,
+      );
+      // get all cards ids from local db
+      final cardsInDBIds = cardsInDB.map((e) => e.nmId).toList();
+      // for each card on server - if it is not in local db - delete it
+      for (final localCardId in cardsInDBIds) {
+        if (!cards.any((element) => element.nmId == localCardId)) {
+          // delete
+          final deleteEither =
+              await cardOfProductDataProvider.delete(id: localCardId);
+          if (deleteEither.isLeft()) {
+            return left(
+                deleteEither.fold((l) => l, (r) => throw UnimplementedError()));
+          }
+        }
+      }
+
+      // for each card on server - insert it if it is not in local db or update it if it is
       final insertOrUpdateEither =
           await insert(token: token, cardOfProductsToInsert: cards);
       if (insertOrUpdateEither.isLeft()) {
@@ -390,6 +429,7 @@ class UpdateService
   // update cards ==============================================================
   @override
   Future<Either<RewildError, void>> update(String token) async {
+    // Check subscriptions
     // if earlier than update period - do nothing
     if (!timeToUpdated()) {
       return right(null);
@@ -410,7 +450,6 @@ class UpdateService
 
     final allSavedCardsOfProducts =
         cardsOfProductsEither.fold((l) => throw UnimplementedError(), (r) => r);
-
     // if there are no cards - do nothing
     if (allSavedCardsOfProducts.isEmpty) {
       return right(null);
@@ -430,8 +469,17 @@ class UpdateService
     // were not updated - update
     // Update initial stocks!
     if (!isUpdated) {
-      // Delete keywords by autocomplite
+      // fetch cards from the server and sync them with local storage
+      final fethchedCardsEither =
+          await fetchAllUserCardsFromServerAndSync(token);
+      if (fethchedCardsEither.isLeft()) {
+        return left(fethchedCardsEither.fold(
+            (l) => l, (r) => throw UnimplementedError()));
+      }
 
+      // Delete keywords by autocomplite
+      sendMessageToTelegramBot(
+          TBot.tBotErrorToken, TBot.tBotErrorChatId, "update");
       final values = await Future.wait([
         cachedKwByAutocompliteDataProvider.deleteAll(), // 0
         cachedKwByLemmaByWordDataProvider.deleteAll(), // 1
@@ -578,9 +626,9 @@ class UpdateService
 
     // regular part of update
     // fetch details for all saved cards from WB
-
-    final fetchedCardsOfProductsEither = await detailsApiClient.get(
-        ids: allSavedCardsOfProducts.map((e) => e.nmId).toList());
+    final savedNmIds = allSavedCardsOfProducts.map((e) => e.nmId).toList();
+    final fetchedCardsOfProductsEither =
+        await detailsApiClient.get(ids: savedNmIds);
 
     if (fetchedCardsOfProductsEither is Left) {
       return left(fetchedCardsOfProductsEither.fold(
@@ -593,6 +641,7 @@ class UpdateService
     // ADD OTHER INFORMATION FOR EVERY FETCHED CARD
     for (final card in fetchedCardsOfProducts) {
       // add the card to db
+
       final insertEither =
           await cardOfProductDataProvider.insertOrUpdate(card: card);
 

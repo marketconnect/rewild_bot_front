@@ -46,7 +46,7 @@ class AdvertApiClient
           statusCode: response.statusCode,
         );
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AdvertApiClient",
           name: "getSearchStat",
@@ -55,7 +55,7 @@ class AdvertApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка $e",
         source: "AdvertApiClient",
         name: "getSearchStat",
@@ -105,7 +105,6 @@ class AdvertApiClient
       required int campaignId,
       required List<String> excludedKw}) async {
     try {
-     
       final params = {'id': campaignId.toString()};
       final body = {
         'excluded': excludedKw,
@@ -147,7 +146,6 @@ class AdvertApiClient
       required int param,
       int? instrument}) async {
     try {
-      
       final body = {
         'advertId': campaignId,
         'type': type,
@@ -172,7 +170,7 @@ class AdvertApiClient
           statusCode: response.statusCode,
         );
         return left(RewildError(
-            sendToTg: false,
+            sendToTg: true,
             errString,
             source: "AdvertApiClient",
             name: "changeCpm",
@@ -180,7 +178,7 @@ class AdvertApiClient
       }
     } catch (e) {
       return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Неизвестная ошибка: $e",
           source: "AdvertApiClient",
           name: "changeCpm",
@@ -195,7 +193,6 @@ class AdvertApiClient
     required DateTime to,
   }) async {
     try {
-    
       final wbApi = WbAdvertApiHelper.getExpensesHistory;
       final DateFormat dateFormat = DateFormat('yyyy-MM-dd');
       final String formattedFrom = dateFormat.format(from);
@@ -243,7 +240,6 @@ class AdvertApiClient
   Future<Either<RewildError, bool>> pauseAdvert(
       {required String token, required int campaignId}) async {
     try {
-    
       final params = {'id': campaignId.toString()};
 
       // final uri = Uri.https('advert-api.wb.ru', "/adv/v0/pause", params);
@@ -260,7 +256,7 @@ class AdvertApiClient
           statusCode: response.statusCode,
         );
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AdvertApiClient",
           name: "pauseAdvert",
@@ -269,7 +265,7 @@ class AdvertApiClient
       }
     } catch (e) {
       return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Неизвестная ошибка",
           source: "AdvertApiClient",
           name: "pauseAdvert",
@@ -282,7 +278,6 @@ class AdvertApiClient
   Future<Either<RewildError, bool>> startAdvert(
       {required String token, required int campaignId}) async {
     try {
-   
       final params = {'id': campaignId.toString()};
 
       // final uri = Uri.https('advert-api.wb.ru', "/adv/v0/start", params);
@@ -300,7 +295,7 @@ class AdvertApiClient
         );
 
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AdvertApiClient",
           name: "startAdvert",
@@ -309,7 +304,7 @@ class AdvertApiClient
       }
     } catch (e) {
       return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Неизвестная ошибка: $e",
           source: "AdvertApiClient",
           name: "startAdvert",
@@ -321,7 +316,6 @@ class AdvertApiClient
   Future<Either<RewildError, int>> getCompanyBudget(
       {required String token, required int campaignId}) async {
     try {
-     
       final params = {'id': campaignId.toString()};
 
       final wbApi = WbAdvertApiHelper.getCompanyBudget;
@@ -342,7 +336,7 @@ class AdvertApiClient
           statusCode: response.statusCode,
         );
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AdvertApiClient",
           name: "getCompanyBudget",
@@ -351,7 +345,7 @@ class AdvertApiClient
       }
     } catch (e) {
       return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Неизвестная ошибка: $e",
           source: "AdvertApiClient",
           name: "getCompanyBudget",
@@ -363,7 +357,6 @@ class AdvertApiClient
   Future<Either<RewildError, Map<(int aType, int aStatus), List<int>>>>
       typeStatusIDs({required String token}) async {
     try {
-    
       final wbApi = WbAdvertApiHelper.getCampaigns;
 
       final response = await wbApi.get(
@@ -408,7 +401,7 @@ class AdvertApiClient
           statusCode: response.statusCode,
         );
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AdvertApiClient",
           name: "typeStatusIDs",
@@ -419,7 +412,7 @@ class AdvertApiClient
       }
     } catch (e) {
       return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Неизвестная ошибка: $e",
           source: "AdvertApiClient",
           name: "typeStatusIDs",
@@ -432,10 +425,9 @@ class AdvertApiClient
   @override
   Future<Either<RewildError, int>> balance({required String token}) async {
     try {
-      
       if (token.isEmpty) {
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Токен не может быть пустым",
           source: "AdvertApiClient",
           name: "balance",
@@ -455,7 +447,7 @@ class AdvertApiClient
           statusCode: response.statusCode,
         );
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AdvertApiClient",
           name: "balance",
@@ -464,7 +456,7 @@ class AdvertApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка: $e",
         source: "AdvertApiClient",
         name: "balance",
@@ -477,7 +469,6 @@ class AdvertApiClient
   Future<Either<RewildError, AutoCampaignStatWord>> autoStatWords(
       {required String token, required int campaignId}) async {
     try {
-     
       final params = {'id': campaignId.toString()};
 
       final wbApi = WbAdvertApiHelper.autoGetStatsWords;
@@ -521,7 +512,6 @@ class AdvertApiClient
       int? status,
       int? type}) async {
     try {
-    
       final body = ids;
       Map<String, String> params = {};
       if (status != null) {
@@ -561,7 +551,7 @@ class AdvertApiClient
 
             default:
               return left(RewildError(
-                sendToTg: false,
+                sendToTg: true,
                 "Неизвестный тип кампании: $advType",
                 source: "AdvertApiClient",
                 name: "getAdverts",
@@ -576,7 +566,7 @@ class AdvertApiClient
           statusCode: response.statusCode,
         );
         return left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           errString,
           source: "AdvertApiClient",
           name: "getAdverts",
@@ -585,7 +575,7 @@ class AdvertApiClient
       }
     } catch (e) {
       return left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Неизвестная ошибка: $e",
         source: "AdvertApiClient",
         name: "getAdverts",
@@ -602,7 +592,6 @@ class AdvertApiClient
     // required int type = 1,
     bool returnResponse = true,
   }) async {
-   
     final apiHelper = WbAdvertApiHelper.depositBudget;
 
     final params = {
@@ -644,7 +633,6 @@ class AdvertApiClient
     required String token,
   }) async {
     try {
-  
       final params = [
         {
           "id": campaignId,
@@ -670,7 +658,7 @@ class AdvertApiClient
         }
         // Обработка ошибок API
         return Left(RewildError(
-          sendToTg: false,
+          sendToTg: true,
           "Ошибка API: Статус ${response.statusCode}",
           source: "AdvertApiClient",
           name: "getSingleCampaignDataByInterval",
@@ -680,7 +668,7 @@ class AdvertApiClient
     } catch (e) {
       // Обработка исключений запроса
       return Left(RewildError(
-        sendToTg: false,
+        sendToTg: true,
         "Исключение при запросе данных кампании: $e",
         source: "AdvertApiClient",
         name: "getSingleCampaignDataByInterval",

@@ -96,10 +96,6 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     // check if wb content api key exists
     final apiKey = await fetch(() => contentService.apiKeyExist());
     if (apiKey == null || !apiKey) {
-      // if (context.mounted) {
-      //   Navigator.of(context)
-      //       .pushReplacementNamed(MainNavigationRouteNames.apiKeysScreen);
-      // }
       _setIsLoading(false);
       return;
     }
@@ -136,9 +132,11 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     for (final c in notSavedCards) {
       final nmId = c.nmID;
       final img = c.photos.first.big;
+      final name = c.title;
       final cardOfProduct = CardOfProductModel(
         nmId: nmId,
         img: img,
+        name: name,
       );
       cardOfProducts.add(cardOfProduct);
     }

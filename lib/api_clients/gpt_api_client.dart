@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:fpdart/fpdart.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:rewild_bot_front/core/constants/messages_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/services/gpt_service.dart';
@@ -36,8 +37,8 @@ class GptApiClient implements GptServiceGptApiClient {
           'n': n,
         }),
       );
-      if (response.statusCode != 402) {
-        return right("У вас закончилась подписка. Пожалуйста, обновите её.");
+      if (response.statusCode == 402) {
+        return right(MessagesConstants.chatGptNotEnoughTokens);
       }
 
       // Check if the server responded with success
