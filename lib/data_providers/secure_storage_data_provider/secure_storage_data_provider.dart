@@ -99,7 +99,7 @@ class SecureStorageProvider
     if (timestamp == null) {
       return right(false);
     }
-    final expiredAtDT = DateTime.fromMillisecondsSinceEpoch(timestamp! * 1000);
+    final expiredAtDT = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
     return right(
       expiredAtDT.isAfter(nowPlus1Hour),
     );
