@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
-import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
+
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
