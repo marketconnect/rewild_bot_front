@@ -369,6 +369,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   // Methods ===================================================================
   Future<void> asyncInit() async {
     setIsLoading(true);
+
     // Stream update track
     streamNotification.listen((event) async {
       if (event.parentType == ParentType.card) {
@@ -379,6 +380,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
         }
       }
     });
+
     // Token
     final token = await fetch(() => tokenProvider.getToken());
     if (token == null) {
@@ -411,23 +413,67 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
 
     // Get card
     final cardOfProduct = values[0] as CardOfProductModel?;
-    if (cardOfProduct == null) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-                "Карточка не найдена. Артикул ($id) скопирован в буфер обмена"),
-          ),
-        );
-      }
+    // if (cardOfProduct == null) {
 
+    //   if (context.mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(
+    //         content: Text(
+    //             "Карточка не найдена. Артикул ($id) скопирован в буфер обмена"),
+    //       ),
+    //     );
+    //   }
+
+    //   if (context.mounted) {
+    //     Navigator.pop(context);
+    //   }
+    //   setIsLoading(false);
+    //   return;
+    // }
+    if (cardOfProduct == null) {
+      print('Card is null');
       if (context.mounted) {
-        Navigator.pop(context);
+        final result = await showDialog<String>(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Карточка не найдена'),
+              content: Text('Что вы хотите сделать?'),
+              actions: <Widget>[
+                TextButton(
+                  child: Text('Добавить'),
+                  onPressed: () {
+                    Navigator.of(context).pop('add');
+                  },
+                ),
+                TextButton(
+                  child: Text('Удалить'),
+                  onPressed: () {
+                    Navigator.of(context).pop('delete');
+                  },
+                ),
+              ],
+            );
+          },
+        );
+
+        if (result == 'add') {
+          // Обработка действия "Добавить"
+          // Например, навигация на экран добавления карточки
+          Navigator.of(context).pushNamed('/addCardScreen', arguments: id);
+        } else if (result == 'delete') {
+          // Обработка действия "Удалить"
+          // Например, выполнить удаление и вернуться назад
+          // Здесь вы можете добавить логику удаления
+          Navigator.of(context).pop();
+        } else {
+          // Если диалог был закрыт без выбора
+          Navigator.of(context).pop();
+        }
       }
       setIsLoading(false);
       return;
     }
-
     _isNull = false;
 
     // name, img, feedbacks, reviewRating
