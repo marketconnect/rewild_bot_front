@@ -14,7 +14,6 @@ abstract class NotificationCardTokenService {
 abstract class NotificationCardNotificationService {
   Future<Either<RewildError, void>> addForParent(
       {required String token,
-      required String endDate,
       required List<ReWildNotificationModel> notifications,
       required int parentId,
       required bool wasEmpty});
@@ -126,9 +125,6 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
 
   Map<Warehouse, int> get warehouses => state.warehouses;
 
-  // end date
-  late String? endDate;
-
   Map<String, ReWildNotificationModel> _originalNotifications = {};
 
   // Methods ===================================================================
@@ -151,8 +147,6 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
       setIsLoading(false);
       return;
     }
-
-    endDate = subscription.endDate;
 
     final savedNotifications = values[1] as List<ReWildNotificationModel>?;
     // final savedNotifications = await fetch(
@@ -190,12 +184,9 @@ class CardNotificationViewModel extends ResourceChangeNotifier {
       return;
     }
     final listToAdd = _notifications.values.toList();
-    if (endDate == null) {
-      return;
-    }
+
     await notificationService.addForParent(
         token: tokenOrNull,
-        endDate: endDate!,
         notifications: listToAdd,
         parentId: state.nmId,
         wasEmpty: _wasEmpty);

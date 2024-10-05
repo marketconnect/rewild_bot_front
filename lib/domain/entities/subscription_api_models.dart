@@ -1,6 +1,7 @@
 class SubscriptionV2Response {
   final int id;
   final String subscriptionTypeName;
+  final int cardLimit;
   final String startDate;
   final String endDate;
   final String token;
@@ -9,6 +10,7 @@ class SubscriptionV2Response {
   SubscriptionV2Response({
     required this.id,
     required this.subscriptionTypeName,
+    required this.cardLimit,
     required this.startDate,
     required this.endDate,
     required this.token,
@@ -19,10 +21,11 @@ class SubscriptionV2Response {
     return SubscriptionV2Response(
       id: json['id'],
       subscriptionTypeName: json['subscription_type_name'],
+      cardLimit: json['card_limit'],
       startDate: json['start_date'],
       endDate: json['end_date'],
       token: json['token'],
-      expiredAt: json['expiredAt'],
+      expiredAt: json['expired_at'],
     );
   }
 
@@ -31,10 +34,11 @@ class SubscriptionV2Response {
     return {
       'id': id,
       'subscription_type_name': subscriptionTypeName,
+      'card_limit': cardLimit,
       'start_date': startDate,
       'end_date': endDate,
       'token': token,
-      'expiredAt': expiredAt,
+      'expired_at': expiredAt,
     };
   }
 
@@ -43,10 +47,11 @@ class SubscriptionV2Response {
     return SubscriptionV2Response(
       id: map['id'],
       subscriptionTypeName: map['subscription_type_name'],
+      cardLimit: map['card_limit'],
       startDate: map['start_date'],
       endDate: map['end_date'],
       token: map['token'],
-      expiredAt: map['expiredAt'],
+      expiredAt: map['expired_at'],
     );
   }
 }

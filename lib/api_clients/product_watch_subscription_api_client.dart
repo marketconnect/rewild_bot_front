@@ -18,7 +18,6 @@ class ProductWatchSubscriptionApiClient
   Future<Either<RewildError, ProductWatchSubscriptionResponse>>
       addProductWatchSubscription({
     required String token,
-    required String endDate,
     required List<Map<String, dynamic>> subscriptions,
   }) async {
     final url =
@@ -31,7 +30,6 @@ class ProductWatchSubscriptionApiClient
           'Content-Type': 'application/json'
         },
         body: jsonEncode({
-          'end_date': endDate,
           'subscriptions': subscriptions,
         }),
       );

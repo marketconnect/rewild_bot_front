@@ -25,12 +25,6 @@ abstract class SubscriptionServiceSubscriptionApiClient {
     required String token,
   });
 
-  Future<Either<RewildError, ExtendSubscriptionV2Response>>
-      extendSubscriptionV2({
-    required String token,
-    required int subscriptionId,
-    required String newEndDate,
-  });
   Future<Either<RewildError, AddCardsToSubscriptionResponse>>
       addCardsToSubscription({
     required String token,

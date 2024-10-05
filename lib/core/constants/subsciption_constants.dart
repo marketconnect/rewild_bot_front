@@ -1,7 +1,7 @@
 int getSubscriptionLimit({required String subscriptionTypeName}) {
   switch (subscriptionTypeName) {
     case "Free":
-      return 5;
+      return 3;
     case "Basic":
       return 25;
     case "Standard":

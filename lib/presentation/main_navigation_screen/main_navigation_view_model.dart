@@ -145,8 +145,7 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
       return;
     }
 
-    setSubscriptionsNum(getSubscriptionLimit(
-        subscriptionTypeName: subscriptions.subscriptionTypeName));
+    setSubscriptionsNum(subscriptions.cardLimit);
 
     // get added cards quantity
     final cardsQtyOrNull = value[1] as List<CardOfProductModel>?;
@@ -312,8 +311,7 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
         return;
       }
 
-      setSubscriptionsNum(getSubscriptionLimit(
-          subscriptionTypeName: subscription.subscriptionTypeName));
+      setSubscriptionsNum(subscription.cardLimit);
     }
   }
 }
