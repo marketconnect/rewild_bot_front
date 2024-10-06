@@ -1,3 +1,4 @@
+import 'package:rewild_bot_front/presentation/home/feedback_form_screen/feedback_form_screen.dart';
 import 'package:rewild_bot_front/presentation/products/cards/add_group_screen/add_group_screen.dart';
 
 import 'package:rewild_bot_front/presentation/products/cards/add_group_screen/add_group_screen_view_model.dart';
@@ -1326,6 +1327,11 @@ class ScreenFactoryDefault implements ScreenFactory {
           _diContainer._makeAddGroupScreenViewModel(context, productsCardsIds),
       child: const AddGroupScreen(),
     );
+  }
+
+  @override
+  Widget makeFeedbackFormScreen() {
+    return const FeedbackFormScreen();
   }
 
   // @override

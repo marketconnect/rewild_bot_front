@@ -439,7 +439,6 @@ class UpdateService
       cardOfProductDataProvider.getAll(),
       lastUpdateDayDataProvider.todayUpdated()
     ]);
-
     // get cards from the local storage
     final cardsOfProductsEither =
         values[0] as Either<RewildError, List<CardOfProductModel>>;
@@ -447,7 +446,6 @@ class UpdateService
       return left(cardsOfProductsEither.fold(
           (l) => l, (r) => throw UnimplementedError()));
     }
-
     final allSavedCardsOfProducts =
         cardsOfProductsEither.fold((l) => throw UnimplementedError(), (r) => r);
     // if there are no cards - do nothing
@@ -462,7 +460,6 @@ class UpdateService
       return left(
           isUpdatedEither.fold((l) => l, (r) => throw UnimplementedError()));
     }
-
     final isUpdated =
         isUpdatedEither.fold((l) => throw UnimplementedError(), (r) => r);
 
@@ -623,13 +620,11 @@ class UpdateService
       // set that today was updated already
       await lastUpdateDayDataProvider.update();
     } // day first time update
-
     // regular part of update
     // fetch details for all saved cards from WB
     final savedNmIds = allSavedCardsOfProducts.map((e) => e.nmId).toList();
     final fetchedCardsOfProductsEither =
         await detailsApiClient.get(ids: savedNmIds);
-
     if (fetchedCardsOfProductsEither is Left) {
       return left(fetchedCardsOfProductsEither.fold(
           (l) => l, (r) => throw UnimplementedError()));
@@ -637,14 +632,12 @@ class UpdateService
 
     final fetchedCardsOfProducts = fetchedCardsOfProductsEither.fold(
         (l) => throw UnimplementedError(), (r) => r);
-
     // ADD OTHER INFORMATION FOR EVERY FETCHED CARD
     for (final card in fetchedCardsOfProducts) {
       // add the card to db
 
       final insertEither =
           await cardOfProductDataProvider.insertOrUpdate(card: card);
-
       if (insertEither is Left) {
         return left(
             insertEither.fold((l) => l, (r) => throw UnimplementedError()));
@@ -665,7 +658,6 @@ class UpdateService
         return left(
             deleteEither.fold((l) => l, (r) => throw UnimplementedError()));
       }
-
       // add stocks
       final addStocksEither = await _addStocks(card.sizes, stocks);
       if (addStocksEither.isLeft()) {

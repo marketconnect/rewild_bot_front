@@ -74,6 +74,12 @@ class _MainNavigationScreenHomeWidgetState
                 route: MainNavigationRouteNames.realizationReportScreen,
                 iconData: Icons.dashboard,
               ),
+              _Link(
+                text: 'Обратная связь',
+                color: Colors.blueAccent,
+                route: MainNavigationRouteNames.feedbackFormScreen,
+                iconData: Icons.feedback,
+              ),
             ],
           ),
         )

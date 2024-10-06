@@ -190,8 +190,8 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       }
     });
     final userNmIdsOrNull = await fetch(
-        () => cardsOfProductsService.getAllUserNmIds(),
-        note: 'getAllUserNmIds()');
+      () => cardsOfProductsService.getAllUserNmIds(),
+    );
     if (userNmIdsOrNull != null) {
       setUserNmIds(userNmIdsOrNull.map((e) => e.nmId).toList());
     }
@@ -257,21 +257,29 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     }
     final token = await _getToken();
 
-    await fetch(() => updateService.fetchAllUserCardsFromServerAndSync(token),
-        note: 'fetchAllUserCardsFromServerAndSync()');
+    await fetch(
+      () => updateService.fetchAllUserCardsFromServerAndSync(token),
+    );
 
     // Update
-    await fetch(() => updateService.update(token), note: 'update()');
+    await fetch(
+      () => updateService.update(token),
+    );
 
     final values = await Future.wait([
       // fetch(() => filterService.getCurrentFilter()), // 0
-      fetch(() => cardsOfProductsService.getAll(), note: '0'), // 0
-      fetch(() => notificationsService.getAll(), note: '1'), // 1
-      fetch(() => groupsProvider.getAll(), note: '2'), // 2
       fetch(
-          () =>
-              averageLogisticsService.getCurrentAverageLogistics(token: token),
-          note: '3'), // 3
+        () => cardsOfProductsService.getAll(),
+      ), // 0
+      fetch(
+        () => notificationsService.getAll(),
+      ), // 1
+      fetch(
+        () => groupsProvider.getAll(),
+      ), // 2
+      fetch(
+        () => averageLogisticsService.getCurrentAverageLogistics(token: token),
+      ), // 3
       _handleSubscriptions(token),
     ]);
 
@@ -366,8 +374,8 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       averageLogistics = averageLogisticsFromApiOrNull;
     }
     final totalCostsGrossProfitOrNull = await fetch(
-        () => totalCostService.getAllGrossProfit(averageLogistics),
-        note: 'gross profit');
+      () => totalCostService.getAllGrossProfit(averageLogistics),
+    );
 
     if (totalCostsGrossProfitOrNull != null) {
       _totalCostsGrossProfit = totalCostsGrossProfitOrNull;
@@ -385,17 +393,20 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     SubscriptionV2Response? localSubscriptionOrNull;
     // when the screen is opened get all subsribed cards
     if (_firstLoad) {
-      localSubscriptionOrNull =
-          await fetch(() => subscriptionsService.getSubscription(token: token));
+      localSubscriptionOrNull = await fetch(
+        () => subscriptionsService.getSubscription(token: token),
+      );
       _firstLoad = false;
     } else {
       localSubscriptionOrNull = await fetch(
-          () => subscriptionsService.getLocalSubscription(token: token));
+        () => subscriptionsService.getLocalSubscription(token: token),
+      );
     }
     if (localSubscriptionOrNull != null) {
       // Find subscribed card IDs
-      final subscribedCardsIdsOrNull =
-          await fetch(() => subscriptionsService.getSubscribedCardsIds(token));
+      final subscribedCardsIdsOrNull = await fetch(
+        () => subscriptionsService.getSubscribedCardsIds(token),
+      );
 
       if (subscribedCardsIdsOrNull == null) {
         return;

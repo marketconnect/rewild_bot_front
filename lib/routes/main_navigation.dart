@@ -75,7 +75,7 @@ abstract class ScreenFactory {
 
   Widget makeAddGroupsScreen(List<int> cardsIds);
 
-  // Widget makeWbWebViewSceen((List<int>, String?) nmIdsSearchString);
+  Widget makeFeedbackFormScreen();
 }
 
 class MainNavigation implements AppNavigation {
@@ -324,6 +324,11 @@ class MainNavigation implements AppNavigation {
         final productsCardsIds = arguments is List<int> ? arguments : <int>[];
         return MaterialPageRoute(
           builder: (_) => screenFactory.makeAddGroupsScreen(productsCardsIds),
+        );
+
+      case MainNavigationRouteNames.feedbackFormScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeFeedbackFormScreen(),
         );
 
       // case MainNavigationRouteNames.addCardOptionScreen:

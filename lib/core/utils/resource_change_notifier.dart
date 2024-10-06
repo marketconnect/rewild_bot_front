@@ -20,27 +20,26 @@ class ResourceChangeNotifier extends ChangeNotifier {
     }
   }
 
-  Future<T?> fetch<T>(Future<Either<RewildError, T>> Function() callBack,
-      {bool showError = false,
-      String? message,
-      // TODO Comment for release
-      String? note}) async {
-    // TODO Comment for release
-    Stopwatch? stopwatch;
+  Future<T?> fetch<T>(
+    Future<Either<RewildError, T>> Function() callBack, {
+    bool showError = false,
+    String? message,
+    //
+    // String? note
+  }) async {
+    // Stopwatch? stopwatch;
 
-    // TODO Comment for release
-    if (note != null) {
-      stopwatch = Stopwatch()..start();
-    }
+    // if (note != null) {
+    //   stopwatch = Stopwatch()..start();
+    // }
 
     final resource = await callBack();
 
-    // TODO Comment for release
-    if (stopwatch != null) {
-      stopwatch.stop();
-      final timeElapsed = stopwatch.elapsed.inSeconds;
-      print('Time elapsed ($note): $timeElapsed seconds.');
-    }
+    // if (stopwatch != null) {
+    //   stopwatch.stop();
+    //   final timeElapsed = stopwatch.elapsed.inSeconds;
+    //   print('Time elapsed ($note): $timeElapsed seconds.');
+    // }
 
     return resource.fold((l) {
       if (l.sendToTg) {

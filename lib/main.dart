@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import 'package:rewild_bot_front/core/utils/database_helper.dart';
+// import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/di/di.dart';
 
@@ -32,10 +32,10 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     setUrlStrategy(PathUrlStrategy());
-    final dbHelper = DatabaseHelper();
+    // final dbHelper = DatabaseHelper();
 
-    await dbHelper.database;
-    await dbHelper.clearTable('card_keywords');
+    // await dbHelper.database;
+    // await dbHelper.clearTable('card_keywords');
     TelegramWebApp.setTelegramHeaderColor("#fef7ff");
     TelegramWebApp.expandTelegramWebApp();
     runApp(appFactory.makeApp());

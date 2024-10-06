@@ -63,4 +63,5 @@ abstract class MainNavigationRouteNames {
   static const String chatGptScreen = '/chat_gpt_screen';
 
   static const String addGroupsScreen = '/add_groups_screen';
+  static const String feedbackFormScreen = '/feedback_form_screen';
 }
