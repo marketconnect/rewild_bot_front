@@ -128,62 +128,77 @@ class ApiKeyMissingWidget extends StatelessWidget {
   final VoidCallback onSeoByCategoryPressed;
 
   const ApiKeyMissingWidget({
-    super.key,
+    Key? key,
     required this.onAddApiKeyPressed,
     required this.onSeoByCategoryPressed,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.info_outline,
-            color: Theme.of(context).primaryColor,
-            size: 48,
+    final theme = Theme.of(context);
+
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24.0),
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          const SizedBox(height: 16),
-          Text(
-            'API ключ не добавлен',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).primaryColor,
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Замените иконку на иллюстрацию, если есть
+                Icon(
+                  Icons.vpn_key_off,
+                  color: theme.primaryColor,
+                  size: 80,
                 ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Для подключения к API портала продавца, вы можете добавить API токен.',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 24),
-          ElevatedButton.icon(
-            onPressed: onAddApiKeyPressed,
-            label: const Text('Добавить API токен'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).primaryColor,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+                const SizedBox(height: 24),
+                Text(
+                  'API ключ не добавлен',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Чтобы воспользоваться всеми возможностями приложения, пожалуйста, добавьте API токен.',
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 32),
+                ElevatedButton.icon(
+                  onPressed: onAddApiKeyPressed,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Добавить API токен'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 24),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextButton.icon(
+                  onPressed: onSeoByCategoryPressed,
+                  icon: const Icon(Icons.category),
+                  label: const Text('Продолжить без API'),
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 16, horizontal: 24),
+                  ),
+                ),
+              ],
             ),
-            icon: const Icon(Icons.vpn_key),
           ),
-          const SizedBox(height: 16),
-          OutlinedButton.icon(
-            onPressed: onSeoByCategoryPressed,
-            label: const Text('SEO без товара'),
-            icon: const Icon(Icons.category),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: Theme.of(context).primaryColor),
-              padding: const EdgeInsets.symmetric(vertical: 16),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
