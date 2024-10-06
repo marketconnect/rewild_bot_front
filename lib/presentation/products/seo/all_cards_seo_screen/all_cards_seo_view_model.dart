@@ -120,15 +120,25 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     final nmIds = _cardsContent.map((e) => e.nmID).toList();
     final allCardsOrNull =
         await fetch(() => cardOfProductService.getAll(nmIds));
+    List<int> savedNmIds = [];
+    // if there are no cards in local storage
+    if (allCardsOrNull == null) {
+      savedNmIds = [];
+    } else {
+      // filter only the saved cards with images and names and get their nmIds
+      savedNmIds = allCardsOrNull
+          .where((e) => e.img.isNotEmpty && e.name.isNotEmpty)
+          .map((e) => e.nmId)
+          .toList();
+    }
 
-    // get local saved cards nmIds
-    final savedNmIds = allCardsOrNull!.map((e) => e.nmId);
-    // get cards that are not in local storage
+    // get cards that are not in local storage or that have no images and names
     final notSavedCards =
         contentOrNull.cards.where((card) => !savedNmIds.contains(card.nmID));
 
     List<CardOfProductModel> cardOfProducts = [];
 
+    // add all cards that are not in local storage
     for (final c in notSavedCards) {
       final nmId = c.nmID;
       final img = c.photos.first.big;
@@ -141,6 +151,7 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
       cardOfProducts.add(cardOfProduct);
     }
 
+    // save all cards in local storage
     if (cardOfProducts.isNotEmpty) {
       final tokenOrNull = await fetch(() => authService.getToken());
       if (tokenOrNull == null) {
@@ -152,7 +163,12 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
           token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
     }
 
-    setCards([...allCardsOrNull, ...cardOfProducts]);
+    // set cards for view
+    if (allCardsOrNull == null) {
+      setCards(cardOfProducts);
+    } else {
+      setCards([...allCardsOrNull, ...cardOfProducts]);
+    }
 
     _setIsLoading(false);
   }
