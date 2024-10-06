@@ -105,6 +105,47 @@ class ProductWatchSubscriptionApiClient
   }
 
   @override
+  Future<Either<RewildError, void>> deleteProductWatchSubscriptionForProduct({
+    required String token,
+    required int productId,
+  }) async {
+    final url = Uri.parse(
+        "https://rewild.website/api/deleteProductWatchSubscriptionsForProduct");
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json'
+        },
+        body: jsonEncode({
+          'product_id': productId,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return right(null);
+      } else {
+        return left(RewildError(
+          sendToTg: true,
+          "Ошибка при удалении подписок: ${response.statusCode}",
+          source: "ProductWatchSubscriptionApiClient",
+          name: "deleteProductWatchSubscriptionForProduct",
+          args: [productId],
+        ));
+      }
+    } catch (e) {
+      return left(RewildError(
+        sendToTg: true,
+        "Неизвестная ошибка: $e",
+        source: "ProductWatchSubscriptionApiClient",
+        name: "deleteProductWatchSubscriptionForProduct",
+        args: [productId],
+      ));
+    }
+  }
+
+  @override
   Future<Either<RewildError, GetAllSubscriptionsForUserAndProductResponse>>
       getAllSubscriptionsForUserAndProduct({
     required String token,

@@ -49,6 +49,10 @@ abstract class NotificationServiceProductWatchSubscriptionApiClient {
     required String token,
     required int productId,
   });
+  Future<Either<RewildError, void>> deleteProductWatchSubscriptionForProduct({
+    required String token,
+    required int productId,
+  });
 }
 
 class NotificationService
@@ -173,6 +177,23 @@ class NotificationService
     }
 
     return right(null);
+  }
+
+  @override
+  Future<Either<RewildError, void>> deleteAllForParent(
+      {required String token, required int parentId}) async {
+    final serverEither = await productWatchSubscriptionApiClient
+        .deleteProductWatchSubscriptionForProduct(
+      token: token,
+      productId: parentId,
+    );
+
+    if (serverEither.isLeft()) {
+      return serverEither;
+    }
+
+    final either = await notificationDataProvider.deleteAll(parentId: parentId);
+    return either;
   }
 
   @override

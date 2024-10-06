@@ -26,6 +26,10 @@ import 'package:rewild_bot_front/domain/entities/warehouse.dart';
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
+import 'package:web/web.dart' as html;
+
+import 'package:js/js.dart';
+
 // card
 abstract class SingleCardScreenCardOfProductService {
   Future<Either<RewildError, CardOfProductModel?>> getOne(int nmId);
@@ -80,17 +84,14 @@ abstract class SingleCardScreenSupplyService {
 // notification
 abstract class SingleCardScreenNotificationService {
   Future<Either<RewildError, bool>> checkForParent({required int campaignId});
+  Future<Either<RewildError, void>> deleteAllForParent(
+      {required String token, required int parentId});
 }
 
 // Token
 abstract class SingleCardScreenAuthService {
   Future<Either<RewildError, String>> getToken();
 }
-
-// subscriptions
-// abstract class SingleCardScreenSubscriptionsService {
-//   Future<Either<RewildError, bool>> isSubscribed(int nmId);
-// }
 
 // price
 abstract class SingleCardScreenPriceService {
@@ -106,6 +107,8 @@ abstract class SingleCardScreenWeekOrdersService {
 // Update
 abstract class SingleCardScreenUpdateService {
   Future<Either<RewildError, void>> update(String token);
+  Future<Either<RewildError, void>> fetchAllUserCardsFromServerAndSync(
+      String token);
 }
 
 class SingleCardScreenViewModel extends ResourceChangeNotifier {
@@ -390,66 +393,76 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
 
     // if from telegram bot then update
     if (fromBot) {
-      await fetch(() => updateService.update(token));
+      // if a user added a card and return to this screen from telegram bot
+      // then the local storage does not contain this card yet
+      // so we need to fetch it from server
+      await fetch(
+        () => updateService.fetchAllUserCardsFromServerAndSync(token),
+      );
+
+      await fetch(
+        () => updateService.update(token),
+      );
     }
 
     // multiple futures
     final values = await Future.wait([
-      fetch(() => cardOfProductService.getOne(id)), // 0
+      fetch(
+        () => cardOfProductService.getOne(id),
+      ), // 0
 
-      fetch(() => stockService.get(nmId: id)), // 1
-      fetch(() => supplyService.getForOne(
-          nmId: id,
-          dateFrom: yesterdayEndOfTheDay(),
-          dateTo: DateTime.now())), // 2
-      fetch(() => initialStocksService.get(nmId: id)), // 3
-      fetch(() => ordersHistoryService.get(nmId: id)), // 4
-      fetch(() => notificationService.checkForParent(campaignId: id)), // 5
-      fetch(() => priceService.getPrice(token)), // 6
-      fetch(() =>
-          weekOrdersService.getOrdersFromTo(token: token, skus: [id])), // 7
+      fetch(
+        () => stockService.get(nmId: id),
+      ), // 1
+      fetch(
+        () => supplyService.getForOne(
+            nmId: id, dateFrom: yesterdayEndOfTheDay(), dateTo: DateTime.now()),
+      ), // 2
+      fetch(
+        () => initialStocksService.get(nmId: id),
+      ), // 3
+      fetch(
+        () => ordersHistoryService.get(nmId: id),
+      ), // 4
+      fetch(
+        () => notificationService.checkForParent(campaignId: id),
+      ), // 5
+      fetch(
+        () => priceService.getPrice(token),
+      ), // 6
+      fetch(
+        () => weekOrdersService.getOrdersFromTo(token: token, skus: [id]),
+      ), // 7
       // Clipboard.setData(ClipboardData(text: "$id")), // 8
     ]);
 
     // Get card
     final cardOfProduct = values[0] as CardOfProductModel?;
-    // if (cardOfProduct == null) {
 
-    //   if (context.mounted) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(
-    //         content: Text(
-    //             "Карточка не найдена. Артикул ($id) скопирован в буфер обмена"),
-    //       ),
-    //     );
-    //   }
-
-    //   if (context.mounted) {
-    //     Navigator.pop(context);
-    //   }
-    //   setIsLoading(false);
-    //   return;
-    // }
     if (cardOfProduct == null) {
-      print('Card is null');
+      // when a user go to the screen from telegram bot and the card already deleted
       if (context.mounted) {
         final result = await showDialog<String>(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Карточка не найдена'),
-              content: Text('Что вы хотите сделать?'),
+              title: const Text('Карточка не найдена'),
+              content: const Text('Что вы хотите сделать?'),
               actions: <Widget>[
                 TextButton(
-                  child: Text('Добавить'),
+                  child: const Text('Добавить'),
                   onPressed: () {
                     Navigator.of(context).pop('add');
                   },
                 ),
                 TextButton(
-                  child: Text('Удалить'),
-                  onPressed: () {
-                    Navigator.of(context).pop('delete');
+                  child: const Text('Удалить'),
+                  onPressed: () async {
+                    await fetch(() => notificationService.deleteAllForParent(
+                        token: token, parentId: id));
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
                   },
                 ),
               ],
@@ -458,17 +471,18 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
         );
 
         if (result == 'add') {
-          // Обработка действия "Добавить"
-          // Например, навигация на экран добавления карточки
-          Navigator.of(context).pushNamed('/addCardScreen', arguments: id);
+          // if (context.mounted) {
+          //   Navigator.of(context).pushNamed('/addCardScreen', arguments: id);
+          // }
+          openBrowserAndCloseApp();
         } else if (result == 'delete') {
-          // Обработка действия "Удалить"
-          // Например, выполнить удаление и вернуться назад
-          // Здесь вы можете добавить логику удаления
-          Navigator.of(context).pop();
+          if (context.mounted) {
+            Navigator.of(context).pop();
+          }
         } else {
-          // Если диалог был закрыт без выбора
-          Navigator.of(context).pop();
+          if (context.mounted) {
+            Navigator.of(context).pop();
+          }
         }
       }
       setIsLoading(false);
@@ -745,4 +759,20 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
         MainNavigationRouteNames.expenseManagerScreen,
         arguments: (id, _maxLogistic, _commission ?? 0));
   }
+
+  void openBrowserAndCloseApp() {
+    // first open browser
+    html.window.open(
+        'https://www.wildberries.ru/catalog/$id/detail.aspx?targetUrl=EX',
+        'wb');
+
+    // Wait for 5 seconds before closing the app to be sure that the browser window is closed
+    Future.delayed(const Duration(seconds: 5), () {
+      closeTelegramApp();
+    });
+  }
 }
+
+// external function from index.html
+@JS('closeTelegramApp')
+external void closeTelegramApp();
