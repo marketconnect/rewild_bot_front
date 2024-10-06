@@ -227,10 +227,11 @@ class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
 
     // Normalize the text to remove common word endings and other variants
     String normalize(String input) {
-      return input.replaceAll(
+      return input.toLowerCase().replaceAll(
           RegExp(
-              r'(а|у|е|я|и|ы|о|й|ю|ь|ъ|ей|ое|ие|ые|ый|их|ую|юю|ам|ом|ем|ым|им|ах|ях|ью|ов|ев|ий|ый|ой|её|яя|ие|ия|ий|ые|ым|им|ем|ое|ую|юю|ое|яя|ей|ей|а|у|е|я|и|ы|о|й|ю|ь|ъ)$'),
+              r'(иями|ями|ами|ов|ев|ей|ого|ему|ому|ым|им|ей|ой|ую|юю|ие|ые|ий|ый|ой|ая|яя|ою|ею|ать|ять|еть|уть|ить|ыть|ешь|ете|ет|ют|ишь|ите|им|ем|ешь|ют|ут|ат|ят|ся|ться|ы|и|а|у|е|о|й|ь|ю|я)$'),
           '');
+      // word = word.replaceAll(RegExp(r'$'), '');
     }
 
     // Extract and normalize words from the input text

@@ -11,7 +11,7 @@ abstract class GptServiceGptApiClient {
     required List<Map<String, String>> messages,
     double temperature = 0.7,
     double topP = 0.9,
-    int maxTokens = 150,
+    // int maxTokens = 150,
     int n = 1,
   });
 }
@@ -45,7 +45,7 @@ class GptService implements GptScreenGptService {
       messages: messages,
       temperature: 0.7,
       topP: 0.9,
-      maxTokens: 150,
+      // maxTokens: 150,
       n: 1,
     );
   }

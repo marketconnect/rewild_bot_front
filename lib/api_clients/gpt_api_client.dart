@@ -17,7 +17,6 @@ class GptApiClient implements GptServiceGptApiClient {
     required List<Map<String, String>> messages,
     double temperature = 0.7,
     double topP = 0.9,
-    int maxTokens = 150,
     int n = 1,
   }) async {
     try {
@@ -33,7 +32,6 @@ class GptApiClient implements GptServiceGptApiClient {
           'messages': messages,
           'temperature': temperature,
           'top_p': topP,
-          'max_tokens': maxTokens,
           'n': n,
         }),
       );

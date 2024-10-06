@@ -121,7 +121,7 @@ class SeoToolViewModel extends ResourceChangeNotifier {
 
   void titleGenerator() async {
     String text =
-        'Создай текст названия. Ключевые слова: ${_selectedTitleKeywords.map((e) => e.keyword).join(', ')}';
+        'Создай текст названия не более 60 символов.Ключевые слова: ${_selectedTitleKeywords.map((e) => e.keyword).join(', ')}';
     // if (title != null) {
     //   text += '\nНазвание: $title';
     // }
@@ -139,10 +139,8 @@ class SeoToolViewModel extends ResourceChangeNotifier {
       _selectedDescriptionKeywords;
   void descriptionGenerator() async {
     String text =
-        'Создай текст описания товара. Ключевые слова: ${_selectedDescriptionKeywords.map((e) => e.keyword).join(', ')}';
-    // if (description != null) {
-    //   text += '\nОписание: $description';
-    // }
+        'Создай текст описания товара длиной около 2000 символов, но не более. Ключевые слова: ${_selectedDescriptionKeywords.map((e) => e.keyword).join(', ')}';
+
     final res = await Navigator.of(context)
         .pushNamed(MainNavigationRouteNames.chatGptScreen, arguments: text);
 

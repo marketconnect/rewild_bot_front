@@ -124,86 +124,6 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
                   title: _selectedIndex == 0
                       ? '${titles[_selectedIndex]} (${kwResearchModel.corePhrases.length})'
                       : titles[_selectedIndex]),
-              // actions: [
-              //   _selectedIndex == 0
-              //       ? IconButton(
-              //           onPressed: () {
-              //             showDialog(
-              //               context: context,
-              //               builder: (BuildContext context) {
-              //                 return Dialog(
-              //                   shape: RoundedRectangleBorder(
-              //                     borderRadius: BorderRadius.circular(20.0),
-              //                   ),
-              //                   child: Padding(
-              //                     padding: const EdgeInsets.all(16.0),
-              //                     child: Column(
-              //                       mainAxisSize: MainAxisSize.min,
-              //                       children: <Widget>[
-              //                         const Text(
-              //                           'Расширение запросов',
-              //                           style: TextStyle(
-              //                             fontSize: 20.0,
-              //                             fontWeight: FontWeight.bold,
-              //                           ),
-              //                         ),
-              //                         const SizedBox(height: 20.0),
-              //                         ListTile(
-              //                           leading: const Icon(Icons.text_fields),
-              //                           title: const Text('По словам'),
-              //                           onTap: () async {
-              //                             Navigator.pop(context);
-              //                             await goToWordsKwExpansionScreen();
-              //                           },
-              //                         ),
-              //                         const Divider(),
-              //                         ListTile(
-              //                           leading: const Icon(Icons.category),
-              //                           title: const Text('По категории'),
-              //                           onTap: () async {
-              //                             Navigator.pop(context);
-              //                             await goToSubjectKwExpansionScreen();
-              //                           },
-              //                         ),
-              //                         const Divider(),
-              //                         ListTile(
-              //                           leading: const Icon(Icons.autorenew),
-              //                           title: const Text('Автозаполнение'),
-              //                           onTap: () async {
-              //                             Navigator.pop(context);
-              //                             await goToAutocompliteKwExpansionScreen();
-              //                           },
-              //                         ),
-              //                         const Divider(),
-              //                         ListTile(
-              //                           leading: const Icon(Icons.business),
-              //                           title: const Text('Из других карточек'),
-              //                           onTap: () async {
-              //                             Navigator.pop(context);
-              //                             await goToCompetitorsKwExpansionScreen();
-              //                           },
-              //                         ),
-              //                         const Divider(),
-              //                         const SizedBox(height: 10.0),
-              //                         Align(
-              //                           alignment: Alignment.bottomRight,
-              //                           child: TextButton(
-              //                             onPressed: () {
-              //                               Navigator.pop(context);
-              //                             },
-              //                             child: const Text('Отмена'),
-              //                           ),
-              //                         ),
-              //                       ],
-              //                     ),
-              //                   ),
-              //                 );
-              //               },
-              //             );
-              //           },
-              //           icon: const Icon(Icons.search))
-              //       : Container(),
-              // ],
               scrolledUnderElevation: 2,
               shadowColor: Colors.black,
               surfaceTintColor: Colors.transparent,
@@ -222,10 +142,6 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
                     Icons.title, titles[1], _selectedIndex == 1),
                 buildBottomNavigationBarItem(
                     Icons.description, titles[2], _selectedIndex == 2),
-                // buildBottomNavigationBarItem(
-                //     Icons.analytics, titles[3], _selectedIndex == 3),
-                // buildBottomNavigationBarItem(
-                //     Icons.report, titles[4], _selectedIndex == 4),
               ],
               currentIndex: _selectedIndex,
               onTap: _onItemTapped,
@@ -378,10 +294,10 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
   final TextEditingController roleController = TextEditingController();
   String selectedModel = const LLM.gigaChat().name;
   bool isTitleTextFieldEmpty = true;
+
+  String? _titleErrorMessage;
   @override
   Widget build(BuildContext context) {
-    // we need a single instance of the CardItem (for the title and description management),
-    // so we need to access it from the SeoToolViewModel
     final seoToolModel = context.watch<SeoToolViewModel>();
     final title = seoToolModel.title;
     final setTitle = seoToolModel.setCardItem;
@@ -438,10 +354,19 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                         isTitleTextFieldEmpty = false;
                       });
                       return;
-                    }
-                    if (value.isEmpty && !isTitleTextFieldEmpty) {
+                    } else if (value.isEmpty && !isTitleTextFieldEmpty) {
                       setState(() {
                         isTitleTextFieldEmpty = true;
+                      });
+                    }
+                    if (value.length > 60) {
+                      setState(() {
+                        _titleErrorMessage =
+                            'Превышено количество символов для поля  (${value.length}). Обычно разрешается указывать не более 60 символов в поле Наименование. Ваша карточка может попасть в Черновики.';
+                      });
+                    } else {
+                      setState(() {
+                        _titleErrorMessage = null;
                       });
                     }
                   },
@@ -449,6 +374,8 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                   decoration: InputDecoration(
                     labelText: 'Наименование',
                     border: const OutlineInputBorder(),
+                    errorText: _titleErrorMessage,
+                    errorMaxLines: 5,
                     suffixIcon: isTitleTextFieldEmpty
                         ? null
                         : IconButton(
@@ -617,7 +544,7 @@ class _DescriptionGeneratorScreenState
     extends State<DescriptionGeneratorScreen> {
   final TextEditingController descriptionController = TextEditingController();
   bool isDescriptionTextFieldEmpty = true;
-
+  String? _descriptionErrorMessage;
   @override
   Widget build(BuildContext context) {
     // Access SeoToolViewModel
@@ -676,10 +603,22 @@ class _DescriptionGeneratorScreenState
                     setState(() {
                       isDescriptionTextFieldEmpty = value.isEmpty;
                     });
+                    if (value.length > 2000) {
+                      setState(() {
+                        _descriptionErrorMessage =
+                            'Превышено количество символов для поля (${value.length}). Обычно разрешается указывать не более 2000 символов в поле Описания. Ваша карточка может попасть в Черновики.';
+                      });
+                    } else {
+                      setState(() {
+                        _descriptionErrorMessage = null;
+                      });
+                    }
                   },
                   maxLines: null,
                   decoration: InputDecoration(
                     labelText: 'Описание',
+                    errorText: _descriptionErrorMessage,
+                    errorMaxLines: 5,
                     border: const OutlineInputBorder(),
                     suffixIcon: isDescriptionTextFieldEmpty
                         ? null

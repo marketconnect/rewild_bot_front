@@ -21,7 +21,10 @@ class ResourceChangeNotifier extends ChangeNotifier {
   }
 
   Future<T?> fetch<T>(Future<Either<RewildError, T>> Function() callBack,
-      {bool showError = false, String? message, String? note}) async {
+      {bool showError = false,
+      String? message,
+      // TODO Comment for release
+      String? note}) async {
     // TODO Comment for release
     Stopwatch? stopwatch;
 

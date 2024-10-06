@@ -189,8 +189,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
         await _update();
       }
     });
-    final userNmIdsOrNull =
-        await fetch(() => cardsOfProductsService.getAllUserNmIds());
+    final userNmIdsOrNull = await fetch(
+        () => cardsOfProductsService.getAllUserNmIds(),
+        note: 'getAllUserNmIds()');
     if (userNmIdsOrNull != null) {
       setUserNmIds(userNmIdsOrNull.map((e) => e.nmId).toList());
     }
@@ -256,18 +257,21 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     }
     final token = await _getToken();
 
-    await fetch(() => updateService.fetchAllUserCardsFromServerAndSync(token));
+    await fetch(() => updateService.fetchAllUserCardsFromServerAndSync(token),
+        note: 'fetchAllUserCardsFromServerAndSync()');
 
     // Update
-    await fetch(() => updateService.update(token));
+    await fetch(() => updateService.update(token), note: 'update()');
 
     final values = await Future.wait([
       // fetch(() => filterService.getCurrentFilter()), // 0
-      fetch(() => cardsOfProductsService.getAll()), // 0
-      fetch(() => notificationsService.getAll()), // 1
-      fetch(() => groupsProvider.getAll()), // 2
-      fetch(() => averageLogisticsService.getCurrentAverageLogistics(
-          token: token)), // 3
+      fetch(() => cardsOfProductsService.getAll(), note: '0'), // 0
+      fetch(() => notificationsService.getAll(), note: '1'), // 1
+      fetch(() => groupsProvider.getAll(), note: '2'), // 2
+      fetch(
+          () =>
+              averageLogisticsService.getCurrentAverageLogistics(token: token),
+          note: '3'), // 3
       _handleSubscriptions(token),
     ]);
 
@@ -361,8 +365,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     if (averageLogisticsFromApiOrNull != null) {
       averageLogistics = averageLogisticsFromApiOrNull;
     }
-    final totalCostsGrossProfitOrNull =
-        await fetch(() => totalCostService.getAllGrossProfit(averageLogistics));
+    final totalCostsGrossProfitOrNull = await fetch(
+        () => totalCostService.getAllGrossProfit(averageLogistics),
+        note: 'gross profit');
 
     if (totalCostsGrossProfitOrNull != null) {
       _totalCostsGrossProfit = totalCostsGrossProfitOrNull;
