@@ -381,6 +381,15 @@ class _GestureDetectorCard extends StatelessWidget {
 
 class _EmptyProductsCards extends StatelessWidget {
   const _EmptyProductsCards();
+  void openBrowserAndCloseApp() {
+    // first open browser
+    html.window.open('https://www.wildberries.ru/', 'wb');
+
+    // Wait for 5 seconds before closing the app to be sure that the browser window is closed
+    Future.delayed(const Duration(seconds: 5), () {
+      closeTelegramApp();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -389,13 +398,18 @@ class _EmptyProductsCards extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const Text("Вы еще не добавили ни одной карточки"),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              "Чтобы добавить карточки товаров, просто поделитесь ссылкой на товар в чат бота.",
+              textAlign: TextAlign.center,
+            ),
+          ),
           CustomElevatedButton(
             onTap: () {
-              Navigator.of(context).pushNamed(
-                "MainNavigationRouteNames.wbWebViewScreen",
-              );
+              openBrowserAndCloseApp();
             },
             text: "Добавить",
             buttonStyle: ButtonStyle(
@@ -438,7 +452,7 @@ class _HorizontalScrollMenuState extends State<_HorizontalScrollMenu>
     final len = model.selectedLength;
     final selectionInProcess = model.selectionInProcess;
     List<GroupModel> groups = model.groups;
-    final someUserNmIdIsSelected = model.someUserNmIdIsSelected;
+    // final someUserNmIdIsSelected = model.someUserNmIdIsSelected;
 
     final isLoading = model.isLoading;
     final selectGroup = model.selectGroup;
@@ -513,21 +527,20 @@ class _HorizontalScrollMenuState extends State<_HorizontalScrollMenu>
                         SizedBox(
                           width: model.screenWidth * 0.3,
                         ),
-                        if (!someUserNmIdIsSelected)
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              IconButton(
-                                  onPressed: () => _openAnimatedDialog(
-                                      context, len, onDelete),
-                                  icon: Icon(
-                                    Icons.delete_outline,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: model.screenWidth * 0.08,
-                                  )),
-                            ],
-                          ),
+                        // if (!someUserNmIdIsSelected)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            IconButton(
+                                onPressed: () =>
+                                    _openAnimatedDialog(context, len, onDelete),
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: model.screenWidth * 0.08,
+                                )),
+                          ],
+                        ),
                       ],
                     ),
                   ]

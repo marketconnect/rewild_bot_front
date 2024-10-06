@@ -71,17 +71,23 @@ class CardOfProductApiClient
 
       if (response.statusCode == 200) {
         final responseData = jsonDecode(response.body);
-        List<CardOfProductModel> cards = [];
-        final productCards = responseData['productsCards'] as List<dynamic>;
-        for (final c in productCards) {
-          cards.add(CardOfProductModel(
-            nmId: c['sku'],
-            name: c['name'],
-            img: c['image'],
-          ));
-        }
+        if (responseData['productsCards'] != null &&
+            responseData['productsCards'] is List) {
+          List<CardOfProductModel> cards = [];
+          final productCards = responseData['productsCards'] as List<dynamic>;
 
-        return right(cards);
+          for (final c in productCards) {
+            cards.add(CardOfProductModel(
+              nmId: c['sku'],
+              name: c['name'],
+              img: c['image'],
+            ));
+          }
+
+          return right(cards);
+        } else {
+          return right([]);
+        }
       } else {
         return left(RewildError(
           sendToTg: true,

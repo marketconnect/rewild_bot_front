@@ -136,8 +136,8 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
   List<int> _userNmIds = [];
 
   bool isUserNmId(int nmId) => _userNmIds.contains(nmId);
-  bool get someUserNmIdIsSelected =>
-      _selectedNmIds.any((element) => isUserNmId(element));
+  // bool get someUserNmIdIsSelected =>
+  //     _selectedNmIds.any((element) => isUserNmId(element));
   void setUserNmIds(List<int> value) {
     _userNmIds = value;
     notify();
