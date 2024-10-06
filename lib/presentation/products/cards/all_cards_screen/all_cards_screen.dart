@@ -62,13 +62,14 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
     final len = model.selectedLength;
     final headerSliverBuilderItems = selectionInProcess
         ? [
-            _HorizontalScrollMenu(
-                selectedGroupIndex: selectedGroupIndex,
-                cardsNmIds: productCards.map((e) => e.nmId).toList())
+            if (productCards.isNotEmpty)
+              _HorizontalScrollMenu(
+                  selectedGroupIndex: selectedGroupIndex,
+                  cardsNmIds: productCards.map((e) => e.nmId).toList())
           ]
         : [
             const _AppBar(),
-            if (!isLoading)
+            if (!isLoading && productCards.isNotEmpty)
               _HorizontalScrollMenu(
                   selectedGroupIndex: selectedGroupIndex,
                   cardsNmIds: productCards.map((e) => e.nmId).toList()),
@@ -101,27 +102,7 @@ class _AllCardsScreenState extends State<AllCardsScreen> {
                               fontWeight: FontWeight.bold)),
                     ),
                   )
-                : null
-        // :
-        // FloatingActionButton(
-        //     backgroundColor:
-        //         Theme.of(context).colorScheme.surfaceContainerHighest,
-        //     onPressed: () async {
-        //       await resetFilter();
-        //     },
-        //     child: Container(
-        //       width: 30,
-        //       height: 30,
-        //       decoration: const BoxDecoration(
-        //         color: Colors.transparent,
-        //       ),
-        //       child: Image.asset(
-        //         IconConstant.iconFilterDismiss,
-        //         color: Theme.of(context).colorScheme.onSurfaceVariant,
-        //       ),
-        //     ),
-        //   )
-        ,
+                : null,
         body: DefaultTabController(
           length: selectionInProcess ? 1 : groups.length,
           child: NestedScrollView(
@@ -203,7 +184,6 @@ class _AppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<AllCardsScreenViewModel>();
-    // final nmIds = model.allNmIds;
     final isLoading = model.isLoading;
     return SliverAppBar(
       // AppBar ========================================================== AppBar
@@ -448,11 +428,10 @@ class _HorizontalScrollMenuState extends State<_HorizontalScrollMenu>
     final model = context.watch<AllCardsScreenViewModel>();
     final onClear = model.onClearSelected;
     final onDelete = model.deleteCards;
-    // final buy = model.buy;
+
     final len = model.selectedLength;
     final selectionInProcess = model.selectionInProcess;
     List<GroupModel> groups = model.groups;
-    // final someUserNmIdIsSelected = model.someUserNmIdIsSelected;
 
     final isLoading = model.isLoading;
     final selectGroup = model.selectGroup;

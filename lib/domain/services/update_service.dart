@@ -6,7 +6,6 @@ import 'package:rewild_bot_front/core/constants/settings.dart';
 
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
 
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
@@ -18,7 +17,7 @@ import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
-import 'package:rewild_bot_front/env.dart';
+
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
@@ -475,8 +474,7 @@ class UpdateService
       }
 
       // Delete keywords by autocomplite
-      sendMessageToTelegramBot(
-          TBot.tBotErrorToken, TBot.tBotErrorChatId, "update");
+
       final values = await Future.wait([
         cachedKwByAutocompliteDataProvider.deleteAll(), // 0
         cachedKwByLemmaByWordDataProvider.deleteAll(), // 1

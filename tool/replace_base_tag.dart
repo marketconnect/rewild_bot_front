@@ -26,7 +26,7 @@ void main() {
     </script>''';
     content = content.replaceFirst('</head>', '$closeAppScript\n</head>');
 
-    // Add CSS styles for 100% height and splash screen before </head>
+    // Обновлённые стили для спиннера с неподвижным изображением
     const styleTag = '''
     <style>
       html, body {
@@ -39,7 +39,7 @@ void main() {
       body > * {
         height: 100%;
       }
-      /* Splash Screen Styles */
+      /* Стили для сплэш-экрана */
       #splash {
         position: fixed;
         top: 0;
@@ -53,7 +53,7 @@ void main() {
         z-index: 9999;
         flex-direction: column;
       }
-      /* Spinner Styles */
+      /* Стили спиннера */
       .spinner {
         width: 80px;
         height: 80px;
@@ -61,12 +61,27 @@ void main() {
         border-top: 10px solid #6650a3; 
         border-radius: 50%;
         animation: spin 1.5s linear infinite;
+        position: relative;
+      }
+      /* Изображение внутри спиннера */
+      .spinner img {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        top: calc(50% - 25px);
+        left: calc(50% - 25px);
+        /* Противоположная анимация для компенсации вращения */
+        animation: counter-spin 1.5s linear infinite;
       }
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
       }
-      /* Optional: Loading Text */
+      @keyframes counter-spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(-360deg); }
+      }
+      /* Дополнительно: Текст загрузки */
       .loading-text {
         margin-top: 20px;
         font-size: 18px;
@@ -76,17 +91,19 @@ void main() {
     ''';
     content = content.replaceFirst('</head>', '$styleTag\n</head>');
 
-    // Add Splash Screen HTML immediately after <body>
+    // Обновлённый HTML для сплэш-экрана сразу после <body>
     const splashHtml = '''
     <body>
       <div id="splash">
-        <div class="spinner"></div>
+        <div class="spinner">
+          <img src="assets/assets/images/logo_for_loading.png" alt="Loading" />
+        </div>
         <div class="loading-text">Загрузка...</div>
       </div>
     ''';
     content = content.replaceFirst('<body>', splashHtml);
 
-    // Add JavaScript to hide splash screen after Flutter loads
+    // Добавляем JavaScript для скрытия сплэш-экрана после загрузки Flutter
     const hideSplashScript = '''
     <script>
       window.addEventListener('flutter-first-frame', function () {
@@ -96,7 +113,7 @@ void main() {
     ''';
     content = content.replaceFirst('</body>', '$hideSplashScript\n</body>');
 
-    // Write the updated content back to index.html
+    // Записываем обновлённое содержимое обратно в index.html
     file.writeAsStringSync(content);
 
     // ignore: avoid_print
