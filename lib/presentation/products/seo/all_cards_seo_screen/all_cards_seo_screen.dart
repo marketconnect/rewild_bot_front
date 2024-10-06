@@ -128,10 +128,10 @@ class ApiKeyMissingWidget extends StatelessWidget {
   final VoidCallback onSeoByCategoryPressed;
 
   const ApiKeyMissingWidget({
-    Key? key,
+    super.key,
     required this.onAddApiKeyPressed,
     required this.onSeoByCategoryPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -139,65 +139,59 @@ class ApiKeyMissingWidget extends StatelessWidget {
 
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Card(
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Padding(
-            padding:
-                const EdgeInsets.symmetric(vertical: 32.0, horizontal: 24.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Замените иконку на иллюстрацию, если есть
-                Icon(
-                  Icons.vpn_key_off,
-                  color: theme.primaryColor,
-                  size: 80,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  'API ключ не добавлен',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    color: theme.primaryColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Чтобы воспользоваться всеми возможностями приложения, пожалуйста, добавьте API токен.',
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 32),
-                ElevatedButton.icon(
-                  onPressed: onAddApiKeyPressed,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Добавить API токен'),
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16, horizontal: 24),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextButton.icon(
-                  onPressed: onSeoByCategoryPressed,
-                  icon: const Icon(Icons.category),
-                  label: const Text('Продолжить без API'),
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 16, horizontal: 24),
-                  ),
-                ),
-              ],
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 24),
+            Text(
+              'Добавьте API токен',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
+            const SizedBox(height: 16),
+            Text(
+              'Чтобы получить доступ ко всем возможностям создания SEO для карточек товара, добавьте API токен "Контент".',
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: onAddApiKeyPressed,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 24,
+                ),
+                backgroundColor: Theme.of(context).primaryColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text('Добавить API токен'),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: onSeoByCategoryPressed,
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 24,
+                ),
+                side: BorderSide(color: theme.primaryColor),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                textStyle: TextStyle(
+                  color: theme.primaryColor,
+                ),
+              ),
+              child: const Text('Продолжить без API'),
+            ),
+          ],
         ),
       ),
     );
