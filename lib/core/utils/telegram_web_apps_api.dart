@@ -31,7 +31,7 @@ class TelegramWebApp {
     }
 
     if (initData.isEmpty) {
-      return 'initData is null or empty';
+      return '';
     }
 
     try {
@@ -60,9 +60,9 @@ class TelegramWebApp {
         }
       }
 
-      return 'Unknown chatId';
+      return '';
     } catch (e) {
-      return 'Error parsing initData: $e';
+      return '';
     }
   }
 

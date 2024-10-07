@@ -6,6 +6,7 @@ import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 
 import 'package:rewild_bot_front/domain/entities/advert_base.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
@@ -298,9 +299,14 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     return userName;
   }
 
-  Future<void> goToSubscriptionsScreeen(BuildContext context) async {
+  Future<void> goToSubscriptionsScreeen(
+      BuildContext context, String chatId) async {
+    final chatId = await TelegramWebApp.getChatId();
+    if (chatId.isEmpty) {
+      return;
+    }
     final res = await Navigator.of(context)
-        .pushNamed(MainNavigationRouteNames.paymentScreen);
+        .pushNamed(MainNavigationRouteNames.paymentScreen, arguments: chatId);
 
     if (res == true) {
       // subscription

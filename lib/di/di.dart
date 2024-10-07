@@ -624,10 +624,10 @@ class _DIContainer {
           tokenService: _makeAuthService());
 
   PaymentScreenViewModel _makePaymentScreenViewModel(
-    BuildContext context,
-  ) =>
+          BuildContext context, String chatId) =>
       PaymentScreenViewModel(
         context: context,
+        chatId: chatId,
         subService: _makeSubscriptionService(),
         tokenService: _makeAuthService(),
         paymentStoreService: _makePriceService(),
@@ -1105,9 +1105,10 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makePaymentScreen() {
+  Widget makePaymentScreen(String chatId) {
     return ChangeNotifierProvider(
-      create: (context) => _diContainer._makePaymentScreenViewModel(context),
+      create: (context) =>
+          _diContainer._makePaymentScreenViewModel(context, chatId),
       child: const PaymentScreen(),
     );
   }

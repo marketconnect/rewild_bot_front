@@ -16,7 +16,7 @@ abstract class ScreenFactory {
   Widget makeApiKeysScreen();
   Widget makeAllCardsScreen();
 
-  Widget makePaymentScreen();
+  Widget makePaymentScreen(String chatId);
   Widget makePaymentWebView(PaymentInfo paymentInfo);
   Widget makeSingleCardScreen(int id, bool fromBot);
   Widget makeCardNotificationsSettingsScreen(NotificationCardState state);
@@ -112,6 +112,33 @@ class MainNavigation implements AppNavigation {
         settings: settings,
       );
     }
+
+    if (uri.path == MainNavigationRouteNames.paymentScreen) {
+      // from url
+      final chatIdParam = uri.queryParameters['chatId'];
+      String chatId = chatIdParam ?? "";
+      print("route query: ${uri.queryParameters}");
+      print("route query: ${uri.path}");
+
+      // from arguments
+      if (chatId.isEmpty) {
+        final arguments = settings.arguments;
+        chatId = arguments is String ? arguments : "";
+      }
+      print("route chatId: $chatId");
+      return PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            screenFactory.makePaymentScreen(chatId),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        settings: settings,
+      );
+    }
+
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(
@@ -132,18 +159,14 @@ class MainNavigation implements AppNavigation {
               );
             },
             settings: settings);
-      case MainNavigationRouteNames.paymentScreen:
-        return MaterialPageRoute(
-          builder: (_) => screenFactory.makePaymentScreen(),
-        );
 
-      case MainNavigationRouteNames.paymentWebView:
-        final arguments = settings.arguments;
-        final args = arguments is PaymentInfo ? arguments : PaymentInfo.empty();
+      // case MainNavigationRouteNames.paymentWebView:
+      //   final arguments = settings.arguments;
+      //   final args = arguments is PaymentInfo ? arguments : PaymentInfo.empty();
 
-        return MaterialPageRoute(
-          builder: (_) => screenFactory.makePaymentWebView(args),
-        );
+      //   return MaterialPageRoute(
+      //     builder: (_) => screenFactory.makePaymentWebView(args),
+      //   );
 
       case MainNavigationRouteNames.cardNotificationsSettingsScreen:
         final arguments = settings.arguments;

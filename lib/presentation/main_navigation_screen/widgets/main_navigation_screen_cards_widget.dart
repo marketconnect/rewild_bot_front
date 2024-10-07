@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 import 'package:rewild_bot_front/widgets/link_btn.dart';
@@ -134,7 +135,9 @@ class _InfoRow extends StatelessWidget {
         ),
       ),
       TextButton(
-          onPressed: () => goToSubscriptionsScreen(context),
+          onPressed: () => goToSubscriptionsScreen(
+                context,
+              ),
           child: Container(
               alignment: Alignment.center,
               decoration: BoxDecoration(
