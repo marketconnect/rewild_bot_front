@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
@@ -5,12 +7,17 @@ import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 
-import 'package:rewild_bot_front/domain/entities/payment_info.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 
-import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
+import "package:http/http.dart" as http;
+
+import 'package:js/js.dart';
+
+@JS('closeTelegramApp')
+external void closeTelegramApp();
 
 // Token
 abstract class PaymentScreenTokenService {
@@ -222,23 +229,72 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
   bool get isProcessing => _isProcessing;
   DateTime _endDate = DateTime.now().add(const Duration(days: 30));
   DateTime get todayPlusOneMonth => _endDate;
+  // void processPayment() async {
+  //   // if prolongation subscription
+  //   if (activeIndex == _indexOfCurrentSubscription) {
+  //     _endDate = currentSubscriptionEndDatePlusOneMonth;
+  //   }
+
+  //   final res = await Navigator.of(context).pushNamed(
+  //       MainNavigationRouteNames.paymentWebView,
+  //       arguments: PaymentInfo(
+  //           amount: _subscriptionsInfo[_activeIndex]['price'],
+  //           description:
+  //               'Тариф «${_subscriptionsInfo[_activeIndex]['title']}» до ${formatDate(_endDate.toIso8601String())}.',
+  //           endDate: _endDate,
+  //           subscriptionType: getSubscriptionTypeByIndex(index: activeIndex)));
+  //   if (res == true) {
+  //     if (context.mounted) {
+  //       Navigator.of(context).pop(true);
+  //     }
+  //   }
+  // }
+
   void processPayment() async {
     // if prolongation subscription
     if (activeIndex == _indexOfCurrentSubscription) {
       _endDate = currentSubscriptionEndDatePlusOneMonth;
     }
 
-    final res = await Navigator.of(context).pushNamed(
-        MainNavigationRouteNames.paymentWebView,
-        arguments: PaymentInfo(
-            amount: _subscriptionsInfo[_activeIndex]['price'],
-            description:
-                'Тариф «${_subscriptionsInfo[_activeIndex]['title']}» до ${formatDate(_endDate.toIso8601String())}.',
-            endDate: _endDate,
-            subscriptionType: getSubscriptionTypeByIndex(index: activeIndex)));
-    if (res == true) {
+    final chatId = await TelegramWebApp.getChatId();
+    final orderNumber =
+        DateTime.now().millisecondsSinceEpoch; // Уникальный номер заказа
+    final amountString = _subscriptionsInfo[_activeIndex]['price'];
+    final amount = int.parse(amountString.replaceAll('₽', '')) *
+        100; // Конвертируем в копейки
+    final description =
+        'Тариф «${_subscriptionsInfo[_activeIndex]['title']}» до ${formatDate(_endDate.toIso8601String())}.'; // Ваше описание
+
+    // Отправляем запрос на сервер
+    final response = await http.post(
+      Uri.parse(
+          'https://rewild.website/api/process_payment_request'), // Замените на ваш URL
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'amount': amount,
+        'chatId': chatId.toString(),
+        'orderNumber': orderNumber,
+        'description': description,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      closeTelegramApp();
+    } else {
       if (context.mounted) {
-        Navigator.of(context).pop(true);
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Ошибка'),
+            content: const Text('Не удалось сформировать ссылку на оплату.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
       }
     }
   }
