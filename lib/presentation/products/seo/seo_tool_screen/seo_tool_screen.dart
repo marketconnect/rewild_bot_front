@@ -5,7 +5,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
-import 'package:rewild_bot_front/core/constants/llms.dart';
+
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
@@ -292,7 +292,7 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController promptController = TextEditingController();
   final TextEditingController roleController = TextEditingController();
-  String selectedModel = const LLM.gigaChat().name;
+
   bool isTitleTextFieldEmpty = true;
 
   String? _titleErrorMessage;

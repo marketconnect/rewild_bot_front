@@ -61,60 +61,61 @@ class SubscriptionApiClient
     }
   }
 
-  @override
-  Future<Either<RewildError, SubscriptionV2Response>> updateSubscriptionV2({
-    required String token,
-    required int subscriptionID,
-    required String subscriptionType,
-    required String startDate,
-    required String endDate,
-  }) async {
-    final url = Uri.parse("https://rewild.website/api/updateSubscriptionV2");
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'subscription_id': subscriptionID,
-          'subscription_type': subscriptionType,
-          'start_date': startDate,
-          'end_date': endDate,
-        }),
-      );
+  // @override
+  // Future<Either<RewildError, SubscriptionV2Response>> updateSubscriptionV2({
+  //   required String token,
+  //   required int subscriptionID,
+  //   required String subscriptionType,
+  //   required String startDate,
+  //   required String endDate,
+  // }) async {
+  //   final url = Uri.parse("https://rewild.website/api/updateSubscriptionV2");
+  //   try {
+  //     final response = await http.post(
+  //       url,
+  //       headers: {
+  //         'Authorization': 'Bearer $token',
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: jsonEncode({
+  // /// otherwise returns a [RewildError].
+  //         'subscription_id': subscriptionID,
+  //         'subscription_type': subscriptionType,
+  //         'start_date': startDate,
+  //         'end_date': endDate,
+  //       }),
+  //     );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
-        return right(SubscriptionV2Response(
-          id: data['id'],
-          subscriptionTypeName: data['subscription_type_name'],
-          startDate: data['start_date'],
-          endDate: data['end_date'],
-          token: data['token'],
-          expiredAt: data['expired_at'],
-          cardLimit: data['card_limit'],
-        ));
-      } else {
-        return left(RewildError(
-          sendToTg: true,
-          "Ошибка при обновлении подписки V2: ${response.statusCode}",
-          source: "SubscriptionApiClient",
-          name: "updateSubscriptionV2",
-          args: [subscriptionID, subscriptionType, startDate, endDate],
-        ));
-      }
-    } catch (e) {
-      return left(RewildError(
-        sendToTg: true,
-        "Неизвестная ошибка: $e",
-        source: "SubscriptionApiClient",
-        name: "updateSubscriptionV2",
-        args: [subscriptionID, subscriptionType, startDate, endDate],
-      ));
-    }
-  }
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> data = jsonDecode(response.body);
+  //       return right(SubscriptionV2Response(
+  //         id: data['id'],
+  //         subscriptionTypeName: data['subscription_type_name'],
+  //         startDate: data['start_date'],
+  //         endDate: data['end_date'],
+  //         token: data['token'],
+  //         expiredAt: data['expired_at'],
+  //         cardLimit: data['card_limit'],
+  //       ));
+  //     } else {
+  //       return left(RewildError(
+  //         sendToTg: true,
+  //         "Ошибка при обновлении подписки V2: ${response.statusCode}",
+  //         source: "SubscriptionApiClient",
+  //         name: "updateSubscriptionV2",
+  //         args: [subscriptionID, subscriptionType, startDate, endDate],
+  //       ));
+  //     }
+  //   } catch (e) {
+  //     return left(RewildError(
+  //       sendToTg: true,
+  //       "Неизвестная ошибка: $e",
+  //       source: "SubscriptionApiClient",
+  //       name: "updateSubscriptionV2",
+  //       args: [subscriptionID, subscriptionType, startDate, endDate],
+  //     ));
+  //   }
+  // }
 
   // @override
   // Future<Either<RewildError, ExtendSubscriptionV2Response>>

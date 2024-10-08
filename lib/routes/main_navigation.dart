@@ -3,7 +3,6 @@ import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 
-import 'package:rewild_bot_front/domain/entities/payment_info.dart';
 import 'package:rewild_bot_front/domain/entities/question_model.dart';
 import 'package:rewild_bot_front/domain/entities/review_model.dart';
 
@@ -17,7 +16,7 @@ abstract class ScreenFactory {
   Widget makeAllCardsScreen();
 
   Widget makePaymentScreen(String chatId);
-  Widget makePaymentWebView(PaymentInfo paymentInfo);
+  // Widget makePaymentWebView(PaymentInfo paymentInfo);
   Widget makeSingleCardScreen(int id, bool fromBot);
   Widget makeCardNotificationsSettingsScreen(NotificationCardState state);
 
@@ -117,15 +116,13 @@ class MainNavigation implements AppNavigation {
       // from url
       final chatIdParam = uri.queryParameters['chatId'];
       String chatId = chatIdParam ?? "";
-      print("route query: ${uri.queryParameters}");
-      print("route query: ${uri.path}");
 
       // from arguments
       if (chatId.isEmpty) {
         final arguments = settings.arguments;
         chatId = arguments is String ? arguments : "";
       }
-      print("route chatId: $chatId");
+
       return PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
             screenFactory.makePaymentScreen(chatId),

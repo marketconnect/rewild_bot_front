@@ -69,7 +69,7 @@ import 'package:rewild_bot_front/data_providers/warehouse_data_provider/warehous
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
-import 'package:rewild_bot_front/domain/entities/payment_info.dart';
+
 import 'package:rewild_bot_front/domain/entities/question_model.dart';
 import 'package:rewild_bot_front/domain/entities/review_model.dart';
 import 'package:rewild_bot_front/domain/entities/stream_advert_event.dart';
@@ -146,8 +146,7 @@ import 'package:rewild_bot_front/presentation/main_navigation_screen/main_naviga
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_web_view.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_screen.dart';
@@ -633,16 +632,16 @@ class _DIContainer {
         paymentStoreService: _makePriceService(),
       );
 
-  PaymentWebViewModel _makePaymentWebViewModel(
-    BuildContext context,
-  ) =>
-      PaymentWebViewModel(
-        context: context,
-        subService: _makeSubscriptionService(),
-        tokenService: _makeAuthService(),
-        // updateService: _makeUpdateService(),
-        // balanceService: _makeBalanceService(),
-      );
+  // PaymentWebViewModel _makePaymentWebViewModel(
+  //   BuildContext context,
+  // ) =>
+  //     PaymentWebViewModel(
+  //       context: context,
+  //       subService: _makeSubscriptionService(),
+  //       tokenService: _makeAuthService(),
+  //       // updateService: _makeUpdateService(),
+  //       // balanceService: _makeBalanceService(),
+  //     );
   // WbWebViewScreenViewModel _makeWbWebViewScreenViewModel(context) =>
   //     WbWebViewScreenViewModel(
   //         context: context,
@@ -1083,17 +1082,17 @@ class ScreenFactoryDefault implements ScreenFactory {
     );
   }
 
-  @override
-  Widget makePaymentWebView(PaymentInfo paymentInfo) {
-    return ChangeNotifierProvider(
-      create: (context) => _diContainer._makePaymentWebViewModel(
-        context,
-      ),
-      child: PaymentWebView(
-        paymentInfo: paymentInfo,
-      ),
-    );
-  }
+  // @override
+  // Widget makePaymentWebView(PaymentInfo paymentInfo) {
+  //   return ChangeNotifierProvider(
+  //     create: (context) => _diContainer._makePaymentWebViewModel(
+  //       context,
+  //     ),
+  //     child: PaymentWebView(
+  //       paymentInfo: paymentInfo,
+  //     ),
+  //   );
+  // }
 
   @override
   Widget makeAllProductsReviewsScreen() {

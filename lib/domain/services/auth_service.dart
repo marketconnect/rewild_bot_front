@@ -19,7 +19,7 @@ import 'package:rewild_bot_front/presentation/main_navigation_screen/main_naviga
 
 import 'package:rewild_bot_front/presentation/products/cards/wb_web_view/wb_web_view_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_view_model.dart';
@@ -66,7 +66,7 @@ class AuthService
         CampaignManagementTokenService,
         CompetitorKeywordExpansionTokenService,
         AutocompliteKeywordExpansionTokenService,
-        PaymentWebViewTokenService,
+        // PaymentWebViewTokenService,
         AllCardsSeoAuthService,
         AllCardsScreenAuthService,
         NotificationCardTokenService,
@@ -98,23 +98,23 @@ class AuthService
     return right(false);
   }
 
-  @override
-  Future<Either<RewildError, String?>> getUsername() async {
-    final result = await secureDataProvider.getUsername();
-    return result.fold((l) => left(l), (r) {
-      if (r == null) {
-        return left(RewildError(
-          sendToTg: true,
-          "Username not found",
-          name: "getUsername",
-          source: "AuthService",
-          args: [],
-        ));
-      }
+  // @override
+  // Future<Either<RewildError, String?>> getUsername() async {
+  //   final result = await secureDataProvider.getUsername();
+  //   return result.fold((l) => left(l), (r) {
+  //     if (r == null) {
+  //       return left(RewildError(
+  //         sendToTg: true,
+  //         "Username not found",
+  //         name: "getUsername",
+  //         source: "AuthService",
+  //         args: [],
+  //       ));
+  //     }
 
-      return right(r);
-    });
-  }
+  //     return right(r);
+  //   });
+  // }
 
   @override
   Future<Either<RewildError, String>> getToken() async {

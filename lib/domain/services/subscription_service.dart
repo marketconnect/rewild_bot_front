@@ -9,18 +9,11 @@ import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 import 'package:rewild_bot_front/presentation/payment/payment_screen/payment_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/payment/payment_web_view/payment_webview_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
 
 // Api
 abstract class SubscriptionServiceSubscriptionApiClient {
-  Future<Either<RewildError, SubscriptionV2Response>> updateSubscriptionV2({
-    required String token,
-    required int subscriptionID,
-    required String subscriptionType,
-    required String startDate,
-    required String endDate,
-  });
   Future<Either<RewildError, SubscriptionV2Response>> getSubscriptionV2({
     required String token,
   });
@@ -83,7 +76,7 @@ class SubscriptionService
     implements
         PaymentScreenSubscriptionsService,
         NotificationCardSubscriptionService,
-        PaymentWebViewSubscriptionsService,
+        // PaymentWebViewSubscriptionsService,
         MainNavigationSubscriptionService,
         AllCardsScreenSubscriptionsService {
   final SubscriptionServiceSubscriptionApiClient apiClient;
@@ -106,44 +99,44 @@ class SubscriptionService
   //   await _syncSubscriptions();
   // }
 
-  @override
+  // @override
 
   /// Update subscription on server and in local db
   /// Return either [RewildError] if error occurred or [SubscriptionV2Response] of updated subscription
-  Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
-    required String token,
-    required int subscriptionID,
-    required String subscriptionType,
-    required String startDate,
-    required String endDate,
-  }) async {
-    // Create subscriptions in the API client
-    final subOnServerEither = await apiClient.updateSubscriptionV2(
-        subscriptionID: subscriptionID,
-        token: token,
-        subscriptionType: subscriptionType,
-        startDate: startDate,
-        endDate: endDate);
-    if (subOnServerEither.isLeft()) {
-      return left(subOnServerEither.fold(
-          (l) => l,
-          (r) =>
-              throw UnimplementedError())); // If API creation fails, return the error
-    }
-    final subscriptionOnServer =
-        subOnServerEither.fold((l) => throw UnimplementedError(), (r) => r);
+  // Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
+  //   required String token,
+  //   required int subscriptionID,
+  //   required String subscriptionType,
+  //   required String startDate,
+  //   required String endDate,
+  // }) async {
+  //   // Create subscriptions in the API client
+  //   final subOnServerEither = await apiClient.updateSubscriptionV2(
+  //       subscriptionID: subscriptionID,
+  //       token: token,
+  //       subscriptionType: subscriptionType,
+  //       startDate: startDate,
+  //       endDate: endDate);
+  //   if (subOnServerEither.isLeft()) {
+  //     return left(subOnServerEither.fold(
+  //         (l) => l,
+  //         (r) =>
+  //             throw UnimplementedError())); // If API creation fails, return the error
+  //   }
+  //   final subscriptionOnServer =
+  //       subOnServerEither.fold((l) => throw UnimplementedError(), (r) => r);
 
-    await _saveAuthData(UserAuthData(
-        token: subscriptionOnServer.token,
-        freebie: true,
-        expiredAt: subscriptionOnServer.expiredAt));
-    final res = await _syncSubscriptions(subscriptionOnServer);
-    if (res.isLeft()) {
-      return res.fold((l) => left(l), (r) => throw UnimplementedError());
-    }
-    return right(
-        subscriptionOnServer); // Return the list of saved subscriptions
-  }
+  //   await _saveAuthData(UserAuthData(
+  //       token: subscriptionOnServer.token,
+  //       freebie: true,
+  //       expiredAt: subscriptionOnServer.expiredAt));
+  //   final res = await _syncSubscriptions(subscriptionOnServer);
+  //   if (res.isLeft()) {
+  //     return res.fold((l) => left(l), (r) => throw UnimplementedError());
+  //   }
+  //   return right(
+  //       subscriptionOnServer); // Return the list of saved subscriptions
+  // }
 
   @override
 

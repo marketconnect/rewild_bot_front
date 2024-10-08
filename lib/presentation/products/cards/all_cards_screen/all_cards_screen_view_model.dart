@@ -76,13 +76,6 @@ abstract class AllCardsScreenSubscriptionsService {
       {required String token, required List<int> cardIds});
   Future<Either<RewildError, SubscriptionV2Response>> getLocalSubscription(
       {required String token});
-  Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
-    required String token,
-    required int subscriptionID,
-    required String subscriptionType,
-    required String startDate,
-    required String endDate,
-  });
 
   Future<Either<RewildError, SubscriptionV2Response>> getSubscription(
       {required String token});

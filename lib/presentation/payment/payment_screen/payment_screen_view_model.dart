@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
+import 'package:intl/intl.dart';
 import 'package:rewild_bot_front/core/constants/subsciption_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
@@ -27,13 +28,6 @@ abstract class PaymentScreenTokenService {
 abstract class PaymentScreenSubscriptionsService {
   Future<Either<RewildError, SubscriptionV2Response?>> getSubscription(
       {required String token});
-  Future<Either<RewildError, SubscriptionV2Response>> updateSubscription({
-    required String token,
-    required int subscriptionID,
-    required String subscriptionType,
-    required String startDate,
-    required String endDate,
-  });
 }
 
 // Price
@@ -238,8 +232,7 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
       _endDate = currentSubscriptionEndDatePlusOneMonth;
     }
 
-    final orderNumber =
-        DateTime.now().millisecondsSinceEpoch; // Уникальный номер заказа
+    final orderNumber = DateTime.now().millisecond; // Уникальный номер заказа
     final amountString = _subscriptionsInfo[_activeIndex]['price'];
     final amount = int.parse(amountString.replaceAll('₽', '')) *
         100; // Конвертируем в копейки
@@ -261,7 +254,10 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
       );
       return;
     }
-    // Отправляем запрос на сервер
+    final today = DateTime.now();
+    String formattedToday = DateFormat('yyyy-MM-dd').format(today);
+    String formatedEndDate = DateFormat('yyyy-MM-dd').format(_endDate);
+
     final response = await http.post(
       Uri.parse(
           'https://rewild.website/api/process_payment_request'), // Замените на ваш URL
@@ -271,6 +267,10 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
         'chatId': chatId,
         'orderNumber': orderNumber,
         'description': description,
+        'subscriptionId': _subscription.id,
+        'subscriptionType': getSubscriptionTypeByIndex(index: activeIndex),
+        'startDate': formattedToday,
+        'endDate': formatedEndDate,
       }),
     );
 

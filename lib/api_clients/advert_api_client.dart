@@ -658,7 +658,7 @@ class AdvertApiClient
         }
         // Обработка ошибок API
         return Left(RewildError(
-          sendToTg: true,
+          sendToTg: false,
           "Ошибка API: Статус ${response.statusCode}",
           source: "AdvertApiClient",
           name: "getSingleCampaignDataByInterval",

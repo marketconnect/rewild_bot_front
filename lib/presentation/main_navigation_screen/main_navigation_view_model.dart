@@ -299,25 +299,14 @@ class MainNavigationViewModel extends ResourceChangeNotifier {
     return userName;
   }
 
-  Future<void> goToSubscriptionsScreeen(
-      BuildContext context, String chatId) async {
+  Future<void> goToSubscriptionsScreeen(BuildContext context) async {
     final chatId = await TelegramWebApp.getChatId();
     if (chatId.isEmpty) {
       return;
     }
-    final res = await Navigator.of(context)
-        .pushNamed(MainNavigationRouteNames.paymentScreen, arguments: chatId);
-
-    if (res == true) {
-      // subscription
-      final token = await _getToken();
-      final subscription =
-          await fetch(() => subscriptionService.getSubscription(token: token));
-      if (subscription == null) {
-        return;
-      }
-
-      setSubscriptionsNum(subscription.cardLimit);
+    if (context.mounted) {
+      await Navigator.of(context)
+          .pushNamed(MainNavigationRouteNames.paymentScreen, arguments: chatId);
     }
   }
 }
