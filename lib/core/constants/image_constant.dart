@@ -7,5 +7,5 @@ class ImageConstant {
 
   static String imgLogoForLoading = '$imagePath/logo_for_loading.png';
 
-  static String empty = '$imagePath/empty.png';
+  static String empty = '$imagePath/empty_v2.png';
 }

@@ -119,86 +119,66 @@ class _AppBar extends StatelessWidget {
     final model = context.watch<AllAdvertsWordsViewModel>();
     final gNum = model.gNum;
     final geoDistanceCity = getDistanceCity(gNum);
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GestureDetector(
-            onTap: () => Navigator.of(context).pop(),
-            child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(
-                color: Colors.transparent,
-              )),
-              child: const Padding(
-                padding:
-                    EdgeInsets.only(left: 8.0, right: 16, top: 16, bottom: 16),
-                child: Icon(Icons.arrow_back),
+    return AppBar(
+      elevation: 0,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      leading: IconButton(
+        icon: Icon(Icons.arrow_back,
+            color: Theme.of(context).colorScheme.onSurface),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
+      title: GestureDetector(
+        onTap: () {
+          _showLocationDialog(context);
+        },
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.location_on,
+                color: Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 4),
+            Text(
+              geoDistanceCity,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
-          ),
-          Text(geoDistanceCity),
-          IconButton(
-              onPressed: () {
-                _showBottomSheet(context);
-              },
-              icon: Icon(
-                Icons.location_on_outlined,
-                color: Theme.of(context).colorScheme.primary,
-              )),
-        ],
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
       ),
+      centerTitle: true,
     );
   }
 
-  void _showBottomSheet(BuildContext parentContext) {
-    final model = parentContext.read<AllAdvertsWordsViewModel>();
+  void _showLocationDialog(BuildContext context) {
+    final model = context.read<AllAdvertsWordsViewModel>();
     final setgNum = model.setGNum;
-    showModalBottomSheet(
-        context: parentContext,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (BuildContext context) {
-          //
-          double screenHeight = MediaQuery.of(context).size.height;
-          return SizedBox(
-            height: screenHeight * 0.5,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListWheelScrollView(
-                itemExtent: MediaQuery.of(context).size.height * 0.2,
-                diameterRatio: 1.5,
-                children: geoDistance.entries
-                    .map((e) => GestureDetector(
-                          onTap: () {
-                            setgNum(e.value);
-                            Navigator.of(context).pop();
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            alignment: Alignment.center,
-                            margin: const EdgeInsets.symmetric(vertical: 10),
-                            child: Text(e.key,
-                                style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSecondaryContainer,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width *
-                                            0.05)),
-                          ),
-                        ))
-                    .toList(),
-              ),
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Выберите локацию для анализа ставок'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView(
+              shrinkWrap: true,
+              children: geoDistance.entries
+                  .map(
+                    (e) => ListTile(
+                      title: Text(e.key),
+                      onTap: () {
+                        setgNum(e.value);
+                        Navigator.of(dialogContext).pop();
+                      },
+                    ),
+                  )
+                  .toList(),
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
 }
 
@@ -215,26 +195,25 @@ class _Card extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Container(
-      width: MediaQuery.of(context).size.width,
+      width: screenWidth,
       height: MediaQuery.of(context).size.height * 0.14,
       margin: const EdgeInsets.only(
         bottom: 25,
       ),
-      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+      padding: EdgeInsets.all(screenWidth * 0.05),
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
-          boxShadow: [
-            BoxShadow(
-              color: Theme.of(context).colorScheme.shadow.withOpacity(0.2),
-              spreadRadius: 0,
-              blurStyle: BlurStyle.outer,
-              blurRadius: 5,
-              offset: const Offset(0, 1),
-            )
-          ],
-          color: Colors.white),
+        borderRadius: BorderRadius.circular(8),
+        color: Theme.of(context).colorScheme.surface,
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
+            spreadRadius: 0,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          )
+        ],
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -256,39 +235,37 @@ class _Card extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(
-            width: screenWidth * 0.05,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: Text(
+          SizedBox(width: screenWidth * 0.05),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
                   advert.name,
                   maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width * 0.035,
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.bold),
+                    fontSize: screenWidth * 0.045,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5,
-                child: Text(
+                const SizedBox(height: 4),
+                Text(
                   subjects == null ? "" : subjects.join(', '),
                   maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                      fontSize: MediaQuery.of(context).size.width * 0.02,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6),
-                      fontWeight: FontWeight.bold),
+                    fontSize: screenWidth * 0.035,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

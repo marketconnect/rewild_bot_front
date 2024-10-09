@@ -38,34 +38,6 @@ class LastUpdateDayDataProvider
     }
   }
 
-  static Future<Either<RewildError, void>> updateInBackground() async {
-    final now = DateTime.now();
-    final formatter = DateFormat('yyyy-MM-dd');
-    String formattedDate = formatter.format(now);
-
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      final ok = await prefs.setString(updatedAtKey, formattedDate);
-      if (!ok) {
-        return left(RewildError(
-          sendToTg: true,
-          'Не удалось сохранить дату последнего обновления',
-          source: "LastUpdateDayDataProvider",
-          name: "updateInBackground",
-        ));
-      }
-      return right(null);
-    } catch (e) {
-      return left(RewildError(
-        sendToTg: true,
-        'Не удалось сохранить дату последнего обновления: $e',
-        source: "LastUpdateDayDataProvider",
-        name: "updateInBackground",
-      ));
-    }
-  }
-
   @override
   Future<Either<RewildError, bool>> todayUpdated() async {
     final now = DateTime.now();
