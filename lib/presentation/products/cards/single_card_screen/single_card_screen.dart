@@ -8,6 +8,7 @@ import 'package:rewild_bot_front/core/color.dart';
 import 'package:rewild_bot_front/core/constants/numeric_constance.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
@@ -248,12 +249,43 @@ class _UnitEconomy extends StatelessWidget {
   }
 }
 
-class _ExpansionTile extends StatelessWidget {
+class _ExpansionTile extends StatefulWidget {
   const _ExpansionTile({
     required this.index,
   });
 
   final int index;
+
+  @override
+  State<_ExpansionTile> createState() => _ExpansionTileState();
+}
+
+class _ExpansionTileState extends State<_ExpansionTile> {
+  final TextEditingController _searchController = TextEditingController();
+  List<KwByLemma> _filteredKeywords = [];
+
+  @override
+  void initState() {
+    super.initState();
+    final model = context.read<SingleCardScreenViewModel>();
+    _filteredKeywords = List<KwByLemma>.from(model.keywords);
+    _filteredKeywords.sort((a, b) => b.freq.compareTo(a.freq));
+    _searchController.addListener(() {
+      setState(() {
+        _filteredKeywords = model.keywords
+            .where((kw) => kw.keyword
+                .toLowerCase()
+                .contains(_searchController.text.toLowerCase()))
+            .toList();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   bool isToday(int? millisecondsSinceEpoch) {
     if (millisecondsSinceEpoch == null) {
@@ -289,7 +321,7 @@ class _ExpansionTile extends StatelessWidget {
           collapsedIconColor: Theme.of(context).colorScheme.onSurface,
           iconColor: Theme.of(context).colorScheme.onSurface,
           title: Text(
-            getTitle(index),
+            getTitle(widget.index),
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: model.screenWidth * 0.05,
@@ -310,7 +342,7 @@ class _ExpansionTile extends StatelessWidget {
   List<Widget> _getContent(
       SingleCardScreenViewModel model, BuildContext context) {
     List<Widget> children = [];
-    if (index == 0) {
+    if (widget.index == 0) {
       // Общая информация
       List<_InfoRowContent> widgetsContent = [];
       final sellerName = model.sellerName;
@@ -337,7 +369,7 @@ class _ExpansionTile extends StatelessWidget {
                 isDark: widgetsContent.indexOf(e) % 2 != 0,
               ))
           .toList();
-    } else if (index == 1) {
+    } else if (widget.index == 1) {
       // Карточка
       final category = model.category;
       final subject = model.subject;
@@ -395,7 +427,7 @@ class _ExpansionTile extends StatelessWidget {
                 isDark: widgetsContent.indexOf(e) % 2 != 0,
               ))
           .toList();
-    } else if (index == 2) {
+    } else if (widget.index == 2) {
       final commision = model.commission;
       final tariffs = model.tariffs;
       final volume = model.volume;
@@ -450,7 +482,7 @@ class _ExpansionTile extends StatelessWidget {
                 isDark: rowsContents.indexOf(e) % 2 != 0,
               ))
           .toList();
-    } else if (index == 3) {
+    } else if (widget.index == 3) {
       // Остатки
       final wareHouses = model.warehouses;
       final supplies = model.supplies;
@@ -488,7 +520,7 @@ class _ExpansionTile extends StatelessWidget {
               ))
           .toList();
     }
-    if (index == 4 && model.orders.isNotEmpty) {
+    if (widget.index == 4 && model.orders.isNotEmpty) {
       // final todayDate = formateDate(DateTime.now());
 
       final orders = model.orders;
@@ -540,7 +572,7 @@ class _ExpansionTile extends StatelessWidget {
       //       parentContext: context),
       // );
     }
-    if (index == 5 && model.weekOrdersHistoryFromServer.isNotEmpty) {
+    if (widget.index == 5 && model.weekOrdersHistoryFromServer.isNotEmpty) {
       final weekOrders = model.weekOrdersHistoryFromServer;
       final justTodayAddedCard = isToday(model.createdAt);
       final weekPeriod = getWeekFromOrderNumber(model.weekNum);
@@ -595,7 +627,7 @@ class _ExpansionTile extends StatelessWidget {
             parentContext: context),
       );
     }
-    if (index == 6 && model.monthOrdersHistoryFromServer.isNotEmpty) {
+    if (widget.index == 6 && model.monthOrdersHistoryFromServer.isNotEmpty) {
       final monthOrders = model.monthOrdersHistoryFromServer;
       final justTodayAddedCard = isToday(model.createdAt);
       //  final weekPeriod = getWeekFromOrderNumber(model.weekNum);
@@ -649,6 +681,87 @@ class _ExpansionTile extends StatelessWidget {
             parentContext: context),
       );
     }
+    if (widget.index == 7) {
+      // Индекс для раздела "Ключевые слова"
+      final keywords = model.keywords;
+      if (keywords.isEmpty) {
+        children = [
+          Padding(
+            padding: EdgeInsets.all(model.screenWidth * 0.05),
+            child: Text(
+              'Ключевые слова не найдены.',
+              style: TextStyle(
+                fontSize: model.screenWidth * 0.04,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              ),
+            ),
+          ),
+        ];
+      } else {
+        children = [
+          Padding(
+            padding: EdgeInsets.all(model.screenWidth * 0.05),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                labelText: 'Поиск по ключевым словам',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchController.text.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          FocusScope.of(context).unfocus();
+                        },
+                      )
+                    : null,
+              ),
+            ),
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _filteredKeywords.length,
+            itemBuilder: (context, index) {
+              final kw = _filteredKeywords[index];
+              return GestureDetector(
+                onTap: () {
+                  final encodedKeyword = Uri.encodeComponent(kw.keyword);
+
+                  html.window.open(
+                      'https://www.wildberries.ru/catalog/0/search.aspx?search=$encodedKeyword',
+                      'wb');
+                },
+                child: Card(
+                  margin: EdgeInsets.symmetric(
+                      vertical: 4.0, horizontal: model.screenWidth * 0.05),
+                  child: ListTile(
+                    title: Text(
+                      kw.keyword,
+                      style: TextStyle(
+                        fontSize: model.screenWidth * 0.045,
+                        color: Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Частотность: ${kw.freq}',
+                      style: TextStyle(
+                        fontSize: model.screenWidth * 0.035,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.6),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ];
+      }
+    }
+
     return children;
   }
 
@@ -707,7 +820,7 @@ class _InfoRowContent {
     required this.text,
     this.child,
   }) : header = header.contains("склад продавца")
-            ? "${header.replaceFirst("склад продавца", "")} (скл. пр.)"
+            ? "${header.replaceFirst("склад продавца", "")} скл. пр. ⚠️ "
             : header;
 }
 
@@ -744,15 +857,28 @@ class _InfoRow extends StatelessWidget {
           children: [
             SizedBox(
               width: model.screenWidth * 0.3,
-              child: Text(
-                content.header,
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: model.screenWidth * 0.04,
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.6)),
+              child: GestureDetector(
+                onTap: () {
+                  if (content.header.contains("⚠️")) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          "Внимание: данные на складах продавцов могут быть неточными.",
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: Text(
+                  content.header,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: model.screenWidth * 0.04,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6)),
+                ),
               ),
             ),
             SizedBox(

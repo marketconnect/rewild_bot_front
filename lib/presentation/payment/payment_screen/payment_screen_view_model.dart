@@ -12,6 +12,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 
+// ignore: depend_on_referenced_packages
 import "package:http/http.dart" as http;
 
 import 'package:js/js.dart';

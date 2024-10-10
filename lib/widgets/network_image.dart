@@ -18,6 +18,7 @@ class ReWildNetworkImage extends StatelessWidget {
   final String? errorImage;
   final BoxFit? fit;
   final String image;
+
   bool validateURL(String? input) {
     if (input == null) {
       return false;
@@ -31,14 +32,28 @@ class ReWildNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Если URL недействителен
     if (!validateURL(image)) {
-      return Image.asset(
-        width: width,
-        height: height,
-        errorImage ?? ImageConstant.empty,
-        fit: BoxFit.scaleDown,
+      return GestureDetector(
+        onTap: () {
+          // Показываем SnackBar при нажатии
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Недействительный URL изображения.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        },
+        child: Image.asset(
+          width: width,
+          height: height,
+          errorImage ?? ImageConstant.empty,
+          fit: BoxFit.scaleDown,
+        ),
       );
     }
+
+    // Если URL действителен, показываем изображение с кэшем
     return SizedBox(
       height: height,
       width: width,

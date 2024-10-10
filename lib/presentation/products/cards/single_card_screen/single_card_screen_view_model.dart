@@ -14,6 +14,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/commission_model.dart';
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
+import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/domain/entities/order_model.dart';
 import 'package:rewild_bot_front/domain/entities/orders_history_model.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
@@ -111,6 +112,11 @@ abstract class SingleCardScreenUpdateService {
       String token);
 }
 
+abstract class SingleCardCardKeywordsService {
+  Future<Either<RewildError, List<KwByLemma>>> getKeywordsForCards(
+      {required String token, required List<int> skus});
+}
+
 class SingleCardScreenViewModel extends ResourceChangeNotifier {
   SingleCardScreenViewModel(
       {required super.context,
@@ -118,7 +124,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       required this.id,
       required this.fromBot,
       required this.initialStocksService,
-      // required this.subscriptionsService,
+      required this.keywordsService,
       required this.updateService,
       required this.notificationService,
       required this.stockService,
@@ -148,7 +154,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   final SingleCardScreenNotificationService notificationService;
   final SingleCardScreenAuthService tokenProvider;
   final SingleCardScreenPriceService priceService;
-  // final SingleCardScreenSubscriptionsService subscriptionsService;
+  final SingleCardCardKeywordsService keywordsService;
   final SingleCardScreenWeekOrdersService weekOrdersService;
   final SingleCardScreenUpdateService updateService;
 
@@ -165,6 +171,16 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   }
 
   bool get isLoading => _isLoading;
+
+  // Keywords
+  final List<KwByLemma> _keywords = [];
+  void setKeywords(List<KwByLemma> value) {
+    _keywords.clear();
+    _keywords.addAll(value);
+    notify();
+  }
+
+  List<KwByLemma> get keywords => _keywords;
 
   // week orders
   final Map<String, int> _weekOrdersHistoryFromServer = {};
@@ -217,7 +233,8 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     'Остатки по складам',
     'Заказы за сегодня',
     'Заказы за пред. неделю',
-    'Заказы за пред. месяц'
+    'Заказы за пред. месяц',
+    'Ключевые слова'
   ];
   String getTitle(int index) {
     return listTilesNames[index];
@@ -433,7 +450,10 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       fetch(
         () => weekOrdersService.getOrdersFromTo(token: token, skus: [id]),
       ), // 7
-      // Clipboard.setData(ClipboardData(text: "$id")), // 8
+      fetch(() => keywordsService.getKeywordsForCards(
+            token: token,
+            skus: [id],
+          )), // 8
     ]);
 
     // Get card
@@ -661,6 +681,10 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
         }
         _addOrderHistoryFromServer(warehouse.name, order.qty, period);
       }
+    }
+    final keywordsResult = values[8] as List<KwByLemma>?;
+    if (keywordsResult != null) {
+      setKeywords(keywordsResult);
     }
 
     setIsLoading(false);

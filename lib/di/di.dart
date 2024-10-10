@@ -672,6 +672,7 @@ class _DIContainer {
           id: id,
           fromBot: fromBot,
           ordersHistoryService: _makeOrdersHistoryService(),
+          keywordsService: _makeProductKeywordsService(),
           weekOrdersService: _makeWeekOrdersService(),
           tariffService: _makeTariffService(),
           // subscriptionsService: _makeSubscriptionService(),

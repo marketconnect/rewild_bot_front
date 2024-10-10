@@ -32,7 +32,7 @@ class DatabaseHelper {
 
     // Открываем базу данных и обновляем её при необходимости
     final db = await dbFactory.open(
-      'w.db',
+      'ww.db',
       version: 1,
       onUpgradeNeeded: _onUpgrade,
     );
@@ -152,10 +152,9 @@ class DatabaseHelper {
 
     createStoreIfNotExists('card_keywords', () {
       final store = db.createObjectStore('card_keywords',
-          keyPath: 'cardId', autoIncrement: true);
+          keyPath: 'cardIdKeyword', autoIncrement: false);
       store.createIndex('cardId', 'cardId');
       store.createIndex('updatedAt', 'updatedAt');
-      store.createIndex('cardId_keyword', ['cardId', 'keyword'], unique: true);
     });
 
     createStoreIfNotExists('cached_kw_by_autocomplite', () {

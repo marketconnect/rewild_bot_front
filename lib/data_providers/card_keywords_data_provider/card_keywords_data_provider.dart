@@ -29,7 +29,8 @@ class CardKeywordsDataProvider
           'cardId': cardId,
           'keyword': keyword.$1,
           'freq': keyword.$2,
-          'updatedAt': dateStr
+          'updatedAt': dateStr,
+          'cardIdKeyword': cardId.toString() + keyword.$1,
         });
       }
 
@@ -83,23 +84,17 @@ class CardKeywordsDataProvider
   }
 
   @override
-  Future<Either<RewildError, void>> deleteKeywordsOlderThanOneDay() async {
+  Future<Either<RewildError, void>> deleteAllKeywords() async {
     try {
       final db = await _db;
       final txn = db.transaction('card_keywords', idbModeReadWrite);
       final store = txn.objectStore('card_keywords');
-      final yesterdayStr = DateFormat('yyyy-MM-dd')
-          .format(DateTime.now().subtract(const Duration(days: 1)));
 
-      final index = store.index('updatedAt');
-      final range = KeyRange.upperBound(yesterdayStr, true);
+      final allKeywordsRequest = store.clear();
 
-      final cursorStream = index.openCursor(range: range);
+      await allKeywordsRequest;
 
-      await for (final cursor in cursorStream) {
-        await cursor.delete();
-        cursor.next();
-      }
+      await txn.completed;
 
       await txn.completed;
       return right(null);

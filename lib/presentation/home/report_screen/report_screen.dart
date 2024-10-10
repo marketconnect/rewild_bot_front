@@ -408,7 +408,7 @@ class _RealizationSummaryWidgetState extends State<RealizationSummaryWidget> {
         ),
       if (minPpvzForPay > 0)
         (
-          const Text('Наименьшая выручка'),
+          const Text('Наименьшая выручка с продажи'),
           Text(
             '${minPpvzForPay.toStringAsFixed(2)} ₽',
           ),
