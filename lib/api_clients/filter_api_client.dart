@@ -87,6 +87,14 @@ class FilterApiClient implements FilterServiceFilterApiClient {
             args: [],
           ));
         }
+      } else if (response.statusCode == 401) {
+        return left(RewildError(
+          sendToTg: false,
+          MessagesConstants.statusUnauthorized,
+          source: "FilterApiClient",
+          name: "getKeywordsByLemmas",
+          args: [],
+        ));
       } else if (response.statusCode == 429) {
         return left(RewildError(
           sendToTg: false,
@@ -144,6 +152,14 @@ class FilterApiClient implements FilterServiceFilterApiClient {
         } else {
           return right([]);
         }
+      } else if (response.statusCode == 401) {
+        return left(RewildError(
+          sendToTg: false,
+          MessagesConstants.statusUnauthorized,
+          source: "FilterApiClient",
+          name: "getKeywordsByWords",
+          args: [],
+        ));
       } else if (response.statusCode == 429) {
         return left(RewildError(
           sendToTg: false,
@@ -211,6 +227,14 @@ class FilterApiClient implements FilterServiceFilterApiClient {
             args: [],
           ));
         }
+      } else if (response.statusCode == 401) {
+        return left(RewildError(
+          sendToTg: false,
+          MessagesConstants.statusUnauthorized,
+          source: "FilterApiClient",
+          name: "getLemmasByFilterId",
+          args: [],
+        ));
       } else if (response.statusCode == 429) {
         return left(RewildError(
           sendToTg: false,

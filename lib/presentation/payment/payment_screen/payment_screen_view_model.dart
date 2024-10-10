@@ -234,7 +234,7 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
 
     final orderNumber = DateTime.now().millisecond; // Уникальный номер заказа
     final amountString = _subscriptionsInfo[_activeIndex]['price'];
-    final amount = int.parse(amountString.replaceAll('₽', '')) *
+    final amountInKopeks = int.parse(amountString.replaceAll('₽', '')) *
         100; // Конвертируем в копейки
     final description =
         'Тариф «${_subscriptionsInfo[_activeIndex]['title']}» до ${formatDate(_endDate.toIso8601String())}.'; // Ваше описание
@@ -256,21 +256,37 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
     }
     final today = DateTime.now();
     String formattedToday = DateFormat('yyyy-MM-dd').format(today);
-    String formatedEndDate = DateFormat('yyyy-MM-dd').format(_endDate);
+    String formattedEndDate = DateFormat('yyyy-MM-dd').format(_endDate);
 
     final response = await http.post(
       Uri.parse(
           'https://rewild.website/api/process_payment_request'), // Замените на ваш URL
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
-        'amount': amount,
+        'amount': amountInKopeks,
         'chatId': chatId,
         'orderNumber': orderNumber,
         'description': description,
         'subscriptionId': _subscription.id,
         'subscriptionType': getSubscriptionTypeByIndex(index: activeIndex),
         'startDate': formattedToday,
-        'endDate': formatedEndDate,
+        'endDate': formattedEndDate,
+        'receipt': {
+          'Email': "ipbogachenko@yandex.ru",
+          'Taxation': 'usn_income',
+          'Items': [
+            {
+              'Name':
+                  'Подписка ${getSubscriptionTypeByIndex(index: activeIndex)}',
+              'Price': amountInKopeks,
+              'Quantity': 1.0,
+              'Amount': amountInKopeks,
+              "PaymentMethod": "full_payment",
+              "PaymentObject": "service",
+              "Tax": "none"
+            },
+          ],
+        },
       }),
     );
 
