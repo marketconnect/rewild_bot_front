@@ -485,7 +485,7 @@ class _ExpansionTileState extends State<_ExpansionTile> {
     } else if (widget.index == 3) {
       // Остатки
       final wareHouses = model.warehouses;
-      final supplies = model.supplies;
+      // final supplies = model.supplies;
 
       if (wareHouses.length > 1) {
         int stocksSum = 0;
@@ -506,9 +506,10 @@ class _ExpansionTileState extends State<_ExpansionTile> {
         rowsContents.add(
           _InfoRowContent(
             header: k,
-            text: supplies[k] != null && supplies[k]! > 0
-                ? '(+${supplies[k]!}) $v шт.'
-                : '$v шт.',
+            text: '$v шт.',
+            // supplies[k] != null && supplies[k]! > 0
+            //     ? '(+${supplies[k]!}) $v шт.'
+            //     : '$v шт.',
           ),
         );
       });
@@ -820,7 +821,7 @@ class _InfoRowContent {
     required this.text,
     this.child,
   }) : header = header.contains("склад продавца")
-            ? "${header.replaceFirst("склад продавца", "")} скл. пр. ⚠️ "
+            ? "${header.replaceFirst("склад продавца", "")} скл. пр."
             : header;
 }
 
@@ -859,25 +860,35 @@ class _InfoRow extends StatelessWidget {
               width: model.screenWidth * 0.3,
               child: GestureDetector(
                 onTap: () {
-                  if (content.header.contains("⚠️")) {
+                  if (content.header.contains("скл. пр.")) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                          "Внимание: данные на складах продавцов могут быть неточными.",
+                          "Внимание: данные о продажах со склада продавца могут быть неточными.",
                         ),
                       ),
                     );
                   }
                 },
-                child: Text(
-                  content.header,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: model.screenWidth * 0.04,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.6)),
+                child: Row(
+                  children: [
+                    if (content.header.contains("скл. пр."))
+                      Icon(
+                        Icons.info_outline,
+                        color: Theme.of(context).colorScheme.error,
+                        size: model.screenWidth * 0.04,
+                      ),
+                    Text(
+                      content.header,
+                      style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: model.screenWidth * 0.04,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.6)),
+                    ),
+                  ],
                 ),
               ),
             ),
