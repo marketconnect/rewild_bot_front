@@ -39,7 +39,7 @@ class ReWildNetworkImage extends StatelessWidget {
           // Показываем SnackBar при нажатии
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Недействительный URL изображения.'),
+              content: Text('Карточка не добавлена.'),
               duration: Duration(seconds: 2),
             ),
           );

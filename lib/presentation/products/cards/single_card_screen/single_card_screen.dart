@@ -441,7 +441,12 @@ class _ExpansionTileState extends State<_ExpansionTile> {
       }
 
       final List<_InfoRowContent> rowsContents = [];
-
+      rowsContents.add(
+        _InfoRowContent(
+          header: "Объем, л",
+          text: (volume / 10).toStringAsFixed(1),
+        ),
+      );
       tariffs.forEach((k, v) {
         if (k.isEmpty) {
           return;
@@ -453,12 +458,12 @@ class _ExpansionTileState extends State<_ExpansionTile> {
         double? boxesTariff = 0;
         double? monoPaletsTariff = 0;
 
-        boxesTariff = boxesCoefs.isNotEmpty && volume <= 120
+        boxesTariff = boxesCoefs.isNotEmpty
             ? (boxesCoefs.first.deliveryBase) +
                 (((volume / 10) - 1) * boxesCoefs.first.deliveryLiter)
             : null;
         setmaxLogistic(boxesTariff ?? 0);
-        monoPaletsTariff = monoPaletsCoefs.isNotEmpty && volume <= 120
+        monoPaletsTariff = monoPaletsCoefs.isNotEmpty
             ? (monoPaletsCoefs.first.deliveryBase) +
                 (((volume / 10) - 1) * monoPaletsCoefs.first.deliveryLiter)
             : null;
@@ -819,8 +824,9 @@ class _InfoRowContent {
     required String header,
     required this.text,
     this.child,
-  }) : header = header.contains("склад продавца")
-            ? "${header.replaceFirst("склад продавца", "")} скл. пр."
+  }) : header = header.contains("склад продавца") ||
+                header.contains(" Склад продавца")
+            ? header.replaceFirst("склад продавца", "скл.пр.")
             : header;
 }
 
@@ -859,7 +865,7 @@ class _InfoRow extends StatelessWidget {
               width: model.screenWidth * 0.3,
               child: GestureDetector(
                 onTap: () {
-                  if (content.header.contains("скл. пр.")) {
+                  if (content.header.contains("скл.пр.")) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
@@ -870,7 +876,7 @@ class _InfoRow extends StatelessWidget {
                   }
                 },
                 child: Text(
-                  content.header,
+                  "${content.header} ${content.header.contains("скл.пр.") ? "⚠" : ""}",
                   style: TextStyle(
                       fontWeight: FontWeight.w600,
                       fontSize: model.screenWidth * 0.04,
