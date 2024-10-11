@@ -229,7 +229,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   final List<String> listTilesNames = [
     'Общая информация',
     'Карточка',
-    'Тарифы',
+    'Стоимость логистики',
     'Остатки по складам',
     'Заказы за сегодня',
     'Заказы за пред. неделю',

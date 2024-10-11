@@ -373,14 +373,17 @@ class _ExpansionTileState extends State<_ExpansionTile> {
       // Карточка
       final category = model.category;
       final subject = model.subject;
-
+      final commision = model.commission;
       final isHighBuyout = model.isHighBuyout;
       List<_InfoRowContent> widgetsContent = [];
       widgetsContent.addAll([
         _InfoRowContent(header: "Категория", text: category),
         _InfoRowContent(header: "Предмет", text: subject)
       ]);
-
+      if (commision != null) {
+        widgetsContent.add(_InfoRowContent(
+            header: "Комиссия WB", text: '${commision.toString()}%'));
+      }
       // if (ordersSum != null) {
       //   widgetsContent.add(_InfoRowContent(
       //       header: "Всего заказов", text: "более $ordersSum шт."));
@@ -428,7 +431,6 @@ class _ExpansionTileState extends State<_ExpansionTile> {
               ))
           .toList();
     } else if (widget.index == 2) {
-      final commision = model.commission;
       final tariffs = model.tariffs;
       final volume = model.volume;
       final setmaxLogistic = model.setMaxLogistic;
@@ -439,10 +441,7 @@ class _ExpansionTileState extends State<_ExpansionTile> {
       }
 
       final List<_InfoRowContent> rowsContents = [];
-      if (commision != null) {
-        rowsContents.add(_InfoRowContent(
-            header: "Комиссия WB", text: '${commision.toString()}%'));
-      }
+
       tariffs.forEach((k, v) {
         if (k.isEmpty) {
           return;
