@@ -869,25 +869,15 @@ class _InfoRow extends StatelessWidget {
                     );
                   }
                 },
-                child: Row(
-                  children: [
-                    if (content.header.contains("скл. пр."))
-                      Icon(
-                        Icons.info_outline,
-                        color: Theme.of(context).colorScheme.error,
-                        size: model.screenWidth * 0.04,
-                      ),
-                    Text(
-                      content.header,
-                      style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: model.screenWidth * 0.04,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.6)),
-                    ),
-                  ],
+                child: Text(
+                  content.header,
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: model.screenWidth * 0.04,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6)),
                 ),
               ),
             ),
