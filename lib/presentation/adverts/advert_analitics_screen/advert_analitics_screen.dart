@@ -128,7 +128,7 @@ class _Body extends StatelessWidget {
             const Center(
                 child: EmptyWidget(
                     text:
-                        'API Wildberries вернул ошибку, так как в интервале присутсвтуют дни, в которых кампания не была запущена.')),
+                        'API Wildberries вернул ошибку, так как в интервале присутствуют дни, в которые кампания не была запущена.')),
           DateRangePickerWidget(
             // centerBtn: true,
             btnText: 'Выберите период для аналитики',
