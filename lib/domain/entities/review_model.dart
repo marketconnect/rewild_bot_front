@@ -149,12 +149,16 @@ class ReviewModel {
           [],
       video: json['video'] != null ? Video.fromJson(json['video']) : null,
       isAbleSupplierFeedbackValuation:
-          json['isAbleSupplierFeedbackValuation'] as bool,
-      supplierFeedbackValuation: json['supplierFeedbackValuation'] as int?,
+          json['isAbleSupplierFeedbackValuation'] ?? false,
+      supplierFeedbackValuation: json['supplierFeedbackValuation'] != null
+          ? json['supplierFeedbackValuation'] as int
+          : null,
       isAbleSupplierProductValuation:
-          json['isAbleSupplierProductValuation'] as bool,
-      supplierProductValuation: json['supplierProductValuation'] as int?,
-      isAbleReturnProductOrders: json['isAbleReturnProductOrders'] as bool,
+          json['isAbleSupplierProductValuation'] ?? false,
+      supplierProductValuation: json['supplierProductValuation'] != null
+          ? json['supplierProductValuation'] as int
+          : null,
+      isAbleReturnProductOrders: json['isAbleReturnProductOrders'] ?? false,
       returnProductOrdersDate: json['returnProductOrdersDate'] as String?,
       bables: (json['bables'] as List<dynamic>?)
               ?.map((bable) => bable as String)
@@ -289,8 +293,8 @@ class ReviewProductDetails {
 
   factory ReviewProductDetails.fromMap(Map<String, dynamic> map) {
     return ReviewProductDetails(
-      nmId: map['nmId'] as int,
-      imtId: map['imtId'] as int,
+      nmId: map['nmId'] ?? 0,
+      imtId: map['imtId'] ?? 0,
       productName: map['productName'] as String,
       supplierArticle: map['supplierArticle'] as String,
       supplierName: map['supplierName'] as String,
@@ -303,8 +307,8 @@ class ReviewProductDetails {
 
   factory ReviewProductDetails.fromJson(Map<String, dynamic> json) {
     return ReviewProductDetails(
-      imtId: json['imtId'],
-      nmId: json['nmId'],
+      imtId: json['imtId'] ?? 0,
+      nmId: json['nmId'] ?? 0,
       productName: json['productName'],
       supplierArticle: json['supplierArticle'],
       supplierName: json['supplierName'],
@@ -361,8 +365,8 @@ class PhotoLink {
 
   factory PhotoLink.fromJson(Map<String, dynamic> json) {
     return PhotoLink(
-      fullSize: json['fullSize'] as String,
-      miniSize: json['miniSize'] as String,
+      fullSize: json['fullSize'] ?? '',
+      miniSize: json['miniSize'] ?? '',
     );
   }
 }
@@ -382,15 +386,15 @@ class Video {
     return Video(
       previewImage: map['previewImage'] as String,
       link: map['link'] as String,
-      durationSec: map['duration_sec'] as int,
+      durationSec: map['duration_sec'] ?? 0,
     );
   }
 
   factory Video.fromJson(Map<String, dynamic> json) {
     return Video(
-      previewImage: json['previewImage'] as String,
-      link: json['link'] as String,
-      durationSec: json['duration_sec'] as int,
+      previewImage: json['previewImage'] ?? '',
+      link: json['link'] ?? '',
+      durationSec: json['duration_sec'] ?? 0,
     );
   }
 }

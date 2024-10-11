@@ -4,9 +4,11 @@ import 'dart:async';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/api_helpers/wb_review_seller_api_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/review_model.dart';
 import 'package:rewild_bot_front/domain/services/review_service.dart';
 import 'package:rewild_bot_front/domain/services/unanswered_feedback_qty_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class ReviewApiClient
     implements
@@ -160,6 +162,7 @@ class ReviewApiClient
       if (response.statusCode == 200) {
         final Map<String, dynamic> responseData =
             jsonDecode(utf8.decode(response.bodyBytes));
+
         final List<ReviewModel> reviews = [];
         final responseReviews = (responseData['data']['feedbacks']);
 
@@ -178,11 +181,13 @@ class ReviewApiClient
         ));
       }
     } catch (e) {
+      sendMessageToTelegramBot(
+          TBot.tBotErrorToken, TBot.tBotErrorChatId, e.toString());
       return left(RewildError(
         sendToTg: true,
         "Ошибка при получении списка отзывов: $e",
         source: "reviewsApiClint",
-        name: "getFeedbacks",
+        name: "getAnsweredReviews",
         args: [take, skip, nmId],
       ));
     }
