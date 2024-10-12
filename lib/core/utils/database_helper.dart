@@ -30,10 +30,10 @@ class DatabaseHelper {
       throw Exception("Failed to get IDB factory.");
     }
 
-    // Открываем базу данных и обновляем её при необходимости
+    // Увеличиваем версию базы данных с 1 до 2
     final db = await dbFactory.open(
       'ww.db',
-      version: 1,
+      version: 2, // Здесь изменили версию
       onUpgradeNeeded: _onUpgrade,
     );
 
@@ -41,8 +41,30 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(VersionChangeEvent event) async {
-    if (event.oldVersion < 2) {
+    final db = event.database;
+
+    if (event.oldVersion < 1) {
       await _onCreate(event);
+    }
+
+    if (event.oldVersion < 2) {
+      if (!db.objectStoreNames.contains('subjects')) {
+        final store = db.createObjectStore('subjects', keyPath: 'subjectId');
+        store.createIndex('subjectId', 'subjectId', unique: true);
+        store.createIndex('name', 'name', unique: false);
+      }
+      if (!db.objectStoreNames.contains('subject_commissions')) {
+        final store =
+            db.createObjectStore('subject_commissions', keyPath: 'id');
+        store.createIndex('catName', 'catName', unique: false);
+        store.createIndex('createdAt', 'createdAt', unique: false);
+      }
+      if (!db.objectStoreNames.contains('categories')) {
+        final store =
+            db.createObjectStore('categories', keyPath: 'categoryName');
+        store.createIndex('categoryName', 'categoryName', unique: true);
+        store.createIndex('updatedAt', 'updatedAt', unique: false);
+      }
     }
     // final db = event.database;
     // if (event.oldVersion < 2) {
@@ -91,6 +113,21 @@ class DatabaseHelper {
       }
     }
 
+    createStoreIfNotExists('subjects', () {
+      final store = db.createObjectStore('subjects', keyPath: 'subjectId');
+      store.createIndex('subjectId', 'subjectId', unique: true);
+    });
+
+    createStoreIfNotExists('subject_commissions', () {
+      final store = db.createObjectStore('subject_commissions', keyPath: 'id');
+      store.createIndex('catName', 'catName', unique: false);
+      store.createIndex('createdAt', 'createdAt', unique: false);
+    });
+    createStoreIfNotExists('categories', () {
+      final store = db.createObjectStore('categories', keyPath: 'categoryName');
+      store.createIndex('categoryName', 'categoryName', unique: true);
+      store.createIndex('updatedAt', 'updatedAt', unique: false);
+    });
     createStoreIfNotExists('user_sellers', () {
       final store = db.createObjectStore('user_sellers', keyPath: 'sellerId');
       store.createIndex('sellerId', 'sellerId', unique: true);

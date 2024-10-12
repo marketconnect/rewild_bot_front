@@ -16,6 +16,7 @@ import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import "package:http/http.dart" as http;
 
 import 'package:js/js.dart';
+import 'package:rewild_bot_front/env.dart';
 
 @JS('closeTelegramApp')
 external void closeTelegramApp();
@@ -261,7 +262,7 @@ class PaymentScreenViewModel extends ResourceChangeNotifier {
 
     final response = await http.post(
       Uri.parse(
-          'https://rewild.website/api/process_payment_request'), // Замените на ваш URL
+          '${ServerConstants.apiUrl}/process_payment_request'), // Замените на ваш URL
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'amount': amountInKopeks,

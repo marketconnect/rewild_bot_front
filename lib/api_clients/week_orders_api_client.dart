@@ -7,6 +7,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/order_model.dart';
 import 'package:rewild_bot_front/domain/services/week_orders_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class WeekOrdersApiClient implements WeekOrdersServiceWeekOrdersApiClient {
   const WeekOrdersApiClient();
@@ -26,7 +27,7 @@ class WeekOrdersApiClient implements WeekOrdersServiceWeekOrdersApiClient {
         ));
       }
 
-      final url = Uri.parse('https://rewild.website/api/getOrdersFromTo');
+      final url = Uri.parse('${ServerConstants.apiUrl}/getOrdersFromTo');
       final headers = {
         'Content-Type': 'application/json',
         'Authorization': token,

@@ -16,6 +16,8 @@ class ServerConstants {
   static const String grpcReverseProxyHost = 'rewild.website';
   static const int grpcReverseProxyPort = 443;
 
+  static const String apiUrl = 'https://rewild.website/api';
+
   static const String siteUrl = 'https://marketconnect.ru/';
 
   static const String xApiKey = '24798bdd-233b-4429-98fd-2590fda01308';

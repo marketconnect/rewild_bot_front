@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class CardOfProductApiClient
     implements UpdateServiceCardOfProductApiClient, SubsServiceCardsApiClient {
@@ -20,7 +21,7 @@ class CardOfProductApiClient
   //   required List<CardOfProductModel> productCards,
   // }) async {
   //   try {
-  //     final url = Uri.parse('https://rewild.website/api/productCardsAdd');
+  //     final url = Uri.parse('${ServerConstants.apiUrl}/productCardsAdd');
   //     final headers = {
   //       'Content-Type': 'application/json',
   //       'Authorization': 'Bearer $token',
@@ -61,7 +62,7 @@ class CardOfProductApiClient
     required String token,
   }) async {
     try {
-      final url = Uri.parse('https://rewild.website/api/productCardsGet');
+      final url = Uri.parse('${ServerConstants.apiUrl}/productCardsGet');
       final headers = {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -114,7 +115,7 @@ class CardOfProductApiClient
   //   required int id,
   // }) async {
   //   try {
-  //     final url = Uri.parse('https://rewild.website/api/productCardsDelete');
+  //     final url = Uri.parse('${ServerConstants.apiUrl}/productCardsDelete');
   //     final headers = {
   //       'Content-Type': 'application/json',
   //       'Authorization': 'Bearer $token',

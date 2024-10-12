@@ -64,4 +64,7 @@ abstract class MainNavigationRouteNames {
 
   static const String addGroupsScreen = '/add_groups_screen';
   static const String feedbackFormScreen = '/feedback_form_screen';
+
+  static const String allCategoriesScreen = '/all_categories_screen';
+  static const String allSubjectsScreen = '/all_subjects_screen';
 }

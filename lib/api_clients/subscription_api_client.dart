@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import 'package:http/http.dart' as http;
 import 'package:rewild_bot_front/domain/services/subscription_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class SubscriptionApiClient
     implements
@@ -20,7 +21,7 @@ class SubscriptionApiClient
   Future<Either<RewildError, SubscriptionV2Response>> getSubscriptionV2({
     required String token,
   }) async {
-    final url = Uri.parse("https://rewild.website/api/getSubscriptionV2");
+    final url = Uri.parse("${ServerConstants.apiUrl}/getSubscriptionV2");
     try {
       final response = await http.post(
         url,
@@ -69,7 +70,7 @@ class SubscriptionApiClient
   //   required String startDate,
   //   required String endDate,
   // }) async {
-  //   final url = Uri.parse("https://rewild.website/api/updateSubscriptionV2");
+  //   final url = Uri.parse("${ServerConstants.apiUrl}/updateSubscriptionV2");
   //   try {
   //     final response = await http.post(
   //       url,
@@ -124,7 +125,7 @@ class SubscriptionApiClient
   //   required int subscriptionId,
   //   required String newEndDate,
   // }) async {
-  //   final url = Uri.parse("https://rewild.website/api/extendSubscriptionV2");
+  //   final url = Uri.parse("${ServerConstants.apiUrl}/extendSubscriptionV2");
   //   try {
   //     final response = await http.post(
   //       url,
@@ -169,8 +170,7 @@ class SubscriptionApiClient
     required String token,
     required List<CardToSubscription> cards,
   }) async {
-    final url =
-        Uri.parse("https://rewild.website/api/addCardsToSubscriptionV2");
+    final url = Uri.parse("${ServerConstants.apiUrl}/addCardsToSubscriptionV2");
     try {
       final response = await http.post(
         url,
@@ -219,7 +219,7 @@ class SubscriptionApiClient
     required List<int> skus,
   }) async {
     final url =
-        Uri.parse("https://rewild.website/api/removeCardFromSubscriptionV2");
+        Uri.parse("${ServerConstants.apiUrl}/removeCardFromSubscriptionV2");
     try {
       final response = await http.post(
         url,

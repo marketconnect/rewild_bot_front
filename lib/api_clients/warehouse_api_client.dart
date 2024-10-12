@@ -7,6 +7,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/warehouse.dart';
 import 'package:rewild_bot_front/domain/services/card_of_product_service.dart';
 import 'package:rewild_bot_front/domain/services/warehouse_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class WarehouseApiClient
     implements
@@ -18,7 +19,7 @@ class WarehouseApiClient
   @override
   Future<Either<RewildError, List<Warehouse>>> getAll() async {
     try {
-      final uri = Uri.parse('https://rewild.website/api/warehouse/');
+      final uri = Uri.parse('${ServerConstants.apiUrl}/warehouse/');
 
       final response = await http.get(uri);
 

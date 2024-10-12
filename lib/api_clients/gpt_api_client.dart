@@ -6,6 +6,7 @@ import 'package:rewild_bot_front/core/constants/messages_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/services/gpt_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class GptApiClient implements GptServiceGptApiClient {
   const GptApiClient();
@@ -20,7 +21,7 @@ class GptApiClient implements GptServiceGptApiClient {
     int n = 1,
   }) async {
     try {
-      final uri = Uri.parse('https://rewild.website/api/chat');
+      final uri = Uri.parse('${ServerConstants.apiUrl}/chat');
 
       final response = await http.post(
         uri,

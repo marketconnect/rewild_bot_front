@@ -7,6 +7,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/user_auth_data.dart';
 import 'package:rewild_bot_front/domain/services/auth_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class AuthApiClient implements AuthServiceAuthApiClient {
   const AuthApiClient();
@@ -16,7 +17,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
     required String username,
     required String password,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/register');
+    final url = Uri.parse('${ServerConstants.apiUrl}/register');
     final headers = {
       'Content-Type': 'application/json',
       'x-api-key': 'YOUR_API_KEY',
@@ -67,7 +68,7 @@ class AuthApiClient implements AuthServiceAuthApiClient {
     required String username,
     required String password,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/login');
+    final url = Uri.parse('${ServerConstants.apiUrl}/login');
     final headers = {
       'Content-Type': 'application/json',
       'x-api-key': 'YOUR_API_KEY', // Replace with the actual API key

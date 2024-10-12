@@ -10,6 +10,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/domain/entities/lemma_by_filter.dart';
 import 'package:rewild_bot_front/domain/services/filter_values_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class FilterApiClient implements FilterServiceFilterApiClient {
   const FilterApiClient();
@@ -21,7 +22,7 @@ class FilterApiClient implements FilterServiceFilterApiClient {
   // }) async {
   //   try {
   //     final uri = Uri.parse(
-  //         'https://rewild.website/api/getFilterValues?filterName=$filterName');
+  //         '${ServerConstants.apiUrl}/getFilterValues?filterName=$filterName');
   //     final response = await http.get(uri, headers: {
   //       'Authorization': token,
   //     });
@@ -57,7 +58,7 @@ class FilterApiClient implements FilterServiceFilterApiClient {
     required int filterID,
   }) async {
     try {
-      final uri = Uri.parse('https://rewild.website/api/getKeywordsByLemmas');
+      final uri = Uri.parse('${ServerConstants.apiUrl}/getKeywordsByLemmas');
       final response = await http.post(
         uri,
         headers: {
@@ -129,7 +130,7 @@ class FilterApiClient implements FilterServiceFilterApiClient {
     required List<String> words,
   }) async {
     try {
-      final uri = Uri.parse('https://rewild.website/api/getKeywordsByWords');
+      final uri = Uri.parse('${ServerConstants.apiUrl}/getKeywordsByWords');
       final response = await http.post(
         uri,
         headers: {
@@ -196,7 +197,7 @@ class FilterApiClient implements FilterServiceFilterApiClient {
     int offset = 0,
   }) async {
     try {
-      final uri = Uri.parse('https://rewild.website/api/getLemmasByFilterID');
+      final uri = Uri.parse('${ServerConstants.apiUrl}/getLemmasByFilterID');
       final response = await http.post(
         uri,
         headers: {

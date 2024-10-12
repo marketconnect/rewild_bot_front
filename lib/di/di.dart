@@ -1,4 +1,17 @@
+import 'package:rewild_bot_front/api_clients/card_of_product_api_client.dart';
+import 'package:rewild_bot_front/api_clients/categories_and_subjects_api_client.dart';
+import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
+import 'package:rewild_bot_front/api_clients/stats_api_client.dart';
+import 'package:rewild_bot_front/data_providers/category_data_provider/category_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/subj_commission_data_provider/subj_commission_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/subject_data_provider/subject_data_provider.dart';
+import 'package:rewild_bot_front/domain/services/categories_and_subjects_sevice.dart';
+import 'package:rewild_bot_front/domain/services/stats_service.dart';
 import 'package:rewild_bot_front/presentation/home/feedback_form_screen/feedback_form_screen.dart';
+import 'package:rewild_bot_front/presentation/products/all_categories_screen/all_categories_screen.dart';
+import 'package:rewild_bot_front/presentation/products/all_categories_screen/all_categories_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/all_subjects_screen/all_subjects_screen.dart';
+import 'package:rewild_bot_front/presentation/products/all_subjects_screen/all_subjects_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/add_group_screen/add_group_screen.dart';
 
 import 'package:rewild_bot_front/presentation/products/cards/add_group_screen/add_group_screen_view_model.dart';
@@ -11,8 +24,7 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/api_clients/advert_api_client.dart';
 import 'package:rewild_bot_front/api_clients/auth_api_client.dart';
-import 'package:rewild_bot_front/api_clients/card_of_product_api_client.dart';
-import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
+
 import 'package:rewild_bot_front/api_clients/details_api_client.dart';
 import 'package:rewild_bot_front/api_clients/filter_api_client.dart';
 import 'package:rewild_bot_front/api_clients/gpt_api_client.dart';
@@ -236,7 +248,8 @@ class _DIContainer {
 
   SubscriptionApiClient _makeSubscriptionApiClient() =>
       const SubscriptionApiClient();
-
+  CategoriesAndSubjectsApiClient _makeCategoriesAndSubjectsApiClient() =>
+      const CategoriesAndSubjectsApiClient();
   PriceApiClient _makePriceApiClient() => const PriceApiClient();
 
   WarehouseApiClient _makeWarehouseApiClient() => const WarehouseApiClient();
@@ -250,6 +263,7 @@ class _DIContainer {
   WbContentApiClient _makeWbContentApiClient() => const WbContentApiClient();
 
   WeekOrdersApiClient _makeWeekOrdersApiClient() => const WeekOrdersApiClient();
+  StatsApiClient _makeStatsApiClient() => const StatsApiClient();
 
   OrdersHistoryApiClient _makeOrdersHistoryApiClient() =>
       const OrdersHistoryApiClient();
@@ -318,6 +332,7 @@ class _DIContainer {
       const LastUpdateDayDataProvider();
 
   // FilterDataProvider _makeFilterDataProvider() => const FilterDataProvider();
+  SubjectDataProvider _makeSubjectDataProvider() => const SubjectDataProvider();
 
   FilterValuesDataProvider _makeFilterValuesDataProvider() =>
       const FilterValuesDataProvider();
@@ -349,7 +364,10 @@ class _DIContainer {
       const WarehouseDataProvider();
 
   GroupDataProvider _makeGroupDataProvider() => const GroupDataProvider();
-
+  CategoryDataProvider _makeCategoryDataProvider() =>
+      const CategoryDataProvider();
+  SubjectCommissionDataProvider _makeSubjectCommissionDataProvider() =>
+      const SubjectCommissionDataProvider();
   CommissionDataProvider _makeCommissionDataProvider() =>
       const CommissionDataProvider();
 
@@ -378,6 +396,10 @@ class _DIContainer {
   AuthService _makeAuthService() => AuthService(
       secureDataProvider: _makeSecureDataProvider(),
       authApiClient: _makeAuthApiClient());
+  StatsService _makeStatsService() => StatsService(
+        statsApiClient: _makeStatsApiClient(),
+        subjectDataProvider: _makeSubjectDataProvider(),
+      );
   UpdateService _makeUpdateService() => UpdateService(
         lemmaDataProvider: _makeLemmaDataProvider(),
         notificationDataProvider: _makeNotificationDataProvider(),
@@ -437,11 +459,11 @@ class _DIContainer {
   GroupService _makeAllGroupsService() => GroupService(
         groupDataProvider: _makeGroupDataProvider(),
       );
-  // AllCardsFilterService _makeAllCardsFilterService() => AllCardsFilterService(
-  //       cardsOfProductsDataProvider: _makeCardOfProductDataProvider(),
-  //       filterDataProvider: _makeFilterDataProvider(),
-  //       sellerDataProvider: _makeSellerDataProvider(),
-  //     );
+  CategoriesAndSubjectsService _makeCategoriesAndSubjectsService() =>
+      CategoriesAndSubjectsService(
+          categoriesDataProvider: _makeCategoryDataProvider(),
+          catAndSubjDataProvider: _makeSubjectCommissionDataProvider(),
+          categoriesAndSubjectsApiClien: _makeCategoriesAndSubjectsApiClient());
 
   NotificationService _makeNotificationService() => NotificationService(
       notificationDataProvider: _makeNotificationDataProvider(),
@@ -972,6 +994,23 @@ class _DIContainer {
           context: context,
           groupsProvider: _makeAllGroupsService(),
           productsCardsIds: productsCardsIds);
+  AllCategoriesScreenViewModel _makeAllCategoriesViewModel(
+      BuildContext context) {
+    return AllCategoriesScreenViewModel(
+        context: context,
+        authService: _makeAuthService(),
+        categoriesService: _makeCategoriesAndSubjectsService());
+  }
+
+  AllSubjectsViewModel _makeAllSubjectsViewModel(
+      BuildContext context, List<String> catNames) {
+    return AllSubjectsViewModel(
+        context: context,
+        catNames: catNames,
+        authService: _makeAuthService(),
+        statsService: _makeStatsService(),
+        catAndSubjService: _makeCategoriesAndSubjectsService());
+  }
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -979,6 +1018,22 @@ class ScreenFactoryDefault implements ScreenFactory {
 
   // ignore: library_private_types_in_public_api
   const ScreenFactoryDefault(this._diContainer);
+  @override
+  Widget makeAllCategoriesScreen() {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeAllCategoriesViewModel(context),
+      child: const AllCategoriesScreen(),
+    );
+  }
+
+  @override
+  Widget makeAllSubjectsScreen(List<String> catNames) {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeAllSubjectsViewModel(context, catNames),
+      child: const AllSubjectsScreen(),
+    );
+  }
 
   @override
   Widget makeSeoToolScreen(

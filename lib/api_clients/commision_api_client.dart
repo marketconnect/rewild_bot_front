@@ -10,6 +10,7 @@ import 'package:rewild_bot_front/domain/entities/commission_model.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
 import 'package:rewild_bot_front/domain/services/commission_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class CommissionApiClient
     implements
@@ -22,7 +23,7 @@ class CommissionApiClient
     required String token,
     required int id,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/getCommission');
+    final url = Uri.parse('${ServerConstants.apiUrl}/getCommission');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ class CommissionApiClient
   Future<Either<RewildError, List<TariffModel>>> getTarrifs({
     required String token,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/getTariffsV2');
+    final url = Uri.parse('${ServerConstants.apiUrl}/getTariffsV2');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',

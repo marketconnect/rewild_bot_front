@@ -6,6 +6,7 @@ import 'package:rewild_bot_front/core/constants/messages_constants.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/services/wb_search_suggestion_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class SearchQueryApiClient
     implements WbSearchSuggestionServiceSearchQueryApiClient {
@@ -14,7 +15,7 @@ class SearchQueryApiClient
   @override
   Future<Either<RewildError, List<(String, int)>>> getSearchQuery(
       {required String token, required List<String> queries}) async {
-    final url = Uri.parse('https://rewild.website/api/getSearchQuery');
+    final url = Uri.parse('${ServerConstants.apiUrl}/getSearchQuery');
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

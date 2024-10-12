@@ -9,6 +9,7 @@ import 'package:rewild_bot_front/domain/entities/product_watch_subscription_resp
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:rewild_bot_front/domain/services/notification_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class ProductWatchSubscriptionApiClient
     implements NotificationServiceProductWatchSubscriptionApiClient {
@@ -21,7 +22,7 @@ class ProductWatchSubscriptionApiClient
     required List<Map<String, dynamic>> subscriptions,
   }) async {
     final url =
-        Uri.parse("https://rewild.website/api/addProductWatchSubscription");
+        Uri.parse("${ServerConstants.apiUrl}/addProductWatchSubscription");
     try {
       final response = await http.post(
         url,
@@ -66,7 +67,7 @@ class ProductWatchSubscriptionApiClient
     required List<Map<String, dynamic>> subscriptions,
   }) async {
     final url =
-        Uri.parse("https://rewild.website/api/deleteProductWatchSubscription");
+        Uri.parse("${ServerConstants.apiUrl}/deleteProductWatchSubscription");
     try {
       final response = await http.post(
         url,
@@ -110,7 +111,7 @@ class ProductWatchSubscriptionApiClient
     required int productId,
   }) async {
     final url = Uri.parse(
-        "https://rewild.website/api/deleteProductWatchSubscriptionsForProduct");
+        "${ServerConstants.apiUrl}/deleteProductWatchSubscriptionsForProduct");
     try {
       final response = await http.post(
         url,
@@ -152,7 +153,7 @@ class ProductWatchSubscriptionApiClient
     required int productId,
   }) async {
     final url = Uri.parse(
-        "https://rewild.website/api/getAllSubscriptionsForUserAndProduct");
+        "${ServerConstants.apiUrl}/getAllSubscriptionsForUserAndProduct");
     try {
       final response = await http.post(
         url,

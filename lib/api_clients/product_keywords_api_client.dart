@@ -6,6 +6,7 @@ import 'package:rewild_bot_front/core/constants/messages_constants.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/domain/services/card_keywords_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class ProductKeywordsApiClient implements CardKeywordsServiceApiClient {
   const ProductKeywordsApiClient();
@@ -15,7 +16,7 @@ class ProductKeywordsApiClient implements CardKeywordsServiceApiClient {
     required String token,
     required List<int> skus,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/getKeywordsForProduct');
+    final url = Uri.parse('${ServerConstants.apiUrl}/getKeywordsForProduct');
 
     try {
       if (token.isEmpty || skus.isEmpty) {

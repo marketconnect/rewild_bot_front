@@ -7,6 +7,8 @@ import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
 import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/all_categories_screen/all_categories_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/all_subjects_screen/all_subjects_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/notification_card_screen/notification_card_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
@@ -55,6 +57,8 @@ class AuthService
         WordsKeywordExpansionTokenService,
         SeoToolTokenService,
         SeoToolEmptyProductTokenService,
+        AllCategoriesScreenAuthService,
+        AllSubjectsViewModelAuthService,
         // SeoToolCategoryDescriptionGeneratorTokenService,
         SeoToolKwResearchTokenService,
         ExpenseManagerScreenTokenService,

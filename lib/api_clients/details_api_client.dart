@@ -12,6 +12,7 @@ import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 import 'package:rewild_bot_front/domain/entities/size_model.dart';
 import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class DetailsApiClient implements UpdateServiceDetailsApiClient {
   const DetailsApiClient();
@@ -31,7 +32,7 @@ class DetailsApiClient implements UpdateServiceDetailsApiClient {
       // final uri = Uri.parse('https://card.wb.ru/cards/detail')
       //     .replace(queryParameters: params);
 
-      final uri = Uri.parse('https://rewild.website/api/details')
+      final uri = Uri.parse('${ServerConstants.apiUrl}/details')
           .replace(queryParameters: params);
 
       final response = await http.get(

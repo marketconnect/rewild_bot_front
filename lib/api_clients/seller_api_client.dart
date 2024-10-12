@@ -10,6 +10,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/seller_model.dart';
 import 'package:rewild_bot_front/domain/services/seller_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class SellerApiClient implements SellerServiceSelerApiClient {
   const SellerApiClient();
@@ -17,7 +18,7 @@ class SellerApiClient implements SellerServiceSelerApiClient {
   Future<Either<RewildError, SellerModel>> get(
       {required int supplierId}) async {
     try {
-      final uri = Uri.parse('https://rewild.website/api/seller/$supplierId');
+      final uri = Uri.parse('${ServerConstants.apiUrl}/seller/$supplierId');
 
       final response = await http.get(uri);
       if (response.statusCode == 200) {

@@ -7,6 +7,7 @@ import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/services/price_service.dart';
 import 'package:rewild_bot_front/domain/services/tariff_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class PriceApiClient
     implements
@@ -20,7 +21,7 @@ class PriceApiClient
     required String token,
     required int price,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/addSubscriptionInfo');
+    final url = Uri.parse('${ServerConstants.apiUrl}/addSubscriptionInfo');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
@@ -57,7 +58,7 @@ class PriceApiClient
   Future<Either<RewildError, Prices>> getCurrentPrice({
     required String token,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/getPrice');
+    final url = Uri.parse('${ServerConstants.apiUrl}/getPrice');
     final headers = {
       'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',

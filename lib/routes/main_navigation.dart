@@ -73,7 +73,8 @@ abstract class ScreenFactory {
   Widget makeChatGptScreen(String questionText);
 
   Widget makeAddGroupsScreen(List<int> cardsIds);
-
+  Widget makeAllCategoriesScreen();
+  Widget makeAllSubjectsScreen(List<String> catNames);
   Widget makeFeedbackFormScreen();
 }
 
@@ -140,6 +141,19 @@ class MainNavigation implements AppNavigation {
       case '/':
         return MaterialPageRoute(
             builder: (_) => screenFactory.makeMainNavigationScreen());
+
+      case MainNavigationRouteNames.allCategoriesScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAllCategoriesScreen(),
+        );
+
+      case MainNavigationRouteNames.allSubjectsScreen:
+        final arguments = settings.arguments;
+        final args = arguments is List<String> ? arguments : <String>[];
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeAllSubjectsScreen(args),
+        );
+
       case MainNavigationRouteNames.apiKeysScreen:
         return MaterialPageRoute(
             builder: (_) => screenFactory.makeApiKeysScreen());

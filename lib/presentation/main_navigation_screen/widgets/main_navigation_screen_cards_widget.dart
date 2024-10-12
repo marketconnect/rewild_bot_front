@@ -73,6 +73,15 @@ class _MainNavigationScreenCardsWidgetState
                 // route: '',
                 iconData: Icons.insights,
               ),
+
+              LinkBtn(
+                text: 'Анализ ниш',
+
+                color: Color(0xFF49C5B6),
+                route: MainNavigationRouteNames.allCategoriesScreen,
+                // route: '',
+                iconData: Icons.pie_chart,
+              ),
               // LinkBtn(
               //   text: 'Анализ спроса',
               //   color: Color(0xFFCDDC39),

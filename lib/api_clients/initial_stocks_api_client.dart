@@ -7,6 +7,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/initial_stock_model.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
+import 'package:rewild_bot_front/env.dart';
 
 class InitialStocksApiClient
     implements UpdateServiceInitialStockModelApiClient {
@@ -19,7 +20,7 @@ class InitialStocksApiClient
     required DateTime dateFrom,
     required DateTime dateTo,
   }) async {
-    final url = Uri.parse('https://rewild.website/api/getStocks');
+    final url = Uri.parse('${ServerConstants.apiUrl}/getStocks');
     final dateToSave = dateFrom.add(const Duration(seconds: 6));
 
     final headers = {
