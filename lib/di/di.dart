@@ -5,9 +5,15 @@ import 'package:rewild_bot_front/api_clients/stats_api_client.dart';
 import 'package:rewild_bot_front/data_providers/category_data_provider/category_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subj_commission_data_provider/subj_commission_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subject_data_provider/subject_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/user_product_card_data_provider/user_product_card_data_provider.dart';
 import 'package:rewild_bot_front/domain/services/categories_and_subjects_sevice.dart';
 import 'package:rewild_bot_front/domain/services/stats_service.dart';
+import 'package:rewild_bot_front/domain/services/user_product_card_service.dart';
 import 'package:rewild_bot_front/presentation/home/feedback_form_screen/feedback_form_screen.dart';
+import 'package:rewild_bot_front/presentation/home/finance_nav_screen/finance_nav_screen.dart';
+import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_screen.dart';
+import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_view_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/all_categories_screen/all_categories_screen.dart';
 import 'package:rewild_bot_front/presentation/products/all_categories_screen/all_categories_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/all_subjects_screen/all_subjects_screen.dart';
@@ -386,6 +392,9 @@ class _DIContainer {
 
   SubscribedCardsDataProvider _makeSubscribedCardsDataProvider() =>
       const SubscribedCardsDataProvider();
+
+  UserProductCardDataProvider _makeUserProductCardDataProvider() =>
+      const UserProductCardDataProvider();
   // Services ==================================================================
   FilterValuesService _makeFilterValuesService() => FilterValuesService(
       lemmaDataProvider: _makeLemmaDataProvider(),
@@ -606,6 +615,10 @@ class _DIContainer {
       );
 
   GptService _makeGptService() => GptService(gptApiClient: _makeGptApiClient());
+
+  UserProductCardService _makeUserCardService() => UserProductCardService(
+        dataProvider: _makeUserProductCardDataProvider(),
+      );
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
           BuildContext context) =>
@@ -625,7 +638,8 @@ class _DIContainer {
           context: context,
           apiKeysService: _makeApiKeysService(),
           contentService: _makeContentService(),
-          updateService: _makeUpdateService(),
+          // updateService: _makeUpdateService(),
+          userCardsService: _makeUserCardService(),
           cardOfProductService: _makeCardOfProductService(),
           authService: _makeAuthService());
 
@@ -673,10 +687,11 @@ class _DIContainer {
   AllCardsSeoViewModel _makeAllCardsSeoViewModel(context) =>
       AllCardsSeoViewModel(
         context: context,
-        cardOfProductService: _makeCardOfProductService(),
+        // cardOfProductService: _makeCardOfProductService(),
         contentService: _makeContentService(),
         authService: _makeAuthService(),
-        updateService: _makeUpdateService(),
+        userCardsService: _makeUserCardService(),
+        // updateService: _makeUpdateService(),
       );
   CardNotificationViewModel _makeCardNotificationSettingsViewModel(
           BuildContext context, NotificationCardState state) =>
@@ -862,7 +877,7 @@ class _DIContainer {
   ReportViewModel _makeRealizationReportViewModel(BuildContext context) =>
       ReportViewModel(
         context: context,
-        cardOfProductService: _makeCardOfProductService(),
+        userCardService: _makeUserCardService(),
         totalCostService: _makeTotalCostService(),
         advertService: _makeAdvertService(),
         realizationReportService: _makeRealizationReportService(),
@@ -873,7 +888,7 @@ class _DIContainer {
       AllProductsQuestionsViewModel(
           context: context,
           unansweredFeedbackQtyService: _makeUnansweredFeedbackQtyService(),
-          cardOfProductService: _makeCardOfProductService(),
+          userCardService: _makeUserCardService(),
           questionService: _makeQuestionService());
 
   AllQuestionsViewModel _makeAllQuestionsViewModel(
@@ -889,14 +904,14 @@ class _DIContainer {
         context: context,
         answerService: _makeAnswerService(),
         questionService: _makeQuestionService(),
-        cardOfProductService: _makeCardOfProductService(),
+        userCardService: _makeUserCardService(),
       );
 
   AllProductsReviewsViewModel _makeAllProductsReviewsViewModel(
           BuildContext context) =>
       AllProductsReviewsViewModel(
           context: context,
-          cardOfProductService: _makeCardOfProductService(),
+          userCardService: _makeUserCardService(),
           reviewService: _makeReviewService(),
           unansweredFeedbackQtyService: _makeUnansweredFeedbackQtyService());
 
@@ -914,7 +929,7 @@ class _DIContainer {
         context: context,
         answerService: _makeAnswerService(),
         tokenService: _makeAuthService(),
-        singleReviewCardOfProductService: _makeCardOfProductService(),
+        userCardService: _makeUserCardService(),
         reviewService: _makeReviewService(),
       );
 
@@ -939,7 +954,7 @@ class _DIContainer {
   AllAdvertsWordsViewModel _makeAdvertsToolsViewModel(BuildContext context) =>
       AllAdvertsWordsViewModel(
           context: context,
-          cardOfProductService: _makeCardOfProductService(),
+          userCardService: _makeUserCardService(),
           advertService: _makeAdvertService());
 
   SingleAutoWordsViewModel _makeAutoStatWordsViewModel(
@@ -954,7 +969,7 @@ class _DIContainer {
           BuildContext context) =>
       AllAdvertsStatScreenViewModel(
         context: context,
-        cardOfProductService: _makeCardOfProductService(),
+        userCardService: _makeUserCardService(),
         updatedAdvertStream: updatedAdvertStream,
         advertService: _makeAdvertService(),
       );
@@ -964,7 +979,7 @@ class _DIContainer {
       AdvertAnaliticsViewModel(
         campaignInfo: campaignInfo,
         context: context,
-        cardOfProductService: _makeCardOfProductService(),
+        userCardService: _makeUserCardService(),
         authService: _makeAuthService(),
         tariffService: _makeTariffService(),
         totalCostService: _makeTotalCostService(),
@@ -1011,6 +1026,18 @@ class _DIContainer {
         statsService: _makeStatsService(),
         catAndSubjService: _makeCategoriesAndSubjectsService());
   }
+
+  UnitEconomicsAllCardsViewModel _makeUnitEconomicsAllCardsViewModel(
+      BuildContext context) {
+    return UnitEconomicsAllCardsViewModel(
+        context: context,
+        totalCostService: _makeTotalCostService(),
+        authService: _makeAuthService(),
+        tariffService: _makeTariffService(),
+        commissionService: _makeCommissionService(),
+        updateService: _makeUpdateService(),
+        userCardService: _makeUserCardService());
+  }
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -1033,6 +1060,20 @@ class ScreenFactoryDefault implements ScreenFactory {
           _diContainer._makeAllSubjectsViewModel(context, catNames),
       child: const AllSubjectsScreen(),
     );
+  }
+
+  @override
+  Widget makeUnitEconomicsAllCardsScreen() {
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeUnitEconomicsAllCardsViewModel(context),
+      child: const UnitEconomicsAllCardsScreen(),
+    );
+  }
+
+  @override
+  Widget makeFinanceNavScreen() {
+    return const FinanceNavScreenWidget();
   }
 
   @override

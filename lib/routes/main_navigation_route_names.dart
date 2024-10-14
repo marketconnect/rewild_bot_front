@@ -67,4 +67,8 @@ abstract class MainNavigationRouteNames {
 
   static const String allCategoriesScreen = '/all_categories_screen';
   static const String allSubjectsScreen = '/all_subjects_screen';
+  static const String unitEconomicsAllCardsScreen =
+      '/unit_economics_all_cards_screen';
+
+  static const String financeNavScreen = '/finance_nav_screen';
 }

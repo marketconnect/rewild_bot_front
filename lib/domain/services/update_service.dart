@@ -17,11 +17,11 @@ import 'package:rewild_bot_front/domain/entities/stocks_model.dart';
 import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
+import 'package:rewild_bot_front/domain/entities/user_product_card.dart';
+import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_view_model.dart';
 
-import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/products/seo/all_cards_seo_screen/all_cards_seo_view_model.dart';
 
 import 'package:rewild_bot_front/presentation/main_navigation_screen/main_navigation_view_model.dart';
 
@@ -180,8 +180,7 @@ class UpdateService
         AllCardsScreenUpdateService,
         WbWebViewScreenViewModelUpdateService,
         SingleCardScreenUpdateService,
-        AllCardsSeoUpdateService,
-        AddApiKeysUpdateService,
+        UnitEconomicsAllCardsUpdateService,
         MainNavigationUpdateService {
   final UpdateServiceDetailsApiClient detailsApiClient;
   final UpdateServiceSupplyDataProvider supplyDataProvider;
@@ -310,7 +309,6 @@ class UpdateService
       {required String token,
       required List<CardOfProductModel> cardOfProductsToInsert}) async {
     // get all cards from local db
-
     final cardsInDBEither = await cardOfProductDataProvider.getAll();
 
     if (cardsInDBEither.isLeft()) {
@@ -332,7 +330,6 @@ class UpdateService
     }
 
     // if there are no new cards - return 0
-
     if (newCards.isEmpty) {
       return right(0);
     }
@@ -419,6 +416,68 @@ class UpdateService
             }
           }
         }
+      }
+    }
+
+    return right(newCards.length);
+  }
+
+  @override
+  Future<Either<RewildError, int>> insertForUnitEconomy(
+      {required String token,
+      required List<UserProductCard> cardOfProductsToInsert}) async {
+    // get all cards from local db
+    final cardsInDBEither = await cardOfProductDataProvider.getAll();
+
+    if (cardsInDBEither.isLeft()) {
+      return left(
+          cardsInDBEither.fold((l) => l, (r) => throw UnimplementedError()));
+    }
+    final cardsInDB = cardsInDBEither.fold(
+      (l) => throw UnimplementedError(),
+      (r) => r,
+    );
+    final cardsInDBIds = cardsInDB.map((e) => e.nmId).toList();
+
+    // filter new cards
+    List<CardOfProductModel> newCards = [];
+    for (final c in cardOfProductsToInsert) {
+      if (cardsInDBIds.contains(c.sku)) {
+        continue;
+      }
+      final newCard = CardOfProductModel(
+        nmId: c.sku,
+        img: c.img,
+      );
+      newCards.add(newCard);
+    }
+
+    // if there are no new cards - return 0
+    if (newCards.isEmpty) {
+      return right(0);
+    }
+    // fetch details for all new cards from wb
+    final fetchedCardsOfProductsEither =
+        await detailsApiClient.get(ids: newCards.map((e) => e.nmId).toList());
+    if (fetchedCardsOfProductsEither.isLeft()) {
+      return left(fetchedCardsOfProductsEither.fold(
+          (l) => l, (r) => throw UnimplementedError()));
+    }
+    final fetchedCardsOfProducts =
+        fetchedCardsOfProductsEither.getOrElse((l) => []);
+
+    // add to db cards
+    for (final card in fetchedCardsOfProducts) {
+      // append img
+      final img = newCards.firstWhere((e) => e.nmId == card.nmId).img;
+      card.img = img;
+      // insert
+
+      final insertEither =
+          await cardOfProductDataProvider.insertOrUpdate(card: card);
+      if (insertEither.isLeft()) {
+        return left(
+            insertEither.fold((l) => l, (r) => throw UnimplementedError()));
       }
     }
 

@@ -19,17 +19,17 @@ abstract class AllAdvertsStatScreenAdvertService {
       {required String token, required int campaignId});
 }
 
-abstract class AllAdvertsStatScreenCardOfProductService {
+abstract class AllAdvertsStatScreenUserCardService {
   Future<Either<RewildError, String>> getImageForNmId({required int nmId});
 }
 
 class AllAdvertsStatScreenViewModel extends ResourceChangeNotifier {
   final AllAdvertsStatScreenAdvertService advertService;
-  final AllAdvertsStatScreenCardOfProductService cardOfProductService;
+  final AllAdvertsStatScreenUserCardService userCardService;
   final Stream<StreamAdvertEvent> updatedAdvertStream;
   AllAdvertsStatScreenViewModel({
     required super.context,
-    required this.cardOfProductService,
+    required this.userCardService,
     required this.updatedAdvertStream,
     required this.advertService,
   }) {
@@ -185,7 +185,7 @@ class AllAdvertsStatScreenViewModel extends ResourceChangeNotifier {
       List<String> images = [];
       for (final nmId in nmIds) {
         final image = await fetch(
-          () => cardOfProductService.getImageForNmId(nmId: nmId),
+          () => userCardService.getImageForNmId(nmId: nmId),
         );
         if (image == null) {
           continue;

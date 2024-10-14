@@ -30,10 +30,9 @@ class DatabaseHelper {
       throw Exception("Failed to get IDB factory.");
     }
 
-    // Увеличиваем версию базы данных с 1 до 2
     final db = await dbFactory.open(
-      'ww.db',
-      version: 2, // Здесь изменили версию
+      'mb.db',
+      version: 2,
       onUpgradeNeeded: _onUpgrade,
     );
 
@@ -41,31 +40,72 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(VersionChangeEvent event) async {
-    final db = event.database;
+    // final db = event.database;
 
     if (event.oldVersion < 1) {
       await _onCreate(event);
     }
 
-    if (event.oldVersion < 2) {
-      if (!db.objectStoreNames.contains('subjects')) {
-        final store = db.createObjectStore('subjects', keyPath: 'subjectId');
-        store.createIndex('subjectId', 'subjectId', unique: true);
-        store.createIndex('name', 'name', unique: false);
-      }
-      if (!db.objectStoreNames.contains('subject_commissions')) {
-        final store =
-            db.createObjectStore('subject_commissions', keyPath: 'id');
-        store.createIndex('catName', 'catName', unique: false);
-        store.createIndex('createdAt', 'createdAt', unique: false);
-      }
-      if (!db.objectStoreNames.contains('categories')) {
-        final store =
-            db.createObjectStore('categories', keyPath: 'categoryName');
-        store.createIndex('categoryName', 'categoryName', unique: true);
-        store.createIndex('updatedAt', 'updatedAt', unique: false);
-      }
-    }
+    // if (event.oldVersion < 2) {
+    //   if (!db.objectStoreNames.contains('subjects')) {
+    //     final store = db.createObjectStore('subjects', keyPath: 'subjectId');
+    //     store.createIndex('subjectId', 'subjectId', unique: true);
+    //     store.createIndex('name', 'name', unique: false);
+    //   }
+    //   if (!db.objectStoreNames.contains('subject_commissions')) {
+    //     final store =
+    //         db.createObjectStore('subject_commissions', keyPath: 'id');
+    //     store.createIndex('catName', 'catName', unique: false);
+    //     store.createIndex('createdAt', 'createdAt', unique: false);
+    //   }
+    //   if (!db.objectStoreNames.contains('categories')) {
+    //     final store =
+    //         db.createObjectStore('categories', keyPath: 'categoryName');
+    //     store.createIndex('categoryName', 'categoryName', unique: true);
+    //     store.createIndex('updatedAt', 'updatedAt', unique: false);
+    //   }
+    // }
+    // if (event.oldVersion < 3) {
+    //   if (!db.objectStoreNames.contains('product_cards')) {
+    //     final store =
+    //         db.createObjectStore('product_cards', keyPath: ['sku', 'mp']);
+    //     store.createIndex('sku', 'sku', unique: true);
+    //     store.createIndex('img', 'img', unique: false);
+    //     store.createIndex('mp', 'mp', unique: false);
+    //   }
+    // }
+
+    // if (event.oldVersion < 4) {
+    //   if (db.objectStoreNames.contains('product_cards')) {
+    //     db.deleteObjectStore('product_cards');
+    //     final store = db.createObjectStore('product_cards', keyPath: 'sku_mp');
+    //     store.createIndex('sku', 'sku', unique: true);
+    //     store.createIndex('img', 'img', unique: false);
+    //     store.createIndex('mp', 'mp', unique: false);
+    //   }
+    // }
+    // final db = event.database;                                            !!!
+    // if (event.oldVersion < 5) {
+    //   if (db.objectStoreNames.contains('product_cards')) {
+    //     sendMessageToTelegramBot(
+    //         TBot.tBotErrorToken, TBot.tBotErrorChatId, "contains");
+    //     db.deleteObjectStore('product_cards');
+    //     sendMessageToTelegramBot(
+    //         TBot.tBotErrorToken, TBot.tBotErrorChatId, "deleteObjectStore");
+    //     final store = event.transaction.objectStore(
+    //       'product_cards',
+    //     );
+
+    //     sendMessageToTelegramBot(
+    //         TBot.tBotErrorToken, TBot.tBotErrorChatId, "createObjectStore");
+    //     store.createIndex('sku_mp', 'sku_mp', unique: true);
+    //     store.createIndex('sku', 'sku', unique: true);
+    //     store.createIndex('img', 'img', unique: false);
+    //     store.createIndex('mp', 'mp', unique: false);
+    //     sendMessageToTelegramBot(
+    //         TBot.tBotErrorToken, TBot.tBotErrorChatId, "added indexes");
+    //   }
+    // }
     // final db = event.database;
     // if (event.oldVersion < 2) {
     //   if (!db.objectStoreNames.contains('keywords')) {
@@ -112,6 +152,14 @@ class DatabaseHelper {
         createStore();
       }
     }
+
+    createStoreIfNotExists('product_cards', () {
+      final store = db.createObjectStore('product_cards', keyPath: 'sku_mp');
+      store.createIndex('sku', 'sku', unique: true);
+      store.createIndex('img', 'img', unique: false);
+      store.createIndex('mp', 'mp', unique: false);
+      store.createIndex('name', 'name', unique: false);
+    });
 
     createStoreIfNotExists('subjects', () {
       final store = db.createObjectStore('subjects', keyPath: 'subjectId');

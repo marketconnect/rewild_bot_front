@@ -63,7 +63,6 @@ class CategoriesAndSubjectsService
         }
       }
     }
-    print('categories were not updated');
     // if categories were not updated
     // fetch them from api
     final resultOrEither =

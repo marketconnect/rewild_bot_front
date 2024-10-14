@@ -15,16 +15,25 @@ abstract class AllCardsSeoAuthService {
 }
 
 // update
-abstract class AllCardsSeoUpdateService {
-  Future<Either<RewildError, int>> insert(
-      {required String token,
-      required List<CardOfProductModel> cardOfProductsToInsert});
+// abstract class AllCardsSeoUpdateService {
+//   Future<Either<RewildError, int>> insert(
+//       {required String token,
+//       required List<CardOfProductModel> cardOfProductsToInsert});
+// }
+abstract class AllCardsSeoScreenUserCardsService {
+  Future<Either<RewildError, void>> addProductCard({
+    required int sku,
+    required String img,
+    required String mp,
+    required String name,
+    required int subjectId,
+  });
 }
 
-abstract class AllCardsSeoScreenCardOfProductService {
-  Future<Either<RewildError, List<CardOfProductModel>>> getAll(
-      [List<int>? nmIds]);
-}
+// abstract class AllCardsSeoScreenCardOfProductService {
+//   Future<Either<RewildError, List<CardOfProductModel>>> getAll(
+//       [List<int>? nmIds]);
+// }
 
 abstract class AllCardsSeoContentService {
   Future<Either<RewildError, CardCatalog>> fetchNomenclatures();
@@ -32,19 +41,22 @@ abstract class AllCardsSeoContentService {
 }
 
 class AllCardsSeoViewModel extends ResourceChangeNotifier {
-  AllCardsSeoViewModel(
-      {required super.context,
-      required this.contentService,
-      required this.authService,
-      required this.updateService,
-      required this.cardOfProductService}) {
+  AllCardsSeoViewModel({
+    required super.context,
+    required this.contentService,
+    required this.authService,
+    // required this.updateService,
+    required this.userCardsService,
+    // required this.cardOfProductService
+  }) {
     _asyncInit();
   }
   // constructor params ========================================================
-  final AllCardsSeoScreenCardOfProductService cardOfProductService;
+  // final AllCardsSeoScreenCardOfProductService cardOfProductService;
   final AllCardsSeoContentService contentService;
   final AllCardsSeoAuthService authService;
-  final AllCardsSeoUpdateService updateService;
+  final AllCardsSeoScreenUserCardsService userCardsService;
+  // final AllCardsSeoUpdateService updateService;
   // other fields ========================================================
   // loading
   bool _isLoading = true;
@@ -117,58 +129,46 @@ class AllCardsSeoViewModel extends ResourceChangeNotifier {
     setCardsContent(contentOrNull!.cards);
 
     // Get all the user cards as we need images and subject ids to pass to SeoTool.
-    final nmIds = _cardsContent.map((e) => e.nmID).toList();
-    final allCardsOrNull =
-        await fetch(() => cardOfProductService.getAll(nmIds));
-    List<int> savedNmIds = [];
+    // final nmIds = _cardsContent.map((e) => e.nmID).toList();
+    // final allCardsOrNull =
+    //     await fetch(() => cardOfProductService.getAll(nmIds));
+    // List<int> savedNmIds = [];
     // if there are no cards in local storage
-    if (allCardsOrNull == null) {
-      savedNmIds = [];
-    } else {
-      // filter only the saved cards with images and names and get their nmIds
-      savedNmIds = allCardsOrNull
-          .where((e) => e.img.isNotEmpty && e.name.isNotEmpty)
-          .map((e) => e.nmId)
-          .toList();
-    }
+    // if (allCardsOrNull == null) {
+    //   savedNmIds = [];
+    // } else {
+    //   // filter only the saved cards with images and names and get their nmIds
+    //   savedNmIds = allCardsOrNull
+    //       .where((e) => e.img.isNotEmpty && e.name.isNotEmpty)
+    //       .map((e) => e.nmId)
+    //       .toList();
+    // }
 
     // get cards that are not in local storage or that have no images and names
-    final notSavedCards =
-        contentOrNull.cards.where((card) => !savedNmIds.contains(card.nmID));
+    // final notSavedCards =
+    //     contentOrNull.cards.where((card) => !savedNmIds.contains(card.nmID));
 
     List<CardOfProductModel> cardOfProducts = [];
 
     // add all cards that are not in local storage
-    for (final c in notSavedCards) {
-      final nmId = c.nmID;
+    for (final c in contentOrNull.cards) {
+      final sku = c.nmID;
       final img = c.photos.first.big;
       final name = c.title;
+      final subjectID = c.subjectID;
+      await userCardsService.addProductCard(
+          sku: sku, img: img, mp: "wb", name: name, subjectId: subjectID);
       final cardOfProduct = CardOfProductModel(
-        nmId: nmId,
+        nmId: sku,
         img: img,
         name: name,
       );
       cardOfProducts.add(cardOfProduct);
     }
 
-    // save all cards in local storage
-    if (cardOfProducts.isNotEmpty) {
-      final tokenOrNull = await fetch(() => authService.getToken());
-      if (tokenOrNull == null) {
-        _setIsLoading(false);
-        return;
-      }
-
-      await updateService.insert(
-          token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
-    }
-
     // set cards for view
-    if (allCardsOrNull == null) {
-      setCards(cardOfProducts);
-    } else {
-      setCards([...allCardsOrNull, ...cardOfProducts]);
-    }
+
+    setCards(cardOfProducts);
 
     _setIsLoading(false);
   }

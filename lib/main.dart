@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_web_libraries_in_flutter
 import 'dart:js' as js;
-import 'dart:convert'; // Для декодирования JSON
-import 'dart:html'; // Для доступа к window.location
+import 'dart:convert';
+import 'dart:html';
 
 import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 

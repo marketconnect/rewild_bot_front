@@ -40,6 +40,7 @@ class ExpenseManagerViewModel extends ResourceChangeNotifier {
   final ExpenseManagerCardOfProductService cardOfProductService;
   final ExpenseManagerScreenTokenService tokenService;
   final ExpenseManagerAverageLogisticsService averageLogisticsService;
+
   ExpenseManagerViewModel({
     required super.context,
     required this.averageLogisticsService,
@@ -86,6 +87,9 @@ class ExpenseManagerViewModel extends ResourceChangeNotifier {
     // card
     final card = values[1] as CardOfProductModel?;
     if (card == null) {
+      // screen opened not from single card screen
+      // get user card
+
       setIsLoading(false);
       return;
     }

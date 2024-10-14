@@ -2,6 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/total_cost_calculator.dart';
 import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/report_screen/report_view_model.dart';
@@ -20,6 +21,7 @@ abstract class TotalCostServiceTotalCostDataProvider {
 class TotalCostService
     implements
         AllCardsScreenTotalCostService,
+        UnitEconomicsAllCardsTotalCostsService,
         AdvertAnaliticsTotalCostService,
         ExpenseManagerTotalCostService,
         ReportTotalCostService {

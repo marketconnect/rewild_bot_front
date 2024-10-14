@@ -25,6 +25,15 @@ class _ExpenseManagerScreenState extends State<ExpenseManagerScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () {
+            Navigator.of(context).pop(true);
+          },
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
         scrolledUnderElevation: 2,
         shadowColor: Colors.black,
         surfaceTintColor: Colors.transparent,

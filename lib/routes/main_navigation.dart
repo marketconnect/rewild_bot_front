@@ -76,6 +76,8 @@ abstract class ScreenFactory {
   Widget makeAllCategoriesScreen();
   Widget makeAllSubjectsScreen(List<String> catNames);
   Widget makeFeedbackFormScreen();
+  Widget makeUnitEconomicsAllCardsScreen();
+  Widget makeFinanceNavScreen();
 }
 
 class MainNavigation implements AppNavigation {
@@ -141,6 +143,16 @@ class MainNavigation implements AppNavigation {
       case '/':
         return MaterialPageRoute(
             builder: (_) => screenFactory.makeMainNavigationScreen());
+
+      case MainNavigationRouteNames.financeNavScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeFinanceNavScreen(),
+        );
+
+      case MainNavigationRouteNames.unitEconomicsAllCardsScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeUnitEconomicsAllCardsScreen(),
+        );
 
       case MainNavigationRouteNames.allCategoriesScreen:
         return MaterialPageRoute(

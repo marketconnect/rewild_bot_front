@@ -8,7 +8,7 @@ import 'package:rewild_bot_front/domain/entities/total_cost_calculator.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // cards
-abstract class ReportCardOfProductService {
+abstract class ReportUserCardService {
   Future<Either<RewildError, String>> getImageForNmId({required int nmId});
 }
 
@@ -40,12 +40,12 @@ abstract class ReportAdvertService {
 
 class ReportViewModel extends ResourceChangeNotifier {
   final ReportRealizationReportService realizationReportService;
-  final ReportCardOfProductService cardOfProductService;
+  final ReportUserCardService userCardService;
   final ReportTotalCostService totalCostService;
   final ReportAdvertService advertService;
   ReportViewModel(
       {required super.context,
-      required this.cardOfProductService,
+      required this.userCardService,
       required this.totalCostService,
       required this.advertService,
       required this.realizationReportService}) {
@@ -531,7 +531,7 @@ class ReportViewModel extends ResourceChangeNotifier {
       // Add images info
       if (_images[nmId] == null) {
         final image =
-            await fetch(() => cardOfProductService.getImageForNmId(nmId: nmId));
+            await fetch(() => userCardService.getImageForNmId(nmId: nmId));
         if (image != null) {
           addImage(nmId, image, rev / allCardsRevenue, profit);
         }

@@ -7,6 +7,7 @@ import 'package:rewild_bot_front/presentation/adverts/campaign_managment_screen/
 import 'package:rewild_bot_front/presentation/feedback/reviews/single_review_screen/single_review_view_model.dart';
 import 'package:rewild_bot_front/presentation/gpt_screen/gpt_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/home/add_api_keys_screen/add_api_keys_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/all_categories_screen/all_categories_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/all_subjects_screen/all_subjects_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
@@ -73,6 +74,7 @@ class AuthService
         // PaymentWebViewTokenService,
         AllCardsSeoAuthService,
         AllCardsScreenAuthService,
+        UnitEconomicsAllCardsAuthService,
         NotificationCardTokenService,
         WbWebViewScreenViewModelAuthService {
   final AuthServiceSecureDataProvider secureDataProvider;

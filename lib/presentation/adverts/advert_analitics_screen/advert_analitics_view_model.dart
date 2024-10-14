@@ -17,7 +17,7 @@ abstract class AdvertAnaliticsAdvertsAnaliticsService {
 }
 
 // cards
-abstract class AdvertAnaliticsScreenCardOfProductService {
+abstract class AdvertAnaliticsScreenUserCardService {
   Future<Either<RewildError, String>> getImageForNmId({required int nmId});
 }
 
@@ -40,7 +40,7 @@ abstract class AdvertAnaliticsTariffService {
 class AdvertAnaliticsViewModel extends ResourceChangeNotifier {
   final (int, DateTime, String) campaignInfo;
   final AdvertAnaliticsAdvertsAnaliticsService advAnaliticsService;
-  final AdvertAnaliticsScreenCardOfProductService cardOfProductService;
+  final AdvertAnaliticsScreenUserCardService userCardService;
   final AdvertAnaliticsTotalCostService totalCostService;
   final AdvertAnaliticsAuthService authService;
   final AdvertAnaliticsTariffService tariffService;
@@ -49,7 +49,7 @@ class AdvertAnaliticsViewModel extends ResourceChangeNotifier {
       required this.campaignInfo,
       required this.tariffService,
       required this.authService,
-      required this.cardOfProductService,
+      required this.userCardService,
       required this.totalCostService,
       required this.advAnaliticsService}) {
     setCampaignCreatedAt(campaignInfo.$2);
@@ -429,7 +429,7 @@ class AdvertAnaliticsViewModel extends ResourceChangeNotifier {
       final nmIds = firsApp.first.nm;
       for (final nmId in nmIds) {
         final image = await fetch(
-          () => cardOfProductService.getImageForNmId(nmId: nmId.nmId),
+          () => userCardService.getImageForNmId(nmId: nmId.nmId),
         );
         if (image == null) {
           continue;
@@ -505,9 +505,12 @@ class AdvertAnaliticsViewModel extends ResourceChangeNotifier {
     }
 
     // average logistic cost from server
-
+    final tokenOrNull = await fetch(() => authService.getToken());
+    if (tokenOrNull == null) {
+      return 0;
+    }
     final averageLogisticCostFromServerOrNull = await fetch(
-      () => tariffService.getCurrentAverageLogistics(token: 'token'),
+      () => tariffService.getCurrentAverageLogistics(token: tokenOrNull),
     );
     if (averageLogisticCostFromServerOrNull != null) {
       setAverageLogisticCost(averageLogisticCostFromServerOrNull);

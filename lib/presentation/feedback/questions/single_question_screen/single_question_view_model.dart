@@ -7,7 +7,7 @@ import 'package:rewild_bot_front/domain/entities/question_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // card of product
-abstract class SingleQuestionViewModelCardOfProductService {
+abstract class SingleQuestionViewModelUserCardService {
   Future<Either<RewildError, String>> getImageForNmId({required int nmId});
 }
 
@@ -27,12 +27,12 @@ class SingleQuestionViewModel extends ResourceChangeNotifier {
   final QuestionModel question;
   final SingleQuestionViewModelAnswerService answerService;
   final SingleQuestionViewModelQuestionService questionService;
-  final SingleQuestionViewModelCardOfProductService cardOfProductService;
+  final SingleQuestionViewModelUserCardService userCardService;
 
   SingleQuestionViewModel(this.question,
       {required super.context,
       required this.questionService,
-      required this.cardOfProductService,
+      required this.userCardService,
       required this.answerService}) {
     _asyncInit();
   }
@@ -48,8 +48,8 @@ class SingleQuestionViewModel extends ResourceChangeNotifier {
     if (answers == null) {
       return;
     }
-    _cardImage = await fetch(() => cardOfProductService.getImageForNmId(
-        nmId: question.productDetails.nmId));
+    _cardImage = await fetch(() =>
+        userCardService.getImageForNmId(nmId: question.productDetails.nmId));
     setStoredAnswers(answers);
     if (question.answer != null) {
       setAnswer(question.answer!.text);

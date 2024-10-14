@@ -71,7 +71,7 @@ class _MainNavigationScreenHomeWidgetState
               _Link(
                 text: 'Финансы',
                 color: Colors.orangeAccent,
-                route: MainNavigationRouteNames.realizationReportScreen,
+                route: MainNavigationRouteNames.financeNavScreen,
                 iconData: Icons.dashboard,
               ),
               _Link(

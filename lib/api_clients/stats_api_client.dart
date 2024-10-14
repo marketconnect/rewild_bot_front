@@ -39,7 +39,6 @@ class StatsApiClient implements StatsServiceStatsApiClient {
 
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(utf8.decode(response.bodyBytes));
-        print(decodedResponse);
         if (decodedResponse['subjects'] != null &&
             decodedResponse['subjects'] is List &&
             decodedResponse['subjects'].isNotEmpty) {

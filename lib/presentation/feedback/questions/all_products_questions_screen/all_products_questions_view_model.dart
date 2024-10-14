@@ -9,7 +9,7 @@ import 'package:rewild_bot_front/domain/entities/question_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // Images
-abstract class AllProductsQuestionsCardOfProductService {
+abstract class AllProductsQuestionsUserCardService {
   Future<Either<RewildError, String>> getImageForNmId({required int nmId});
 }
 
@@ -45,13 +45,13 @@ abstract class AllProductsQuestionsUnansweredFeedbackQtyService {
 
 class AllProductsQuestionsViewModel extends ResourceChangeNotifier {
   final AllProductsQuestionsViewModelQuestionService questionService;
-  final AllProductsQuestionsCardOfProductService cardOfProductService;
+  final AllProductsQuestionsUserCardService userCardService;
 
   final AllProductsQuestionsUnansweredFeedbackQtyService
       unansweredFeedbackQtyService;
   AllProductsQuestionsViewModel(
       {required super.context,
-      required this.cardOfProductService,
+      required this.userCardService,
       required this.unansweredFeedbackQtyService,
       required this.questionService}) {
     _asyncInit();
@@ -238,7 +238,7 @@ class AllProductsQuestionsViewModel extends ResourceChangeNotifier {
       // Image
       if (!_images.containsKey(nmId)) {
         final image = await fetch(
-          () => cardOfProductService.getImageForNmId(nmId: nmId),
+          () => userCardService.getImageForNmId(nmId: nmId),
         );
         if (image == null) {
           continue;

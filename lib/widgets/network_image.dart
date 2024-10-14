@@ -34,22 +34,11 @@ class ReWildNetworkImage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Если URL недействителен
     if (!validateURL(image)) {
-      return GestureDetector(
-        onTap: () {
-          // Показываем SnackBar при нажатии
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Карточка не добавлена.'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        },
-        child: Image.asset(
-          width: width,
-          height: height,
-          errorImage ?? ImageConstant.empty,
-          fit: BoxFit.scaleDown,
-        ),
+      return Image.asset(
+        width: width,
+        height: height,
+        errorImage ?? ImageConstant.empty,
+        fit: BoxFit.scaleDown,
       );
     }
 

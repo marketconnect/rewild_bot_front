@@ -7,7 +7,7 @@ import 'package:rewild_bot_front/domain/entities/review_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 // Card of product
-abstract class SingleReviewCardOfProductService {
+abstract class SingleReviewUserCardService {
   Future<Either<RewildError, String>> getImageForNmId({required int nmId});
 }
 
@@ -42,7 +42,7 @@ abstract class SingleReviewViewModelTokenService {
 }
 
 class SingleReviewViewModel extends ResourceChangeNotifier {
-  final SingleReviewCardOfProductService singleReviewCardOfProductService;
+  final SingleReviewUserCardService userCardService;
   final SingleReviewViewReviewService reviewService;
 
   final SingleReviewViewModelAnswerService answerService;
@@ -54,7 +54,7 @@ class SingleReviewViewModel extends ResourceChangeNotifier {
       required this.reviewService,
       required this.tokenService,
       required this.answerService,
-      required this.singleReviewCardOfProductService}) {
+      required this.userCardService}) {
     _asyncInit();
   }
 
@@ -65,8 +65,8 @@ class SingleReviewViewModel extends ResourceChangeNotifier {
     }
     setApiKey(apiKey);
     if (review != null) {
-      _cardImage = await fetch(() => singleReviewCardOfProductService
-          .getImageForNmId(nmId: review!.productDetails.nmId));
+      _cardImage = await fetch(() =>
+          userCardService.getImageForNmId(nmId: review!.productDetails.nmId));
     }
     // Saved answers
     final answers = await fetch(() => answerService.getAllReviews());

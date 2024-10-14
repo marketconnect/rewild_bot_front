@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/commission_model.dart';
+import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 
 abstract class CommissionServiceCommissionApiClient {
@@ -14,7 +15,10 @@ abstract class CommissionServiceCommissionDataProvider {
       {required CommissionModel commission});
 }
 
-class CommissionService implements SingleCardScreenCommissionService {
+class CommissionService
+    implements
+        SingleCardScreenCommissionService,
+        UnitEconomicsAllCardsCommissionService {
   final CommissionServiceCommissionApiClient commissionApiClient;
   final CommissionServiceCommissionDataProvider commissionDataProvider;
 

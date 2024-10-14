@@ -14,16 +14,16 @@ abstract class AllAdvertsWordsAdvertService {
       {required String token, List<int>? types});
 }
 
-abstract class AllAdvertsWordsScreenCardOfProductService {
+abstract class AllAdvertsWordsScreenUserCardService {
   Future<Either<RewildError, String>> getImageForNmId({required int nmId});
 }
 
 class AllAdvertsWordsViewModel extends ResourceChangeNotifier {
   final AllAdvertsWordsAdvertService advertService;
-  final AllAdvertsWordsScreenCardOfProductService cardOfProductService;
+  final AllAdvertsWordsScreenUserCardService userCardService;
   AllAdvertsWordsViewModel(
       {required super.context,
-      required this.cardOfProductService,
+      required this.userCardService,
       required this.advertService}) {
     _asyncInit();
   }
@@ -106,7 +106,7 @@ class AllAdvertsWordsViewModel extends ResourceChangeNotifier {
           final newAdvert = advert.copyWith(subjectId: params.subject!.id);
           if (nmIds.isNotEmpty) {
             final image = await fetch(
-              () => cardOfProductService.getImageForNmId(nmId: nmIds.first),
+              () => userCardService.getImageForNmId(nmId: nmIds.first),
             );
 
             if (image == null) {

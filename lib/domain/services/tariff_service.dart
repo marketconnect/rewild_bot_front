@@ -3,6 +3,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/prices.dart';
 import 'package:rewild_bot_front/domain/entities/tariff_model.dart';
 import 'package:rewild_bot_front/presentation/adverts/advert_analitics_screen/advert_analitics_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/all_cards_screen/all_cards_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/expense_manager_screen/expense_manager_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
@@ -24,6 +25,7 @@ class TariffService
     implements
         AllCardsScreenAverageLogisticsService,
         AdvertAnaliticsTariffService,
+        UnitEconomicsAllCardsTariffService,
         ExpenseManagerAverageLogisticsService,
         SingleCardScreenTariffService {
   final TariffServiceTariffDataProvider tariffDataProvider;

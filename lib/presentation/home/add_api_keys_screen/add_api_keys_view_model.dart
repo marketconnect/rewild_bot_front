@@ -34,10 +34,19 @@ abstract class AddApiKeysAuthService {
 }
 
 // Update
-abstract class AddApiKeysUpdateService {
-  Future<Either<RewildError, int>> insert(
-      {required String token,
-      required List<CardOfProductModel> cardOfProductsToInsert});
+// abstract class AddApiKeysUpdateService {
+//   Future<Either<RewildError, int>> insert(
+//       {required String token,
+//       required List<CardOfProductModel> cardOfProductsToInsert});
+// }
+abstract class AddApiKeysScreenUserCardsService {
+  Future<Either<RewildError, void>> addProductCard({
+    required int sku,
+    required String img,
+    required String mp,
+    required String name,
+    required int subjectId,
+  });
 }
 
 // Content
@@ -57,7 +66,8 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
     required super.context,
     required this.apiKeysService,
     required this.contentService,
-    required this.updateService,
+    // required this.updateService,
+    required this.userCardsService,
     required this.cardOfProductService,
     required this.authService,
   }) {
@@ -66,7 +76,8 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
 
   // constructor params
   final AddApiKeysScreenApiKeysService apiKeysService;
-  final AddApiKeysUpdateService updateService;
+  // final AddApiKeysUpdateService updateService;
+  final AddApiKeysScreenUserCardsService userCardsService;
   final AddApiKeysContentService contentService;
   final AddApiKeysCardOfProductService cardOfProductService;
   final AddApiKeysAuthService authService;
@@ -308,25 +319,30 @@ class AddApiKeysScreenViewModel extends ResourceChangeNotifier {
           .toList();
     }
 
-    List<CardOfProductModel> cardOfProducts = [];
+    // List<CardOfProductModel> cardOfProducts = [];
 
     for (final c in notSavedCards) {
-      final nmId = c.nmID;
+      final sku = c.nmID;
       final img = c.photos.first.big;
-      final cardOfProduct = CardOfProductModel(
-        nmId: nmId,
-        img: img,
-      );
-      cardOfProducts.add(cardOfProduct);
-    }
-    if (cardOfProducts.isNotEmpty) {
-      final tokenOrNull = await fetch(() => authService.getToken());
-      if (tokenOrNull == null) {
-        return;
-      }
+      final name = c.title;
+      final subjectId = c.subjectID;
+      fetch(() => userCardsService.addProductCard(
+          sku: sku, img: img, mp: "wb", name: name, subjectId: subjectId));
 
-      await updateService.insert(
-          token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
+      // final cardOfProduct = CardOfProductModel(
+      //   nmId: nmId,
+      //   img: img,
+      // );
+      // cardOfProducts.add(cardOfProduct);
     }
+    // if (cardOfProducts.isNotEmpty) {
+    //   final tokenOrNull = await fetch(() => authService.getToken());
+    //   if (tokenOrNull == null) {
+    //     return;
+    //   }
+
+    // await updateService.insert(
+    //     token: tokenOrNull, cardOfProductsToInsert: cardOfProducts);
+    // }
   }
 }
