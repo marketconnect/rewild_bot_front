@@ -375,9 +375,16 @@ class _ExpansionTileState extends State<_ExpansionTile> {
       final subject = model.subject;
       final commision = model.commission;
       final isHighBuyout = model.isHighBuyout;
+      final navigateToAllSubjectsScreen = model.navigateToAllSubjectsScreen;
       List<_InfoRowContent> widgetsContent = [];
       widgetsContent.addAll([
-        _InfoRowContent(header: "Категория", text: category),
+        _InfoRowContent(
+            header: "Категория",
+            text: category,
+            isClickable: true,
+            onTap: () {
+              navigateToAllSubjectsScreen();
+            }),
         _InfoRowContent(header: "Предмет", text: subject)
       ]);
       if (commision != null) {
@@ -819,11 +826,14 @@ class _InfoRowContent {
   final String header;
   final String text;
   final Widget? child;
-
+  final bool isClickable;
+  final VoidCallback? onTap;
   _InfoRowContent({
     required String header,
     required this.text,
     this.child,
+    this.isClickable = false,
+    this.onTap,
   }) : header = header.contains("склад продавца") ||
                 header.contains(" Склад продавца")
             ? header.replaceFirst("склад продавца", "скл.пр.")
@@ -845,6 +855,41 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<SingleCardScreenViewModel>();
+    Widget textWidget = Text(
+      content.text,
+      textAlign: TextAlign.end,
+      maxLines: 3,
+      style: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: model.screenWidth * 0.04,
+          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5)),
+    );
+
+    if (content.isClickable) {
+      textWidget = GestureDetector(
+        onTap: content.onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Text(
+              content.text,
+              textAlign: TextAlign.end,
+              maxLines: 3,
+              style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: model.screenWidth * 0.04,
+                  color: Colors.blue),
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: model.screenWidth * 0.05,
+              color: Colors.blue, // links color
+            ),
+          ],
+        ),
+      );
+    }
+
     return Container(
       width: model.screenWidth,
       height: model.screenHeight * 0.07,
@@ -889,19 +934,7 @@ class _InfoRow extends StatelessWidget {
             ),
             SizedBox(
               width: model.screenWidth * 0.6,
-              child: content.child ??
-                  Text(
-                    content.text,
-                    textAlign: TextAlign.end,
-                    maxLines: 3,
-                    style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: model.screenWidth * 0.04,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.5)),
-                  ),
+              child: content.child ?? textWidget,
             ),
           ],
         ),

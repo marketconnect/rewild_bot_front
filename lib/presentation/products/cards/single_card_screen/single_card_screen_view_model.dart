@@ -795,6 +795,11 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       closeTelegramApp();
     });
   }
+
+  void navigateToAllSubjectsScreen() {
+    Navigator.of(context).pushNamed(MainNavigationRouteNames.allSubjectsScreen,
+        arguments: [_category]);
+  }
 }
 
 // external function from index.html
