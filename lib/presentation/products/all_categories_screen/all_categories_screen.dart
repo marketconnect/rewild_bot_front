@@ -57,6 +57,8 @@ class AllCategoriesScreen extends StatelessWidget {
             ),
       floatingActionButton: model.isAnyCategoryChecked
           ? FloatingActionButton(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               onPressed: () {
                 // Perform your action here
                 navigateToAllSubjects();
