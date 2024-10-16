@@ -32,7 +32,7 @@ class DatabaseHelper {
 
     final db = await dbFactory.open(
       'mb.db',
-      version: 2,
+      version: 3,
       onUpgradeNeeded: _onUpgrade,
     );
 
@@ -40,12 +40,26 @@ class DatabaseHelper {
   }
 
   Future<void> _onUpgrade(VersionChangeEvent event) async {
-    // final db = event.database;
+    final db = event.database;
 
     if (event.oldVersion < 1) {
       await _onCreate(event);
     }
 
+    if (event.oldVersion < 3) {
+      if (!db.objectStoreNames.contains('top_products')) {
+        final store = db.createObjectStore('top_products', keyPath: 'sku');
+        store.createIndex('total_orders', 'total_orders', unique: false);
+        store.createIndex('total_revenue', 'total_revenue', unique: false);
+        store.createIndex('subject_id', 'subject_id', unique: false);
+        store.createIndex('name', 'name', unique: false);
+        store.createIndex('supplier', 'supplier', unique: false);
+        store.createIndex('review_rating', 'review_rating', unique: false);
+        store.createIndex('feedbacks', 'feedbacks', unique: false);
+        store.createIndex('img', 'img', unique: false);
+        store.createIndex('last_updated', 'last_updated', unique: false);
+      }
+    }
     // if (event.oldVersion < 2) {
     //   if (!db.objectStoreNames.contains('subjects')) {
     //     final store = db.createObjectStore('subjects', keyPath: 'subjectId');
@@ -152,6 +166,20 @@ class DatabaseHelper {
         createStore();
       }
     }
+
+    createStoreIfNotExists('top_products', () {
+      final store = db.createObjectStore('top_products', keyPath: 'sku');
+      store.createIndex('total_orders', 'total_orders', unique: false);
+      store.createIndex('total_revenue', 'total_revenue', unique: false);
+      store.createIndex('subject_id', 'subject_id', unique: false);
+      store.createIndex('name', 'name', unique: false);
+      store.createIndex('supplier', 'supplier', unique: false);
+      store.createIndex('review_rating', 'review_rating', unique: false);
+      store.createIndex('feedbacks', 'feedbacks', unique: false);
+      store.createIndex('img', 'img', unique: false);
+      store.createIndex('last_updated', 'last_updated',
+          unique: false); // Поле для даты последнего обновления
+    });
 
     createStoreIfNotExists('product_cards', () {
       final store = db.createObjectStore('product_cards', keyPath: 'sku_mp');
@@ -323,12 +351,12 @@ class DatabaseHelper {
       store.createIndex('id', 'id', unique: true);
     });
 
-    createStoreIfNotExists('filterValues', () {
-      final store = db.createObjectStore('filterValues',
-          keyPath: 'id', autoIncrement: true);
-      store.createIndex('filterName', 'filterName', unique: false);
-      store.createIndex('updatedAt', 'updatedAt', unique: false);
-    });
+    // createStoreIfNotExists('filterValues', () {
+    //   final store = db.createObjectStore('filterValues',
+    //       keyPath: 'id', autoIncrement: true);
+    //   store.createIndex('filterName', 'filterName', unique: false);
+    //   store.createIndex('updatedAt', 'updatedAt', unique: false);
+    // });
     createStoreIfNotExists('seo_kw_by_lemma', () {
       final store =
           db.createObjectStore('seo_kw_by_lemma', keyPath: ['nmId', 'keyword']);

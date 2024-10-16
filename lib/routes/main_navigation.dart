@@ -78,6 +78,7 @@ abstract class ScreenFactory {
   Widget makeFeedbackFormScreen();
   Widget makeUnitEconomicsAllCardsScreen();
   Widget makeFinanceNavScreen();
+  Widget makeTopProductsScreen(int subjectId);
 }
 
 class MainNavigation implements AppNavigation {
@@ -169,6 +170,13 @@ class MainNavigation implements AppNavigation {
       case MainNavigationRouteNames.apiKeysScreen:
         return MaterialPageRoute(
             builder: (_) => screenFactory.makeApiKeysScreen());
+
+      case MainNavigationRouteNames.topProductsScreen:
+        final arguments = settings.arguments;
+        final subjectId = arguments is int ? arguments : 0;
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeTopProductsScreen(subjectId),
+        );
 
       case MainNavigationRouteNames.allCardsScreen:
         return PageRouteBuilder(

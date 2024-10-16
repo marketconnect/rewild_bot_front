@@ -5,9 +5,12 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/domain/entities/commission_model.dart';
 import 'package:rewild_bot_front/domain/services/commission_service.dart';
+import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class CommissionDataProvider
-    implements CommissionServiceCommissionDataProvider {
+    implements
+        CommissionServiceCommissionDataProvider,
+        UpdateServiceCommissionDataProvider {
   const CommissionDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
@@ -61,6 +64,30 @@ class CommissionDataProvider
         source: "CommissionDataProvider",
         name: "insert",
         args: [commission],
+      ));
+    }
+  }
+
+  @override
+  Future<Either<RewildError, void>> deleteAll() async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('commissions', idbModeReadWrite);
+      final store = txn.objectStore('commissions');
+
+      final allCommissionsRequest = store.clear();
+
+      await allCommissionsRequest;
+
+      await txn.completed;
+      return right(null);
+    } catch (e) {
+      return left(RewildError(
+        "Failed to delete old commissions: ${e.toString()}",
+        source: "CommissionDataProvider",
+        name: "deleteAll",
+        args: [],
+        sendToTg: true,
       ));
     }
   }

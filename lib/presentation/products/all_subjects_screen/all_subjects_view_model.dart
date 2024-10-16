@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/subject_commission_model.dart';
 import 'package:rewild_bot_front/domain/entities/subject_model.dart';
+import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
 abstract class AllSubjectsViewModelStatsService {
   Future<Either<RewildError, List<SubjectModel>>> getAllSubjects({
@@ -39,12 +41,10 @@ class AllSubjectsViewModel extends ResourceChangeNotifier {
   }
 
   _asyncInit() async {
-    // print('catNames: ${catNames}');
     // SqfliteService.printTableContent('subject_commissions');
     setIsLoading(true);
     // get token
     final tokenOrNull = await fetch(() => authService.getToken());
-
     if (tokenOrNull == null) {
       _subjects = [];
       notify();
@@ -58,14 +58,13 @@ class AllSubjectsViewModel extends ResourceChangeNotifier {
               token: tokenOrNull,
               catNames: catNames,
             ));
-
     if (subjectsIdsOrNull == null) {
       _subjects = [];
       notify();
       return;
     }
     setSubjectCommissions(subjectsIdsOrNull);
-    setLoadingText('Получаю метрики для каждой группы предметов...');
+
     final subjectsIds = subjectsIdsOrNull.map((e) => e.id).toList();
     final subjectsOrNull = await fetch(() => statsService.getAllSubjects(
           token: tokenOrNull,
@@ -167,7 +166,17 @@ class AllSubjectsViewModel extends ResourceChangeNotifier {
           return bC.compareTo(aC);
         });
         break;
+      case 'alphabeticalAsc':
+        _subjects.sort((a, b) => a.name.compareTo(b.name));
+        break;
     }
     notifyListeners();
+  }
+
+  void goToSubject(int subjectId) {
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.topProductsScreen,
+      arguments: subjectId,
+    );
   }
 }

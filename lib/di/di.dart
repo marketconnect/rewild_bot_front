@@ -5,6 +5,7 @@ import 'package:rewild_bot_front/api_clients/stats_api_client.dart';
 import 'package:rewild_bot_front/data_providers/category_data_provider/category_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subj_commission_data_provider/subj_commission_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subject_data_provider/subject_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/top_product_data_provider/top_product_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/user_product_card_data_provider/user_product_card_data_provider.dart';
 import 'package:rewild_bot_front/domain/services/categories_and_subjects_sevice.dart';
 import 'package:rewild_bot_front/domain/services/stats_service.dart';
@@ -62,7 +63,7 @@ import 'package:rewild_bot_front/data_providers/card_keywords_data_provider/card
 import 'package:rewild_bot_front/data_providers/card_of_product_data_provider/card_of_product_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/commission_data_provider/commission_data_provider.dart';
 // import 'package:rewild_bot_front/data_providers/filter_data_provider/filter_data_provider.dart';
-import 'package:rewild_bot_front/data_providers/filter_values_data_provider/filter_values_data_provider.dart';
+
 import 'package:rewild_bot_front/data_providers/group_data_provider/group_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/initial_stocks_data_provider/initial_stocks_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/keyword_data_provider/keyword_data_provider.dart';
@@ -193,6 +194,7 @@ import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_produc
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_screen.dart';
 
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/top_products_screen/top_products_screen.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation.dart';
@@ -340,8 +342,8 @@ class _DIContainer {
   // FilterDataProvider _makeFilterDataProvider() => const FilterDataProvider();
   SubjectDataProvider _makeSubjectDataProvider() => const SubjectDataProvider();
 
-  FilterValuesDataProvider _makeFilterValuesDataProvider() =>
-      const FilterValuesDataProvider();
+  // FilterValuesDataProvider _makeFilterValuesDataProvider() =>
+  //     const FilterValuesDataProvider();
 
   TrackingResultDataProvider _makeTrackingResultDataProvider() =>
       const TrackingResultDataProvider();
@@ -395,12 +397,15 @@ class _DIContainer {
 
   UserProductCardDataProvider _makeUserProductCardDataProvider() =>
       const UserProductCardDataProvider();
+
+  TopProductsDataProvider _makeTopProductsDataProvider() =>
+      const TopProductsDataProvider();
   // Services ==================================================================
   FilterValuesService _makeFilterValuesService() => FilterValuesService(
       lemmaDataProvider: _makeLemmaDataProvider(),
       cachedKwByWordDataProvider: _makeCachedKwByWordDataProvider(),
       kwByLemmaDataProvider: _makeCachedKwByLemmaDataProvider(),
-      filterDataProvider: _makeFilterValuesDataProvider(),
+      // filterDataProvider: _makeFilterValuesDataProvider(),
       filterApiClient: _makeFilterApiClient());
   AuthService _makeAuthService() => AuthService(
       secureDataProvider: _makeSecureDataProvider(),
@@ -410,30 +415,33 @@ class _DIContainer {
         subjectDataProvider: _makeSubjectDataProvider(),
       );
   UpdateService _makeUpdateService() => UpdateService(
-        lemmaDataProvider: _makeLemmaDataProvider(),
-        notificationDataProvider: _makeNotificationDataProvider(),
-        trackingResultDataProvider: _makeTrackingResultDataProvider(),
-        totalCostdataProvider: _makeTotalCostCalculatorDataProvider(),
-        averageLogisticsDataProvider: _makeAverageLogisticsDataProvider(),
-        supplyDataProvider: _makeSupplyDataProvider(),
-        tariffDataProvider: _makeTariffDataProvider(),
-        cardOfProductDataProvider: _makeCardOfProductDataProvider(),
-        initialStockModelDataProvider: _makeInitialStockDataProvider(),
-        subscriptionsApiClient: _makeSubscriptionApiClient(),
-        stockDataProvider: _makeStockDataProvider(),
-        weekOrdersDataProvider: _makeOrderDataProvider(),
-        cardKeywordsDataProvider: _makeCardKeywordsDataProvider(),
-        cachedKwByAutocompliteDataProvider:
-            _makeCachedKwByAutocompliteDataProvider(),
-        cachedKwByLemmaDataProvider: _makeCachedKwByLemmaDataProvider(),
-        cachedKwByLemmaByWordDataProvider: _makeCachedKwByWordDataProvider(),
-        lastUpdateDayDataProvider: _makeLastUpdateDayDataProvider(),
-        tariffApiClient: _makeCommissionApiClient(),
-        detailsApiClient: _makeDetailsApiClient(),
-        averageLogisticsApiClient: _makePriceApiClient(),
-        initialStockModelApiClient: _makeStocksApiClient(),
-        cardOfProductApiClient: _makeCardOfProductApiClient(),
-      );
+      lemmaDataProvider: _makeLemmaDataProvider(),
+      notificationDataProvider: _makeNotificationDataProvider(),
+      categoriesAndSubjectsDataProvider: _makeSubjectCommissionDataProvider(),
+      trackingResultDataProvider: _makeTrackingResultDataProvider(),
+      totalCostdataProvider: _makeTotalCostCalculatorDataProvider(),
+      commissionDataProvider: _makeCommissionDataProvider(),
+      averageLogisticsDataProvider: _makeAverageLogisticsDataProvider(),
+      supplyDataProvider: _makeSupplyDataProvider(),
+      tariffDataProvider: _makeTariffDataProvider(),
+      ordersHistoryDataProvider: _makeOrdersHistoryDataProvider(),
+      cardOfProductDataProvider: _makeCardOfProductDataProvider(),
+      initialStockModelDataProvider: _makeInitialStockDataProvider(),
+      subscriptionsApiClient: _makeSubscriptionApiClient(),
+      stockDataProvider: _makeStockDataProvider(),
+      weekOrdersDataProvider: _makeOrderDataProvider(),
+      cardKeywordsDataProvider: _makeCardKeywordsDataProvider(),
+      cachedKwByAutocompliteDataProvider:
+          _makeCachedKwByAutocompliteDataProvider(),
+      cachedKwByLemmaDataProvider: _makeCachedKwByLemmaDataProvider(),
+      cachedKwByLemmaByWordDataProvider: _makeCachedKwByWordDataProvider(),
+      lastUpdateDayDataProvider: _makeLastUpdateDayDataProvider(),
+      tariffApiClient: _makeCommissionApiClient(),
+      detailsApiClient: _makeDetailsApiClient(),
+      averageLogisticsApiClient: _makePriceApiClient(),
+      initialStockModelApiClient: _makeStocksApiClient(),
+      cardOfProductApiClient: _makeCardOfProductApiClient(),
+      topProductDataProvider: _makeTopProductsDataProvider());
 
   ApiKeysService _makeApiKeysService() => ApiKeysService(
         apiKeysDataProvider: _makeSecureDataProvider(),
@@ -1051,6 +1059,11 @@ class ScreenFactoryDefault implements ScreenFactory {
       create: (context) => _diContainer._makeAllCategoriesViewModel(context),
       child: const AllCategoriesScreen(),
     );
+  }
+
+  @override
+  Widget makeTopProductsScreen(int subjectId) {
+    return const TopProductsScreen();
   }
 
   @override

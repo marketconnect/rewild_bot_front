@@ -71,4 +71,5 @@ abstract class MainNavigationRouteNames {
       '/unit_economics_all_cards_screen';
 
   static const String financeNavScreen = '/finance_nav_screen';
+  static const String topProductsScreen = '/top_products_screen';
 }

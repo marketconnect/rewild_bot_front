@@ -10,6 +10,7 @@ class FinanceNavScreenWidget extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: Column(children: [
           Padding(

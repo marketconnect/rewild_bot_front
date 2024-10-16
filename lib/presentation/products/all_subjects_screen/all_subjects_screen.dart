@@ -47,6 +47,10 @@ class AllSubjectsScreen extends StatelessWidget {
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                 const PopupMenuItem<String>(
+                  value: 'alphabeticalAsc',
+                  child: Text('По алфавиту'),
+                ),
+                const PopupMenuItem<String>(
                   value: 'percentageSkusWithoutOrdersAsc',
                   child: Text('По товарам без заказов'),
                 ),
@@ -82,7 +86,7 @@ class AllSubjectsScreen extends StatelessWidget {
                   final commission = model.getCommission(subject.subjectId);
                   final bool isKiz = commission.isKiz;
                   final conversionInOrder = subject.conversionInOrder();
-
+                  final goToSubject = model.goToSubject;
                   return Card(
                     elevation: 4,
                     margin: const EdgeInsets.only(bottom: 16),
@@ -92,7 +96,7 @@ class AllSubjectsScreen extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
-                        // Действие при нажатии на карточку
+                        goToSubject(subject.subjectId);
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -280,7 +284,7 @@ class AllSubjectsScreen extends StatelessWidget {
       {
         'title': 'Всего товаров',
         'description':
-            'Общее количество товаров, представленных в данной категории.',
+            'Общее количество товаров, представленных в данной категории на первых двух страницах поисковой выдачи для миллиона самых популярных запросов.',
       },
       {
         'title': 'Товары без заказов',

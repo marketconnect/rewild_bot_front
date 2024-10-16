@@ -37,8 +37,6 @@ class StatsService implements AllSubjectsViewModelStatsService {
     required int skip,
     required List<int> subjectIds,
   }) async {
-    // try to get from local storage
-    // print('AAAAAAAAAA ${subjectIds}');
     List<SubjectModel> localySavedSubjects = [];
     List<int> missingSubjectIds = [];
     for (var subjectId in subjectIds) {
@@ -47,12 +45,11 @@ class StatsService implements AllSubjectsViewModelStatsService {
       if (subjOrNull != null && isToday(subjOrNull.updatedAt)) {
         localySavedSubjects.add(subjOrNull);
       } else {
-        // print('subjOrNull adsfdsdsaz: ${subjOrNull!.updatedAt}');
         missingSubjectIds.add(subjectId);
       }
     }
 
-    // get missed subjects
+    // get missed OR EXPIRED subjects
     final subjectsFromServerEither = await statsApiClient.getAllSubjects(
       token: token,
       take: take,

@@ -31,23 +31,26 @@ class CommissionService
       {required String token, required int id}) async {
     // get from local db
     final commissionEither = await commissionDataProvider.get(id: id);
-    return commissionEither.fold((l) => left(l), (r) async {
-      if (r == null) {
-        // not found in local db
-        // get from server
-        final commissionFromServerEither =
-            await commissionApiClient.get(token: token, id: id);
-        return commissionFromServerEither.fold((l) => left(l),
-            (commision) async {
-          // save to local db
-          final saveEither =
-              await commissionDataProvider.insert(commission: commision);
-          return saveEither.fold((l) => left(l), (r) {
-            return right(commision);
-          });
+    if (commissionEither.isLeft()) {
+      return left(
+          commissionEither.fold((l) => l, (r) => throw UnimplementedError()));
+    }
+    final commission =
+        commissionEither.fold((l) => throw UnimplementedError(), (r) => r);
+    if (commission == null) {
+      // not found in local db
+      // get from server
+      final commissionFromServerEither =
+          await commissionApiClient.get(token: token, id: id);
+      return commissionFromServerEither.fold((l) => left(l), (commision) async {
+        // save to local db
+        final saveEither =
+            await commissionDataProvider.insert(commission: commision);
+        return saveEither.fold((l) => left(l), (r) {
+          return right(commision);
         });
-      }
-      return right(r);
-    });
+      });
+    }
+    return right(commission);
   }
 }

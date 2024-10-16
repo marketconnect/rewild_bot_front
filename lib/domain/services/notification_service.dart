@@ -75,24 +75,6 @@ class NotificationService
       required this.productWatchSubscriptionApiClient,
       required this.updatedNotificationStreamController});
 
-  // Future<Either<RewildError, bool>> delete(
-  //     {required int id, required int condition, bool? isEmpty}) async {
-  //   final either = await notificationDataProvider.delete(
-  //       parentId: id, condition: condition);
-  //   return either.fold((l) => left(l), (r) {
-  //     if (isEmpty != null && isEmpty) {
-  //       updatedNotificationStreamController.add(StreamNotificationEvent(
-  //           parentId: id,
-  //           parentType:
-  //               condition == NotificationConditionConstants.budgetLessThan
-  //                   ? ParentType.advert
-  //                   : ParentType.card,
-  //           exists: false));
-  //     }
-  //     return either;
-  //   });
-  // }
-
   @override
   Future<Either<RewildError, bool>> checkForParent(
       {required int campaignId}) async {
@@ -223,16 +205,4 @@ class NotificationService
       return right(notifications);
     });
   }
-
-  // @override
-  // Future<Either<RewildError, List<ReWildNotificationModel>?>> getByCondition(
-  //     List<String> conditions) async {
-  //   final either = await notificationDataProvider.getByCondition(conditions);
-  //   return either.fold((l) => left(l), (notifications) {
-  //     if (notifications == null || notifications.isEmpty) {
-  //       return right(null);
-  //     }
-  //     return right(notifications);
-  //   });
-  // }
 }

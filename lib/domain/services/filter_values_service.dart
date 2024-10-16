@@ -57,13 +57,13 @@ class FilterValuesService
         WordsKeywordExpansionFilterValuesService,
         SubjectKeywordExpansionFilterValuesService {
   final FilterServiceFilterApiClient filterApiClient;
-  final FilterServiceFilterDataProvider filterDataProvider;
+  // final FilterServiceFilterDataProvider filterDataProvider;
   final FilterServiceLemmaDataProvider lemmaDataProvider;
   final FilterServiceKwByLemmaDataProvider kwByLemmaDataProvider;
   final FilterServiceCachedKwByWordDataProvider cachedKwByWordDataProvider;
   const FilterValuesService({
     required this.filterApiClient,
-    required this.filterDataProvider,
+    // required this.filterDataProvider,
     required this.lemmaDataProvider,
     required this.kwByLemmaDataProvider,
     required this.cachedKwByWordDataProvider,

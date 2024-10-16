@@ -5,41 +5,50 @@ import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/subject_commission_model.dart';
 import 'package:rewild_bot_front/domain/services/categories_and_subjects_sevice.dart';
+import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class SubjectCommissionDataProvider
-    implements CategoriesAndSubjectsServiceSubjectsDataProvider {
+    implements
+        CategoriesAndSubjectsServiceSubjectsDataProvider,
+        UpdateServiceCategoriesAndSubjectsDataProvider {
   const SubjectCommissionDataProvider();
   Future<Database> get _db async => await DatabaseHelper().database;
   @override
   Future<Either<RewildError, bool>> isUpdated(String catName) async {
     try {
       final db = await DatabaseHelper().database;
-      final txn = db.transaction('subject_commissions', idbModeReadOnly);
-      final store = txn.objectStore('subject_commissions');
-
+      final transaction = db.transaction('subject_commissions', 'readonly');
+      final store = transaction.objectStore('subject_commissions');
       final index = store.index('catName');
-      final keyRange = KeyRange.only(catName);
+
+      final result = await index.getKey(catName);
+      await transaction.completed;
+
+      if (result == null) {
+        return right(false);
+      }
+
+      final firstRecord = await store.openCursor().first;
 
       bool isUpdatedToday = false;
 
-      // Use 'await for' to iterate over the cursor
-      await for (var cursor in index.openCursor(range: keyRange)) {
-        final data = cursor.value as Map<String, dynamic>;
+      final data = firstRecord.value as Map<String, dynamic>;
+
+      if (data.containsKey('createdAt')) {
         final dateStr = data['createdAt'] as String;
+
         final updatedAt =
             DateFormat('yyyy-MM-dd').parse(dateStr, true).toLocal();
         final today = DateTime.now();
+
         final isToday = (updatedAt.year == today.year &&
             updatedAt.month == today.month &&
             updatedAt.day == today.day);
 
         if (isToday) {
           isUpdatedToday = true;
-          break; // Exit the loop if the condition is met
         }
       }
-
-      await txn.completed;
 
       return right(isUpdatedToday);
     } catch (e) {
@@ -117,6 +126,29 @@ class SubjectCommissionDataProvider
         source: "SubjectCommissionDataProvider",
         name: "insertAll",
         args: [models.map((m) => m.toJson()).toList()],
+        sendToTg: true,
+      ));
+    }
+  }
+
+  @override
+  Future<Either<RewildError, void>> deleteAll() async {
+    try {
+      final db = await _db;
+      final txn = db.transaction('subject_commissions', idbModeReadWrite);
+      final store = txn.objectStore('subject_commissions');
+
+      await store.clear();
+
+      await txn.completed;
+
+      return right(null);
+    } catch (e) {
+      return left(RewildError(
+        "Failed to delete all subject commissions: ${e.toString()}",
+        source: "SubjectCommissionDataProvider",
+        name: "deleteAll",
+        args: [],
         sendToTg: true,
       ));
     }

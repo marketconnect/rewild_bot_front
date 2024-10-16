@@ -5,9 +5,12 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/domain/entities/orders_history_model.dart';
 import 'package:rewild_bot_front/domain/services/orders_history_service.dart';
+import 'package:rewild_bot_front/domain/services/update_service.dart';
 
 class OrdersHistoryDataProvider
-    implements OrdersHistoryServiceOrdersHistoryDataProvider {
+    implements
+        OrdersHistoryServiceOrdersHistoryDataProvider,
+        UpdateServiceOrdersHistoryDataProvider {
   const OrdersHistoryDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
@@ -112,6 +115,32 @@ class OrdersHistoryDataProvider
         source: "OrdersHistoryDataProvider",
         name: "insert",
         args: [ordersHistory],
+      ));
+    }
+  }
+
+  @override
+  Future<Either<RewildError, void>> deleteAll() async {
+    try {
+      final db = await _db;
+
+      final txn = db.transaction('orders_history', idbModeReadWrite);
+      final store = txn.objectStore('orders_history');
+
+      final allOrdersHistoryRequest = store.clear();
+
+      await allOrdersHistoryRequest;
+
+      await txn.completed;
+
+      return right(null);
+    } catch (e) {
+      return left(RewildError(
+        "Failed to delete all orders: ${e.toString()}",
+        source: "OrderDataProvider",
+        name: "deleteAllOrders",
+        args: [],
+        sendToTg: true,
       ));
     }
   }
