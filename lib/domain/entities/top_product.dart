@@ -24,13 +24,13 @@ class TopProduct {
   factory TopProduct.fromJson(Map<String, dynamic> json) {
     return TopProduct(
       sku: json['sku'],
-      totalOrders: json['total_orders'],
-      totalRevenue: json['total_revenue'],
-      subjectId: json['subject_id'],
+      totalOrders: json['total_orders'] ?? 0,
+      totalRevenue: json['total_revenue'] ?? 0,
+      subjectId: json['subject_id'] ?? 0,
       name: json['name'],
       supplier: json['supplier'],
-      reviewRating: (json['review_rating'] as num).toDouble(),
-      feedbacks: json['feedbacks'],
+      reviewRating: (json['review_rating'] ?? 0 as num).toDouble(),
+      feedbacks: json['feedbacks'] ?? 0,
       img: json['img'],
     );
   }

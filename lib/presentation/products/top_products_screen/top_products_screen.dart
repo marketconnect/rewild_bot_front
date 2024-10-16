@@ -1,118 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
+import 'package:provider/provider.dart';
+import 'package:rewild_bot_front/core/constants/image_constant.dart';
 import 'package:rewild_bot_front/domain/entities/top_product.dart';
-
-List<TopProduct> topProducts = [
-  TopProduct(
-    sku: 100001,
-    totalOrders: 1200,
-    totalRevenue: 300000,
-    subjectId: 1,
-    name: "Wireless Bluetooth Headphones",
-    supplier: "TechGear",
-    reviewRating: 4.8,
-    feedbacks: 320,
-    img: "https://example.com/images/headphones.jpg",
-  ),
-  TopProduct(
-    sku: 100002,
-    totalOrders: 980,
-    totalRevenue: 245000,
-    subjectId: 1,
-    name: "Smartphone XYZ",
-    supplier: "MobilePlus",
-    reviewRating: 4.7,
-    feedbacks: 290,
-    img: "https://example.com/images/smartphone.jpg",
-  ),
-  TopProduct(
-    sku: 100003,
-    totalOrders: 760,
-    totalRevenue: 190000,
-    subjectId: 2,
-    name: "Laptop Pro 15",
-    supplier: "Computech",
-    reviewRating: 4.5,
-    feedbacks: 210,
-    img: "https://example.com/images/laptop.jpg",
-  ),
-  TopProduct(
-    sku: 100004,
-    totalOrders: 1500,
-    totalRevenue: 375000,
-    subjectId: 2,
-    name: "Gaming Monitor 4K",
-    supplier: "DisplayTech",
-    reviewRating: 4.9,
-    feedbacks: 400,
-    img: "https://example.com/images/monitor.jpg",
-  ),
-  TopProduct(
-    sku: 100005,
-    totalOrders: 520,
-    totalRevenue: 130000,
-    subjectId: 3,
-    name: "Smart Watch GT",
-    supplier: "Wearable World",
-    reviewRating: 4.6,
-    feedbacks: 180,
-    img: "https://example.com/images/smartwatch.jpg",
-  ),
-  TopProduct(
-    sku: 100006,
-    totalOrders: 860,
-    totalRevenue: 215000,
-    subjectId: 3,
-    name: "Fitness Tracker",
-    supplier: "HealthTech",
-    reviewRating: 4.3,
-    feedbacks: 250,
-    img: "https://example.com/images/fitnesstracker.jpg",
-  ),
-  TopProduct(
-    sku: 100007,
-    totalOrders: 1100,
-    totalRevenue: 275000,
-    subjectId: 4,
-    name: "Action Camera Pro",
-    supplier: "AdventureGear",
-    reviewRating: 4.8,
-    feedbacks: 300,
-    img: "https://example.com/images/actioncamera.jpg",
-  ),
-  TopProduct(
-    sku: 100008,
-    totalOrders: 650,
-    totalRevenue: 162500,
-    subjectId: 4,
-    name: "Drone Quadcopter",
-    supplier: "FlyTech",
-    reviewRating: 4.7,
-    feedbacks: 240,
-    img: "https://example.com/images/drone.jpg",
-  ),
-  TopProduct(
-    sku: 100009,
-    totalOrders: 1400,
-    totalRevenue: 350000,
-    subjectId: 5,
-    name: "4K Smart TV",
-    supplier: "ScreenMasters",
-    reviewRating: 4.9,
-    feedbacks: 380,
-    img: "https://example.com/images/smarttv.jpg",
-  ),
-  TopProduct(
-    sku: 100010,
-    totalOrders: 900,
-    totalRevenue: 225000,
-    subjectId: 5,
-    name: "Home Theater System",
-    supplier: "SoundWave",
-    reviewRating: 4.6,
-    feedbacks: 270,
-    img: "https://example.com/images/hometheater.jpg",
-  ),
-];
+import 'package:rewild_bot_front/presentation/products/top_products_screen/top_products_view_model.dart';
+import 'package:web/web.dart' as html;
 
 class TopProductsScreen extends StatelessWidget {
   const TopProductsScreen({super.key});
@@ -124,18 +16,62 @@ class TopProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Топ продуктов'),
+    final model = context.watch<TopProductsViewModel>();
+    final isLoading = model.isLoading;
+    final topProducts = model.topProducts;
+    topProducts.sort((a, b) => b.totalRevenue.compareTo(a.totalRevenue));
+    return OverlayLoaderWithAppIcon(
+      isLoading: isLoading,
+      overlayBackgroundColor: Colors.black,
+      circularProgressColor: const Color(0xff83735c),
+      appIcon: Image.asset(ImageConstant.imgLogoForLoading),
+      child: Scaffold(
+        appBar: AppBar(
+            title: const Text('Топ продуктов'),
+            centerTitle: true,
+            elevation: 2,
+            shadowColor: Colors.black54,
+            surfaceTintColor: Colors.transparent,
+            iconTheme: const IconThemeData(color: Color(0xFF1f1f1f)),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.info_outline),
+                onPressed: () {
+                  _showInfoDialog(context);
+                },
+              ),
+            ]),
+        body: ListView.builder(
+          padding: const EdgeInsets.all(8),
+          itemCount: topProducts.length,
+          itemBuilder: (context, index) {
+            final product = topProducts[index];
+            return _ProductCard(product: product);
+          },
+        ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: topProducts.length,
-        itemBuilder: (context, index) {
-          final product = topProducts[index];
-          return _ProductCard(product: product);
-        },
-      ),
+    );
+  }
+
+  void _showInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Информация'),
+          content: const Text(
+            'Данные предоставляются за последнюю календарную неделю и учитываются только продажи со склада Wildberries.',
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Понятно'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -146,8 +82,9 @@ class _ProductCard extends StatelessWidget {
   const _ProductCard({required this.product});
 
   // Форматирование цены с разделителем тысяч и символом рубля
-  String formatCurrency(int amount) {
-    return '${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]} ')} ₽';
+  String formatCurrency(int amountInKopecks) {
+    final amount = (amountInKopecks / 100).toStringAsFixed(0);
+    return '${amount.replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]} ')} ₽';
   }
 
   @override
@@ -158,7 +95,9 @@ class _ProductCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // Действие при нажатии на карточку (если необходимо)
+          html.window.open(
+              'https://www.wildberries.ru/catalog/${product.sku}/detail.aspx',
+              'wb');
         },
         child: Padding(
           padding: const EdgeInsets.all(12),

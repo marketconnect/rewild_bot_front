@@ -4,9 +4,13 @@ import 'package:intl/intl.dart';
 import 'package:rewild_bot_front/core/utils/database_helper.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/top_product.dart';
+import 'package:rewild_bot_front/domain/services/top_products_service.dart';
 import 'package:rewild_bot_front/domain/services/update_service.dart';
 
-class TopProductsDataProvider implements UpdateServiceTopProductDataProvider {
+class TopProductsDataProvider
+    implements
+        UpdateServiceTopProductDataProvider,
+        TopProductsServiceDataProvider {
   const TopProductsDataProvider();
 
   Future<Database> get _db async => await DatabaseHelper().database;
@@ -33,6 +37,7 @@ class TopProductsDataProvider implements UpdateServiceTopProductDataProvider {
     }
   }
 
+  @override
   Future<Either<RewildError, List<TopProduct>>> getTodayForSubjectId(
       int subjectId) async {
     try {
@@ -66,6 +71,7 @@ class TopProductsDataProvider implements UpdateServiceTopProductDataProvider {
     }
   }
 
+  @override
   Future<Either<RewildError, void>> insertAll(List<TopProduct> products) async {
     try {
       final db = await _db;

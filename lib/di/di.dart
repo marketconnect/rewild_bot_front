@@ -2,6 +2,7 @@ import 'package:rewild_bot_front/api_clients/card_of_product_api_client.dart';
 import 'package:rewild_bot_front/api_clients/categories_and_subjects_api_client.dart';
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/stats_api_client.dart';
+import 'package:rewild_bot_front/api_clients/top_product_api_client.dart';
 import 'package:rewild_bot_front/data_providers/category_data_provider/category_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subj_commission_data_provider/subj_commission_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subject_data_provider/subject_data_provider.dart';
@@ -9,6 +10,7 @@ import 'package:rewild_bot_front/data_providers/top_product_data_provider/top_pr
 import 'package:rewild_bot_front/data_providers/user_product_card_data_provider/user_product_card_data_provider.dart';
 import 'package:rewild_bot_front/domain/services/categories_and_subjects_sevice.dart';
 import 'package:rewild_bot_front/domain/services/stats_service.dart';
+import 'package:rewild_bot_front/domain/services/top_products_service.dart';
 import 'package:rewild_bot_front/domain/services/user_product_card_service.dart';
 import 'package:rewild_bot_front/presentation/home/feedback_form_screen/feedback_form_screen.dart';
 import 'package:rewild_bot_front/presentation/home/finance_nav_screen/finance_nav_screen.dart';
@@ -195,6 +197,7 @@ import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_produc
 
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/top_products_screen/top_products_screen.dart';
+import 'package:rewild_bot_front/presentation/products/top_products_screen/top_products_view_model.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation.dart';
@@ -301,6 +304,8 @@ class _DIContainer {
       const ProductWatchSubscriptionApiClient();
 
   GptApiClient _makeGptApiClient() => const GptApiClient();
+
+  TopProductApiClient _makeTopProductApiClient() => const TopProductApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -626,6 +631,11 @@ class _DIContainer {
 
   UserProductCardService _makeUserCardService() => UserProductCardService(
         dataProvider: _makeUserProductCardDataProvider(),
+      );
+
+  TopProductsService _makeTopProductsService() => TopProductsService(
+        topProductsServiceApiClient: _makeTopProductApiClient(),
+        topProductsServiceDataProvider: _makeTopProductsDataProvider(),
       );
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
@@ -1046,6 +1056,16 @@ class _DIContainer {
         updateService: _makeUpdateService(),
         userCardService: _makeUserCardService());
   }
+
+  TopProductsViewModel _makeTopProductsViewModel(
+      BuildContext context, int subjectId) {
+    return TopProductsViewModel(
+      subjectId: subjectId,
+      authService: _makeAuthService(),
+      topProductsService: _makeTopProductsService(),
+      context: context,
+    );
+  }
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -1063,7 +1083,11 @@ class ScreenFactoryDefault implements ScreenFactory {
 
   @override
   Widget makeTopProductsScreen(int subjectId) {
-    return const TopProductsScreen();
+    return ChangeNotifierProvider(
+      create: (context) =>
+          _diContainer._makeTopProductsViewModel(context, subjectId),
+      child: const TopProductsScreen(),
+    );
   }
 
   @override

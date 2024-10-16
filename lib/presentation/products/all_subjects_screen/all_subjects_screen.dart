@@ -65,9 +65,6 @@ class AllSubjectsScreen extends StatelessWidget {
                     value: 'totalRevenueDesc',
                     child: Text('По суммарной выручке заказов')),
                 const PopupMenuItem<String>(
-                    value: 'totalSkusDesc',
-                    child: Text('По количеству товаров')),
-                const PopupMenuItem<String>(
                     value: 'averageCheck', child: Text('По среднему чеку')),
                 const PopupMenuItem<String>(
                     value: 'conversionToOrdersDesc',
@@ -150,6 +147,9 @@ class AllSubjectsScreen extends StatelessWidget {
                               Icons.shopping_cart,
                               'Всего заказов',
                               '${subject.totalOrders} шт.',
+                              showInfoIcon: subject.totalOrders < 100,
+                              onInfoIconPressed: () =>
+                                  _showZeroOrdersInfoDialog(context),
                             ),
                             _buildInfoRow(
                               Icons.attach_money,
@@ -199,12 +199,40 @@ class AllSubjectsScreen extends StatelessWidget {
     );
   }
 
+  void _showZeroOrdersInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Информация'),
+          content: const Text(
+            'Учитываются заказы только для первых двух страниц поисковой выдачи миллиона самых популярных запросов предыдущей недели. С остальных страниц поисковой выдачи заказы не учитываются.',
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Понятно'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   String _formatString(int input) {
     return input.toString().replaceAllMapped(
         RegExp(r'(\d)(?=(\d{3})+(?!\d))'), (Match match) => '${match[1]} ');
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(
+    IconData icon,
+    String label,
+    String value, {
+    bool showInfoIcon = false,
+    VoidCallback? onInfoIconPressed,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -217,13 +245,24 @@ class AllSubjectsScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16),
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
-              color: Color(0xFF1f1f1f),
-            ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (showInfoIcon && onInfoIconPressed != null)
+                IconButton(
+                  icon: const Icon(Icons.info_outline,
+                      color: Colors.blueGrey, size: 20),
+                  onPressed: onInfoIconPressed,
+                ),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: Color(0xFF1f1f1f),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -237,7 +276,7 @@ class AllSubjectsScreen extends StatelessWidget {
         return AlertDialog(
           title: const Text('Информация'),
           content: const Text(
-            'Данные предоставляются за последнюю неделю и охватывают первые две страницы поисковой выдачи для миллиона самых популярных запросов.',
+            'Данные предоставляются за последнюю календарную неделю и охватывают первые две страницы поисковой выдачи для миллиона самых популярных запросов.',
           ),
           actions: [
             TextButton(

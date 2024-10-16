@@ -31,6 +31,7 @@ import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_produc
 
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_empty_product_screen/seo_tool_empty_product_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/products/top_products_screen/top_products_view_model.dart';
 
 abstract class AuthServiceSecureDataProvider {
   Future<Either<RewildError, void>> updateUserInfo(
@@ -68,6 +69,7 @@ class AuthService
         SingleCardScreenAuthService,
         PaymentScreenTokenService,
         // NotificationFeedbackTokenService,
+        TopProductsViewModelAuthService,
         CampaignManagementTokenService,
         CompetitorKeywordExpansionTokenService,
         AutocompliteKeywordExpansionTokenService,
