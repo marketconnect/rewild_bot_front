@@ -36,7 +36,7 @@ abstract class AdvertServiceAdvertApiClient {
       {required String token, required int campaignId});
   Future<Either<RewildError, int>> balance({required String token});
 
-  Future<Either<RewildError, int>> getExpensesSum({
+  Future<Either<RewildError, double>> getExpensesSum({
     required String token,
     required DateTime from,
     required DateTime to,
@@ -114,7 +114,7 @@ class AdvertService
   }
 
   @override
-  Future<Either<RewildError, int>> getExpensesSum({
+  Future<Either<RewildError, double>> getExpensesSum({
     required DateTime from,
     required DateTime to,
   }) async {

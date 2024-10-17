@@ -78,8 +78,21 @@ class _AddApiKeysScreenState extends State<AddApiKeysScreen> {
             ),
           ),
           actions: userSellers.length < 2
-              ? null
+              ? [
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    onPressed: () {
+                      _showInfoDialog(context);
+                    },
+                  )
+                ]
               : <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    onPressed: () {
+                      _showInfoDialog(context);
+                    },
+                  ),
                   IconButton(
                     icon: const Icon(Icons.swap_horiz),
                     onPressed: () => _showSellerSelection(
@@ -685,6 +698,127 @@ class _AddApiKeysScreenState extends State<AddApiKeysScreen> {
                 if (context.mounted) Navigator.of(context).pop();
               },
               child: const Text('Сохранить'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showInfoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Информация'),
+          content: const Text(
+            'Как добавить токены: Вы можете создать или удалить токены в личном кабинете продавца, перейдя в раздел "Настройки" → "Доступ к API" → "Создать новый токен".',
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Понятно'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Подробнее'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Закрываем текущий диалог
+                _showDetailsDialog(context); // Открываем новый диалог
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDetailsDialog(BuildContext context) {
+    final infoItems = [
+      {
+        'title': 'Контент',
+        'description':
+            'Этот токен позволяет приложению получать информацию о ваших товарных карточках.',
+      },
+      {
+        'title': 'Статистика',
+        'description':
+            'С помощью этого токена вы сможете получать детальные финансовые отчеты и анализировать продажи, что поможет принимать обоснованные бизнес-решения.',
+      },
+      {
+        'title': 'Продвижение',
+        'description':
+            'Этот токен позволяет управлять рекламными кампаниями прямо из приложения, получая актуальную статистику и оптимизируя расходы на рекламу.',
+      },
+      {
+        'title': 'Вопросы и Отзывы',
+        'description':
+            ' Данный токен необходим для быстрого и удобного ответа на вопросы покупателей и обработки отзывов, повышая уровень обслуживания и доверие к вашему магазину.',
+      },
+    ];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Подробнее'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: infoItems.length,
+              itemBuilder: (context, index) {
+                final item = infoItems[index];
+                return ListTile(
+                  title: Text(item['title']!),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    Navigator.of(context).pop(); // Закрываем список
+                    _showItemDetailDialog(
+                        context, item['title']!, item['description']!);
+                  },
+                );
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Назад'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _showInfoDialog(context); // Возвращаемся к предыдущему диалогу
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showItemDetailDialog(
+      BuildContext context, String title, String description) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height *
+                  0.6, // Ограничиваем высоту
+            ),
+            child: SingleChildScrollView(
+              child: Text(description),
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Назад'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _showDetailsDialog(context); // Возвращаемся к списку
+              },
             ),
           ],
         );

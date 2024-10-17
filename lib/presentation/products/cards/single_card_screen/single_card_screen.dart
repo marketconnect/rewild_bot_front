@@ -164,7 +164,10 @@ class _Body extends StatelessWidget {
               Padding(
                 padding:
                     EdgeInsets.symmetric(horizontal: model.screenWidth * 0.05),
-                child: const _Feedback(),
+                child: const _TopProductsLink(),
+              ),
+              SizedBox(
+                height: model.screenHeight * 0.02,
               ),
               if (promo.isNotEmpty)
                 Padding(
@@ -1081,5 +1084,46 @@ class _MainPicture extends StatelessWidget {
         width: MediaQuery.of(context).size.width,
         fit: BoxFit.cover,
         image: img);
+  }
+}
+
+class _TopProductsLink extends StatelessWidget {
+  const _TopProductsLink();
+
+  @override
+  Widget build(BuildContext context) {
+    final model = context.watch<SingleCardScreenViewModel>();
+    final subject = model.subject;
+    return GestureDetector(
+      onTap: () {
+        model.goToSubject();
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceVariant,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: EdgeInsets.all(model.screenWidth * 0.04),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Какие товары сейчас на пике продаж в категории $subject?',
+                style: TextStyle(
+                  fontSize: model.screenWidth * 0.045,
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              size: model.screenWidth * 0.07,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

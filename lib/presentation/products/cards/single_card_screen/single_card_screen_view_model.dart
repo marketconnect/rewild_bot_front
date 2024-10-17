@@ -800,6 +800,13 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
     Navigator.of(context).pushNamed(MainNavigationRouteNames.allSubjectsScreen,
         arguments: [_category]);
   }
+
+  void goToSubject() {
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.topProductsScreen,
+      arguments: subjectId,
+    );
+  }
 }
 
 // external function from index.html

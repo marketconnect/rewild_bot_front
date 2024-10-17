@@ -187,7 +187,7 @@ class AdvertApiClient
   }
 
   @override
-  Future<Either<RewildError, int>> getExpensesSum({
+  Future<Either<RewildError, double>> getExpensesSum({
     required String token,
     required DateTime from,
     required DateTime to,
@@ -212,8 +212,8 @@ class AdvertApiClient
       if (response.statusCode == 200) {
         final List<dynamic> expensesData = json.decode(response.body);
 
-        final int totalSum = expensesData.fold<int>(
-            0, (sum, item) => sum + (item['updSum'] as int));
+        final double totalSum = expensesData.fold<double>(
+            0, (sum, item) => sum + (item['updSum'] as double));
         return Right(totalSum);
       } else {
         final errString = wbApi.errResponse(statusCode: response.statusCode);

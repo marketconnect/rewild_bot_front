@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
 import 'package:rewild_bot_front/domain/entities/user_product_card.dart';
 import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_view_model.dart';
+import 'package:rewild_bot_front/widgets/empty_widget.dart';
 
 class UnitEconomicsAllCardsScreen extends StatelessWidget {
   const UnitEconomicsAllCardsScreen({super.key});
@@ -13,6 +14,8 @@ class UnitEconomicsAllCardsScreen extends StatelessWidget {
     final model = context.watch<UnitEconomicsAllCardsViewModel>();
     final isLoading = model.isLoading;
     final userProductCards = model.userProductCards;
+    final isApiKeyExists = model.apiKeyExists;
+
     return OverlayLoaderWithAppIcon(
       isLoading: isLoading,
       overlayBackgroundColor: Colors.black,
@@ -23,13 +26,15 @@ class UnitEconomicsAllCardsScreen extends StatelessWidget {
           title: const Text('Все карточки'),
           centerTitle: true,
         ),
-        body: ListView.builder(
-          itemCount: userProductCards.length,
-          itemBuilder: (context, index) {
-            final product = userProductCards[index];
-            return _buildProductCard(context, product);
-          },
-        ),
+        body: isApiKeyExists
+            ? ListView.builder(
+                itemCount: userProductCards.length,
+                itemBuilder: (context, index) {
+                  final product = userProductCards[index];
+                  return _buildProductCard(context, product);
+                },
+              )
+            : const _EmptyApiKeyWidget(),
       ),
     );
   }
@@ -121,5 +126,41 @@ class UnitEconomicsAllCardsScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class _EmptyApiKeyWidget extends StatelessWidget {
+  const _EmptyApiKeyWidget();
+
+  @override
+  Widget build(BuildContext context) {
+    final addToken = context.read<UnitEconomicsAllCardsViewModel>().addToken;
+    return Center(
+        child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const EmptyWidget(
+            text:
+                'Для работы с этим разделом вам необходимо добавить токен "Контент"'),
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.05,
+        ),
+        TextButton(
+            onPressed: () => addToken(),
+            child: Container(
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                width: MediaQuery.of(context).size.width * 0.7,
+                height: MediaQuery.of(context).size.height * 0.08,
+                child: Text(
+                  'Добавить токен',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.onPrimary),
+                )))
+      ],
+    ));
   }
 }

@@ -69,6 +69,13 @@ class UnitEconomicsAllCardsViewModel extends ResourceChangeNotifier {
     notify();
   }
 
+// api key exists
+  bool _apiKeyExists = false;
+  bool get apiKeyExists => _apiKeyExists;
+  void setApiKeyExists(bool exists) {
+    _apiKeyExists = exists;
+  }
+
   List<UserProductCard> get userProductCards => _userProductCards;
   int _averageLogisticCost = 50;
   void setAverageLogisticCost(int averageLogisticCost) {
@@ -78,20 +85,27 @@ class UnitEconomicsAllCardsViewModel extends ResourceChangeNotifier {
   int get averageLogisticCost => _averageLogisticCost;
   Future<void> _asyncInit() async {
     setIsLoading(true);
+
     final values = await Future.wait([
       fetch(() => userCardService.getAllUserCards()),
       fetch(() => authService.getToken())
     ]);
+
     final userProductCardsOrNull = values[0] as List<UserProductCard>?;
 
     final tokenOrNull = values[1] as String?;
     if (tokenOrNull == null) {
+      setApiKeyExists(false);
+      setIsLoading(false);
       return;
     }
+
+    setApiKeyExists(true);
     if (userProductCardsOrNull == null) {
       setIsLoading(false);
       return;
     }
+
     List<UserProductCard> userProductCardsWithUnitEconomics = [];
     for (final card in userProductCardsOrNull) {
       final totalCosts =
@@ -181,5 +195,11 @@ class UnitEconomicsAllCardsViewModel extends ResourceChangeNotifier {
         await _reload();
       }
     }
+  }
+
+  Future<void> addToken() async {
+    await Navigator.of(context)
+        .pushNamed(MainNavigationRouteNames.apiKeysScreen);
+    _asyncInit();
   }
 }

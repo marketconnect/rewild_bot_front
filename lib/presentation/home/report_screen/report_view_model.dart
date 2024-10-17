@@ -31,7 +31,7 @@ abstract class ReportRealizationReportService {
 
 // adverts
 abstract class ReportAdvertService {
-  Future<Either<RewildError, int>> getExpensesSum({
+  Future<Either<RewildError, double>> getExpensesSum({
     required DateTime from,
     required DateTime to,
   });
@@ -238,13 +238,13 @@ class ReportViewModel extends ResourceChangeNotifier {
   String _minPpvzForPayWarehouse = '';
   String get minPpvzForPayWarehouse => _minPpvzForPayWarehouse;
 
-  int _advertExpenses = 0;
-  setExpenses(int expenses) {
+  double _advertExpenses = 0;
+  setExpenses(double expenses) {
     _advertExpenses = expenses;
     notify();
   }
 
-  int get advertExpenses => _advertExpenses;
+  double get advertExpenses => _advertExpenses;
 
   void resetSummary() {
     _revenue = 0.0;
