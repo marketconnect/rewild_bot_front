@@ -75,6 +75,12 @@ class _MainNavigationScreenHomeWidgetState
                 iconData: Icons.dashboard,
               ),
               _Link(
+                text: 'Склады',
+                color: Colors.greenAccent,
+                route: MainNavigationRouteNames.whCofficientsScreen,
+                iconData: Icons.feedback,
+              ),
+              _Link(
                 text: 'Обратная связь',
                 color: Colors.blueAccent,
                 route: MainNavigationRouteNames.feedbackFormScreen,

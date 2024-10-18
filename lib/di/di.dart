@@ -3,6 +3,8 @@ import 'package:rewild_bot_front/api_clients/categories_and_subjects_api_client.
 import 'package:rewild_bot_front/api_clients/commision_api_client.dart';
 import 'package:rewild_bot_front/api_clients/stats_api_client.dart';
 import 'package:rewild_bot_front/api_clients/top_product_api_client.dart';
+import 'package:rewild_bot_front/api_clients/wh_coefficients_api_client.dart';
+import 'package:rewild_bot_front/data_providers/average_logistic_data_provider/average_logistic_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/category_data_provider/category_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subj_commission_data_provider/subj_commission_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subject_data_provider/subject_data_provider.dart';
@@ -12,6 +14,7 @@ import 'package:rewild_bot_front/domain/services/categories_and_subjects_sevice.
 import 'package:rewild_bot_front/domain/services/stats_service.dart';
 import 'package:rewild_bot_front/domain/services/top_products_service.dart';
 import 'package:rewild_bot_front/domain/services/user_product_card_service.dart';
+import 'package:rewild_bot_front/domain/services/wf_cofficient_service.dart';
 import 'package:rewild_bot_front/presentation/home/feedback_form_screen/feedback_form_screen.dart';
 import 'package:rewild_bot_front/presentation/home/finance_nav_screen/finance_nav_screen.dart';
 import 'package:rewild_bot_front/presentation/home/unit_economics_all_cards_screen/unit_economics_all_cards_screen.dart';
@@ -56,7 +59,7 @@ import 'package:rewild_bot_front/api_clients/wb_search_suggestion_api_client.dar
 import 'package:rewild_bot_front/api_clients/week_orders_api_client.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/data_providers/answer_data_provider/answer_data_provider.dart';
-import 'package:rewild_bot_front/data_providers/average_logistics_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/wh_coeffs_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cached_kw_by_lemma_by_word_data_provider/cached_kw_by_lemma_by_word_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cached_lemma_data_provider/cached_lemma_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cahced_kw_by_autocomplite_data_provider/cahced_kw_by_autocomplite_data_provider.dart';
@@ -200,6 +203,8 @@ import 'package:rewild_bot_front/presentation/products/top_products_screen/top_p
 import 'package:rewild_bot_front/presentation/products/top_products_screen/top_products_view_model.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen_view_model.dart';
+import 'package:rewild_bot_front/presentation/wh_coefficients_screen/wh_coefficients_screen.dart';
+import 'package:rewild_bot_front/presentation/wh_coefficients_screen/wh_coefficients_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation.dart';
 
 AppFactory makeAppFactory() => _AppFactoryDefault();
@@ -306,6 +311,9 @@ class _DIContainer {
   GptApiClient _makeGptApiClient() => const GptApiClient();
 
   TopProductApiClient _makeTopProductApiClient() => const TopProductApiClient();
+
+  WhCoefficientsApiClient _makeWhCoefficientsApiClient() =>
+      const WhCoefficientsApiClient();
   // Data Providers ============================================================
   // secure storage
   SecureStorageProvider _makeSecureDataProvider() =>
@@ -405,6 +413,9 @@ class _DIContainer {
 
   TopProductsDataProvider _makeTopProductsDataProvider() =>
       const TopProductsDataProvider();
+
+  WarehouseCoeffsDataProvider _makeWarehouseCoeffsDataProvider() =>
+      const WarehouseCoeffsDataProvider();
   // Services ==================================================================
   FilterValuesService _makeFilterValuesService() => FilterValuesService(
       lemmaDataProvider: _makeLemmaDataProvider(),
@@ -636,6 +647,11 @@ class _DIContainer {
   TopProductsService _makeTopProductsService() => TopProductsService(
         topProductsServiceApiClient: _makeTopProductApiClient(),
         topProductsServiceDataProvider: _makeTopProductsDataProvider(),
+      );
+
+  WfCofficientService _makeWfCofficientService() => WfCofficientService(
+        apiClient: _makeWhCoefficientsApiClient(),
+        dataProvider: _makeWarehouseCoeffsDataProvider(),
       );
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
@@ -1066,6 +1082,14 @@ class _DIContainer {
       context: context,
     );
   }
+
+  WhCoefficientsViewModel _makeWhCoefficientsViewModel(BuildContext context) {
+    return WhCoefficientsViewModel(
+      context: context,
+      authService: _makeAuthService(),
+      wfCofficientService: _makeWfCofficientService(),
+    );
+  }
 }
 
 class ScreenFactoryDefault implements ScreenFactory {
@@ -1078,6 +1102,13 @@ class ScreenFactoryDefault implements ScreenFactory {
     return ChangeNotifierProvider(
       create: (context) => _diContainer._makeAllCategoriesViewModel(context),
       child: const AllCategoriesScreen(),
+    );
+  }
+
+  Widget makeWhCoefficientsScreen() {
+    return ChangeNotifierProvider(
+      create: (context) => _diContainer._makeWhCoefficientsViewModel(context),
+      child: const WarehouseCoeffsScreen(),
     );
   }
 

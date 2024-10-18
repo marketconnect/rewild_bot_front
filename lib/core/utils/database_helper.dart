@@ -32,7 +32,7 @@ class DatabaseHelper {
 
     final db = await dbFactory.open(
       'mb.db',
-      version: 3,
+      version: 4,
       onUpgradeNeeded: _onUpgrade,
     );
 
@@ -58,6 +58,18 @@ class DatabaseHelper {
         store.createIndex('feedbacks', 'feedbacks', unique: false);
         store.createIndex('img', 'img', unique: false);
         store.createIndex('last_updated', 'last_updated', unique: false);
+      }
+    }
+
+    if (event.oldVersion < 4) {
+      if (!db.objectStoreNames.contains('wh_coefficients_subs')) {
+        final store = db.createObjectStore('wh_coefficients_subs',
+            keyPath: 'whIdBoxTypeId');
+        store.createIndex('warehouse_id', 'warehouse_id', unique: false);
+        store.createIndex('box_type_id', 'box_type_id', unique: false);
+        store.createIndex('box_type_name', 'box_type_name', unique: false);
+        store.createIndex('warehouse_name', 'warehouse_name', unique: false);
+        store.createIndex('coefficient', 'coefficient', unique: false);
       }
     }
     // if (event.oldVersion < 2) {
@@ -166,6 +178,16 @@ class DatabaseHelper {
         createStore();
       }
     }
+
+    createStoreIfNotExists('wh_coefficients_subs', () {
+      final store = db.createObjectStore('wh_coefficients_subs',
+          keyPath: 'whIdBoxTypeId');
+      store.createIndex('warehouse_id', 'warehouse_id', unique: false);
+      store.createIndex('box_type_id', 'box_type_id', unique: false);
+      store.createIndex('box_type_name', 'box_type_name', unique: false);
+      store.createIndex('warehouse_name', 'warehouse_name', unique: false);
+      store.createIndex('coefficient', 'coefficient', unique: false);
+    });
 
     createStoreIfNotExists('top_products', () {
       final store = db.createObjectStore('top_products', keyPath: 'sku');

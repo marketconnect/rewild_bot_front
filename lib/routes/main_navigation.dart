@@ -79,6 +79,8 @@ abstract class ScreenFactory {
   Widget makeUnitEconomicsAllCardsScreen();
   Widget makeFinanceNavScreen();
   Widget makeTopProductsScreen(int subjectId);
+
+  Widget makeWhCoefficientsScreen();
 }
 
 class MainNavigation implements AppNavigation {
@@ -144,6 +146,11 @@ class MainNavigation implements AppNavigation {
       case '/':
         return MaterialPageRoute(
             builder: (_) => screenFactory.makeMainNavigationScreen());
+
+      case MainNavigationRouteNames.whCofficientsScreen:
+        return MaterialPageRoute(
+          builder: (_) => screenFactory.makeWhCoefficientsScreen(),
+        );
 
       case MainNavigationRouteNames.financeNavScreen:
         return MaterialPageRoute(

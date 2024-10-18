@@ -72,4 +72,6 @@ abstract class MainNavigationRouteNames {
 
   static const String financeNavScreen = '/finance_nav_screen';
   static const String topProductsScreen = '/top_products_screen';
+
+  static const String whCofficientsScreen = '/wf_coefficients_screen';
 }
