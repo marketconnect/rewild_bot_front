@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
+import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
 import 'package:rewild_bot_front/env.dart';
 
 class ResourceChangeNotifier extends ChangeNotifier {
@@ -41,10 +42,11 @@ class ResourceChangeNotifier extends ChangeNotifier {
     //   print('Time elapsed ($note): $timeElapsed seconds.');
     // }
 
-    return resource.fold((l) {
+    return resource.fold((l) async {
+      String chatId = await TelegramWebApp.getChatId();
       if (l.sendToTg) {
-        sendMessageToTelegramBot(
-            TBot.tBotErrorToken, TBot.tBotErrorChatId, l.toString());
+        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+            '$chatId ${l.toString()}');
       }
       if (context.mounted && showError) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

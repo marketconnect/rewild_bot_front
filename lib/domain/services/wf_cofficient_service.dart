@@ -7,45 +7,63 @@ import 'package:rewild_bot_front/presentation/wh_coefficients_screen/wh_coeffici
 abstract class WfCofficientServiceWfCofficientApiClient {
   Future<Either<RewildError, void>> subscribe({
     required String token,
-    required int warehouseId,
-    required double threshold,
+    required int chatId,
+    required UserSubscription sub,
   });
   Future<Either<RewildError, void>> unsubscribe({
     required String token,
     required int warehouseId,
+    required int boxTypeId,
+    required int chatId,
   });
-  Future<Either<RewildError, List<WarehouseCoeffs>>> getAllWarehouses({
+  Future<Either<RewildError, GetAllWarehousesResp>> getAllWarehouses({
     required String token,
+    required int chatId,
   });
 }
 
-abstract class WhCoefficientsServiceDataProvider {
-  Future<Either<RewildError, void>> subscribe(WarehouseCoeffs warehouseCoeffs);
-  Future<Either<RewildError, void>> unsubscribe(int warehouseId, int boxTypeId);
-  Future<Either<RewildError, List<WarehouseCoeffs>>> getAll();
+abstract class WhCoefficientsServiceSecureDataProvider {
+  Future<Either<RewildError, String?>> getUsername();
 }
 
 class WfCofficientService
     implements WhCoefficientsViewModelWfCofficientService {
   final WfCofficientServiceWfCofficientApiClient apiClient;
-  final WhCoefficientsServiceDataProvider dataProvider;
+
+  final WhCoefficientsServiceSecureDataProvider secureDataProvider;
   WfCofficientService({
     required this.apiClient,
-    required this.dataProvider,
+    required this.secureDataProvider,
   });
 
   @override
   Future<Either<RewildError, void>> subscribe({
     required String token,
-    required WarehouseCoeffs warehouseCoeffs,
+    required UserSubscription sub,
   }) async {
     // save local
-    await dataProvider.subscribe(warehouseCoeffs);
+
+    final chatIdEither = await secureDataProvider.getUsername();
+    if (chatIdEither.isLeft()) {
+      return chatIdEither;
+    }
+
+    final chatId = chatIdEither.fold((l) => "", (r) => r ?? "");
+    final chatIdInt = int.tryParse(chatId);
+    if (chatIdInt == null) {
+      return left(RewildError(
+        sendToTg: true,
+        "Не удалось получить chat_id",
+        source: "WfCofficientService",
+        name: "subscribe",
+        args: [sub.warehouseId],
+      ));
+    }
 
     return await apiClient.subscribe(
       token: token,
-      warehouseId: warehouseCoeffs.warehouseId,
-      threshold: warehouseCoeffs.coefficient,
+      sub: sub,
+      chatId: chatIdInt,
     );
   }
 
@@ -56,26 +74,57 @@ class WfCofficientService
     required int boxTypeId,
   }) async {
     // unsubscribe local
-    await dataProvider.unsubscribe(warehouseId, boxTypeId);
 
+    final chatIdEither = await secureDataProvider.getUsername();
+    if (chatIdEither.isLeft()) {
+      return chatIdEither;
+    }
+
+    final chatId = chatIdEither.fold((l) => "", (r) => r ?? "");
+    final chatIdInt = int.tryParse(chatId);
+    if (chatIdInt == null) {
+      return left(RewildError(
+        sendToTg: true,
+        "Не удалось получить chat_id",
+        source: "WfCofficientService",
+        name: "subscribe",
+        args: [],
+      ));
+    }
     return await apiClient.unsubscribe(
       token: token,
       warehouseId: warehouseId,
+      boxTypeId: boxTypeId,
+      chatId: chatIdInt,
     );
   }
 
   @override
-  Future<Either<RewildError, List<WarehouseCoeffs>>> getAllWarehouses({
+  Future<Either<RewildError, GetAllWarehousesResp>> getAllWarehouses({
     required String token,
   }) async {
+    final chatIdEither = await secureDataProvider.getUsername();
+    if (chatIdEither.isLeft()) {
+      return left(RewildError("chat_id not found",
+          source: "WfCofficientService",
+          name: "getAllWarehouses",
+          sendToTg: true));
+    }
+    final chatId = chatIdEither.fold((l) => "", (r) => r ?? "");
+    final chatIdInt = int.tryParse(chatId);
+    if (chatIdInt == null) {
+      return left(RewildError(
+        sendToTg: true,
+        "Не удалось получить chat_id",
+        source: "WfCofficientService",
+        name: "subscribe",
+        args: [],
+      ));
+    }
+
     return await apiClient.getAllWarehouses(
       token: token,
+      chatId: chatIdInt,
     );
-  }
-
-  @override
-  Future<Either<RewildError, List<WarehouseCoeffs>>>
-      getCurrentSubscriptions() async {
-    return await dataProvider.getAll();
   }
 }

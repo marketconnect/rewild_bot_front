@@ -169,6 +169,14 @@ class _Body extends StatelessWidget {
               SizedBox(
                 height: model.screenHeight * 0.02,
               ),
+              SizedBox(
+                height: model.screenHeight * 0.02,
+              ),
+              Padding(
+                padding:
+                    EdgeInsets.symmetric(horizontal: model.screenWidth * 0.05),
+                child: const _Feedback(),
+              ),
               if (promo.isNotEmpty)
                 Padding(
                   padding: EdgeInsets.symmetric(
@@ -920,7 +928,7 @@ class _InfoRow extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                          "Внимание: данные о продажах со склада продавца могут быть неточными.",
+                          "Внимание: данные о заказах со склада продавца могут быть неточными.",
                         ),
                       ),
                     );
@@ -1100,7 +1108,7 @@ class _TopProductsLink extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surfaceVariant,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
         ),
         padding: EdgeInsets.all(model.screenWidth * 0.04),

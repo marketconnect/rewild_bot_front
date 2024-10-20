@@ -38,11 +38,9 @@ class TopProductApiClient implements TopProductsServiceApiClient {
         if (decodedResponse['top_products'] != null &&
             decodedResponse['top_products'] is List &&
             decodedResponse['top_products'].isNotEmpty) {
-          print(decodedResponse['top_products']);
           final topProducts = (decodedResponse['top_products'] as List)
               .map((productJson) => TopProduct.fromJson(productJson))
               .toList();
-          print(topProducts);
           return right(topProducts);
         } else {
           return right([]);

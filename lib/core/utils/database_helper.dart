@@ -61,17 +61,6 @@ class DatabaseHelper {
       }
     }
 
-    if (event.oldVersion < 4) {
-      if (!db.objectStoreNames.contains('wh_coefficients_subs')) {
-        final store = db.createObjectStore('wh_coefficients_subs',
-            keyPath: 'whIdBoxTypeId');
-        store.createIndex('warehouse_id', 'warehouse_id', unique: false);
-        store.createIndex('box_type_id', 'box_type_id', unique: false);
-        store.createIndex('box_type_name', 'box_type_name', unique: false);
-        store.createIndex('warehouse_name', 'warehouse_name', unique: false);
-        store.createIndex('coefficient', 'coefficient', unique: false);
-      }
-    }
     // if (event.oldVersion < 2) {
     //   if (!db.objectStoreNames.contains('subjects')) {
     //     final store = db.createObjectStore('subjects', keyPath: 'subjectId');
@@ -178,16 +167,6 @@ class DatabaseHelper {
         createStore();
       }
     }
-
-    createStoreIfNotExists('wh_coefficients_subs', () {
-      final store = db.createObjectStore('wh_coefficients_subs',
-          keyPath: 'whIdBoxTypeId');
-      store.createIndex('warehouse_id', 'warehouse_id', unique: false);
-      store.createIndex('box_type_id', 'box_type_id', unique: false);
-      store.createIndex('box_type_name', 'box_type_name', unique: false);
-      store.createIndex('warehouse_name', 'warehouse_name', unique: false);
-      store.createIndex('coefficient', 'coefficient', unique: false);
-    });
 
     createStoreIfNotExists('top_products', () {
       final store = db.createObjectStore('top_products', keyPath: 'sku');

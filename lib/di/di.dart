@@ -59,7 +59,7 @@ import 'package:rewild_bot_front/api_clients/wb_search_suggestion_api_client.dar
 import 'package:rewild_bot_front/api_clients/week_orders_api_client.dart';
 import 'package:rewild_bot_front/core/constants/api_key_constants.dart';
 import 'package:rewild_bot_front/data_providers/answer_data_provider/answer_data_provider.dart';
-import 'package:rewild_bot_front/data_providers/wh_coeffs_data_provider.dart';
+
 import 'package:rewild_bot_front/data_providers/cached_kw_by_lemma_by_word_data_provider/cached_kw_by_lemma_by_word_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cached_lemma_data_provider/cached_lemma_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/cahced_kw_by_autocomplite_data_provider/cahced_kw_by_autocomplite_data_provider.dart';
@@ -414,8 +414,6 @@ class _DIContainer {
   TopProductsDataProvider _makeTopProductsDataProvider() =>
       const TopProductsDataProvider();
 
-  WarehouseCoeffsDataProvider _makeWarehouseCoeffsDataProvider() =>
-      const WarehouseCoeffsDataProvider();
   // Services ==================================================================
   FilterValuesService _makeFilterValuesService() => FilterValuesService(
       lemmaDataProvider: _makeLemmaDataProvider(),
@@ -651,7 +649,7 @@ class _DIContainer {
 
   WfCofficientService _makeWfCofficientService() => WfCofficientService(
         apiClient: _makeWhCoefficientsApiClient(),
-        dataProvider: _makeWarehouseCoeffsDataProvider(),
+        secureDataProvider: _makeSecureDataProvider(),
       );
   // View Models ===============================================================
   MainNavigationViewModel _makeBottomNavigationViewModel(
@@ -1105,6 +1103,7 @@ class ScreenFactoryDefault implements ScreenFactory {
     );
   }
 
+  @override
   Widget makeWhCoefficientsScreen() {
     return ChangeNotifierProvider(
       create: (context) => _diContainer._makeWhCoefficientsViewModel(context),

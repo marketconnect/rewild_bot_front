@@ -8,17 +8,16 @@ import 'package:rewild_bot_front/domain/entities/wh_coeffs.dart';
 abstract class WhCoefficientsViewModelWfCofficientService {
   Future<Either<RewildError, void>> subscribe({
     required String token,
-    required WarehouseCoeffs warehouseCoeffs,
+    required UserSubscription sub,
   });
   Future<Either<RewildError, void>> unsubscribe({
     required String token,
     required int warehouseId,
     required int boxTypeId,
   });
-  Future<Either<RewildError, List<WarehouseCoeffs>>> getAllWarehouses({
+  Future<Either<RewildError, GetAllWarehousesResp>> getAllWarehouses({
     required String token,
   });
-  Future<Either<RewildError, List<WarehouseCoeffs>>> getCurrentSubscriptions();
 }
 
 abstract class WhCoefficientsScreenAuthService {
@@ -55,13 +54,13 @@ class WhCoefficientsViewModel extends ResourceChangeNotifier {
 
   List<WarehouseCoeffs> get warehouses => _warehouses;
 
-  final List<WarehouseCoeffs> _currentSubscriptions = [];
-  void setSubscriptions(List<WarehouseCoeffs> subscriptions) {
+  final List<UserSubscription> _currentSubscriptions = [];
+  void setSubscriptions(List<UserSubscription> subscriptions) {
     _currentSubscriptions.clear();
     _currentSubscriptions.addAll(subscriptions);
   }
 
-  List<WarehouseCoeffs> get curentSubscriptions => _currentSubscriptions;
+  List<UserSubscription> get currentSubscriptions => _currentSubscriptions;
 
   // Methods ===================================================================`
   Future<void> _asyncInit() async {
@@ -74,17 +73,16 @@ class WhCoefficientsViewModel extends ResourceChangeNotifier {
 
     final warehousesOrNull =
         await fetch(() => wfCofficientService.getAllWarehouses(token: token));
-    print('w1 ${warehousesOrNull}');
     if (warehousesOrNull == null) {
       setIsLoading(false);
       return;
     }
-    print('w1 ${warehousesOrNull.length}');
-    setWarehouses(warehousesOrNull);
+    setWarehouses(warehousesOrNull.warehouses);
+    setSubscriptions(warehousesOrNull.userSubscriptions);
     setIsLoading(false);
   }
 
-  Future<void> subscribe({required WarehouseCoeffs warehouseCoeffs}) async {
+  Future<void> subscribe({required UserSubscription sub}) async {
     final token = await fetch(() => authService.getToken());
     if (token == null) {
       return;
@@ -92,12 +90,12 @@ class WhCoefficientsViewModel extends ResourceChangeNotifier {
 
     await fetch(() => wfCofficientService.subscribe(
           token: token,
-          warehouseCoeffs: warehouseCoeffs,
+          sub: sub,
         ));
     await _asyncInit();
   }
 
-  Future<void> unsubscribe(WarehouseCoeffs warehouseCoeffs) async {
+  Future<void> unsubscribe(UserSubscription sub) async {
     final token = await fetch(() => authService.getToken());
     if (token == null) {
       return;
@@ -105,13 +103,13 @@ class WhCoefficientsViewModel extends ResourceChangeNotifier {
 
     await fetch(() => wfCofficientService.unsubscribe(
           token: token,
-          warehouseId: warehouseCoeffs.warehouseId,
-          boxTypeId: warehouseCoeffs.boxTypeId,
+          warehouseId: sub.warehouseId,
+          boxTypeId: sub.boxTypeId,
         ));
     await _asyncInit();
   }
 
-  Future<void> updateSubscription(WarehouseCoeffs warehouseCoeffs) async {
+  Future<void> updateSubscription(UserSubscription sub) async {
     final token = await fetch(() => authService.getToken());
     if (token == null) {
       return;
@@ -119,8 +117,20 @@ class WhCoefficientsViewModel extends ResourceChangeNotifier {
 
     await fetch(() => wfCofficientService.subscribe(
           token: token,
-          warehouseCoeffs: warehouseCoeffs,
+          sub: sub,
         ));
     await _asyncInit();
+  }
+
+  String getBoxTypeName(int boxTypeId) {
+    for (var element in warehouses) {
+      for (var boxType in element.boxTypes) {
+        if (boxType.boxTypeId == boxTypeId) {
+          return boxType.boxTypeName;
+        }
+      }
+    }
+
+    return "";
   }
 }

@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:fpdart/fpdart.dart';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
@@ -15,11 +18,16 @@ class WhCoefficientsApiClient
   @override
   Future<Either<RewildError, void>> subscribe({
     required String token,
-    required int warehouseId,
-    required double threshold,
+    required int chatId,
+    required UserSubscription sub,
   }) async {
     final url = Uri.parse("${ServerConstants.apiUrl}/subscribe");
     try {
+      DateTime parsedFromDate = DateFormat('dd.MM.yyyy').parse(sub.fromDate);
+      DateTime parsedToDate = DateFormat('dd.MM.yyyy').parse(sub.toDate);
+      final dateFrom = formatDateForAnaliticsDetail(parsedFromDate);
+      final dateTo = formatDateForAnaliticsDetail(parsedToDate);
+
       final response = await http.post(
         url,
         headers: {
@@ -27,8 +35,12 @@ class WhCoefficientsApiClient
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'warehouse_id': warehouseId,
-          'threshold': threshold,
+          'warehouse_id': sub.warehouseId,
+          'box_type_id': sub.boxTypeId,
+          'threshold': sub.threshold,
+          'from_date': dateFrom,
+          'to_date': dateTo,
+          'chat_id': chatId
         }),
       );
 
@@ -40,7 +52,7 @@ class WhCoefficientsApiClient
           "Ошибка при подписке: ${response.statusCode}",
           source: "WhCoefficientsApiClient",
           name: "subscribe",
-          args: [warehouseId, threshold],
+          args: [sub.warehouseId, sub.threshold],
         ));
       }
     } catch (e) {
@@ -49,7 +61,7 @@ class WhCoefficientsApiClient
         "Неизвестная ошибка: $e",
         source: "WhCoefficientsApiClient",
         name: "subscribe",
-        args: [warehouseId, threshold],
+        args: [sub.warehouseId, sub.threshold],
       ));
     }
   }
@@ -58,6 +70,8 @@ class WhCoefficientsApiClient
   Future<Either<RewildError, void>> unsubscribe({
     required String token,
     required int warehouseId,
+    required int boxTypeId,
+    required int chatId,
   }) async {
     final url = Uri.parse("${ServerConstants.apiUrl}/unsubscribe");
     try {
@@ -69,6 +83,8 @@ class WhCoefficientsApiClient
         },
         body: jsonEncode({
           'warehouse_id': warehouseId,
+          'box_type_id': boxTypeId,
+          'chat_id': chatId
         }),
       );
 
@@ -95,8 +111,9 @@ class WhCoefficientsApiClient
   }
 
   @override
-  Future<Either<RewildError, List<WarehouseCoeffs>>> getAllWarehouses({
+  Future<Either<RewildError, GetAllWarehousesResp>> getAllWarehouses({
     required String token,
+    required int chatId,
   }) async {
     final url = Uri.parse("${ServerConstants.apiUrl}/getAllWarehouses");
     try {
@@ -106,17 +123,13 @@ class WhCoefficientsApiClient
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/json',
         },
+        body: jsonEncode({'chat_id': chatId}),
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data =
-            json.decode(utf8.decode(response.bodyBytes));
-        List<WarehouseCoeffs> warehouses = (data['warehouses'] as List)
-            .map((warehouse) =>
-                WarehouseCoeffs.fromJson(warehouse as Map<String, dynamic>))
-            .toList();
-        print(warehouses);
-        return right(warehouses);
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        final resp = GetAllWarehousesResp.fromJson(data);
+        return right(resp);
       } else {
         return left(RewildError(
           sendToTg: true,

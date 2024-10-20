@@ -75,7 +75,7 @@ class _MainNavigationScreenHomeWidgetState
                 iconData: Icons.dashboard,
               ),
               _Link(
-                text: 'Склады',
+                text: 'Коэффициенты складов',
                 color: Colors.greenAccent,
                 route: MainNavigationRouteNames.whCofficientsScreen,
                 iconData: Icons.feedback,
