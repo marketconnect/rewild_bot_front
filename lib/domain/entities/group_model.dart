@@ -4,7 +4,7 @@ import 'package:rewild_bot_front/domain/entities/card_of_product_model.dart';
 
 class GroupModel {
   int id;
-  final String name;
+  String name;
   final int bgColor;
   final int fontColor;
   final List<int> cardsNmIds;

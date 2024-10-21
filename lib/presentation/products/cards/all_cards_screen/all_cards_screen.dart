@@ -446,113 +446,198 @@ class _HorizontalScrollMenuState extends State<_HorizontalScrollMenu>
     return SliverPersistentHeader(
       delegate: MySliverPersistentHeaderDelegate(
         TabBar(
-            tabAlignment: TabAlignment.start,
-            controller: _tabController,
-            isScrollable: true,
-            labelPadding: const EdgeInsets.symmetric(horizontal: 5),
-            padding: const EdgeInsets.symmetric(horizontal: 15),
-            unselectedLabelColor: Theme.of(context).colorScheme.primary,
-            indicatorPadding: const EdgeInsets.symmetric(vertical: 7),
-            labelColor: selectionInProcess
-                ? Theme.of(context).colorScheme.primary
-                : Colors.white,
-            onTap: (index) {
-              if (selectionInProcess) {
-                return;
-              }
+          tabAlignment: TabAlignment.start,
+          controller: _tabController,
+          isScrollable: true,
+          labelPadding: const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          unselectedLabelColor: Theme.of(context).colorScheme.primary,
+          indicatorPadding: const EdgeInsets.symmetric(vertical: 7),
+          labelColor: selectionInProcess
+              ? Theme.of(context).colorScheme.primary
+              : Colors.white,
+          onTap: (index) {
+            if (selectionInProcess) {
+              return;
+            }
 
-              selectGroup(index);
-            },
-            indicator: selectionInProcess || productsCardsIsEmpty
-                ? const BoxDecoration(border: null)
-                : BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-            dividerColor: Colors.transparent,
-            tabs: selectionInProcess
-                ? [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            Tab(
-                              child: IconButton(
-                                icon: Icon(Icons.close,
+            selectGroup(index);
+          },
+          indicator: selectionInProcess || productsCardsIsEmpty
+              ? const BoxDecoration(border: null)
+              : BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+          dividerColor: Colors.transparent,
+          tabs: selectionInProcess
+              ? [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Tab(
+                            child: IconButton(
+                              icon: Icon(Icons.close,
+                                  color: Theme.of(context).colorScheme.primary,
+                                  size: model.screenWidth * 0.08),
+                              onPressed: () => onClear(),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 5,
+                          ),
+                          emptySubscriptionsQty - len > 0
+                              ? Text(
+                                  '$len/${emptySubscriptionsQty - len}',
+                                  style: TextStyle(
+                                    fontSize: 20,
                                     color:
                                         Theme.of(context).colorScheme.primary,
-                                    size: model.screenWidth * 0.08),
-                                onPressed: () => onClear(),
-                              ),
-                            ),
-                            const SizedBox(
-                              width: 5,
-                            ),
-                            emptySubscriptionsQty - len > 0
-                                ? Text(
-                                    '$len/${emptySubscriptionsQty - len}',
-                                    style: TextStyle(
-                                      fontSize: 20,
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                                  )
-                                : const Icon(
-                                    Icons.update,
                                   ),
-                          ],
-                        ),
-                        SizedBox(
-                          width: model.screenWidth * 0.3,
-                        ),
-                        // if (!someUserNmIdIsSelected)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                                onPressed: () =>
-                                    _openAnimatedDialog(context, len, onDelete),
-                                icon: Icon(
-                                  Icons.delete_outline,
-                                  color: Theme.of(context).colorScheme.primary,
-                                  size: model.screenWidth * 0.08,
-                                )),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ]
-                : groups
-                    .map(
-                      (e) => Tab(
+                                )
+                              : const Icon(
+                                  Icons.update,
+                                ),
+                        ],
+                      ),
+                      SizedBox(
+                        width: model.screenWidth * 0.3,
+                      ),
+                      // if (!someUserNmIdIsSelected)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          IconButton(
+                              onPressed: () =>
+                                  _openAnimatedDialog(context, len, onDelete),
+                              icon: Icon(
+                                Icons.delete_outline,
+                                color: Theme.of(context).colorScheme.primary,
+                                size: model.screenWidth * 0.08,
+                              )),
+                        ],
+                      ),
+                    ],
+                  ),
+                ]
+              : groups
+                  .map(
+                    (group) => Tab(
+                      child: GestureDetector(
+                        onLongPress: () {
+                          _showGroupOptionsDialog(group, model);
+                        },
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 7),
                           child: Container(
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                border: Border.all(
-                                  color: isLoading || productsCardsIsEmpty
-                                      ? Colors.transparent
-                                      : Theme.of(context).colorScheme.secondary,
-                                )),
+                              borderRadius: BorderRadius.circular(30),
+                              border: Border.all(
+                                color: isLoading || productsCardsIsEmpty
+                                    ? Colors.transparent
+                                    : Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
                             width: model.screenWidth * 0.25,
                             child: Align(
                               alignment: Alignment.center,
                               child: Text(
-                                e.name.capitalize().take(5),
+                                group.name.capitalize().take(5),
                                 maxLines: 1,
                                 style: const TextStyle(
-                                    fontWeight: FontWeight.w500),
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    )
-                    .toList()),
+                    ),
+                  )
+                  .toList(),
+        ),
       ),
       pinned: true,
+    );
+  }
+
+  // Внутри _HorizontalScrollMenuState
+  void _showGroupOptionsDialog(
+      GroupModel group, AllCardsScreenViewModel model) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Опции для группы "${group.name}"'),
+          content: const Text('Выберите действие:'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _showRenameGroupDialog(group, model);
+              },
+              child: const Text('Переименовать'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _confirmDeleteGroup(group, model);
+              },
+              child: const Text(
+                'Удалить',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Отмена'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showRenameGroupDialog(GroupModel group, AllCardsScreenViewModel model) {
+    // ignore: no_leading_underscores_for_local_identifiers
+    final TextEditingController _controller =
+        TextEditingController(text: group.name);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Переименовать группу'),
+          content: TextField(
+            controller: _controller,
+            decoration: const InputDecoration(
+              labelText: 'Новое название группы',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                final newGroupName = _controller.text.trim();
+                if (newGroupName.isNotEmpty) {
+                  model.renameGroup(group.name, newGroupName);
+                }
+                Navigator.of(context).pop();
+              },
+              child: const Text('Сохранить'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -567,6 +652,39 @@ class _HorizontalScrollMenuState extends State<_HorizontalScrollMenu>
 
     final text = "Удалить $cardsLength $cardsName?";
     _showGeneralDialog(context, text, onDelete);
+  }
+
+  void _confirmDeleteGroup(GroupModel group, AllCardsScreenViewModel model) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Удалить группу'),
+          content:
+              Text('Вы уверены, что хотите удалить группу "${group.name}"?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Отмена'),
+            ),
+            TextButton(
+              onPressed: () {
+                // Удаляем группу через ViewModel
+                // final model = context.read<AllCardsScreenViewModel>();
+                model.deleteGroup(group.name);
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Удалить',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<Object?> _showGeneralDialog(

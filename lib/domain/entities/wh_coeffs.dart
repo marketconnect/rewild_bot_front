@@ -61,7 +61,7 @@ class BoxType {
     return BoxType(
       boxTypeId: json['box_type_id'],
       boxTypeName: json['box_type_name'],
-      coefficient: json['coefficient'],
+      coefficient: json['coefficient'] ?? 0.0,
       date: json['date'],
     );
   }

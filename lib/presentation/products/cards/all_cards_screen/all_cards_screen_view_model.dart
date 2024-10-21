@@ -51,6 +51,9 @@ abstract class AllCardsScreenGroupsService {
   Future<Either<RewildError, List<GroupModel>?>> getAll([List<int>? nmIds]);
   Future<Either<RewildError, void>> delete(
       {required String groupName, required int nmId});
+  Future<Either<RewildError, void>> deleteGroup({required String groupName});
+  Future<Either<RewildError, void>> renameGroup(
+      {required String groupName, required String newGroupName});
 }
 
 // Supply
@@ -244,23 +247,165 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
   Map<int, double> get grossProfit => _totalCostsGrossProfit;
 
+  // Future<void> _update([bool toNotify = true]) async {
+  //   if (!context.mounted) {
+  //     return;
+  //   }
+  //   final token = await _getToken();
+
+  //   await fetch(
+  //     () => updateService.fetchAllUserCardsFromServerAndSync(token),
+  //   );
+
+  //   // Update
+  //   await fetch(
+  //     () => updateService.update(token),
+  //   );
+  //   final values = await Future.wait([
+  //     // fetch(() => filterService.getCurrentFilter()), // 0
+  //     fetch(
+  //       () => cardsOfProductsService.getAll(),
+  //     ), // 0
+  //     fetch(
+  //       () => notificationsService.getAll(),
+  //     ), // 1
+  //     fetch(
+  //       () => groupsProvider.getAll(),
+  //     ), // 2
+  //     fetch(
+  //       () => averageLogisticsService.getCurrentAverageLogistics(token: token),
+  //     ), // 3
+  //     _handleSubscriptions(token),
+  //   ]);
+
+  //   // get cards
+  //   final fetchedCardsOfProducts = values[0] as List<CardOfProductModel>?;
+
+  //   if (fetchedCardsOfProducts == null) {
+  //     return;
+  //   }
+
+  //   List<CardOfProductModel> oldCards = List.from(_productCards);
+
+  //   // reassign productCards
+  //   if (fetchedCardsOfProducts.isNotEmpty) {
+  //     _productCards.clear();
+  //   }
+
+  //   // tracked ids
+  //   List<int> trackedIds = [];
+  //   final notifications = values[1] as List<ReWildNotificationModel>?;
+  //   if (notifications != null) {
+  //     for (final n in notifications) {
+  //       if (n.condition != NotificationConditionConstants.budgetLessThan) {
+  //         trackedIds.add(n.parentId);
+  //       }
+  //     }
+  //   }
+  //   final dateFrom = yesterdayEndOfTheDay();
+  //   final dateTo = DateTime.now();
+  //   // calculate stocks, initial stocks, supplies, was ordered field
+  //   for (CardOfProductModel card in fetchedCardsOfProducts) {
+  //     card.calculate(dateFrom, dateTo);
+  //     final oldCard = oldCards.where((old) {
+  //       return old.nmId == card.nmId;
+  //     });
+
+  //     // tracked
+  //     if (trackedIds.contains(card.nmId)) {
+  //       card.setTracked();
+  //     }
+
+  //     if (oldCard.isNotEmpty &&
+  //         card.weekOrdersSum > oldCard.first.weekOrdersSum) {
+  //       card.setWasOrdered();
+  //     } else {
+  //       card.setWasNotOrdered();
+  //     }
+
+  //     _productCards.add(card);
+  //   }
+  //   // sort by orders sum
+  //   _productCards.sort((a, b) => b.weekOrdersSum.compareTo(a.weekOrdersSum));
+
+  //   final fetchedGroups = values[2] as List<GroupModel>?;
+  //   final cardsNmIds = _productCards.map((card) => card.nmId).toList();
+  //   // append groups
+  //   if (fetchedGroups != null) {
+  //     for (final g in fetchedGroups) {
+  //       if (_groups.where((element) => element.name == g.name).isEmpty) {
+  //         if (g.cardsNmIds.any((element) => cardsNmIds.contains(element))) {}
+  //         _groups.add(g);
+  //       }
+  //       final cardsWithGroup =
+  //           _productCards.where((card) => g.cardsNmIds.contains(card.nmId));
+  //       for (final card in cardsWithGroup) {
+  //         card.setGroup(g);
+  //       }
+  //     }
+  //   }
+
+  //   // Filter groups
+  //   _groups = _groups.where((group) {
+  //     if (group.name == "Все") {
+  //       return true;
+  //     }
+  //     // Drop extra groups
+  //     final cardsNmIds = _productCards.map((e) => e.nmId).toList();
+  //     for (int id in group.cardsNmIds) {
+  //       if (cardsNmIds.contains(id)) {
+  //         return true;
+  //       }
+  //     }
+  //     return false;
+  //   }).toList();
+
+  //   // Subscription ==========================================================
+
+  //   // Total costs
+  //   int averageLogistics = 50;
+  //   final averageLogisticsFromApiOrNull = values[4] as int?;
+  //   if (averageLogisticsFromApiOrNull != null) {
+  //     averageLogistics = averageLogisticsFromApiOrNull;
+  //   }
+  //   final totalCostsGrossProfitOrNull = await fetch(
+  //     () => totalCostService.getAllGrossProfit(averageLogistics),
+  //   );
+
+  //   if (totalCostsGrossProfitOrNull != null) {
+  //     _totalCostsGrossProfit = totalCostsGrossProfitOrNull;
+  //   }
+
+  //   if (!toNotify) {
+  //     return;
+  //   }
+
+  //   notify();
+  // }
+
   Future<void> _update([bool toNotify = true]) async {
     if (!context.mounted) {
       return;
     }
     final token = await _getToken();
 
-    await fetch(
-      () => updateService.fetchAllUserCardsFromServerAndSync(token),
-    );
-
-    // Update
-    await fetch(
+    fetch(
       () => updateService.update(token),
-    );
+    ).then((_) async {
+      await _refreshData(token);
+    });
 
+    await _loadInitialData(token);
+
+    if (!toNotify) {
+      return;
+    }
+
+    notify();
+  }
+
+  Future<void> _loadInitialData(String token) async {
     final values = await Future.wait([
-      // fetch(() => filterService.getCurrentFilter()), // 0
       fetch(
         () => cardsOfProductsService.getAll(),
       ), // 0
@@ -276,9 +421,8 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       _handleSubscriptions(token),
     ]);
 
-    // get cards
+    // Обработка и отображение данных как обычно
     final fetchedCardsOfProducts = values[0] as List<CardOfProductModel>?;
-
     if (fetchedCardsOfProducts == null) {
       return;
     }
@@ -374,9 +518,131 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
       _totalCostsGrossProfit = totalCostsGrossProfitOrNull;
     }
 
-    if (!toNotify) {
+    // if (!toNotify) {
+    //   return;
+    // }
+
+    notify();
+  }
+
+// Новый метод для обновления данных после завершения updateService.update(token)
+  Future<void> _refreshData(String token) async {
+    final values = await Future.wait([
+      fetch(
+        () => cardsOfProductsService.getAll(),
+      ), // Обновляем данные карточек
+      fetch(
+        () => notificationsService.getAll(),
+      ), // 1
+      fetch(
+        () => groupsProvider.getAll(),
+      ), // 2
+      fetch(
+        () => averageLogisticsService.getCurrentAverageLogistics(token: token),
+      ), // 3
+      _handleSubscriptions(token),
+    ]);
+
+    // Обработка обновленных данных
+    final fetchedCardsOfProducts = values[0] as List<CardOfProductModel>?;
+    if (fetchedCardsOfProducts == null) {
       return;
     }
+
+    List<CardOfProductModel> oldCards = List.from(_productCards);
+
+    // reassign productCards
+    if (fetchedCardsOfProducts.isNotEmpty) {
+      _productCards.clear();
+    }
+
+    // tracked ids
+    List<int> trackedIds = [];
+    final notifications = values[1] as List<ReWildNotificationModel>?;
+    if (notifications != null) {
+      for (final n in notifications) {
+        if (n.condition != NotificationConditionConstants.budgetLessThan) {
+          trackedIds.add(n.parentId);
+        }
+      }
+    }
+    final dateFrom = yesterdayEndOfTheDay();
+    final dateTo = DateTime.now();
+    // calculate stocks, initial stocks, supplies, was ordered field
+    for (CardOfProductModel card in fetchedCardsOfProducts) {
+      card.calculate(dateFrom, dateTo);
+      final oldCard = oldCards.where((old) {
+        return old.nmId == card.nmId;
+      });
+
+      // tracked
+      if (trackedIds.contains(card.nmId)) {
+        card.setTracked();
+      }
+
+      if (oldCard.isNotEmpty &&
+          card.weekOrdersSum > oldCard.first.weekOrdersSum) {
+        card.setWasOrdered();
+      } else {
+        card.setWasNotOrdered();
+      }
+
+      _productCards.add(card);
+    }
+    // sort by orders sum
+    _productCards.sort((a, b) => b.weekOrdersSum.compareTo(a.weekOrdersSum));
+
+    final fetchedGroups = values[2] as List<GroupModel>?;
+    final cardsNmIds = _productCards.map((card) => card.nmId).toList();
+    // append groups
+    if (fetchedGroups != null) {
+      for (final g in fetchedGroups) {
+        if (_groups.where((element) => element.name == g.name).isEmpty) {
+          if (g.cardsNmIds.any((element) => cardsNmIds.contains(element))) {}
+          _groups.add(g);
+        }
+        final cardsWithGroup =
+            _productCards.where((card) => g.cardsNmIds.contains(card.nmId));
+        for (final card in cardsWithGroup) {
+          card.setGroup(g);
+        }
+      }
+    }
+
+    // Filter groups
+    _groups = _groups.where((group) {
+      if (group.name == "Все") {
+        return true;
+      }
+      // Drop extra groups
+      final cardsNmIds = _productCards.map((e) => e.nmId).toList();
+      for (int id in group.cardsNmIds) {
+        if (cardsNmIds.contains(id)) {
+          return true;
+        }
+      }
+      return false;
+    }).toList();
+
+    // Subscription ==========================================================
+
+    // Total costs
+    int averageLogistics = 50;
+    final averageLogisticsFromApiOrNull = values[4] as int?;
+    if (averageLogisticsFromApiOrNull != null) {
+      averageLogistics = averageLogisticsFromApiOrNull;
+    }
+    final totalCostsGrossProfitOrNull = await fetch(
+      () => totalCostService.getAllGrossProfit(averageLogistics),
+    );
+
+    if (totalCostsGrossProfitOrNull != null) {
+      _totalCostsGrossProfit = totalCostsGrossProfitOrNull;
+    }
+
+    // if (!toNotify) {
+    //   return;
+    // }
 
     notify();
   }
@@ -557,5 +823,59 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
     }
     onClearSelected();
     refresh();
+  }
+
+  Future<void> deleteGroup(String groupName) async {
+    _groups.removeWhere((group) => group.name == groupName);
+
+    for (var card in _productCards) {
+      final groups = card.groups;
+
+      if (groups.isEmpty) {
+        continue;
+      }
+
+      groups.removeWhere((group) => group.name == groupName);
+    }
+
+    // Вызываем метод удаления из группы в сервисе
+    await fetch(() => groupsProvider.deleteGroup(groupName: groupName));
+
+    notify();
+  }
+
+  Future<void> renameGroup(String oldGroupName, String newGroupName) async {
+    if (newGroupName.isEmpty ||
+        _groups.any((group) => group.name == newGroupName)) {
+      return;
+    }
+
+    final groupIndex =
+        _groups.indexWhere((group) => group.name == oldGroupName);
+    if (groupIndex != -1) {
+      _groups[groupIndex].name = newGroupName;
+    }
+
+    // Обновляем имя группы в картах
+    for (var card in _productCards) {
+      final groups = card.groups;
+
+      if (groups.isEmpty) {
+        continue;
+      }
+      final groupIndex =
+          groups.indexWhere((group) => group.name == oldGroupName);
+      if (groupIndex != -1) {
+        groups[groupIndex].name = newGroupName;
+      }
+    }
+
+    // Вызываем метод переименования группы в сервисе
+    await fetch(() => groupsProvider.renameGroup(
+          groupName: oldGroupName,
+          newGroupName: newGroupName,
+        ));
+
+    notify();
   }
 }

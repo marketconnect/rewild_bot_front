@@ -383,8 +383,8 @@ class DatabaseHelper {
 
   Future<void> cleanInvalidRecords() async {
     final db = await DatabaseHelper().database;
-    final txn = db.transaction('stocks', idbModeReadWrite);
-    final store = txn.objectStore('stocks');
+    final txn = db.transaction('groups', idbModeReadWrite);
+    final store = txn.objectStore('groups');
 
     final result = await store.getAll();
     for (var item in result) {

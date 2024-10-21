@@ -70,10 +70,12 @@ class GroupService
     return groupDataProvider.delete(name: groupName, nmId: nmId);
   }
 
+  @override
   Future<Either<RewildError, void>> deleteGroup({required String groupName}) {
     return groupDataProvider.delete(name: groupName);
   }
 
+  @override
   Future<Either<RewildError, void>> renameGroup(
       {required String groupName, required String newGroupName}) {
     return groupDataProvider.renameGroup(

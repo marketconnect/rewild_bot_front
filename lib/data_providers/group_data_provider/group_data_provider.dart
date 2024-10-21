@@ -23,7 +23,7 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
           'bgColor': group.bgColor,
           'fontColor': group.fontColor,
           'nmId': nmId,
-          "nmId_name": [nmId, group.name]
+          "nmId_name": '${nmId}_${group.name}'
         });
       }
 
@@ -47,31 +47,47 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
   }) async {
     try {
       final db = await _db;
+
+      // Открываем транзакцию для чтения и записи
       final txn = db.transaction('groups', idbModeReadWrite);
       final store = txn.objectStore('groups');
       final index = store.index('name');
 
-      final cursorStream = index.openCursor(range: KeyRange.only(groupName));
+      // Получаем все записи и ключи с именем groupName
+      final records = await index.getAll(groupName);
+      final keys = await index.getAllKeys(groupName);
 
-      await for (final cursor in cursorStream) {
-        final value = cursor.value as Map<String, dynamic>;
+      // Удаляем старые записи и вставляем новые
+      for (int i = 0; i < records.length; i++) {
+        final value = records[i] as Map<String, dynamic>;
+        final oldKey = keys[i];
+
+        // Удаляем старую запись
+        await store.delete(oldKey);
+
+        // Обновляем данные
         value['name'] = newGroupName;
-        await cursor.update(value);
+        value['nmId_name'] = '${value['nmId']}_$newGroupName';
+
+        // Вставляем новую запись
+        await store.put(value);
       }
 
       await txn.completed;
+
       return right(null);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: "GroupDataProvider",
-        name: "renameGroup",
+        source: 'GroupDataProvider',
+        name: 'renameGroup',
         args: [groupName, newGroupName],
       ));
     }
   }
 
+  @override
   @override
   Future<Either<RewildError, void>> delete({
     required String name,
@@ -79,37 +95,45 @@ class GroupDataProvider implements GroupServiceGroupDataProvider {
   }) async {
     try {
       final db = await _db;
-      final txn = db.transaction('groups', idbModeReadWrite);
-      final store = txn.objectStore('groups');
 
       if (nmId != null) {
-        final index = store.index('nmId');
-        final cursorStream = index.openCursor(range: KeyRange.only(nmId));
-
-        await for (final cursor in cursorStream) {
-          final value = cursor.value as Map<String, dynamic>;
-          if (value['name'] == name) {
-            await cursor.delete();
-          }
-        }
+        // Если указан nmId, удаляем конкретную запись
+        final txn = db.transaction('groups', idbModeReadWrite);
+        final store = txn.objectStore('groups');
+        final key = '${nmId}_$name';
+        await store.delete(key);
+        await txn.completed;
       } else {
-        final cursorStream = store.index('name').openCursor(
-              range: KeyRange.only(name),
-            );
+        // Если nmId не указан, удаляем все записи с заданным именем группы
 
-        await for (final cursor in cursorStream) {
-          await cursor.delete();
+        // Сначала собираем все ключи для удаления, используя транзакцию только для чтения
+        final readTxn = db.transaction('groups', idbModeReadOnly);
+        final store = readTxn.objectStore('groups');
+        final index = store.index('name');
+
+        final keys = await index.getAllKeys(name);
+        await readTxn.completed;
+
+        if (keys.isNotEmpty) {
+          // Открываем транзакцию для записи и удаляем записи по ключам
+          final writeTxn = db.transaction('groups', idbModeReadWrite);
+          final writeStore = writeTxn.objectStore('groups');
+
+          for (final key in keys) {
+            await writeStore.delete(key);
+          }
+
+          await writeTxn.completed;
         }
       }
 
-      await txn.completed;
       return right(null);
     } catch (e) {
       return left(RewildError(
         sendToTg: true,
         e.toString(),
-        source: "GroupDataProvider",
-        name: "delete",
+        source: 'GroupDataProvider',
+        name: 'delete',
         args: [name, nmId],
       ));
     }

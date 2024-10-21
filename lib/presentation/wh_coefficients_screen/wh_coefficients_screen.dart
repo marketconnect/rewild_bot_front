@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import 'package:rewild_bot_front/domain/entities/wh_coeffs.dart';
 import 'package:rewild_bot_front/presentation/wh_coefficients_screen/wh_coefficients_view_model.dart';
 import 'package:rewild_bot_front/widgets/date_range_picker_widget.dart';
 
 class WarehouseCoeffsScreen extends StatefulWidget {
-  const WarehouseCoeffsScreen({Key? key}) : super(key: key);
+  const WarehouseCoeffsScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _WarehouseCoeffsScreenState createState() => _WarehouseCoeffsScreenState();
 }
 
@@ -155,10 +157,9 @@ class BoxTypesScreen extends StatelessWidget {
   final WarehouseCoeffs warehouse;
   final WhCoefficientsViewModel model;
 
-  BoxTypesScreen({Key? key, required this.warehouse, required this.model})
-      : super(key: key);
+  BoxTypesScreen({super.key, required this.warehouse, required this.model});
 
-  // Define the standard list of delivery types with correct boxTypeId values
+  // Список стандартных типов поставки с корректными boxTypeId
   final List<BoxType> standardBoxTypes = [
     BoxType(boxTypeId: 2, boxTypeName: 'Короба', coefficient: 0.0, date: ''),
     BoxType(
@@ -183,19 +184,22 @@ class BoxTypesScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final boxType = standardBoxTypes[index];
 
-          // Find available coefficients for this warehouse and box type
+          // Поиск доступных коэффициентов для этого склада и типа поставки
           final availableCoefficients = warehouse.boxTypes.where((bt) {
-            // Ensure both boxTypeId and boxTypeName match
             return bt.boxTypeId == boxType.boxTypeId &&
                 bt.boxTypeName == boxType.boxTypeName;
           }).toList();
 
-          // Check if the user is subscribed to this boxType
+          // Сортировка по дате
+          availableCoefficients.sort((a, b) =>
+              DateTime.parse(a.date).compareTo(DateTime.parse(b.date)));
+
+          // Проверка, подписан ли пользователь на этот тип поставки
           final isSubscribed = model.currentSubscriptions.any((sub) =>
               sub.warehouseId == warehouse.warehouseId &&
               sub.boxTypeId == boxType.boxTypeId);
 
-          // Get the user's subscription if it exists
+          // Получение подписки пользователя, если она существует
           UserSubscription? userSubscription;
           if (isSubscribed) {
             userSubscription = model.currentSubscriptions.firstWhere((sub) =>
@@ -221,7 +225,7 @@ class BoxTypesScreen extends StatelessWidget {
                   ? Padding(
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
-                        'Вы подписаны с коэффициентом: ${userSubscription.threshold}\nПериод: ${userSubscription.fromDate} - ${userSubscription.toDate}',
+                        'Вы подписаны с коэффициентом: ${userSubscription.threshold}\nПериод: c ${userSubscription.fromDate} по ${userSubscription.toDate}',
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.blue,
@@ -235,12 +239,16 @@ class BoxTypesScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: availableCoefficients.map((coeff) {
                       return ListTile(
+                        tileColor:
+                            coeff.coefficient == 0.0 ? Colors.green[100] : null,
                         title: Text(
                           'Дата: ${_formatDate(DateTime.parse(coeff.date))}',
                           style: const TextStyle(fontSize: 16),
                         ),
                         subtitle: Text(
-                          'Коэффициент приёмки: ${coeff.coefficient}',
+                          coeff.coefficient == 0.0
+                              ? 'Бесплатно'
+                              : 'Коэффициент приёмки: ${coeff.coefficient}',
                           style: const TextStyle(fontSize: 16),
                         ),
                       );
@@ -299,53 +307,60 @@ class BoxTypesScreen extends StatelessWidget {
   void _showSubscribeDialog(BuildContext context, WhCoefficientsViewModel model,
       WarehouseCoeffs warehouse, BoxType boxType) {
     final TextEditingController coefficientController = TextEditingController();
-    DateTime? fromDate;
-    DateTime? toDate;
+
+    DateTime now = DateTime.now();
+    DateTime sixMonthsFromNow = now.add(const Duration(days: 182));
+
+    DateTimeRange selectedDateRange =
+        DateTimeRange(start: now, end: sixMonthsFromNow);
+
+    DateTime? fromDate = selectedDateRange.start;
+    DateTime? toDate = selectedDateRange.end;
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
+            scrollable: true,
             title: Text('Подписка на "${boxType.boxTypeName}"'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text(
-                    'Установите коэффициент и период для отслеживания.',
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Установите коэффициент и период для отслеживания.',
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: coefficientController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Коэффициент',
+                    hintText: 'Введите коэффициент',
+                    border: OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: coefficientController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Коэффициент',
-                      hintText: 'Введите коэффициент',
-                      border: OutlineInputBorder(),
+                ),
+                const SizedBox(height: 16),
+                DateRangePickerWidget(
+                  btnText: 'Выбрать период',
+                  initDateTimeRange: selectedDateRange,
+                  onDateRangeSelected: (start, end) {
+                    setState(() {
+                      fromDate = start;
+                      toDate = end;
+                    });
+                  },
+                ),
+                if (fromDate != null && toDate != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Период: ${_formatDate(fromDate!)} - ${_formatDate(toDate!)}',
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  DateRangePickerWidget(
-                    btnText: 'Выбрать период',
-                    onDateRangeSelected: (start, end) {
-                      setState(() {
-                        fromDate = start;
-                        toDate = end;
-                      });
-                    },
-                  ),
-                  if (fromDate != null && toDate != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        'Период: ${_formatDate(fromDate!)} - ${_formatDate(toDate!)}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                ],
-              ),
+              ],
             ),
             actions: [
               TextButton(
@@ -365,7 +380,6 @@ class BoxTypesScreen extends StatelessWidget {
                     final newSubscription = UserSubscription(
                       warehouseId: warehouse.warehouseId,
                       boxTypeId: boxType.boxTypeId,
-                      // boxTypeName: boxType.boxTypeName,
                       threshold: coefficient,
                       warehouseName: warehouse.warehouseName,
                       fromDate: _formatDate(fromDate!),
@@ -399,52 +413,53 @@ class BoxTypesScreen extends StatelessWidget {
     DateTime? toDate = DateTime.tryParse(subscription.toDate) ??
         DateTime.now().add(const Duration(days: 1));
 
-    // final boxTypeName = subscription.boxTypeName;
+    DateTimeRange selectedDateRange =
+        DateTimeRange(start: fromDate, end: toDate);
 
     showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(builder: (context, setState) {
           return AlertDialog(
+            scrollable: true,
             title: const Text('Изменить подписку'),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    'Текущий коэффициент: ${subscription.threshold}',
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Текущий коэффициент: ${subscription.threshold}',
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: coefficientController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Новый коэффициент',
+                    hintText: 'Введите новый коэффициент',
+                    border: OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: coefficientController,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Новый коэффициент',
-                      hintText: 'Введите новый коэффициент',
-                      border: OutlineInputBorder(),
+                ),
+                const SizedBox(height: 16),
+                DateRangePickerWidget(
+                  btnText: 'Изменить период',
+                  initDateTimeRange: selectedDateRange,
+                  onDateRangeSelected: (start, end) {
+                    setState(() {
+                      fromDate = start;
+                      toDate = end;
+                    });
+                  },
+                ),
+                if (fromDate != null && toDate != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      'Период: ${_formatDate(fromDate!)} - ${_formatDate(toDate!)}',
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  DateRangePickerWidget(
-                    btnText: 'Изменить период',
-                    onDateRangeSelected: (start, end) {
-                      setState(() {
-                        fromDate = start;
-                        toDate = end;
-                      });
-                    },
-                  ),
-                  if (fromDate != null && toDate != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        'Период: ${_formatDate(fromDate!)} - ${_formatDate(toDate!)}',
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                ],
-              ),
+              ],
             ),
             actions: [
               TextButton(
@@ -464,7 +479,6 @@ class BoxTypesScreen extends StatelessWidget {
                     final updatedSubscription = UserSubscription(
                       warehouseId: subscription.warehouseId,
                       boxTypeId: subscription.boxTypeId,
-                      // boxTypeName: subscription.boxTypeName,
                       threshold: coefficient,
                       warehouseName: subscription.warehouseName,
                       fromDate: _formatDate(fromDate!),
