@@ -128,7 +128,6 @@ class WhCoefficientsApiClient
 
       if (response.statusCode == 200) {
         final data = json.decode(utf8.decode(response.bodyBytes));
-
         final resp = GetAllWarehousesResp.fromJson(data);
         return right(resp);
       } else {

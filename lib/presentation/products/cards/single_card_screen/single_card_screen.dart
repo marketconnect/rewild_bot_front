@@ -750,36 +750,41 @@ class _ExpansionTileState extends State<_ExpansionTile> {
             itemCount: _filteredKeywords.length,
             itemBuilder: (context, index) {
               final kw = _filteredKeywords[index];
-              return GestureDetector(
-                onTap: () {
-                  final encodedKeyword = Uri.encodeComponent(kw.keyword);
-
-                  html.window.open(
-                      'https://www.wildberries.ru/catalog/0/search.aspx?search=$encodedKeyword',
-                      'wb');
-                },
-                child: Card(
-                  margin: EdgeInsets.symmetric(
-                      vertical: 4.0, horizontal: model.screenWidth * 0.05),
-                  child: ListTile(
-                    title: Text(
-                      kw.keyword,
-                      style: TextStyle(
-                        fontSize: model.screenWidth * 0.045,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
-                    ),
-                    subtitle: Text(
-                      'Частотность: ${kw.freq}',
-                      style: TextStyle(
-                        fontSize: model.screenWidth * 0.035,
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onSurface
-                            .withOpacity(0.6),
-                      ),
+              return Card(
+                margin: EdgeInsets.symmetric(
+                    vertical: 4.0, horizontal: model.screenWidth * 0.05),
+                child: ListTile(
+                  title: Text(
+                    kw.keyword,
+                    style: TextStyle(
+                      fontSize: model.screenWidth * 0.045,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
+                  subtitle: Text(
+                    'Частотность: ${kw.freq}',
+                    style: TextStyle(
+                      fontSize: model.screenWidth * 0.035,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                    ),
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(
+                      Icons.more_vert,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+                    onPressed: () {
+                      _showKeywordOptions(
+                          context, kw.keyword, model.goToAdBidsScreen);
+                    },
+                  ),
+                  onTap: () {
+                    _showKeywordOptions(
+                        context, kw.keyword, model.goToAdBidsScreen);
+                  },
                 ),
               );
             },
@@ -787,8 +792,40 @@ class _ExpansionTileState extends State<_ExpansionTile> {
         ];
       }
     }
-
     return children;
+  }
+
+  void _showKeywordOptions(BuildContext context, String keyword,
+      void Function(String) goToAdBidsScreen) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.search),
+              title: const Text('Найти на маркетплейсе'),
+              onTap: () {
+                Navigator.of(context).pop();
+                final encodedKeyword = Uri.encodeComponent(keyword);
+                html.window.open(
+                    'https://www.wildberries.ru/catalog/0/search.aspx?search=$encodedKeyword',
+                    'wb');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.trending_up),
+              title: const Text('Посмотреть рекламные ставки'),
+              onTap: () {
+                Navigator.of(context).pop();
+                goToAdBidsScreen(keyword);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   String formateDate(DateTime dateTime) {

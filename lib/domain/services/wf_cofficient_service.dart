@@ -2,7 +2,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 
 import 'package:rewild_bot_front/domain/entities/wh_coeffs.dart';
-import 'package:rewild_bot_front/presentation/wh_coefficients_screen/wh_coefficients_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/wh_coefficients_screen/wh_coefficients_view_model.dart';
 
 abstract class WfCofficientServiceWfCofficientApiClient {
   Future<Either<RewildError, void>> subscribe({

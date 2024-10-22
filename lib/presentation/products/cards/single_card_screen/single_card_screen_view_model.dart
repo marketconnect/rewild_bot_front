@@ -807,6 +807,13 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       arguments: subjectId,
     );
   }
+
+  void goToAdBidsScreen(String keyword) {
+    Navigator.of(context).pushNamed(
+      MainNavigationRouteNames.geoSearchScreen,
+      arguments: keyword,
+    );
+  }
 }
 
 // external function from index.html

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 
 import 'package:rewild_bot_front/domain/entities/wh_coeffs.dart';
-import 'package:rewild_bot_front/presentation/wh_coefficients_screen/wh_coefficients_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/wh_coefficients_screen/wh_coefficients_view_model.dart';
 import 'package:rewild_bot_front/widgets/date_range_picker_widget.dart';
 
 class WarehouseCoeffsScreen extends StatefulWidget {
@@ -146,8 +147,10 @@ class _WarehouseCoeffsScreenState extends State<WarehouseCoeffsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            BoxTypesScreen(warehouse: warehouse, model: model),
+        builder: (context) => ChangeNotifierProvider.value(
+          value: model,
+          child: BoxTypesScreen(warehouse: warehouse),
+        ),
       ),
     );
   }
@@ -155,18 +158,19 @@ class _WarehouseCoeffsScreenState extends State<WarehouseCoeffsScreen> {
 
 class BoxTypesScreen extends StatelessWidget {
   final WarehouseCoeffs warehouse;
-  final WhCoefficientsViewModel model;
 
-  BoxTypesScreen({super.key, required this.warehouse, required this.model});
+  BoxTypesScreen({
+    super.key,
+    required this.warehouse,
+  });
 
-  // Список стандартных типов поставки с корректными boxTypeId
   final List<BoxType> standardBoxTypes = [
     BoxType(boxTypeId: 2, boxTypeName: 'Короба', coefficient: 0.0, date: ''),
     BoxType(
         boxTypeId: 5, boxTypeName: 'Монопаллеты', coefficient: 0.0, date: ''),
     BoxType(boxTypeId: 6, boxTypeName: 'Суперсейф', coefficient: 0.0, date: ''),
     BoxType(
-        boxTypeId: 4,
+        boxTypeId: 0,
         boxTypeName: 'QR-поставка с коробами',
         coefficient: 0.0,
         date: ''),
@@ -174,6 +178,7 @@ class BoxTypesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final model = context.watch<WhCoefficientsViewModel>();
     return Scaffold(
       appBar: AppBar(
         title: Text(warehouse.warehouseName),
@@ -184,22 +189,18 @@ class BoxTypesScreen extends StatelessWidget {
         itemBuilder: (context, index) {
           final boxType = standardBoxTypes[index];
 
-          // Поиск доступных коэффициентов для этого склада и типа поставки
           final availableCoefficients = warehouse.boxTypes.where((bt) {
             return bt.boxTypeId == boxType.boxTypeId &&
                 bt.boxTypeName == boxType.boxTypeName;
           }).toList();
 
-          // Сортировка по дате
           availableCoefficients.sort((a, b) =>
               DateTime.parse(a.date).compareTo(DateTime.parse(b.date)));
 
-          // Проверка, подписан ли пользователь на этот тип поставки
           final isSubscribed = model.currentSubscriptions.any((sub) =>
               sub.warehouseId == warehouse.warehouseId &&
               sub.boxTypeId == boxType.boxTypeId);
 
-          // Получение подписки пользователя, если она существует
           UserSubscription? userSubscription;
           if (isSubscribed) {
             userSubscription = model.currentSubscriptions.firstWhere((sub) =>
@@ -225,7 +226,7 @@ class BoxTypesScreen extends StatelessWidget {
                   ? Padding(
                       padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
-                        'Вы подписаны с коэффициентом: ${userSubscription.threshold}\nПериод: c ${userSubscription.fromDate} по ${userSubscription.toDate}',
+                        'Вы подписаны с коэффициентом: ${userSubscription.threshold}\nПериод: c ${formatDate(userSubscription.fromDate)} по ${formatDate(userSubscription.toDate)}',
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.blue,

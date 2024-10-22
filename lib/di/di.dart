@@ -203,8 +203,8 @@ import 'package:rewild_bot_front/presentation/products/top_products_screen/top_p
 import 'package:rewild_bot_front/presentation/products/top_products_screen/top_products_view_model.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen.dart';
 import 'package:rewild_bot_front/presentation/root_adverts_screen/root_adverts_screen_view_model.dart';
-import 'package:rewild_bot_front/presentation/wh_coefficients_screen/wh_coefficients_screen.dart';
-import 'package:rewild_bot_front/presentation/wh_coefficients_screen/wh_coefficients_view_model.dart';
+import 'package:rewild_bot_front/presentation/home/wh_coefficients_screen/wh_coefficients_screen.dart';
+import 'package:rewild_bot_front/presentation/home/wh_coefficients_screen/wh_coefficients_view_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation.dart';
 
 AppFactory makeAppFactory() => _AppFactoryDefault();

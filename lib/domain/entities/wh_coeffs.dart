@@ -59,7 +59,7 @@ class BoxType {
 
   factory BoxType.fromJson(Map<String, dynamic> json) {
     return BoxType(
-      boxTypeId: json['box_type_id'],
+      boxTypeId: json['box_type_id'] ?? 0,
       boxTypeName: json['box_type_name'],
       coefficient: json['coefficient'] ?? 0.0,
       date: json['date'],
@@ -91,7 +91,7 @@ class UserSubscription {
   factory UserSubscription.fromJson(Map<String, dynamic> json) {
     return UserSubscription(
       warehouseId: json['warehouse_id'],
-      boxTypeId: json['box_type_id'],
+      boxTypeId: json['box_type_id'] ?? 0,
       threshold: json['threshold'],
       warehouseName: json['warehouse_name'],
       fromDate: json['from_date'],
