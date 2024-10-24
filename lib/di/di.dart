@@ -8,6 +8,7 @@ import 'package:rewild_bot_front/data_providers/average_logistic_data_provider/a
 import 'package:rewild_bot_front/data_providers/category_data_provider/category_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subj_commission_data_provider/subj_commission_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/subject_data_provider/subject_data_provider.dart';
+import 'package:rewild_bot_front/data_providers/subject_history_data_provider/subject_history_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/top_product_data_provider/top_product_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/user_product_card_data_provider/user_product_card_data_provider.dart';
 import 'package:rewild_bot_front/domain/services/categories_and_subjects_sevice.dart';
@@ -87,7 +88,7 @@ import 'package:rewild_bot_front/data_providers/supply_data_provider/supply_data
 import 'package:rewild_bot_front/data_providers/tariff_data_provider/tariff_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/total_cost_data_provider/total_cost_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/tracking_query_provider/tracking_query_provider.dart';
-import 'package:rewild_bot_front/data_providers/tracking_result_data_provider/tracking_result_data_provider.dart';
+
 import 'package:rewild_bot_front/data_providers/user_sellers_data_provider/user_sellers_data_provider.dart';
 import 'package:rewild_bot_front/data_providers/warehouse_data_provider/warehouse_data_provider.dart';
 import 'package:rewild_bot_front/domain/entities/card_catalog.dart';
@@ -358,8 +359,8 @@ class _DIContainer {
   // FilterValuesDataProvider _makeFilterValuesDataProvider() =>
   //     const FilterValuesDataProvider();
 
-  TrackingResultDataProvider _makeTrackingResultDataProvider() =>
-      const TrackingResultDataProvider();
+  // TrackingResultDataProvider _makeTrackingResultDataProvider() =>
+  //     const TrackingResultDataProvider();
 
   CachedLemmaDataProvider _makeLemmaDataProvider() =>
       const CachedLemmaDataProvider();
@@ -414,6 +415,8 @@ class _DIContainer {
   TopProductsDataProvider _makeTopProductsDataProvider() =>
       const TopProductsDataProvider();
 
+  SubjectHistoryDataProvider _makeSubjectHistoryDataProvider() =>
+      const SubjectHistoryDataProvider();
   // Services ==================================================================
   FilterValuesService _makeFilterValuesService() => FilterValuesService(
       lemmaDataProvider: _makeLemmaDataProvider(),
@@ -432,9 +435,10 @@ class _DIContainer {
       lemmaDataProvider: _makeLemmaDataProvider(),
       notificationDataProvider: _makeNotificationDataProvider(),
       categoriesAndSubjectsDataProvider: _makeSubjectCommissionDataProvider(),
-      trackingResultDataProvider: _makeTrackingResultDataProvider(),
+      // trackingResultDataProvider: _makeTrackingResultDataProvider(),
       totalCostdataProvider: _makeTotalCostCalculatorDataProvider(),
       commissionDataProvider: _makeCommissionDataProvider(),
+      subjectsHistoryDataProvider: _makeSubjectHistoryDataProvider(),
       averageLogisticsDataProvider: _makeAverageLogisticsDataProvider(),
       supplyDataProvider: _makeSupplyDataProvider(),
       tariffDataProvider: _makeTariffDataProvider(),
@@ -588,7 +592,7 @@ class _DIContainer {
         geoSearchApiClient: _makeGeoSearchApiClient(),
         queryDataProvider: _makeTrackingQueryDataProvider(),
         subscriptionsDataProvider: _makeSubscriptionDataProvider(),
-        trackingDataProvider: _makeTrackingResultDataProvider(),
+        // trackingDataProvider: _makeTrackingResultDataProvider(),
       );
   SeoService _makeSeoService() => SeoService(
         seoServiceSeoKwByLemmaDataProvider: _makeSeoKwByLemmaDataProvider(),
@@ -644,6 +648,7 @@ class _DIContainer {
 
   TopProductsService _makeTopProductsService() => TopProductsService(
         topProductsServiceApiClient: _makeTopProductApiClient(),
+        subjectHistoryDataProvider: _makeSubjectHistoryDataProvider(),
         topProductsServiceDataProvider: _makeTopProductsDataProvider(),
       );
 
@@ -823,6 +828,7 @@ class _DIContainer {
     return SeoToolKwResearchViewModel(
         context: context,
         productId: productId,
+        keywordsService: _makeProductKeywordsService(),
         subjectId: subjectId,
         tokenService: _makeAuthService(),
         trackingService: _makeTrackingService(),
@@ -1072,9 +1078,10 @@ class _DIContainer {
   }
 
   TopProductsViewModel _makeTopProductsViewModel(
-      BuildContext context, int subjectId) {
+      BuildContext context, int subjectId, String subjectName) {
     return TopProductsViewModel(
       subjectId: subjectId,
+      subjectName: subjectName,
       authService: _makeAuthService(),
       topProductsService: _makeTopProductsService(),
       context: context,
@@ -1112,10 +1119,10 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeTopProductsScreen(int subjectId) {
+  Widget makeTopProductsScreen(int subjectId, String subjectName) {
     return ChangeNotifierProvider(
-      create: (context) =>
-          _diContainer._makeTopProductsViewModel(context, subjectId),
+      create: (context) => _diContainer._makeTopProductsViewModel(
+          context, subjectId, subjectName),
       child: const TopProductsScreen(),
     );
   }

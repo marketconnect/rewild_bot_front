@@ -293,8 +293,8 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   int get subjectId => _subjectId;
 
   // subject
-  String _subject = '-';
-  String get subject => _subject;
+  String _subjectName = '-';
+  String get subjectName => _subjectName;
 
   // commission
   double? _commission;
@@ -555,7 +555,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
       }
       _commission = commissionResource.commission;
       _category = utf8.decode(commissionResource.category.runes.toList());
-      _subject = utf8.decode(commissionResource.subject.runes.toList());
+      _subjectName = utf8.decode(commissionResource.subject.runes.toList());
     }
 
     // brand
@@ -804,7 +804,7 @@ class SingleCardScreenViewModel extends ResourceChangeNotifier {
   void goToSubject() {
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.topProductsScreen,
-      arguments: subjectId,
+      arguments: (subjectId, _subjectName),
     );
   }
 

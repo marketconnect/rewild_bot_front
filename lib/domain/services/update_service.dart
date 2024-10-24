@@ -183,11 +183,18 @@ abstract class UpdateServiceCategoriesAndSubjectsDataProvider {
   Future<Either<RewildError, void>> deleteAll();
 }
 
+// commission
 abstract class UpdateServiceCommissionDataProvider {
   Future<Either<RewildError, void>> deleteAll();
 }
 
+// orders history
 abstract class UpdateServiceOrdersHistoryDataProvider {
+  Future<Either<RewildError, void>> deleteAll();
+}
+
+// subjects history
+abstract class UpdateServiceSubjectsHistoryDataProvider {
   Future<Either<RewildError, void>> deleteAll();
 }
 
@@ -213,7 +220,7 @@ class UpdateService
   final UpdateServiceCommissionDataProvider commissionDataProvider;
   final UpdateServiceOrdersHistoryDataProvider ordersHistoryDataProvider;
   final UpdateServiceWeekOrdersDataProvider weekOrdersDataProvider;
-  final UpdateServiceTrackingResultDataProvider trackingResultDataProvider;
+  // final UpdateServiceTrackingResultDataProvider trackingResultDataProvider;
   final UpdateServiceTariffApiClient tariffApiClient;
   final UpdateServiceTariffDataProvider tariffDataProvider;
   final UpdateServiceTotalCostdataProvider totalCostdataProvider;
@@ -227,6 +234,7 @@ class UpdateService
   final UpdateServiceKwByAutocompliteDataProvider
       cachedKwByAutocompliteDataProvider;
   final UpdateServiceTopProductDataProvider topProductDataProvider;
+  final UpdateServiceSubjectsHistoryDataProvider subjectsHistoryDataProvider;
   UpdateService(
       {required this.stockDataProvider,
       required this.detailsApiClient,
@@ -246,13 +254,14 @@ class UpdateService
       required this.cardOfProductDataProvider,
       required this.notificationDataProvider,
       required this.initialStockModelApiClient,
-      required this.trackingResultDataProvider,
+      // required this.trackingResultDataProvider,
       required this.supplyDataProvider,
       required this.lastUpdateDayDataProvider,
       required this.cardKeywordsDataProvider,
       required this.cachedKwByLemmaByWordDataProvider,
       required this.cachedKwByAutocompliteDataProvider,
       required this.topProductDataProvider,
+      required this.subjectsHistoryDataProvider,
       required this.cardOfProductApiClient});
 
   // used to avoid updating uses cards twice in one session
@@ -507,7 +516,7 @@ class UpdateService
     return right(newCards.length);
   }
 
-  // update cards ==============================================================
+  // update cards ===================================================================
   @override
   Future<Either<RewildError, void>> update(String token) async {
     // Check subscriptions
@@ -565,12 +574,13 @@ class UpdateService
         averageLogisticsApiClient.getCurrentPrice(token: token), // 6
         supplyDataProvider.deleteAll(), // 7
         initialStockModelDataProvider.deleteAll(), // 8
-        trackingResultDataProvider.deleteOldTrackingResults(), // 9
-        tariffApiClient.getTarrifs(token: token), // 10
-        topProductDataProvider.deleteAll(), // 11
-        categoriesAndSubjectsDataProvider.deleteAll(), // 12
-        commissionDataProvider.deleteAll(), // 13
-        ordersHistoryDataProvider.deleteAll(), // 14
+
+        tariffApiClient.getTarrifs(token: token), // 9
+        topProductDataProvider.deleteAll(), // 10
+        categoriesAndSubjectsDataProvider.deleteAll(), // 11
+        commissionDataProvider.deleteAll(), // 12
+        ordersHistoryDataProvider.deleteAll(), // 13
+        subjectsHistoryDataProvider.deleteAll(), // 14
         _fetchTodayInitialStockModelsFromServer(
             token, allSavedCardsOfProducts.map((e) => e.nmId).toList()), // 15
       ]);
@@ -642,16 +652,16 @@ class UpdateService
       }
 
       // delete old tracking results since it stores only last 30 days
-      final deleteOldTrackingResultsEither = values[9];
+      // final deleteOldTrackingResultsEither = values[9];
 
-      if (deleteOldTrackingResultsEither.isLeft()) {
-        return left(deleteOldTrackingResultsEither.fold(
-            (l) => l, (r) => throw UnimplementedError()));
-      }
+      // if (deleteOldTrackingResultsEither.isLeft()) {
+      //   return left(deleteOldTrackingResultsEither.fold(
+      //       (l) => l, (r) => throw UnimplementedError()));
+      // }
 
       // update tariffs
       final fetchedTariffsEither =
-          values[10] as Either<RewildError, List<TariffModel>>;
+          values[9] as Either<RewildError, List<TariffModel>>;
 
       if (fetchedTariffsEither.isLeft()) {
         return left(fetchedTariffsEither.fold(
@@ -667,7 +677,7 @@ class UpdateService
         return left(updateTariffsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
-      final deletTopProductsEither = values[11];
+      final deletTopProductsEither = values[10];
       if (deletTopProductsEither.isLeft()) {
         return left(deletTopProductsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
@@ -678,15 +688,22 @@ class UpdateService
         return left(deletCategoriesAndSubjectsEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
-      final deleteCommissionEither = values[13];
+      final deleteCommissionEither = values[12];
       if (deleteCommissionEither.isLeft()) {
         return left(deleteCommissionEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 
-      final deleteOrdersHistoryEither = values[14];
+      final deleteOrdersHistoryEither = values[13];
       if (deleteOrdersHistoryEither.isLeft()) {
         return left(deleteOrdersHistoryEither.fold(
+            (l) => l, (r) => throw UnimplementedError()));
+      }
+
+      // delete subjects history
+      final deleteSubjectsHistoryEither = values[14];
+      if (deleteSubjectsHistoryEither.isLeft()) {
+        return left(deleteSubjectsHistoryEither.fold(
             (l) => l, (r) => throw UnimplementedError()));
       }
 

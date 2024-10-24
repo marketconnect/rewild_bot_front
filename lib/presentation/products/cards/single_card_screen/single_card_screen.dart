@@ -8,9 +8,9 @@ import 'package:rewild_bot_front/core/color.dart';
 import 'package:rewild_bot_front/core/constants/numeric_constance.dart';
 import 'package:rewild_bot_front/core/utils/date_time_utils.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
-import 'package:rewild_bot_front/core/utils/telegram.dart';
+// import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
-import 'package:rewild_bot_front/env.dart';
+// import 'package:rewild_bot_front/env.dart';
 
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
@@ -385,7 +385,7 @@ class _ExpansionTileState extends State<_ExpansionTile> {
     } else if (widget.index == 1) {
       // Карточка
       final category = model.category;
-      final subject = model.subject;
+      final subject = model.subjectName;
       final commision = model.commission;
       final isHighBuyout = model.isHighBuyout;
       final navigateToAllSubjectsScreen = model.navigateToAllSubjectsScreen;
@@ -565,8 +565,7 @@ class _ExpansionTileState extends State<_ExpansionTile> {
         // model.initStocksSum + model.supplySum - model.stocksSum;
       }
       List<_InfoRowContent> widgetsContent = [];
-      sendMessageToTelegramBot(TBot.tBotErrorChatId, TBot.tBotErrorToken,
-          "orders: ${orders.toString()}");
+
       orders.forEach((whName, sales) {
         if (whName.isEmpty) {
           return;
@@ -1138,7 +1137,7 @@ class _TopProductsLink extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<SingleCardScreenViewModel>();
-    final subject = model.subject;
+    final subject = model.subjectName;
     return GestureDetector(
       onTap: () {
         model.goToSubject();

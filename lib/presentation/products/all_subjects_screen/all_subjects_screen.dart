@@ -93,7 +93,7 @@ class AllSubjectsScreen extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
-                        goToSubject(subject.subjectId);
+                        goToSubject(subject.subjectId, subject.name);
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16),

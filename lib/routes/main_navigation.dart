@@ -78,7 +78,7 @@ abstract class ScreenFactory {
   Widget makeFeedbackFormScreen();
   Widget makeUnitEconomicsAllCardsScreen();
   Widget makeFinanceNavScreen();
-  Widget makeTopProductsScreen(int subjectId);
+  Widget makeTopProductsScreen(int subjectId, String subjectName);
 
   Widget makeWhCoefficientsScreen();
 }
@@ -180,9 +180,10 @@ class MainNavigation implements AppNavigation {
 
       case MainNavigationRouteNames.topProductsScreen:
         final arguments = settings.arguments;
-        final subjectId = arguments is int ? arguments : 0;
+        final subjectIdName = arguments is (int, String) ? arguments : (0, '');
         return MaterialPageRoute(
-          builder: (_) => screenFactory.makeTopProductsScreen(subjectId),
+          builder: (_) => screenFactory.makeTopProductsScreen(
+              subjectIdName.$1, subjectIdName.$2),
         );
 
       case MainNavigationRouteNames.allCardsScreen:

@@ -21,20 +21,17 @@ class SubjectCommissionDataProvider
       final store = transaction.objectStore('subject_commissions');
       final index = store.index('catName');
 
-      final result = await index.getKey(catName);
+      final data = await index.get(catName);
+
       await transaction.completed;
 
-      if (result == null) {
+      if (data == null) {
         return right(false);
       }
 
-      final firstRecord = await store.openCursor().first;
-
       bool isUpdatedToday = false;
 
-      final data = firstRecord.value as Map<String, dynamic>;
-
-      if (data.containsKey('createdAt')) {
+      if (data is Map<String, dynamic> && data.containsKey('createdAt')) {
         final dateStr = data['createdAt'] as String;
 
         final updatedAt =

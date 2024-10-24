@@ -23,6 +23,7 @@ import 'package:rewild_bot_front/domain/entities/subscription_api_models.dart';
 import 'package:rewild_bot_front/domain/entities/supply_model.dart';
 import 'package:rewild_bot_front/routes/main_navigation_route_names.dart';
 
+// total cost
 abstract class AllCardsScreenTotalCostService {
   Future<Either<RewildError, Map<int, double>>> getAllGrossProfit(
       int averageLogistics);
@@ -527,6 +528,9 @@ class AllCardsScreenViewModel extends ResourceChangeNotifier {
 
 // Новый метод для обновления данных после завершения updateService.update(token)
   Future<void> _refreshData(String token) async {
+    await fetch(
+      () => updateService.fetchAllUserCardsFromServerAndSync(token),
+    );
     final values = await Future.wait([
       fetch(
         () => cardsOfProductsService.getAll(),

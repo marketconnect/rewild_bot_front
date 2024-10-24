@@ -32,7 +32,7 @@ class DatabaseHelper {
 
     final db = await dbFactory.open(
       'mb.db',
-      version: 4,
+      version: 6,
       onUpgradeNeeded: _onUpgrade,
     );
 
@@ -58,6 +58,30 @@ class DatabaseHelper {
         store.createIndex('feedbacks', 'feedbacks', unique: false);
         store.createIndex('img', 'img', unique: false);
         store.createIndex('last_updated', 'last_updated', unique: false);
+      }
+    }
+
+    if (event.oldVersion < 5) {
+      if (!db.objectStoreNames.contains('subject_history')) {
+        final store = db.createObjectStore('subject_history', keyPath: 'id');
+        store.createIndex('subject_id', 'subject_id', unique: false);
+        store.createIndex('date', 'date', unique: false);
+        store.createIndex('total_revenue', 'total_revenue', unique: false);
+        store.createIndex('total_orders', 'total_orders', unique: false);
+        store.createIndex('total_skus', 'total_skus', unique: false);
+        store.createIndex(
+            'percentage_skus_without_orders', 'percentage_skus_without_orders',
+            unique: false);
+      }
+    }
+
+    if (event.oldVersion < 6) {
+      if (db.objectStoreNames.contains('total_cost_calculator')) {
+        final store = event.transaction.objectStore('total_cost_calculator');
+        if (!store.indexNames.contains('nmId_expenseName')) {
+          store.createIndex('nmId_expenseName', 'nmId_expenseName',
+              unique: true);
+        }
       }
     }
 
@@ -167,6 +191,18 @@ class DatabaseHelper {
         createStore();
       }
     }
+
+    createStoreIfNotExists('subject_history', () {
+      final store = db.createObjectStore('subject_history', keyPath: 'id');
+      store.createIndex('subject_id', 'subject_id', unique: false);
+      store.createIndex('date', 'date', unique: false);
+      store.createIndex('total_revenue', 'total_revenue', unique: false);
+      store.createIndex('total_orders', 'total_orders', unique: false);
+      store.createIndex('total_skus', 'total_skus', unique: false);
+      store.createIndex(
+          'percentage_skus_without_orders', 'percentage_skus_without_orders',
+          unique: false);
+    });
 
     createStoreIfNotExists('top_products', () {
       final store = db.createObjectStore('top_products', keyPath: 'sku');

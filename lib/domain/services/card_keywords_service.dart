@@ -3,6 +3,7 @@ import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 import 'package:rewild_bot_front/presentation/products/cards/single_card_screen/single_card_screen_view_model.dart';
 import 'package:rewild_bot_front/presentation/products/seo/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
+import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
 
 // API client
 abstract class CardKeywordsServiceApiClient {
@@ -22,6 +23,7 @@ abstract class CardKeywordsServiceCardKeywordsDataProvider {
 class CardKeywordsService
     implements
         CompetitorKeywordExpansionCardKeywordsService,
+        SeoToolKwResearchKeywordsService,
         SingleCardCardKeywordsService {
   final CardKeywordsServiceApiClient apiClient;
   final CardKeywordsServiceCardKeywordsDataProvider cardKeywordsDataProvider;

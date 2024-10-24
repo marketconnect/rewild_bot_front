@@ -1,10 +1,12 @@
 import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/resource_change_notifier.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/domain/entities/subject_history.dart';
 import 'package:rewild_bot_front/domain/entities/top_product.dart';
 
 abstract class TopProductsViewModelTopProductsService {
-  Future<Either<RewildError, List<TopProduct>>> getTopProducts({
+  Future<Either<RewildError, (List<TopProduct>, List<SubjectHistory>)>>
+      getTopProducts({
     required String token,
     required int subjectId,
   });
@@ -20,11 +22,13 @@ class TopProductsViewModel extends ResourceChangeNotifier {
       {required super.context,
       required this.topProductsService,
       required this.authService,
+      required this.subjectName,
       required this.subjectId}) {
     _asyncInit();
   }
   // Constructor parameters
   final int subjectId;
+  final String subjectName;
   final TopProductsViewModelTopProductsService topProductsService;
   final TopProductsViewModelAuthService authService;
 
@@ -45,6 +49,14 @@ class TopProductsViewModel extends ResourceChangeNotifier {
 
   List<TopProduct> get topProducts => _topProducts;
 
+  final List<SubjectHistory> _subjectsHistory = [];
+  void setSubjectsHistory(List<SubjectHistory> value) {
+    _subjectsHistory.clear();
+    _subjectsHistory.addAll(value);
+  }
+
+  List<SubjectHistory> get subjectsHistory => _subjectsHistory;
+
   // Methods
   Future<void> _asyncInit() async {
     setIsLoading(true);
@@ -59,7 +71,8 @@ class TopProductsViewModel extends ResourceChangeNotifier {
       setIsLoading(false);
       return;
     }
-    setTopProducts(topProductsResource);
+    setTopProducts(topProductsResource.$1);
+    setSubjectsHistory(topProductsResource.$2);
     setIsLoading(false);
   }
 }

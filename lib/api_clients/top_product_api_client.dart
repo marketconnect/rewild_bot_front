@@ -4,6 +4,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
+import 'package:rewild_bot_front/domain/entities/subject_history.dart';
 import 'package:rewild_bot_front/domain/entities/top_product.dart';
 import 'package:rewild_bot_front/domain/services/top_products_service.dart';
 import 'package:rewild_bot_front/env.dart';
@@ -12,7 +13,8 @@ class TopProductApiClient implements TopProductsServiceApiClient {
   const TopProductApiClient();
 
   @override
-  Future<Either<RewildError, List<TopProduct>>> getTopProducts({
+  Future<Either<RewildError, (List<TopProduct>, List<SubjectHistory>)>>
+      getTopProducts({
     required String token,
     required int subjectId,
   }) async {
@@ -41,9 +43,12 @@ class TopProductApiClient implements TopProductsServiceApiClient {
           final topProducts = (decodedResponse['top_products'] as List)
               .map((productJson) => TopProduct.fromJson(productJson))
               .toList();
-          return right(topProducts);
+          final subjectHistory = (decodedResponse['subjects'] as List)
+              .map((historyJson) => SubjectHistory.fromJson(historyJson))
+              .toList();
+          return right((topProducts, subjectHistory));
         } else {
-          return right([]);
+          return right(([], []));
         }
       } else if (response.statusCode == 401) {
         return left(RewildError(

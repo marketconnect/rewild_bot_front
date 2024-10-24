@@ -173,10 +173,10 @@ class AllSubjectsViewModel extends ResourceChangeNotifier {
     notifyListeners();
   }
 
-  void goToSubject(int subjectId) {
+  void goToSubject(int subjectId, String subjectName) {
     Navigator.of(context).pushNamed(
       MainNavigationRouteNames.topProductsScreen,
-      arguments: subjectId,
+      arguments: (subjectId, subjectName),
     );
   }
 }

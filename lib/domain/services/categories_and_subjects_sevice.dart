@@ -84,6 +84,9 @@ class CategoriesAndSubjectsService
     List<SubjectCommissionModel> localySavedSubjects = [];
     List<String> missingCatNames = [];
     for (var catName in catNames) {
+      if (catName == "Все") {
+        continue;
+      }
       final isUpdatedEither = await catAndSubjDataProvider.isUpdated(catName);
       final isUpdatedOrNull = isUpdatedEither.fold((l) => null, (r) => r);
       if (isUpdatedOrNull != null && isUpdatedOrNull) {
@@ -99,7 +102,6 @@ class CategoriesAndSubjectsService
         missingCatNames.add(catName);
       }
     }
-
     // get missed subjects
     final resultOrEither = await categoriesAndSubjectsApiClien.getSubjects(
         token: token, catNames: missingCatNames);

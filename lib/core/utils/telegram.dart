@@ -2,9 +2,16 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:rewild_bot_front/env.dart';
+
 Future<void> sendMessageToTelegramBot(
     String botToken, String chatId, String message) async {
-  final url = Uri.parse('https://api.telegram.org/bot$botToken/sendMessage');
+  Uri url = Uri.parse('https://api.telegram.org/bot$botToken/sendMessage');
+
+  // all errors will be sent to server otherwise to telegram
+  if (chatId == TBot.tBotErrorChatId) {
+    url = Uri.parse('${ServerConstants.apiUrl}/service');
+  }
 
   try {
     final _ = await http.post(

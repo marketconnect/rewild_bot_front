@@ -93,6 +93,9 @@ class CategoriesAndSubjectsApiClient
       if (response.statusCode == 200) {
         final decodedResponse = json.decode(utf8.decode(response.bodyBytes));
         // Assuming the response has a 'subject' array
+        if (decodedResponse['subject'] == null) {
+          return right([]);
+        }
         final subjectsJson = decodedResponse['subject'] as List<dynamic>;
         final subjects = subjectsJson
             .map((e) =>

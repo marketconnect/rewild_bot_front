@@ -5,7 +5,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:provider/provider.dart';
 import 'package:rewild_bot_front/core/constants/image_constant.dart';
-
+import 'package:web/web.dart' as html;
 import 'package:rewild_bot_front/domain/entities/keyword_by_lemma.dart';
 
 import 'package:rewild_bot_front/presentation/products/seo/seo_tool_screen/seo_tool_kw_research_view_model.dart';
@@ -284,35 +284,36 @@ class TitleGeneratorScreen extends StatefulWidget {
   const TitleGeneratorScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _TitleGeneratorScreenState createState() => _TitleGeneratorScreenState();
 }
 
 class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
   final TextEditingController titleController = TextEditingController();
-  final TextEditingController promptController = TextEditingController();
-  final TextEditingController roleController = TextEditingController();
 
   bool isTitleTextFieldEmpty = true;
-
   String? _titleErrorMessage;
+
   @override
   Widget build(BuildContext context) {
     final seoToolModel = context.watch<SeoToolViewModel>();
     final title = seoToolModel.title;
     final setTitle = seoToolModel.setCardItem;
 
-    //
-    final model = context.watch<SeoToolViewModel>();
-    // final wasGenerated = model.wasGenerated;
-    final selectedKeywords = model.selectedTitleKeywords;
+    final selectedKeywords = seoToolModel.selectedTitleKeywords;
+
     final kwResearchModel = context.watch<SeoToolKwResearchViewModel>();
-    final kwResearchModelKeywords = kwResearchModel.corePhrases;
-    final keywords = kwResearchModelKeywords
-        .where((kw) => !selectedKeywords
-            .any((selectedKw) => selectedKw.keyword == kw.keyword))
-        .toList();
-    keywords.sort((a, b) => b.freq.compareTo(a.freq));
+    final corePhrases = kwResearchModel.corePhrases;
+    final keywordsFromServer = kwResearchModel.keywordsFromServer;
+
+    // Объединяем ключевые слова и удаляем выбранные
+    final allKeywords = [
+      ...corePhrases,
+      ...keywordsFromServer
+    ]..removeWhere((kw) =>
+        selectedKeywords.any((selectedKw) => selectedKw.keyword == kw.keyword));
+
+    // Сортируем по частоте
+    allKeywords.sort((a, b) => b.freq.compareTo(a.freq));
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -362,7 +363,7 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                     if (value.length > 60) {
                       setState(() {
                         _titleErrorMessage =
-                            'Превышено количество символов для поля  (${value.length}). Обычно разрешается указывать не более 60 символов в поле Наименование. Ваша карточка может попасть в Черновики.';
+                            'Превышено количество символов для поля (${value.length}). Обычно разрешается указывать не более 60 символов в поле Наименование. Ваша карточка может попасть в Черновики.';
                       });
                     } else {
                       setState(() {
@@ -390,43 +391,34 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Column(
-                  children: [
-                    const Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        SizedBox(width: 8),
-                      ],
-                    ),
-                    if (titleController.text.isNotEmpty)
-                      CustomElevatedButton(
-                        onTap: () async {
-                          await setTitle(title: titleController.text);
+                if (titleController.text.isNotEmpty)
+                  CustomElevatedButton(
+                    onTap: () async {
+                      await setTitle(title: titleController.text);
 
-                          kwResearchModel.countKeyPhraseOccurrences(
-                              text: titleController.text, isTitle: false);
-                        },
-                        buttonStyle: ButtonStyle(
-                            backgroundColor: WidgetStateProperty.all(
-                              Theme.of(context).colorScheme.primary,
-                            ),
-                            foregroundColor: WidgetStateProperty.all(
-                                Theme.of(context).colorScheme.onPrimary)),
-                        height: 50,
-                        margin: EdgeInsets.fromLTRB(
-                            0,
-                            model.screenHeight * 0.05,
-                            0,
-                            model.screenHeight * 0.05),
-                        text: 'Заменить',
+                      kwResearchModel.countKeyPhraseOccurrences(
+                        text: titleController.text,
+                        isTitle: true,
+                      );
+                    },
+                    buttonStyle: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(
+                        Theme.of(context).colorScheme.primary,
                       ),
-                  ],
-                ),
+                      foregroundColor: WidgetStateProperty.all(
+                        Theme.of(context).colorScheme.onPrimary,
+                      ),
+                    ),
+                    height: 50,
+                    margin: const EdgeInsets.symmetric(vertical: 16),
+                    text: 'Сохранить',
+                  ),
                 const SizedBox(height: 16),
                 Text(
                   'Выбранные ключевые слова:',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 8.0,
                   children: selectedKeywords.map((keyword) {
@@ -445,9 +437,11 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                   'Все ключевые слова:',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 8.0,
-                  children: keywords.map((keyword) {
+                  children: allKeywords.map((keyword) {
+                    final isFromServer = keywordsFromServer.contains(keyword);
                     final occurenceInTitle = keyword.numberOfOccurrencesInTitle;
                     final occurenceInDescription =
                         keyword.numberOfOccurrencesInDescription;
@@ -457,6 +451,12 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 8.0),
                       child: ActionChip(
+                        backgroundColor:
+                            isFromServer ? Colors.lightBlue[50] : null,
+                        avatar: isFromServer
+                            ? const Icon(Icons.check_circle_outline_outlined,
+                                size: 16)
+                            : null,
                         label: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -493,7 +493,7 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                             if (occurenceInDescription != null &&
                                 occurenceInDescription > 0)
                               Text(
-                                ' описании: $occurenceInDescription',
+                                'В описании: $occurenceInDescription',
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -514,7 +514,7 @@ class _TitleGeneratorScreenState extends State<TitleGeneratorScreen> {
                         ),
                         onPressed: () {
                           setState(() {
-                            keywords.remove(keyword);
+                            allKeywords.remove(keyword);
                             selectedKeywords.add(keyword);
                           });
                         },
@@ -545,25 +545,28 @@ class _DescriptionGeneratorScreenState
   final TextEditingController descriptionController = TextEditingController();
   bool isDescriptionTextFieldEmpty = true;
   String? _descriptionErrorMessage;
+
   @override
   Widget build(BuildContext context) {
-    // Access SeoToolViewModel
     final seoToolModel = context.watch<SeoToolViewModel>();
     final description = seoToolModel.description;
     final setDescription = seoToolModel.setCardItem;
 
-    // Use selectedDescriptionKeywords from SeoToolViewModel
     final selectedKeywords = seoToolModel.selectedDescriptionKeywords;
 
     final kwResearchModel = context.watch<SeoToolKwResearchViewModel>();
-    final kwResearchModelKeywords = kwResearchModel.corePhrases;
+    final corePhrases = kwResearchModel.corePhrases;
+    final keywordsFromServer = kwResearchModel.keywordsFromServer;
 
-    // Filter out selected keywords from the list of all keywords
-    final keywords = kwResearchModelKeywords
-        .where((kw) => !selectedKeywords
-            .any((selectedKw) => selectedKw.keyword == kw.keyword))
-        .toList();
-    keywords.sort((a, b) => b.freq.compareTo(a.freq));
+    // Объединяем ключевые слова и удаляем выбранные
+    final allKeywords = [
+      ...corePhrases,
+      ...keywordsFromServer
+    ]..removeWhere((kw) =>
+        selectedKeywords.any((selectedKw) => selectedKw.keyword == kw.keyword));
+
+    // Сортируем по частоте
+    allKeywords.sort((a, b) => b.freq.compareTo(a.freq));
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -653,19 +656,15 @@ class _DescriptionGeneratorScreenState
                       ),
                     ),
                     height: 50,
-                    margin: EdgeInsets.fromLTRB(
-                      0,
-                      seoToolModel.screenHeight * 0.05,
-                      0,
-                      seoToolModel.screenHeight * 0.05,
-                    ),
-                    text: 'Заменить',
+                    margin: const EdgeInsets.symmetric(vertical: 16),
+                    text: 'Сохранить',
                   ),
                 const SizedBox(height: 16),
                 Text(
                   'Выбранные ключевые слова:',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 8.0,
                   children: selectedKeywords.map((keyword) {
@@ -684,9 +683,11 @@ class _DescriptionGeneratorScreenState
                   'Все ключевые слова:',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
+                const SizedBox(height: 8),
                 Wrap(
                   spacing: 8.0,
-                  children: keywords.map((keyword) {
+                  children: allKeywords.map((keyword) {
+                    final isFromServer = keywordsFromServer.contains(keyword);
                     final occurenceInTitle = keyword.numberOfOccurrencesInTitle;
                     final occurenceInDescription =
                         keyword.numberOfOccurrencesInDescription;
@@ -696,6 +697,12 @@ class _DescriptionGeneratorScreenState
                     return Container(
                       margin: const EdgeInsets.only(bottom: 8.0),
                       child: ActionChip(
+                        backgroundColor:
+                            isFromServer ? Colors.lightBlue[50] : null,
+                        avatar: isFromServer
+                            ? const Icon(Icons.check_circle_outline_outlined,
+                                size: 16)
+                            : null,
                         label: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -753,7 +760,7 @@ class _DescriptionGeneratorScreenState
                         ),
                         onPressed: () {
                           setState(() {
-                            keywords.remove(keyword);
+                            allKeywords.remove(keyword);
                             selectedKeywords.add(keyword);
                           });
                         },
@@ -785,72 +792,142 @@ class _KeywordManagerState extends State<KeywordManager> {
     final corePhrases = List<KwByLemma>.from(model.corePhrases)
       ..sort((a, b) => b.freq.compareTo(a.freq));
 
+    final keywordsFromServer = List<KwByLemma>.from(model.keywordsFromServer)
+      ..sort((a, b) => b.freq.compareTo(a.freq));
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 20),
-          if (corePhrases.isEmpty)
-            Expanded(
-              child: Center(
-                child: Text(
-                  'Пока не добавлено ни одного ключевого слова',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            )
-          else
-            Expanded(
+          Expanded(
+            child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Добавляем кнопку копирования
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Ключевые слова',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.copy),
-                        tooltip: 'Скопировать все фразы',
-                        onPressed: () {
-                          final allPhrases = corePhrases
-                              .map((kw) => '${kw.keyword},${kw.freq}')
-                              .join('\n');
-                          Clipboard.setData(ClipboardData(text: allPhrases));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Ключевые слова скопированы в буфер обмена'),
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: _buildSemanticCoreSection(corePhrases),
+                  // Раздел для ключевых слов из сервера
+                  if (keywordsFromServer.isNotEmpty) ...[
+                    Text(
+                      'Ключевые слова по которым есть показы на первых двух страницах',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    _buildKeywordsFromServerSection(keywordsFromServer),
+                    const SizedBox(height: 16),
+                  ],
+
+                  if (corePhrases.isNotEmpty) ...[
+                    Text(
+                      'Новые ключевые слова',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    _buildSemanticCoreSection(corePhrases),
+                  ] else
+                    Center(
+                      child: Text(
+                        'Пока не добавлено ни одного нового ключевого слова',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                 ],
               ),
             ),
+          ),
         ],
       ),
     );
   }
 
+  Widget _buildKeywordsFromServerSection(List<KwByLemma> keywords) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: keywords.map((keyword) {
+        return Card(
+          color: Colors.lightBlue[50], // Визуальное отличие
+          margin: const EdgeInsets.symmetric(vertical: 4.0),
+          child: ListTile(
+            title: Text(
+              keyword.keyword,
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            subtitle: Text(
+              'Частотность: ${keyword.freq}',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            trailing: PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'geoSearch') {
+                  Navigator.of(context).pushNamed(
+                    MainNavigationRouteNames.geoSearchScreen,
+                    arguments: keyword.keyword,
+                  );
+                } else if (value == 'wb') {
+                  final encodedKeyword = Uri.encodeComponent(keyword.keyword);
+                  html.window.open(
+                      'https://www.wildberries.ru/catalog/0/search.aspx?search=$encodedKeyword',
+                      'wb');
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                const PopupMenuItem<String>(
+                  value: 'geoSearch',
+                  child: ListTile(
+                    leading: Icon(Icons.map),
+                    title: Text('Ставки и поиск'),
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'wb',
+                  child: ListTile(
+                    leading: Icon(Icons.delete),
+                    title: Text('Перейти на WB'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  // Метод для отображения выбранных ключевых слов
   Widget _buildSemanticCoreSection(List<KwByLemma> corePhrases) {
-    final model = context.watch<SeoToolKwResearchViewModel>();
+    final model = context.read<SeoToolKwResearchViewModel>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Кнопка копирования
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Ключевые слова',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            IconButton(
+              icon: const Icon(Icons.copy),
+              tooltip: 'Скопировать все фразы',
+              onPressed: () {
+                final allPhrases = corePhrases
+                    .map((kw) => '${kw.keyword},${kw.freq}')
+                    .join('\n');
+                Clipboard.setData(ClipboardData(text: allPhrases));
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Ключевые слова скопированы в буфер обмена'),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
         ListView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -858,7 +935,7 @@ class _KeywordManagerState extends State<KeywordManager> {
           itemBuilder: (context, index) {
             final keyword = corePhrases[index];
             return Card(
-              margin: const EdgeInsets.symmetric(vertical: 8.0),
+              margin: const EdgeInsets.symmetric(vertical: 4.0),
               child: ListTile(
                 title: Text(
                   keyword.keyword,
@@ -866,15 +943,9 @@ class _KeywordManagerState extends State<KeywordManager> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 4),
-                    Text(
-                      'Частотность: ${keyword.freq}',
-                      style: TextStyle(color: Colors.grey[600]),
-                    ),
-                  ],
+                subtitle: Text(
+                  'Частотность: ${keyword.freq}',
+                  style: TextStyle(color: Colors.grey[600]),
                 ),
                 trailing: PopupMenuButton<String>(
                   onSelected: (value) {

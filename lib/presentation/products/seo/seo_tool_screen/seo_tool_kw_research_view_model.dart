@@ -26,9 +26,15 @@ abstract class SeoToolKwResearchTrackingService {
   Future<Either<RewildError, void>> deleteAllQueryForNmId(int nmId);
 }
 
+abstract class SeoToolKwResearchKeywordsService {
+  Future<Either<RewildError, List<KwByLemma>>> getKeywordsForCards(
+      {required String token, required List<int> skus});
+}
+
 class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
   final SeoToolSeoService seoService;
   final SeoToolKwResearchTokenService tokenService;
+  final SeoToolKwResearchKeywordsService keywordsService;
   final SeoToolKwResearchTrackingService trackingService;
   final int productId;
   final int subjectId;
@@ -37,6 +43,7 @@ class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
       {required super.context,
       required this.productId,
       required this.subjectId,
+      required this.keywordsService,
       required this.trackingService,
       required this.tokenService,
       required this.seoService}) {
@@ -56,6 +63,21 @@ class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
       setIsLoading(false);
       return;
     }
+
+    final values = await Future.wait([
+      fetch(() => keywordsService.getKeywordsForCards(
+            token: _token!,
+            skus: [productId],
+          )),
+      fetch(() => seoService.getPhrasesForNmId(productId)),
+    ]);
+
+    final fetchedKeywords = values[0];
+    if (fetchedKeywords == null) {
+      setIsLoading(false);
+      return;
+    }
+    setKeywordsFromServer(fetchedKeywords);
 
     // get saved phrases from local db
     final phrasesEither = await seoService.getPhrasesForNmId(productId);
@@ -90,6 +112,16 @@ class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
   }
 
   List<KwByLemma> get corePhrases => _corePhrases;
+
+  // keywords from server
+  List<KwByLemma> _keywordsFromServer = [];
+
+  void setKeywordsFromServer(List<KwByLemma> value) {
+    _keywordsFromServer = value;
+    notify();
+  }
+
+  List<KwByLemma> get keywordsFromServer => _keywordsFromServer;
 
   //   // is not empty
   bool _isNotEmpty = false;
