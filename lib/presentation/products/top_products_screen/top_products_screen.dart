@@ -265,10 +265,18 @@ class _LineChartWidget extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         getTitlesWidget: (value, meta) {
-                          return Text(yLabelFormatter(value),
-                              style: const TextStyle(fontSize: 12));
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                                right: 8.0), // Отступ для лучшего размещения
+                            child: Text(
+                              yLabelFormatter(value),
+                              style: const TextStyle(
+                                  fontSize: 10), // Уменьшаем размер шрифта
+                            ),
+                          );
                         },
-                        interval: ((maxY - minY) / 5).abs(),
+                        interval: ((maxY - minY) / 5)
+                            .abs(), // Интервал между значениями
                       ),
                     ),
                     bottomTitles: AxisTitles(
