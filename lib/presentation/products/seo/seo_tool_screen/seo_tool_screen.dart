@@ -785,198 +785,133 @@ class _KeywordManagerState extends State<KeywordManager> {
   @override
   Widget build(BuildContext context) {
     final model = context.watch<SeoToolKwResearchViewModel>();
-    final corePhrases = List<KwByLemma>.from(model.corePhrases)
-      ..sort((a, b) => b.freq.compareTo(a.freq));
+    final corePhrases = model.corePhrases;
+    final keywordsFromServer = model.keywordsFromServer;
 
-    final keywordsFromServer = List<KwByLemma>.from(model.keywordsFromServer)
-      ..sort((a, b) => b.freq.compareTo(a.freq));
+    // Создаем объединенный список элементов для ListView
+    final List<ListItem> items = [];
+
+    if (keywordsFromServer.isNotEmpty) {
+      items.add(SectionHeaderItem(
+          'Ключевые слова с показами на первых двух страницах'));
+      items.addAll(keywordsFromServer.map((k) => KeywordItem(k)));
+    }
+
+    if (corePhrases.isNotEmpty) {
+      items.add(SectionHeaderItem('Новые ключевые слова'));
+      items.addAll(corePhrases.map((k) => KeywordItem(k)));
+    } else {
+      items.add(
+          EmptyStateItem('Пока не добавлено ни одного нового ключевого слова'));
+    }
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16.0, 0, 16.0, 16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Раздел для ключевых слов из сервера
-                  if (keywordsFromServer.isNotEmpty) ...[
-                    Text(
-                      'Ключевые слова по которым есть показы на первых двух страницах',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildKeywordsFromServerSection(keywordsFromServer),
-                    const SizedBox(height: 16),
-                  ],
-
-                  if (corePhrases.isNotEmpty) ...[
-                    Text(
-                      'Новые ключевые слова',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    _buildSemanticCoreSection(corePhrases),
-                  ] else
-                    Center(
-                      child: Text(
-                        'Пока не добавлено ни одного нового ключевого слова',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                ],
+      padding: const EdgeInsets.all(16.0),
+      child: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          final item = items[index];
+          if (item is SectionHeaderItem) {
+            return Text(
+              item.title,
+              style: Theme.of(context).textTheme.titleMedium,
+            );
+          } else if (item is KeywordItem) {
+            final keyword = item.keyword;
+            return KeywordCard(keyword: keyword, model: model);
+          } else if (item is EmptyStateItem) {
+            return Center(
+              child: Text(
+                item.message,
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
               ),
-            ),
-          ),
-        ],
+            );
+          }
+          return const SizedBox.shrink();
+        },
       ),
     );
   }
+}
 
-  Widget _buildKeywordsFromServerSection(List<KwByLemma> keywords) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: keywords.map((keyword) {
-        return Card(
-          color: Colors.lightBlue[50], // Визуальное отличие
-          margin: const EdgeInsets.symmetric(vertical: 4.0),
-          child: ListTile(
-            title: Text(
-              keyword.keyword,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
+// Классы для представления различных типов элементов списка
+abstract class ListItem {}
+
+class SectionHeaderItem extends ListItem {
+  final String title;
+  SectionHeaderItem(this.title);
+}
+
+class KeywordItem extends ListItem {
+  final KwByLemma keyword;
+  KeywordItem(this.keyword);
+}
+
+class EmptyStateItem extends ListItem {
+  final String message;
+  EmptyStateItem(this.message);
+}
+
+// Виджет для отображения карточки ключевого слова
+class KeywordCard extends StatelessWidget {
+  final KwByLemma keyword;
+  final SeoToolKwResearchViewModel model;
+
+  const KeywordCard({
+    Key? key,
+    required this.keyword,
+    required this.model,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final isFromServer = model.keywordsFromServer.contains(keyword);
+
+    return Card(
+      color: isFromServer ? Colors.lightBlue[50] : null,
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      child: ListTile(
+        title: Text(
+          keyword.keyword,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Text(
+          'Частотность: ${keyword.freq}',
+          style: TextStyle(color: Colors.grey[600]),
+        ),
+        trailing: PopupMenuButton<String>(
+          onSelected: (value) {
+            if (value == 'geoSearch') {
+              Navigator.of(context).pushNamed(
+                MainNavigationRouteNames.geoSearchScreen,
+                arguments: keyword.keyword,
+              );
+            } else if (value == 'delete') {
+              model.removeKeywordFromCore(keyword.keyword);
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: 'geoSearch',
+              child: ListTile(
+                leading: Icon(Icons.map),
+                title: Text('Ставки и поиск'),
               ),
             ),
-            subtitle: Text(
-              'Частотность: ${keyword.freq}',
-              style: TextStyle(color: Colors.grey[600]),
-            ),
-            trailing: PopupMenuButton<String>(
-              onSelected: (value) {
-                if (value == 'geoSearch') {
-                  Navigator.of(context).pushNamed(
-                    MainNavigationRouteNames.geoSearchScreen,
-                    arguments: keyword.keyword,
-                  );
-                } else if (value == 'wb') {
-                  final encodedKeyword = Uri.encodeComponent(keyword.keyword);
-                  html.window.open(
-                      'https://www.wildberries.ru/catalog/0/search.aspx?search=$encodedKeyword',
-                      'wb');
-                }
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                const PopupMenuItem<String>(
-                  value: 'geoSearch',
-                  child: ListTile(
-                    leading: Icon(Icons.map),
-                    title: Text('Ставки и поиск'),
-                  ),
+            if (!isFromServer)
+              const PopupMenuItem<String>(
+                value: 'delete',
+                child: ListTile(
+                  leading: Icon(Icons.delete),
+                  title: Text('Удалить'),
                 ),
-                const PopupMenuItem<String>(
-                  value: 'wb',
-                  child: ListTile(
-                    leading: Icon(Icons.delete),
-                    title: Text('Перейти на WB'),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-
-  // Метод для отображения выбранных ключевых слов
-  Widget _buildSemanticCoreSection(List<KwByLemma> corePhrases) {
-    final model = context.read<SeoToolKwResearchViewModel>();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Кнопка копирования
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Ключевые слова',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            IconButton(
-              icon: const Icon(Icons.copy),
-              tooltip: 'Скопировать все фразы',
-              onPressed: () {
-                final allPhrases = corePhrases
-                    .map((kw) => '${kw.keyword},${kw.freq}')
-                    .join('\n');
-                Clipboard.setData(ClipboardData(text: allPhrases));
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Ключевые слова скопированы в буфер обмена'),
-                  ),
-                );
-              },
-            ),
+              ),
           ],
         ),
-        const SizedBox(height: 8),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          itemCount: corePhrases.length,
-          itemBuilder: (context, index) {
-            final keyword = corePhrases[index];
-            return Card(
-              margin: const EdgeInsets.symmetric(vertical: 4.0),
-              child: ListTile(
-                title: Text(
-                  keyword.keyword,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                subtitle: Text(
-                  'Частотность: ${keyword.freq}',
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-                trailing: PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'geoSearch') {
-                      Navigator.of(context).pushNamed(
-                        MainNavigationRouteNames.geoSearchScreen,
-                        arguments: keyword.keyword,
-                      );
-                    } else if (value == 'delete') {
-                      model.removeKeywordFromCore(keyword.keyword);
-                    }
-                  },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
-                      value: 'geoSearch',
-                      child: ListTile(
-                        leading: Icon(Icons.map),
-                        title: Text('Ставки и поиск'),
-                      ),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'delete',
-                      child: ListTile(
-                        leading: Icon(Icons.delete),
-                        title: Text('Удалить'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-      ],
+      ),
     );
   }
 }
