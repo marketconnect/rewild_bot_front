@@ -203,8 +203,8 @@ class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
 
   Future<void> goToCompetitorsKwExpansionScreen() async {
     final result = await Navigator.of(context).pushNamed(
-      MainNavigationRouteNames.competitorKwExpansionScreen,
-    );
+        MainNavigationRouteNames.competitorKwExpansionScreen,
+        arguments: subjectId);
     if (result != null && result is List<KwByLemma>) {
       // corePhrases.clear();
 

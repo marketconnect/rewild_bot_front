@@ -354,6 +354,7 @@ class DatabaseHelper {
     createStoreIfNotExists('total_cost_calculator', () {
       final store = db.createObjectStore('total_cost_calculator',
           keyPath: "nmId_expenseName", autoIncrement: false);
+      store.createIndex('nmId_expenseName', 'nmId_expenseName', unique: true);
       store.createIndex('nmId', 'nmId', unique: false);
     });
 

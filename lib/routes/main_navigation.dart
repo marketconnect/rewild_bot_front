@@ -22,7 +22,7 @@ abstract class ScreenFactory {
 
   Widget makeAllCardsSeoScreen();
 
-  Widget makeCompetitorKwExpansionScreen();
+  Widget makeCompetitorKwExpansionScreen(int? subjectId);
 
   Widget makeSubjectKeywordExpansionScreen(
       {required List<KwByLemma> addedKeywords, required int subjectId});
@@ -222,8 +222,11 @@ class MainNavigation implements AppNavigation {
           builder: (_) => screenFactory.makeAllCardsSeoScreen(),
         );
       case MainNavigationRouteNames.competitorKwExpansionScreen:
+        final arguments = settings.arguments;
+        final subjectId = arguments is int ? arguments : null;
         return MaterialPageRoute(
-          builder: (_) => screenFactory.makeCompetitorKwExpansionScreen(),
+          builder: (_) =>
+              screenFactory.makeCompetitorKwExpansionScreen(subjectId),
         );
 
       case MainNavigationRouteNames.allProductsQuestionsScreen:

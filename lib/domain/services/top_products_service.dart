@@ -2,6 +2,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:rewild_bot_front/core/utils/rewild_error.dart';
 import 'package:rewild_bot_front/domain/entities/subject_history.dart';
 import 'package:rewild_bot_front/domain/entities/top_product.dart';
+import 'package:rewild_bot_front/presentation/products/seo/expansion_competitor_keyword_screen/competitor_keyword_expansion_model.dart';
+
 import 'package:rewild_bot_front/presentation/products/top_products_screen/top_products_view_model.dart';
 
 // Api
@@ -27,15 +29,21 @@ abstract class TopProductsServiceSubjectHistoryDataProvider {
   Future<Either<RewildError, void>> insertAll(List<SubjectHistory> histories);
 }
 
-class TopProductsService implements TopProductsViewModelTopProductsService {
+class TopProductsService
+    implements
+        TopProductsViewModelTopProductsService,
+        CompetitorKeywordExpansionTopProductService {
   const TopProductsService(
       {required this.topProductsServiceApiClient,
       required this.subjectHistoryDataProvider,
+      required this.topProductsServiceSubjectHistoryDataProvider,
       required this.topProductsServiceDataProvider});
 
   final TopProductsServiceApiClient topProductsServiceApiClient;
   final TopProductsServiceDataProvider topProductsServiceDataProvider;
   final TopProductsServiceSubjectHistoryDataProvider subjectHistoryDataProvider;
+  final TopProductsServiceSubjectHistoryDataProvider
+      topProductsServiceSubjectHistoryDataProvider;
 
   @override
   Future<Either<RewildError, (List<TopProduct>, List<SubjectHistory>)>>

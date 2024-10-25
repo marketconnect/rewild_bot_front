@@ -65,8 +65,8 @@ class ApiKeysService implements AddApiKeysScreenApiKeysService {
 
   ApiKeysService(
       {required this.apiKeysDataProvider,
-      // required this.advertApiClient,
       required this.activeSellerDataProvider,
+      // required this.advertApiClient,
       // required this.reviewApiClient,
       // required this.statisticsApiClient,
       // required this.analyticsApiClient,

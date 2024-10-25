@@ -284,6 +284,7 @@ class TitleGeneratorScreen extends StatefulWidget {
   const TitleGeneratorScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _TitleGeneratorScreenState createState() => _TitleGeneratorScreenState();
 }
 

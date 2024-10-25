@@ -648,6 +648,8 @@ class _DIContainer {
 
   TopProductsService _makeTopProductsService() => TopProductsService(
         topProductsServiceApiClient: _makeTopProductApiClient(),
+        topProductsServiceSubjectHistoryDataProvider:
+            _makeSubjectHistoryDataProvider(),
         subjectHistoryDataProvider: _makeSubjectHistoryDataProvider(),
         topProductsServiceDataProvider: _makeTopProductsDataProvider(),
       );
@@ -764,10 +766,12 @@ class _DIContainer {
           warehouseService: _makeWarehouseService());
 
   CompetitorKeywordExpansionViewModel _makeCompetitorKwExpansionViewModel(
-      BuildContext context) {
+      BuildContext context, int? subjectId) {
     return CompetitorKeywordExpansionViewModel(
       context: context,
+      subjectId: subjectId,
       tokenService: _makeAuthService(),
+      topProductService: _makeTopProductsService(),
       keywordsService: _makeProductKeywordsService(),
       cardsService: _makeCardOfProductService(),
     );
@@ -1158,7 +1162,7 @@ class ScreenFactoryDefault implements ScreenFactory {
       return const SeoToolScreen();
     }
     final nmId = cardOfProductCardItem.$1.nmId;
-    final subjectId = cardOfProductCardItem.$1.subjectId;
+    final subjectId = cardOfProductCardItem.$2.subjectID;
     final img = cardOfProductCardItem.$1.img;
     final cardItem = cardOfProductCardItem.$2;
     return MultiProvider(
@@ -1171,7 +1175,7 @@ class ScreenFactoryDefault implements ScreenFactory {
             create: (context) => _diContainer._makeSeoToolKwResearchViewModel(
                   context,
                   nmId,
-                  subjectId!,
+                  subjectId,
                 )),
         // ChangeNotifierProvider<SeoToolTitleGeneratorViewModel>(
         //     create: (context) =>
@@ -1327,10 +1331,10 @@ class ScreenFactoryDefault implements ScreenFactory {
   }
 
   @override
-  Widget makeCompetitorKwExpansionScreen() {
+  Widget makeCompetitorKwExpansionScreen(int? subjectId) {
     return ChangeNotifierProvider(
       create: (context) =>
-          _diContainer._makeCompetitorKwExpansionViewModel(context),
+          _diContainer._makeCompetitorKwExpansionViewModel(context, subjectId),
       child: const CompetitorKeywordExpansionScreen(),
     );
   }
