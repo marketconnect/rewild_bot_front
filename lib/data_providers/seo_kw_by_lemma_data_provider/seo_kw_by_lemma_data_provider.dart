@@ -41,6 +41,7 @@ class SeoKwByLemmaDataProvider implements SeoServiceSeoKwByLemmaDataProvider {
   }
 
   @override
+  @override
   Future<Either<RewildError, void>> deleteForNmID(int nmId) async {
     try {
       final db = await _db;
@@ -49,11 +50,13 @@ class SeoKwByLemmaDataProvider implements SeoServiceSeoKwByLemmaDataProvider {
 
       final index = store.index('nmId');
       final range = KeyRange.only(nmId);
-      final cursorStream = index.openCursor(
-          range: range); // Указываем именованный параметр range
 
-      await for (final cursor in cursorStream) {
-        await cursor.delete();
+      // Получаем все ключи записей, соответствующих nmId
+      final keys = await index.getAllKeys(range);
+
+      // Удаляем записи по ключам
+      for (final key in keys) {
+        await store.delete(key);
       }
 
       await txn.completed;

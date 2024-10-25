@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, library_private_types_in_public_api
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -20,7 +20,6 @@ class SeoToolScreen extends StatefulWidget {
   const SeoToolScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _SeoToolScreenState createState() => _SeoToolScreenState();
 }
 
@@ -32,16 +31,12 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
     'Сбор фраз',
     'Название',
     'Описание',
-    // 'Конкуренты',
-    // 'Отчёты',
   ];
 
   static final List<Widget> _sections = <Widget>[
-    const KeywordManager(),
+    const KeywordManager(), // Убираем const
     const TitleGeneratorScreen(),
     const DescriptionGeneratorScreen(),
-    // const CompetitorAnalysisScreen(),
-    // const ReportsAndRecommendationsScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -128,7 +123,10 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
               shadowColor: Colors.black,
               surfaceTintColor: Colors.transparent,
             ),
-            body: _sections.elementAt(_selectedIndex),
+            body: IndexedStack(
+              index: _selectedIndex,
+              children: _sections,
+            ),
             floatingActionButton: _selectedIndex == 0
                 ? buildSpeedDial(context)
                 : _selectedIndex == 1
@@ -284,7 +282,6 @@ class TitleGeneratorScreen extends StatefulWidget {
   const TitleGeneratorScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _TitleGeneratorScreenState createState() => _TitleGeneratorScreenState();
 }
 
@@ -536,7 +533,6 @@ class DescriptionGeneratorScreen extends StatefulWidget {
   const DescriptionGeneratorScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _DescriptionGeneratorScreenState createState() =>
       _DescriptionGeneratorScreenState();
 }
@@ -782,7 +778,6 @@ class KeywordManager extends StatefulWidget {
   const KeywordManager({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _KeywordManagerState createState() => _KeywordManagerState();
 }
 

@@ -70,6 +70,7 @@ class TrackingQueryDataProvider implements TrackingServiceQueryDataProvider {
   }
 
   @override
+  @override
   Future<Either<RewildError, void>> deleteAllQueryForNmId(int nmId) async {
     try {
       final db = await _db;
@@ -77,11 +78,13 @@ class TrackingQueryDataProvider implements TrackingServiceQueryDataProvider {
       final store = txn.objectStore('tracking_queries');
 
       final index = store.index('nmId');
-      final cursorStream = index.openCursor(); // Без аргумента
+      final range = KeyRange.only(nmId);
 
-      await for (final cursor in cursorStream) {
-        if ((cursor.value as Map<String, dynamic>)['nmId'] == nmId) {
-          await cursor.delete();
+      final keys = await index.getAllKeys(range);
+
+      if (keys.isNotEmpty) {
+        for (final key in keys) {
+          await store.delete(key);
         }
       }
 

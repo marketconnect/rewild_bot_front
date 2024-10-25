@@ -243,6 +243,7 @@ class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
     await fetch(
       () => trackingService.deleteAllQueryForNmId(productId),
     );
+
     // save tracking queries
     await fetch(
         () => trackingService.addAllForNmId(
@@ -250,6 +251,7 @@ class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
             nmId: productId),
         showError: true,
         message: 'Failed to add tracking queries');
+
     setIsSaving(false);
   }
 

@@ -85,60 +85,7 @@ class TrackingService
             addQueryRes.fold((l) => l, (r) => throw UnimplementedError()));
       }
     }
-    // Get all cards nmids
-    // final allCardsNmIdsEither =
-    //     await subscriptionsDataProvider.getActiveSubscriptions();
-    // if (allCardsNmIdsEither is Left) {
-    //   return left(allCardsNmIdsEither.fold(
-    //       (l) => l, (r) => throw UnimplementedError()));
-    // }
 
-    // final allCardsNmIds = allCardsNmIdsEither.fold(
-    //     (l) => <int>[], (r) => r.map((e) => e.cardId).toList());
-    // if (allCardsNmIds.isEmpty) {
-    //   return left(RewildError('У Вас нет активных карточек',
-    //       source: runtimeType.toString(),
-    //       error: 'У Вас нет активных карточек',
-    //       name: 'addNewTrackingQuery',
-    //       sendToTg: true));
-    // }
-
-    //   final fetchedPositions = geoNum == null
-    //       ? await geoSearchApiClient
-    //           .getProductsNmIdIndexMapIn(query: query, nmIds: [nmId])
-    //       : await geoSearchApiClient.getProductsNmIdIndexMapWithGeo(
-    //           gNum: geoNum, query: query, nmIds: [nmId]);
-
-    //   Map<int, GeoSearchModel> positions = {};
-
-    //   // some queries are wrong
-    //   if (fetchedPositions is Right) {
-    //     positions =
-    //         fetchedPositions.fold((l) => <int, GeoSearchModel>{}, (r) => r);
-    //   }
-
-    //   final trackingResults = positions
-    //       .map((key, value) => MapEntry(
-    //           key,
-    //           TrackingResult(
-    //             productId: key,
-    //             keyword: query,
-    //             geo: geoNum ?? '',
-    //             position: value.position,
-    //             date: DateTime.now(),
-    //           )))
-    //       .values
-    //       .toList();
-
-    //   for (var trackingResult in trackingResults) {
-    //     final addTrackingResultRes =
-    //         await trackingDataProvider.addTrackingResult(trackingResult);
-    //     if (addTrackingResultRes is Left) {
-    //       return left(addTrackingResultRes.fold(
-    //           (l) => l, (r) => throw UnimplementedError()));
-    //     }
-    //   }
-    // }
     return right(null);
   }
 

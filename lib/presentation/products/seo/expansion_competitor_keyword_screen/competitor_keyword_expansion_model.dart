@@ -83,6 +83,7 @@ class CompetitorKeywordExpansionViewModel extends ResourceChangeNotifier {
   Set<CardOfProductModel> get selectedCards => _selectedCards;
 
 // Selected top products
+  // ignore: prefer_final_fields
   Set<TopProduct> _selectedTopProducts = {};
   Set<TopProduct> get selectedTopProducts => _selectedTopProducts;
 
