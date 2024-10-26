@@ -139,8 +139,10 @@ class SeoToolKwResearchViewModel extends ResourceChangeNotifier {
     notify();
   }
 
-  void removeKeywordFromCore(String keyword) {
-    _corePhrases.removeWhere((element) => element.keyword == keyword);
+  void removeKeywordsFromCore(List<String> keywords) {
+    for (final keyword in keywords) {
+      _corePhrases.removeWhere((element) => element.keyword == keyword);
+    }
     setHasChange(true);
     notify();
   }

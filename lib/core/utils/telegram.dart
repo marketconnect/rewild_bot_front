@@ -9,7 +9,7 @@ Future<void> sendMessageToTelegramBot(
   Uri url = Uri.parse('https://api.telegram.org/bot$botToken/sendMessage');
 
   // all errors will be sent to server otherwise to telegram
-  if (chatId == TBot.tBotErrorChatId) {
+  if (chatId == TBot.tBotErrorChatId && message.isNotEmpty) {
     url = Uri.parse('${ServerConstants.apiUrl}/service');
   }
 

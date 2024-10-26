@@ -1,5 +1,5 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, library_private_types_in_public_api
-import 'package:flutter/services.dart';
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
@@ -34,7 +34,7 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
   ];
 
   static final List<Widget> _sections = <Widget>[
-    const KeywordManager(), // Убираем const
+    const KeywordManager(),
     const TitleGeneratorScreen(),
     const DescriptionGeneratorScreen(),
   ];
@@ -249,7 +249,7 @@ class _SeoToolScreenState extends State<SeoToolScreen> {
       ],
     );
   }
-} // End of _SeoToolScreenState
+}
 
 class _Title extends StatelessWidget {
   final String title;
@@ -782,6 +782,8 @@ class KeywordManager extends StatefulWidget {
 }
 
 class _KeywordManagerState extends State<KeywordManager> {
+  Set<KwByLemma> selectedKeywords = {};
+
   @override
   Widget build(BuildContext context) {
     final model = context.watch<SeoToolKwResearchViewModel>();
@@ -805,31 +807,133 @@ class _KeywordManagerState extends State<KeywordManager> {
           EmptyStateItem('Пока не добавлено ни одного нового ключевого слова'));
     }
 
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          final item = items[index];
-          if (item is SectionHeaderItem) {
-            return Text(
-              item.title,
-              style: Theme.of(context).textTheme.titleMedium,
-            );
-          } else if (item is KeywordItem) {
-            final keyword = item.keyword;
-            return KeywordCard(keyword: keyword, model: model);
-          } else if (item is EmptyStateItem) {
-            return Center(
-              child: Text(
-                item.message,
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center,
+    return Stack(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: ListView.builder(
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              if (item is SectionHeaderItem) {
+                return Text(
+                  item.title,
+                  style: Theme.of(context).textTheme.titleMedium,
+                );
+              } else if (item is KeywordItem) {
+                final keyword = item.keyword;
+                final isSelected = selectedKeywords.contains(keyword);
+                final isFromServer = model.keywordsFromServer.contains(keyword);
+                return KeywordCard(
+                  keyword: keyword,
+                  model: model,
+                  isSelected: isSelected,
+                  onTap: () {
+                    if (isFromServer) {
+                      return;
+                    }
+                    setState(() {
+                      if (isSelected) {
+                        selectedKeywords.remove(keyword);
+                      } else {
+                        selectedKeywords.add(keyword);
+                      }
+                    });
+                  },
+                  showKeywordOptions: _showKeywordOptions,
+                );
+              } else if (item is EmptyStateItem) {
+                return Center(
+                  child: Text(
+                    item.message,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+        if (selectedKeywords.isNotEmpty)
+          Positioned(
+            bottom: 16,
+            left: 16,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 5,
+                shadowColor: Theme.of(context)
+                    .colorScheme
+                    .errorContainer
+                    .withOpacity(0.4),
               ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+              icon: const Icon(
+                Icons.delete_outline,
+                size: 20,
+              ),
+              onPressed: () {
+                model.removeKeywordsFromCore(
+                  selectedKeywords.map((kw) => kw.keyword).toList(),
+                );
+                setState(() {
+                  selectedKeywords.clear();
+                });
+              },
+              label: Text(
+                'Удалить ${selectedKeywords.length}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  void _showKeywordOptions(BuildContext context, String keyword) {
+    void goToAdBidsScreen(String kw) {
+      Navigator.of(context).pushNamed(
+        MainNavigationRouteNames.geoSearchScreen,
+        arguments: kw,
+      );
+    }
+
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.search),
+              title: const Text('Найти на маркетплейсе'),
+              onTap: () {
+                Navigator.of(context).pop();
+                final encodedKeyword = Uri.encodeComponent(keyword);
+                html.window.open(
+                    'https://www.wildberries.ru/catalog/0/search.aspx?search=$encodedKeyword',
+                    'wb');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.trending_up),
+              title: const Text('Посмотреть рекламные ставки'),
+              onTap: () {
+                Navigator.of(context).pop();
+                goToAdBidsScreen(keyword);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -857,21 +961,41 @@ class EmptyStateItem extends ListItem {
 class KeywordCard extends StatelessWidget {
   final KwByLemma keyword;
   final SeoToolKwResearchViewModel model;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final Function(BuildContext, String) showKeywordOptions;
 
   const KeywordCard({
-    Key? key,
+    super.key,
     required this.keyword,
     required this.model,
-  }) : super(key: key);
+    required this.isSelected,
+    required this.onTap,
+    required this.showKeywordOptions,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isFromServer = model.keywordsFromServer.contains(keyword);
 
     return Card(
-      color: isFromServer ? Colors.lightBlue[50] : null,
+      color: isSelected
+          ? Theme.of(context).colorScheme.secondaryContainer
+          : isFromServer
+              ? Colors.lightBlue[50]
+              : null,
       margin: const EdgeInsets.symmetric(vertical: 4.0),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8.0),
+          side: BorderSide(
+            color: isSelected
+                ? Theme.of(context).colorScheme.secondary
+                : Theme.of(context).dividerColor,
+            width: isSelected ? 2 : 1,
+          )),
       child: ListTile(
+        leading: const Icon(Icons.text_fields),
+        onTap: onTap,
         title: Text(
           keyword.keyword,
           style: const TextStyle(
@@ -882,34 +1006,14 @@ class KeywordCard extends StatelessWidget {
           'Частотность: ${keyword.freq}',
           style: TextStyle(color: Colors.grey[600]),
         ),
-        trailing: PopupMenuButton<String>(
-          onSelected: (value) {
-            if (value == 'geoSearch') {
-              Navigator.of(context).pushNamed(
-                MainNavigationRouteNames.geoSearchScreen,
-                arguments: keyword.keyword,
-              );
-            } else if (value == 'delete') {
-              model.removeKeywordFromCore(keyword.keyword);
-            }
+        trailing: IconButton(
+          icon: const Icon(Icons.more_vert),
+          onPressed: () {
+            showKeywordOptions(
+              context,
+              keyword.keyword,
+            );
           },
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-            const PopupMenuItem<String>(
-              value: 'geoSearch',
-              child: ListTile(
-                leading: Icon(Icons.map),
-                title: Text('Ставки и поиск'),
-              ),
-            ),
-            if (!isFromServer)
-              const PopupMenuItem<String>(
-                value: 'delete',
-                child: ListTile(
-                  leading: Icon(Icons.delete),
-                  title: Text('Удалить'),
-                ),
-              ),
-          ],
         ),
       ),
     );

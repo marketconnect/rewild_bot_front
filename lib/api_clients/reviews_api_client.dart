@@ -181,8 +181,8 @@ class ReviewApiClient
         ));
       }
     } catch (e) {
-      sendMessageToTelegramBot(
-          TBot.tBotErrorToken, TBot.tBotErrorChatId, e.toString());
+      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
+          'reviewsApiClient getAnsweredReviews ${e.toString()}');
       return left(RewildError(
         sendToTg: true,
         "Ошибка при получении списка отзывов: $e",
