@@ -39,14 +39,7 @@ class AdvertAnaliticsScreen extends StatelessWidget {
           shadowColor: Colors.black,
           surfaceTintColor: Colors.transparent,
         ),
-        body:
-            // isLoading
-            //     ? Center(
-            //         child: MyProgressIndicator(
-            //         text: loadingText,
-            //       ))
-            //     :
-            _bodyBuilder(context),
+        body: _bodyBuilder(context),
       ),
     );
   }
@@ -270,204 +263,119 @@ class _Efficiency extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<AdvertAnaliticsViewModel>();
 
-    final cpmRoiCorrelation = model.cpmRoiCorrelation;
-    final cpmToCtrCorrelation = model.cpmCtrcorrelation;
-    final notEnoughData = model.notEnoughData;
-    final thresholdIsNotExceeded = model.thresholdIsNotExceeded;
     final totalCosts = model.totalCosts;
     final averageLogisticCost = model.averageLogisticCost;
-    List<CampaignDataDay> selectedDays = model.selectedData;
 
     final currentDetailNmId = model.currentDetailNmId;
-    if (currentDetailNmId != -1) {
-      final getNmIdsSelectedData =
-          model.getNmIdsSelectedData(currentDetailNmId);
 
-      if (getNmIdsSelectedData != null) {
-        selectedDays = getNmIdsSelectedData;
-      }
-    }
-    model.setCorrelations(selectedDays);
-
-    final goToCard = model.goToCard;
-
-    final cpmToCtrRows = <(String, String)>[];
-
-    if (notEnoughData) {
-      cpmToCtrRows.add(
-        (
-          "Для точной оценки влияния ставки CPM на CTR (коэффициент кликабельности) используйте данные хотя бы за последние 30 дней.",
-          ""
-        ),
-      );
-    } else if (!thresholdIsNotExceeded && cpmRoiCorrelation != null) {
-      cpmToCtrRows.addAll([
-        (
-          'Коэффициент корреляции Пирсона между ставкой CPM и CTR (коэффициент кликабельности): $cpmToCtrCorrelation',
-          _correlationToText(context, cpmToCtrCorrelation ?? 0)
-        ),
-        (
-          'Коэффициент корреляции Пирсона между ставкой CPM и ROMI (коэффициент окупаемости вложений в маркетинг): $cpmRoiCorrelation',
-          _correlationToText(context, cpmRoiCorrelation)
-        ),
-        (
-          _correlationPairsToText(
-              context, cpmToCtrCorrelation!, cpmRoiCorrelation),
-          ""
-        )
-      ]);
-    } else if (thresholdIsNotExceeded) {
-      cpmToCtrRows.add((
-        'Для того чтобы оценка корреляции между ставкой CPM и другими показателями, такими как CTR (коэффициент кликабельности) или ROMI (коэффициент окупаемости вложений в маркетинг), была действительно значимой и информативной, необходимо, чтобы в рассматриваемом диапазоне данных ставка CPM демонстрировал достаточное изменение.',
-        ""
-      ));
-    } else {
-      const SizedBox(); // Fallback for an undefined state
-    }
-
-    // ROMI
+    // Расчёт ROMI
     CampaignDataDay? selectedData = model.totalSelectedData;
 
     if (currentDetailNmId != -1) {
       selectedData = model.getNmIdsTotalSelectedData(currentDetailNmId);
     }
-    // Total cost widget
-    Widget? totalCostWidget;
+
+    // Проверка наличия данных по юнит-экономике
+    Widget totalCostWidget;
 
     if (currentDetailNmId == -1) {
-      // All tab is active
-      for (final entry in totalCosts.entries) {
-        // some of card may be empty
-        if (entry.value!.expenses.isEmpty) {
-          totalCostWidget = const GeneralUnitEconomicsNotification(
-              text:
-                  "Для точного расчета общего ROMI (коэффициент окупаемости вложений в маркетинг) необходимо заполнить данные о юнит-экономике всех номенклатур, учавствующих в кампании.");
-          break;
-        }
-      }
-      if (totalCostWidget == null) {
-        // All cards are not empty
+      // Активна вкладка "Все"
+      bool hasEmptyExpenses = totalCosts.values
+          .any((totalCost) => totalCost == null || totalCost.expenses.isEmpty);
+
+      if (hasEmptyExpenses) {
+        totalCostWidget = const GeneralUnitEconomicsNotification(
+          text:
+              "Для расчета общего ROMI необходимо заполнить данные о юнит-экономике всех номенклатур, участвующих в кампании.",
+        );
+      } else {
         if (selectedData == null) {
           return const SizedBox();
         }
         final profit = model.profit;
         final spend = selectedData.sum;
-        final roi = (((profit - spend) / spend) * 100);
-        final rows = [
-          ('Доходы от маркетинга:', '${profit.round()} ₽'),
-          ('Расходы на маркетинг:', '${spend.round()} ₽'),
-          ('ROMI:', '${roi.round()}%'),
-        ];
-        totalCostWidget = CampaignSummaryWidget(
-          rows: rows,
-          title: 'Эффективность инвестиций:',
-          success: roi >= 0,
-        );
-        // totalCostWidget = TotalCampaignSummaryWidget(
-        //   summaryRevenue: profit,
-        //   totalCampaignExpenses: spend,
-        //   roi: roi,
-        // );
-      }
-    }
+        final romi = (((profit - spend) / spend) * 100);
 
-    if (currentDetailNmId != -1) {
-      // Some card is active
+        totalCostWidget = _buildReport(
+          context,
+          profit: profit.round(),
+          spend: spend.round(),
+          romi: romi.round(),
+        );
+      }
+    } else {
+      // Активна конкретная карточка
       final totalCost = totalCosts[currentDetailNmId];
       if (totalCost == null || totalCost.expenses.isEmpty) {
         totalCostWidget = UnitEconomicsNotificationBanner(
-          onFillNowPressed: () => goToCard(currentDetailNmId),
+          onFillNowPressed: () => model.goToCard(currentDetailNmId),
         );
       } else {
-        final grossProfit = totalCost.grossProfit;
         if (selectedData == null) {
           return const SizedBox();
         }
+        final grossProfit = totalCost.grossProfit;
         final orders = selectedData.shks;
         final spend = selectedData.sum;
         final profit = orders * grossProfit(averageLogisticCost).round();
-        final roi = (((profit - spend) / spend) * 100);
-        final rows = [
-          (
-            'Средний доход на единицу товара:',
-            '${grossProfit(averageLogisticCost).round()} ₽'
-          ),
-          ('Количество заказанных единиц:', '$orders шт.'),
-          (
-            profit > 0
-                ? 'Общий доход на рекламную кампанию:'
-                : 'Общий убыток на рекламную кампанию:',
-            '${profit.round()} ₽'
-          ),
-          ('Общие затраты на рекламную кампанию:', '${spend.round()} ₽'),
-          ('ROI:', '${roi.toStringAsFixed(0)}%'),
-        ];
+        final romi = (((profit - spend) / spend) * 100);
 
-        totalCostWidget = CampaignSummaryWidget(
-          rows: rows,
-          success: roi >= 0,
-          title: 'Эффективность инвестиций:',
+        totalCostWidget = _buildReport(
+          context,
+          profit: profit.round(),
+          spend: spend.round(),
+          romi: romi.round(),
         );
       }
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Анализ эффективности',
-                style: Theme.of(context).textTheme.titleLarge),
-          ],
-        ),
-        if (totalCostWidget != null) totalCostWidget,
-        // if (notEnoughData)
-        //   const GeneralUnitEconomicsNotification(
-        //       text:
-        //           'Для того чтобы оценка корреляции между CPM и другими показателями, такими как CTR или ROI, была действительно значимой и информативной, необходимо, чтобы в рассматриваемом диапазоне данных CPM демонстрировал достаточное изменение.'),
-        // if (thresholdIsNotExceeded)
-        //   const GeneralUnitEconomicsNotification(
-        //       text:
-        //           'Для того чтобы оценка корреляции между CPM и другими показателями, такими как CTR или ROI, была действительно значимой и информативной, необходимо, чтобы в рассматриваемом диапазоне данных CPM демонстрировал достаточное изменение.'),
-        // if (!thresholdIsNotExceeded && !notEnoughData)
-        CampaignSummaryWidget(
-          title: 'Эффективность рекламных затрат',
-          success: cpmToCtrCorrelation == null || cpmRoiCorrelation == null
-              ? false
-              : cpmToCtrCorrelation > 0.5 || cpmRoiCorrelation > 0.5,
-          rows: cpmToCtrRows,
-        ),
-      ],
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: totalCostWidget,
     );
   }
 
-  String _correlationToText(BuildContext context, double correlation) {
-    if (correlation >= 0.00 && correlation < 0.20) {
-      return 'Очень слабая корреляция';
-    } else if (correlation >= 0.20 && correlation < 0.39) {
-      return 'Слабая корреляция';
-    } else if (correlation >= 0.39 && correlation < 0.59) {
-      return 'Средняя корреляция';
-    } else if (correlation >= 0.59 && correlation < 0.80) {
-      return 'Сильная корреляция';
-    } else if (correlation >= 0.80 && correlation <= 1.00) {
-      return 'Очень сильная корреляция';
-    }
-    return '';
+  Widget _buildReport(BuildContext context,
+      {required int profit, required int spend, required int romi}) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      margin: const EdgeInsets.only(top: 16),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Отчет по эффективности кампании',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const Divider(height: 20, thickness: 1),
+            _buildReportRow('Доходы за период', '$profit ₽'),
+            const SizedBox(height: 8),
+            _buildReportRow('Расходы за период', '$spend ₽'),
+            const SizedBox(height: 8),
+            _buildReportRow('ROMI', '$romi%'),
+          ],
+        ),
+      ),
+    );
   }
 
-  String _correlationPairsToText(BuildContext context, double cpmCtrCorrelation,
-      double cpmRoiCorrelation) {
-    if (cpmCtrCorrelation >= 0.59 && cpmRoiCorrelation >= 0.59) {
-      'Вывод: Рекламная кампания хорошо оптимизирована и целесообразно увеличивать её бюджет.';
-    } else if (cpmCtrCorrelation >= 0.59 && cpmRoiCorrelation < 0.59) {
-      return 'Вывод: увеличение стоимости показов и рост кликабельности не приводят к повышению возврата инвестиций. Проблема может заключаться в несоответствии содержания карточки товара ожиданиям покупателей или неэффективности выбранных параметров рекламной кампании.';
-    } else if (cpmCtrCorrelation < 0.59 && cpmRoiCorrelation >= 0.59) {
-      return 'Вывод: увеличение бюджета рекламной кампании приводит к более ценным конверсиям и улучшению ROI, это указывает на успешное привлечение качественного трафика, который более склонен к покупке';
-    }
-    return 'Вывод: повышение CPM не влияет на улучшение кликабельности (CTR) и возврата инвестиций (ROI), это может свидетельствовать о неэффективности текущих рекламных усилий на маркетплейсе. В такой ситуации целесообразно пересмотреть и оптимизировать рекламную стратегию.';
+  Widget _buildReportRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(fontSize: 16),
+        ),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+      ],
+    );
   }
 }
 
@@ -725,13 +633,22 @@ class AdvertMetricsDataTableState extends State<AdvertMetricsDataTable> {
             '${widget.previousData.cpc.toStringAsFixed(2)} ₽',
             '${widget.dynamicData['cpcChange'].toStringAsFixed(0) ?? 0}%',
           ),
-          if (widget.selectedData.orders != 0)
+          if (widget.selectedData.orders != 0 &&
+              widget.previousData.orders != 0)
             _createDataRow(
               'Стоимость заказа',
               '${(widget.selectedData.sum / widget.selectedData.orders).ceil()} ₽',
               '${(widget.previousData.sum / widget.previousData.orders).ceil()} ₽',
               '${widget.dynamicData['costPerOrderChange'].toStringAsFixed(0)}%',
             ),
+          if (widget.selectedData.orders == 0 ||
+              widget.previousData.orders == 0)
+            _createDataRow(
+              'Стоимость заказа',
+              '- ₽',
+              '- ₽',
+              '- %',
+            )
         ],
       ),
     );

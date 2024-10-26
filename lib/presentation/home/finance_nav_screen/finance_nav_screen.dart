@@ -24,8 +24,7 @@ class FinanceNavScreenWidget extends StatelessWidget {
                 Text(
                   'Финансы',
                   style: TextStyle(
-                      fontSize: screenWidth * 0.14,
-                      fontWeight: FontWeight.bold),
+                      fontSize: screenWidth * 0.1, fontWeight: FontWeight.bold),
                 ),
               ],
             ),

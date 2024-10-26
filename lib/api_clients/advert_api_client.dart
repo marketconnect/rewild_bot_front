@@ -641,12 +641,19 @@ class AdvertApiClient
       ];
 
       final response = await WbAdvertApiHelper.getFullStat.post(token, params);
-      if (response.body == "") {
+
+      if (response.body == null || response.body.isEmpty) {
         return const Right(null);
       }
 
       if (response.statusCode == 200) {
-        final List<dynamic> dataList = json.decode(response.body);
+        final List<dynamic>? dataList = json.decode(response.body);
+
+        // Проверка, что dataList не равен null
+        if (dataList == null || dataList.isEmpty) {
+          return const Right(null);
+        }
+
         final List<CampaignData> campaigns = dataList
             .map((dynamic item) => CampaignData.fromJson(item))
             .toList();

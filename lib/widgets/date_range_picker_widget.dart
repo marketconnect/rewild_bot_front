@@ -53,6 +53,7 @@ class _DateRangePickerWidgetState extends State<DateRangePickerWidget> {
   Future<void> _pickDateRange(BuildContext context) async {
     final picked = await showDateRangePicker(
       context: context,
+      locale: const Locale('ru'),
       firstDate: widget.firstAllowable ?? DateTime(DateTime.now().year - 5),
       lastDate:
           widget.lastAllowable ?? DateTime.now().add(const Duration(days: 365)),

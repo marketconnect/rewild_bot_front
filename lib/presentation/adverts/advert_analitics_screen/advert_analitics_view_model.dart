@@ -643,8 +643,13 @@ class AdvertAnaliticsViewModel extends ResourceChangeNotifier {
     dynamicData['roiChange'] = _calculatePercentageChange(
         totalPreviousData.roi, totalSelectedData.roi);
     dynamicData['costPerOrderChange'] = _calculatePercentageChange(
-        totalPreviousData.sum / totalPreviousData.orders,
-        totalSelectedData.sum / totalSelectedData.orders);
+        totalPreviousData.orders > 0
+            ? totalPreviousData.sum / totalPreviousData.orders
+            : 0,
+        totalSelectedData.orders > 0
+            ? totalSelectedData.sum / totalSelectedData.orders
+            : 0);
+
     return dynamicData;
   }
 

@@ -34,7 +34,6 @@ class CampaignData {
   factory CampaignData.fromJson(Map<String, dynamic> json) {
     final dates =
         json['dates'] != null ? List<String>.from(json['dates']) : <String>[];
-
     final days = json['days'] != null
         ? List<CampaignDataDay>.from(
             json['days'].map((x) => CampaignDataDay.fromJson(x)))
@@ -45,20 +44,20 @@ class CampaignData {
         : <CampaignDataBoosterStat>[];
 
     return CampaignData(
-      views: (json['views'] as num).toInt(),
-      clicks: (json['clicks'] as num).toInt(),
-      ctr: json['ctr'].toDouble(),
-      cpc: json['cpc'].toDouble(),
-      sum: json['sum'].toDouble(),
-      atbs: (json['atbs'] as num).toInt(),
-      orders: (json['orders'] as num).toInt(),
-      cr: (json['cr'] as num).toInt(),
-      shks: (json['shks'] as num).toInt(),
-      sumPrice: json['sum_price'].toDouble(),
+      views: (json['views'] as num?)?.toInt() ?? 0,
+      clicks: (json['clicks'] as num?)?.toInt() ?? 0,
+      ctr: (json['ctr'] as num?)?.toDouble() ?? 0.0,
+      cpc: (json['cpc'] as num?)?.toDouble() ?? 0.0,
+      sum: (json['sum'] as num?)?.toDouble() ?? 0.0,
+      atbs: (json['atbs'] as num?)?.toInt() ?? 0,
+      orders: (json['orders'] as num?)?.toInt() ?? 0,
+      cr: (json['cr'] as num?)?.toInt() ?? 0,
+      shks: (json['shks'] as num?)?.toInt() ?? 0,
+      sumPrice: (json['sum_price'] as num?)?.toDouble() ?? 0.0,
       dates: dates,
       days: days,
       boosterStats: boosterStats,
-      advertId: json['advertId'],
+      advertId: json['advertId'] ?? 0,
     );
   }
 }
@@ -98,19 +97,21 @@ class CampaignDataDay {
 
   factory CampaignDataDay.fromJson(Map<String, dynamic> json) {
     return CampaignDataDay(
-      date: json['date'],
-      views: (json['views'] as num).toInt(),
-      clicks: (json['clicks'] as num).toInt(),
-      ctr: json['ctr'].toDouble(),
-      cpc: json['cpc'].toDouble(),
-      sum: json['sum'].toDouble(),
-      atbs: (json['atbs'] as num).toInt(),
-      orders: (json['orders'] as num).toInt(),
-      cr: (json['cr'] as num).toInt(),
-      shks: (json['shks'] as num).toInt(),
-      sumPrice: json['sum_price'].toDouble(),
-      apps: List<CampaignDataApp>.from(
-          json['apps'].map((x) => CampaignDataApp.fromJson(x))),
+      date: json['date'] ?? '',
+      views: (json['views'] as num?)?.toInt() ?? 0,
+      clicks: (json['clicks'] as num?)?.toInt() ?? 0,
+      ctr: (json['ctr'] as num?)?.toDouble() ?? 0.0,
+      cpc: (json['cpc'] as num?)?.toDouble() ?? 0.0,
+      sum: (json['sum'] as num?)?.toDouble() ?? 0.0,
+      atbs: (json['atbs'] as num?)?.toInt() ?? 0,
+      orders: (json['orders'] as num?)?.toInt() ?? 0,
+      cr: (json['cr'] as num?)?.toInt() ?? 0,
+      shks: (json['shks'] as num?)?.toInt() ?? 0,
+      sumPrice: (json['sum_price'] as num?)?.toDouble() ?? 0.0,
+      apps: json['apps'] != null
+          ? List<CampaignDataApp>.from(
+              json['apps'].map((x) => CampaignDataApp.fromJson(x)))
+          : <CampaignDataApp>[],
     );
   }
 }
@@ -146,19 +147,21 @@ class CampaignDataApp {
 
   factory CampaignDataApp.fromJson(Map<String, dynamic> json) {
     return CampaignDataApp(
-      views: (json['views'] as num).toInt(),
-      clicks: (json['clicks'] as num).toInt(),
-      ctr: json['ctr'].toDouble(),
-      cpc: json['cpc'].toDouble(),
-      sum: json['sum'].toDouble(),
-      atbs: (json['atbs'] as num).toInt(),
-      orders: (json['orders'] as num).toInt(),
-      cr: (json['cr'] as num).toInt(),
-      shks: (json['shks'] as num).toInt(),
-      sumPrice: json['sum_price'].toDouble(),
-      nm: List<CampaignDataNm>.from(
-          json['nm'].map((x) => CampaignDataNm.fromJson(x))),
-      appType: json['appType'],
+      views: (json['views'] as num?)?.toInt() ?? 0,
+      clicks: (json['clicks'] as num?)?.toInt() ?? 0,
+      ctr: (json['ctr'] as num?)?.toDouble() ?? 0.0,
+      cpc: (json['cpc'] as num?)?.toDouble() ?? 0.0,
+      sum: (json['sum'] as num?)?.toDouble() ?? 0.0,
+      atbs: (json['atbs'] as num?)?.toInt() ?? 0,
+      orders: (json['orders'] as num?)?.toInt() ?? 0,
+      cr: (json['cr'] as num?)?.toInt() ?? 0,
+      shks: (json['shks'] as num?)?.toInt() ?? 0,
+      sumPrice: (json['sum_price'] as num?)?.toDouble() ?? 0.0,
+      nm: json['nm'] != null
+          ? List<CampaignDataNm>.from(
+              json['nm'].map((x) => CampaignDataNm.fromJson(x)))
+          : <CampaignDataNm>[],
+      appType: json['appType'] ?? 0,
     );
   }
 }
@@ -194,18 +197,18 @@ class CampaignDataNm {
 
   factory CampaignDataNm.fromJson(Map<String, dynamic> json) {
     return CampaignDataNm(
-      views: (json['views'] as num).toInt(),
-      clicks: (json['clicks'] as num).toInt(),
-      ctr: json['ctr'].toDouble(),
-      cpc: json['cpc'].toDouble(),
-      sum: json['sum'].toDouble(),
-      atbs: (json['atbs'] as num).toInt(),
-      orders: (json['orders'] as num).toInt(),
-      cr: (json['cr'] as num).toInt(),
-      shks: (json['shks'] as num).toInt(),
-      sumPrice: json['sum_price'].toDouble(),
-      name: json['name'],
-      nmId: json['nmId'],
+      views: (json['views'] as num?)?.toInt() ?? 0,
+      clicks: (json['clicks'] as num?)?.toInt() ?? 0,
+      ctr: (json['ctr'] as num?)?.toDouble() ?? 0.0,
+      cpc: (json['cpc'] as num?)?.toDouble() ?? 0.0,
+      sum: (json['sum'] as num?)?.toDouble() ?? 0.0,
+      atbs: (json['atbs'] as num?)?.toInt() ?? 0,
+      orders: (json['orders'] as num?)?.toInt() ?? 0,
+      cr: (json['cr'] as num?)?.toInt() ?? 0,
+      shks: (json['shks'] as num?)?.toInt() ?? 0,
+      sumPrice: (json['sum_price'] as num?)?.toDouble() ?? 0.0,
+      name: json['name'] ?? '',
+      nmId: json['nmId'] ?? 0,
     );
   }
 }
@@ -223,9 +226,9 @@ class CampaignDataBoosterStat {
 
   factory CampaignDataBoosterStat.fromJson(Map<String, dynamic> json) {
     return CampaignDataBoosterStat(
-      date: json['date'],
-      nm: json['nm'],
-      avgPosition: (json['avg_position'] as num).toInt(),
+      date: json['date'] ?? '',
+      nm: json['nm'] ?? 0,
+      avgPosition: (json['avg_position'] as num?)?.toInt() ?? 0,
     );
   }
 }
