@@ -14,8 +14,6 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/di/di.dart';
 
-import 'package:rewild_bot_front/env.dart';
-
 abstract class AppFactory {
   Widget makeApp();
 }
@@ -24,8 +22,7 @@ final appFactory = makeAppFactory();
 
 void main() async {
   FlutterError.onError = (FlutterErrorDetails details) async {
-    await sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, details.toString());
+    await sendSystemMessage(details.toString(), SystemMessageType.error);
     FlutterError.presentError(details);
   };
   await initializeDateFormatting('ru', null);
@@ -42,8 +39,7 @@ void main() async {
     TelegramWebApp.expandTelegramWebApp();
     runApp(appFactory.makeApp());
   }, (Object error, StackTrace stack) async {
-    await sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, '$error\n$stack');
+    await sendSystemMessage('$error\n$stack', SystemMessageType.error);
   });
 }
 
@@ -53,8 +49,7 @@ void interceptConsoleErrors() {
   js.context['console']['error'] =
       js.allowInterop((message, [source, lineno, colno, error]) {
     final logMessage = 'Console Error: $message at $source:$lineno:$colno';
-    sendMessageToTelegramBot(
-        TBot.tBotErrorToken, TBot.tBotErrorChatId, logMessage);
+    sendSystemMessage(logMessage, SystemMessageType.error);
 
     originalConsoleError
         .apply(js.context['console'], [message, source, lineno, colno, error]);

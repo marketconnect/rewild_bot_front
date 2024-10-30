@@ -4,15 +4,28 @@ import 'dart:convert';
 
 import 'package:rewild_bot_front/env.dart';
 
-Future<void> sendMessageToTelegramBot(
-    String botToken, String chatId, String message) async {
-  Uri url = Uri.parse('https://api.telegram.org/bot$botToken/sendMessage');
+enum SystemMessageType { error, feedback }
 
-  // all errors will be sent to server otherwise to telegram
-  if (chatId == TBot.tBotErrorChatId && message.isNotEmpty) {
-    url = Uri.parse('${ServerConstants.apiUrl}/service');
+Future<void> sendSystemMessage(String message, SystemMessageType type) async {
+  switch (type) {
+    case SystemMessageType.error:
+      const chatId = TBot.tBotErrorChatId;
+      final url = Uri.parse('${ServerConstants.apiUrl}/service');
+      await _req(url, chatId, message);
+      break;
+    case SystemMessageType.feedback:
+      const chatId = TBot.tBotFeedbackChatId;
+      const botToken = TBot.tBotFeedbackToken;
+      Uri url = Uri.parse('https://api.telegram.org/bot$botToken/sendMessage');
+
+      await _req(url, chatId, message);
+      break;
+    default:
+      break;
   }
+}
 
+Future<void> _req(Uri url, String chatId, String message) async {
   try {
     final _ = await http.post(
       url,

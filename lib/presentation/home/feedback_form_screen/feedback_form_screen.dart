@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/core/utils/telegram_web_apps_api.dart';
-import 'package:rewild_bot_front/env.dart';
+
 import 'package:rewild_bot_front/widgets/custom_elevated_button.dart';
 
 class FeedbackFormScreen extends StatefulWidget {
@@ -32,11 +32,7 @@ class _FeedbackFormScreenState extends State<FeedbackFormScreen> {
     try {
       final id = await TelegramWebApp.getChatId();
       final messageToSend = 'id:$id $feedbackText';
-      await sendMessageToTelegramBot(
-        TBot.tBotFeedbackToken,
-        TBot.tBotFeedbackChatId,
-        messageToSend,
-      );
+      await sendSystemMessage(messageToSend, SystemMessageType.feedback);
 
       if (ScaffoldMessenger.of(context).mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

@@ -21,12 +21,18 @@ class SellerApiClient implements SellerServiceSelerApiClient {
       final uri = Uri.parse('${ServerConstants.apiUrl}/seller/$supplierId');
 
       final response = await http.get(uri);
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        SellerModel resultSeller = SellerModel.fromJson(data);
 
-        return right(resultSeller);
+      if (response.statusCode == 200) {
+        if (response.headers['content-type']?.contains('application/json') ==
+            true) {
+          final data = jsonDecode(response.body);
+          SellerModel resultSeller = SellerModel.fromJson(data);
+          return right(resultSeller);
+        } else {
+          return right(SellerModel(supplierId: 0, name: ""));
+        }
       } else {
+        // Обработка неуспешных статусов
         final wbApiHelper = SellerApiHelper.get;
         final errString = wbApiHelper.errResponse(
           statusCode: response.statusCode,
@@ -40,6 +46,7 @@ class SellerApiClient implements SellerServiceSelerApiClient {
         ));
       }
     } catch (e) {
+      // Общая обработка ошибок
       return left(RewildError(
         sendToTg: true,
         "Ошибка при обращении к WB: $e",

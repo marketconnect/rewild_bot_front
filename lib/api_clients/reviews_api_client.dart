@@ -8,7 +8,6 @@ import 'package:rewild_bot_front/core/utils/telegram.dart';
 import 'package:rewild_bot_front/domain/entities/review_model.dart';
 import 'package:rewild_bot_front/domain/services/review_service.dart';
 import 'package:rewild_bot_front/domain/services/unanswered_feedback_qty_service.dart';
-import 'package:rewild_bot_front/env.dart';
 
 class ReviewApiClient
     implements
@@ -181,8 +180,8 @@ class ReviewApiClient
         ));
       }
     } catch (e) {
-      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          'reviewsApiClient getAnsweredReviews ${e.toString()}');
+      sendSystemMessage('reviewsApiClient getAnsweredReviews ${e.toString()}',
+          SystemMessageType.error);
       return left(RewildError(
         sendToTg: true,
         "Ошибка при получении списка отзывов: $e",

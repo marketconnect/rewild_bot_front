@@ -2,7 +2,6 @@ import 'package:idb_shim/idb.dart';
 import 'package:idb_shim/idb_browser.dart';
 
 import 'package:rewild_bot_front/core/utils/telegram.dart';
-import 'package:rewild_bot_front/env.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -442,8 +441,8 @@ class DatabaseHelper {
       await store.clear();
       await txn.completed;
     } catch (e) {
-      sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-          "Failed to clear store $storeName: $e");
+      sendSystemMessage(
+          "Failed to clear store $storeName: $e", SystemMessageType.error);
     }
   }
 
@@ -460,8 +459,8 @@ class DatabaseHelper {
         await store.clear();
         await txn.completed;
       } catch (e) {
-        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-            "Failed to clear store $storeName: $e");
+        sendSystemMessage(
+            "Failed to clear store $storeName: $e", SystemMessageType.error);
       }
     }
   }
@@ -476,8 +475,8 @@ class DatabaseHelper {
     for (var item in result) {
       final map = item as Map<String, dynamic>;
       if (map['nmId'] == null) {
-        sendMessageToTelegramBot(TBot.tBotErrorToken, TBot.tBotErrorChatId,
-            "Error: Missing nmId in record: $map");
+        sendSystemMessage(
+            "Error: Missing nmId in record: $map", SystemMessageType.error);
         // print("Error: Missing nmId in record: $map");
       }
     }
