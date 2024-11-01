@@ -1,6 +1,9 @@
+// SeoToolScreen.dart
+
 // ignore_for_file: library_private_types_in_public_api
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:overlay_loader_with_app_icon/overlay_loader_with_app_icon.dart';
 import 'package:provider/provider.dart';
@@ -783,6 +786,64 @@ class KeywordManager extends StatefulWidget {
 
 class _KeywordManagerState extends State<KeywordManager> {
   Set<KwByLemma> selectedKeywords = {};
+  List<ListItem> buildGroupedKeywordItems(List<KwByLemma> keywords) {
+    // Sort keywords by length in ascending order
+    final sortedKeywords = [...keywords];
+    sortedKeywords.sort((a, b) => a.keyword.length.compareTo(b.keyword.length));
+
+    // Map to hold parent keywords and their children
+    Map<String, List<KwByLemma>> keywordChildren = {};
+    Set<String> keywordSet = keywords.map((k) => k.keyword).toSet();
+
+    // Build parent-child relationships
+    for (var kw in sortedKeywords) {
+      bool hasParent = false;
+      for (int i = kw.keyword.length - 1; i > 0; i--) {
+        String prefix = kw.keyword.substring(0, i).trim();
+        if (keywordSet.contains(prefix)) {
+          hasParent = true;
+          keywordChildren.putIfAbsent(prefix, () => []).add(kw);
+          break;
+        }
+      }
+      if (!hasParent) {
+        keywordChildren.putIfAbsent(kw.keyword, () => []);
+      }
+    }
+
+    // Build list items with indentation
+    List<ListItem> items = [];
+    Set<String> addedKeywords = {};
+
+    void addKeywordWithChildren(String keyword, int indentLevel) {
+      if (addedKeywords.contains(keyword)) return;
+      addedKeywords.add(keyword);
+
+      // Find the KwByLemma object for this keyword
+      final kwObj = keywords.firstWhere((k) => k.keyword == keyword);
+
+      items.add(KeywordItem(kwObj, indentLevel: indentLevel));
+
+      // Recursively add children
+      final children = keywordChildren[keyword];
+      if (children != null) {
+        for (var child in children) {
+          addKeywordWithChildren(child.keyword, indentLevel + 1);
+        }
+      }
+    }
+
+    // Start with root keywords
+    for (var keyword in keywordChildren.keys) {
+      bool isChild = keywordChildren.values.any(
+          (children) => children.any((childKw) => childKw.keyword == keyword));
+      if (!isChild) {
+        addKeywordWithChildren(keyword, 0);
+      }
+    }
+
+    return items;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -799,26 +860,63 @@ class _KeywordManagerState extends State<KeywordManager> {
       items.addAll(keywordsFromServer.map((k) => KeywordItem(k)));
     }
 
+    // if (corePhrases.isNotEmpty) {
+    //   items.add(SectionHeaderItem('Новые ключевые слова'));
+    //   items.addAll(corePhrases.map((k) => KeywordItem(k)));
+    // } else {
+    //   items.add(
+    //       EmptyStateItem('Пока не добавлено ни одного нового ключевого слова'));
+    // }
     if (corePhrases.isNotEmpty) {
       items.add(SectionHeaderItem('Новые ключевые слова'));
-      items.addAll(corePhrases.map((k) => KeywordItem(k)));
+      items.addAll(buildGroupedKeywordItems(corePhrases));
     } else {
       items.add(
-          EmptyStateItem('Пока не добавлено ни одного нового ключевого слова'));
+        EmptyStateItem('Пока не добавлено ни одного нового ключевого слова'),
+      );
     }
+
+    // Получаем все ключевые слова для копирования
+    final allKeywords = [...keywordsFromServer, ...corePhrases];
 
     return Stack(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: ListView.builder(
-            itemCount: items.length,
+            itemCount: items.length + 1, // +1 для кнопки копирования
             itemBuilder: (context, index) {
-              final item = items[index];
+              if (index == 0) {
+                // Добавляем кнопку копирования в начало списка
+                return Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    icon: const Icon(Icons.copy),
+                    label: const Text('Скопировать все ключевые слова'),
+                    onPressed: () {
+                      final keywordsText = allKeywords
+                          .map((kw) => '${kw.keyword},${kw.freq}')
+                          .join('\n');
+                      Clipboard.setData(ClipboardData(text: keywordsText));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content:
+                              Text('Ключевые слова скопированы в буфер обмена'),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+
+              final item = items[index - 1]; // -1 из-за кнопки копирования
               if (item is SectionHeaderItem) {
-                return Text(
-                  item.title,
-                  style: Theme.of(context).textTheme.titleMedium,
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
                 );
               } else if (item is KeywordItem) {
                 final keyword = item.keyword;
@@ -841,6 +939,7 @@ class _KeywordManagerState extends State<KeywordManager> {
                     });
                   },
                   showKeywordOptions: _showKeywordOptions,
+                  indentLevel: item.indentLevel,
                 );
               } else if (item is EmptyStateItem) {
                 return Center(
@@ -949,7 +1048,9 @@ class SectionHeaderItem extends ListItem {
 
 class KeywordItem extends ListItem {
   final KwByLemma keyword;
-  KeywordItem(this.keyword);
+  final int indentLevel;
+
+  KeywordItem(this.keyword, {this.indentLevel = 0});
 }
 
 class EmptyStateItem extends ListItem {
@@ -964,7 +1065,7 @@ class KeywordCard extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
   final Function(BuildContext, String) showKeywordOptions;
-
+  final int indentLevel;
   const KeywordCard({
     super.key,
     required this.keyword,
@@ -972,48 +1073,53 @@ class KeywordCard extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
     required this.showKeywordOptions,
+    this.indentLevel = 0, // Default to 0 (no indentation)
   });
 
   @override
   Widget build(BuildContext context) {
     final isFromServer = model.keywordsFromServer.contains(keyword);
 
-    return Card(
-      color: isSelected
-          ? Theme.of(context).colorScheme.secondaryContainer
-          : isFromServer
-              ? Colors.lightBlue[50]
-              : null,
-      margin: const EdgeInsets.symmetric(vertical: 4.0),
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8.0),
-          side: BorderSide(
-            color: isSelected
-                ? Theme.of(context).colorScheme.secondary
-                : Theme.of(context).dividerColor,
-            width: isSelected ? 2 : 1,
-          )),
-      child: ListTile(
-        leading: const Icon(Icons.text_fields),
-        onTap: onTap,
-        title: Text(
-          keyword.keyword,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
+    return Padding(
+      padding:
+          EdgeInsets.only(left: 16.0 * indentLevel), // Indent based on level
+      child: Card(
+        color: isSelected
+            ? Theme.of(context).colorScheme.secondaryContainer
+            : isFromServer
+                ? Colors.lightBlue[50]
+                : null,
+        margin: const EdgeInsets.symmetric(vertical: 4.0),
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            side: BorderSide(
+              color: isSelected
+                  ? Theme.of(context).colorScheme.secondary
+                  : Theme.of(context).dividerColor,
+              width: isSelected ? 2 : 1,
+            )),
+        child: ListTile(
+          leading: const Icon(Icons.text_fields),
+          onTap: onTap,
+          title: Text(
+            keyword.keyword,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        subtitle: Text(
-          'Частотность: ${keyword.freq}',
-          style: TextStyle(color: Colors.grey[600]),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.more_vert),
-          onPressed: () {
-            showKeywordOptions(
-              context,
-              keyword.keyword,
-            );
-          },
+          subtitle: Text(
+            'Частотность: ${keyword.freq}',
+            style: TextStyle(color: Colors.grey[600]),
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () {
+              showKeywordOptions(
+                context,
+                keyword.keyword,
+              );
+            },
+          ),
         ),
       ),
     );
